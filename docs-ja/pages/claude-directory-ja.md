@@ -103,15 +103,22 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます�
 
 作成したコンフィグ以外に、`~/.claude` には Claude Code がセッション中に書き込むデータが保存されます。これらのファイルはプレーンテキストです。ツールを通過するすべてのものは、ディスク上のトランスクリプトに書き込まれます。ファイルの内容、コマンド出力、貼り付けたテキストなどです。
 
+トランスクリプトには、Claude Code がメッセージとともにモデルに送信する内容も含まれる場合があります：
+
+* システムプロンプト
+* ツール定義
+* リクエストパラメータ
+* 読み込んだ指示ファイル（CLAUDE.md など）
+
 ### 自動的にクリーンアップされるファイル
 
 Claude Code は、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) より古いファイルを以下のパスから削除します。ただし、保持期間を安全に判定できる場合に限ります。デフォルトは 30 日で、最小値は 1 です。`0` に設定するとバリデーションエラーが発生します。同じ経過日数の閾値が、[孤立した worktrees の自動削除](https://code.claude.com/docs/ja/worktrees.md#clean-up-subagent-and-background-session-worktrees)にも適用されます。
 
 | `~/.claude/` 下のパス | 内容 |
 | - | - |
-| `projects/<project>/<session>.jsonl` | 完全な会話トランスクリプト：すべてのメッセージ、ツール呼び出し、ツール結果 |
+| `projects/<project>/<session>.jsonl` | 会話トランスクリプト：メッセージ、ツール呼び出し、ツール結果、および Claude Code がモデルに送信したリクエストのシステムプロンプト、ツール定義、パラメータ |
 | `projects/<project>/<session>.orphaned-<timestamp>-<suffix>.jsonl`、`projects/<project>/<session>.jsonl.superseded-<timestamp>` | Claude Code が上書きまたは削除する代わりに脇に置いたセッションの前のトランスクリプト。セッションピッカーには表示されません |
-| `projects/<project>/<session>/subagents/` | [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)の会話トランスクリプト。親セッションのトランスクリプトが経過時間で削除されるときに削除されます |
+| `projects/<project>/<session>/subagents/` | セッショントランスクリプトと同じ形式の[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)トランスクリプト。親セッションのトランスクリプトが経過時間で削除されるときに一緒に削除されます |
 | `projects/<project>/<session>/tool-results/` | 別ファイルにこぼれた大きなツール出力、および [MCP ツールが返す画像](https://code.claude.com/docs/ja/mcp.md#images-in-tool-results)のフルサイズコピー |
 | `projects/<project>/<session>/mcp-tasks/` | 再開したセッションが実行中の [MCP タスク](https://code.claude.com/docs/ja/mcp.md#mcp-tasks-that-run-on-the-server)を再び追跡するために必要な情報、および Claude がまだ読み取っていない完了済みタスクの結果 |
 | `file-history/<session>/` | Claude が変更したファイルの編集前スナップショット。[チェックポイント復元](https://code.claude.com/docs/ja/checkpointing.md)に使用されます。最新 100 個のチェックポイントのスナップショットを保持します。保持されたチェックポイントが参照していないスナップショットファイルは削除されます。ただし、各ファイルの最初のスナップショットは除きます |

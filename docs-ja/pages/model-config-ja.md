@@ -680,7 +680,7 @@ Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus
 
 effort は次のいずれかの方法で変更できます。
 
-* **`/effort`**：引数なしで `/effort` を実行するとインタラクティブなスライダーが開き、`/effort` の後にレベル名を続けると直接設定でき、`/effort auto` を実行するとアクティブなモデルの保存済みレベルがクリアされます。Claude が作業中でも実行でき、Claude Code が[キャッシュの警告](https://code.claude.com/docs/ja/prompt-caching.md#changing-effort-level)を表示した場合はそれを確認すると、Claude Code はターン内の次のリクエストに新しいレベルを適用します
+* **`/effort`**：引数なしで `/effort` を実行するとインタラクティブなスライダーが開き、`/effort` の後にレベル名を続けると直接設定でき、`/effort auto` を実行するとアクティブなモデルの保存済みレベルがクリアされます
 * **`/model` 内**：モデルを選択する際に、左右の矢印キーで effort スライダーを調整します
 * **`--effort` フラグ**：Claude Code の起動時にレベル名を渡して、1 つのセッションに設定します
 * **環境変数**：`CLAUDE_CODE_EFFORT_LEVEL` にレベル名または `auto` を設定します
@@ -692,7 +692,18 @@ effort は次のいずれかの方法で変更できます。
 
 [管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `effortLevel` を設定した場合、Claude Code は[effort の解決順序](#adjust-effort-level)の設定のステップでそれを適用し、ユーザーは引き続き `/effort` や `--effort` でレベルを変更できます。ユーザーを特定のレベル以下に制限するには、[`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を設定します。
 
-サポートされているモデルが選択されている場合、effort スライダーは `/model` に表示されます。現在の effort レベルはセッションヘッダーのモデル名の横にも「with low effort」のように表示されるため、`/model` を開かずにどの設定が有効かを確認できます。フッターにも、起動時と変更時に effort レベルが短時間表示されます。
+#### 設定した effort レベルを確認する
+
+サポートされているモデルが選択されている場合、effort スライダーは `/model` に表示されます。セッションヘッダーに表示されるレベル（たとえば「with low effort」）は effort 設定に基づくもので、Claude が[まだ以前のレベルで作業している](#when-a-new-effort-level-starts)場合でも同様です。フッターにも、起動時と変更時に effort レベルが短時間表示されます。
+
+#### 新しい effort レベルが適用されるタイミング
+
+ターミナルセッションでは、`/effort` が新しいレベルを確定すると、次に送信するメッセージはそのレベルで実行されます。このメッセージは、進行中のターンが終了した後、または[Claude がまだ作業している間](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)に送信できます。
+
+* **ターンの終了後**：それまで何もする必要はなく、ターンが以前のレベルのまま終了するのは想定どおりです
+* **Claude がまだ作業している間**：`keep going` などのメッセージを入力して `Enter` を押すと、ターンを中断せずにキューに追加できます。Claude は現在のツール呼び出しが完了したとき、遅くともターンの終了時にそのメッセージを受け取り、それ以降は新しいレベルで作業します。
+
+v2.1.242 より前は、Claude Code がターンの終了まで `/effort` 自体をキューに入れることがあり、[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)上など、[機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)しないセッションでは常にそうなっていました。
 
 #### アダプティブ推論と固定の思考予算
 

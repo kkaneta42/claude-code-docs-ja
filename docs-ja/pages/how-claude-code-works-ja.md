@@ -174,7 +174,7 @@ Claude には 2 つのセーフティメカニズムがあります。チェッ�
 
 ## Claude Code を効果的に使用する
 
-これらのヒントは Claude Code からより良い結果を得るのに役立ちます。特定のプロンプト、検証、計画の詳細については、[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)を参照してください。
+これらのヒントは Claude Code からより良い結果を得るのに役立ちます。特定のプロンプト、検証、およびプロンプトで指示するのではなく強制すべきルールの詳細については、[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)を参照してください。
 
 ### Claude Code に助言を求める
 

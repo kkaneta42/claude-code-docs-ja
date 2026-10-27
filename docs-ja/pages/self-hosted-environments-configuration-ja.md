@@ -381,7 +381,7 @@ name="runner-${CLAUDE_RUNNER_ORDER_ID}"
 
 | フラグ（値の例） | 渡す対象 | 動作 |
 | :- | :- | :- |
-| `--release-idle-session-min 30` | フックが起動するすべてのランナー | ランナーは指定した分数アイドル状態が続くとセッションを解放し、その後 0 で終了します。セッションはユーザーが次のメッセージを送信すると再開されますが、[プッシュされていなかった作業は失われます](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)。 |
+| `--release-idle-session-min 30` | フックが起動するすべてのランナー | ランナーは指定した分数アイドル状態が続くとセッションを解放し、その後 0 で終了します。セッションはユーザーが次のメッセージを送信すると再開されますが、[プッシュされていなかった作業は失われます](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)。セッションが実行したままにしたプロセスについては、[セッションを保持](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#keep-an-idle-session-while-its-processes-run)してください。 |
 | `--kill-session-after-min 480` | フックが起動するすべてのランナー | 各セッションをその分数に制限します。[アイドルとしてカウントされないセッション](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)に対するバックストップとして機能するため、想定される最長のセッションより大きい値を設定してください。 |
 | `--exit-if-unused-min 60` | スタンバイランナー（事前ウォーミング要求に対してフックが起動するもの） | セッションを一度も受け取らないスタンバイは、その分数が経過すると終了します。[`--min-idle`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) を設定している場合、スタンバイが余剰でない限り代わりのランナーが起動されるため、ブート時間を十分に上回る値を使用してください。 |
 

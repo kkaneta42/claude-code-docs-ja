@@ -155,7 +155,7 @@ ultracode をオンにすると既に大規模な実行にオプトインして�
 * セッションの[同時サブエージェント制限](https://code.claude.com/docs/ja/sub-agents.md#concurrent-subagent-limit)は、Claude が Agent ツールで生成するサブエージェントに対して強制されません
 * 自動権限モード では、[ワークフロー起動を承認](#approve-the-plan-before-it-runs)するよう求められません
 
-`/effort ultracode` は現在のセッション用です。すべてのセッションをそれで開始するには、[`ultracode`](https://code.claude.com/docs/ja/settings-reference#ultracode) 設定を設定します。日常的な作業に戻るときは `/effort ultracode off` で戻ります。`/effort` スライダーは [ultracode が利用可能な場合](https://code.claude.com/docs/ja/model-config.md#when-ultracode-is-available)のみトグルを提供します。
+`/effort ultracode` は現在のセッション用です。すべてのセッションをそれで開始するには、[`ultracode`](https://code.claude.com/docs/ja/settings-reference#ultracode) 設定を設定します。日常的な作業に戻るときは `/effort ultracode off` でオフにします。`/effort` スライダーは [ultracode が利用可能な場合](https://code.claude.com/docs/ja/model-config.md#when-ultracode-is-available)のみトグルを提供します。v2.1.284 より前は、`/effort ultracode` はセッションを `xhigh` に設定し、`/effort ultracode off` は `Invalid argument` で失敗していました。
 
 ### 実行前にプランを承認する
 
@@ -333,7 +333,7 @@ Claude Code はスクリプトを読み込んで実行するときに、ファ�
 
 ワークフローランタイムは、会話から分離された隔離環境でスクリプトを実行します。中間結果は Claude のコンテキストに入る代わりにスクリプト変数に留まります。
 
-すべての実行は、セッションディレクトリの `~/.claude/projects/` 配下のファイルにスクリプトを書き込みます。実行が開始されると Claude はパスを受け取るため、それを尋ねることができます。そのファイルを開いて、Claude が作成したオーケストレーションを読んだり、前回の実行のスクリプトと比較したり、編集して Claude に編集版から再起動するよう依頼したりできます。
+Claude がスクリプトファイルのパスから実行を開始する場合を除き、Claude Code は実行のスクリプトを `~/.claude/projects/` 内のセッションのディレクトリ配下のファイルに書き込みます。実行が開始されると Claude はスクリプトのパスを受け取るため、それを尋ねることができます。そのファイルを開いて、Claude が作成したオーケストレーションを読んだり、前回の実行のスクリプトとの差分を確認したり、編集して Claude に編集版から再起動するよう依頼したりできます。
 
 Claude がワークフローを開始できるのは、セッションが既に読み取りを許可されているスクリプトファイルからのみです。作業ディレクトリの外に保存されているスクリプトを実行するには、まず [`/add-dir`](https://code.claude.com/docs/ja/permissions#working-directories) でそのディレクトリを追加するか、[Read 許可ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)を設定してください。
 
@@ -387,10 +387,11 @@ A、B、C、D を開始していたスクリプトを編集して A、C、B、D 
 
 #### セッションを離れた後に再開する
 
-実行は同じ Claude Code セッション内で再開できます。実行中のワークフローがセッションを離れたときにどうなるかは、離れ方によって異なります。
+ワークフローの実行中にセッションをバックグラウンドに移したり Claude Code を終了したりした場合、実行は自動的には続行しません。実行が続行するのは、Claude が `Workflow` 呼び出しで再起動したときだけで、その際は[保存された結果から実行がリプレイされます](#which-agents-run-again)。
 
-* [セッションをバックグラウンドに移した](https://code.claude.com/docs/ja/agent-view.md#what-carries-over-when-you-background)場合、Claude Code はバックグラウンドセッションで同じ方法で実行をリプレイし、続行します。
-* ワークフローの実行中に Claude Code を終了し、[エージェントビューがオン](https://code.claude.com/docs/ja/agent-view.md#from-inside-a-session)になっている場合、終了ダイアログに `Move to background and exit` が表示され、同じ方法で実行を引き継ぎます。代わりに `Exit and stop tasks` を選択した場合、またはこのオプションが表示されない場合、実行はセッションとともに停止します。Claude Code は実行の保存済み結果を `~/.claude/projects/` 内のそのセッションのディレクトリに保持するため、`claude --resume` で再開したセッションでは、ワークフローの再起動を Claude に依頼するとそれらをリプレイできます。新しく開始したセッションでは、Claude には再起動する以前の実行がないため、ワークフローを新しい実行として最初から開始します。
+* **セッションをバックグラウンドに移した、または [`Move to background and exit`](https://code.claude.com/docs/ja/agent-view#from-inside-a-session) を選択した場合**: [バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#what-carries-over-when-you-background)を確認した時点で実行が続行していなければ、そのセッションでワークフローの再起動を Claude に依頼します。[権限モード](#approve-the-plan-before-it-runs)によっては、Claude Code はまず再起動の承認を求めます。セッションがエージェントビューの `Needs input` の下に表示されている場合は、[セッションにアタッチして](https://code.claude.com/docs/ja/agent-view.md#attach-to-a-session)承認プロンプトに応答してください。
+* **バックグラウンドセッションでの再起動が `nothing to resume` で失敗した場合**: ワークフローを新しい実行として最初から開始するよう Claude に依頼します。作業ディレクトリ内のスクリプトなど、`~/.claude/projects/` の外にあるスクリプトファイルのパスから Claude が実行を開始した場合、Claude はバックグラウンドセッションでその実行を再起動できません。
+* **`Exit and stop tasks` を選択した場合、または `Move to background and exit` が表示されなかった場合**: 実行はセッションとともに停止し、Claude Code は実行の保存済み結果を `~/.claude/projects/` 内のそのセッションのディレクトリに保持します。シェルで `claude --resume` を使ってセッションを再開し、ワークフローの再起動を Claude に依頼してください。新しく開始したセッションでは、Claude には再起動する以前の実行がないため、ワークフローを最初から開始します。
 
 [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、Claude Code は実行の結果をセッションの会話履歴とともにも保存し、これはセッションの VM が回収されても残ります。[そのようなセッションを再度開いて](https://code.claude.com/docs/ja/claude-code-on-the-web.md#environment-expired)ワークフローの再起動を Claude に依頼すると、完了済みのエージェントは引き続き保存された結果を返します。
 

@@ -1624,7 +1624,16 @@ URL モードでは、Claude Code は URL をコマンドライン引数とし�
 
 エリシテーションを使用する MCP サーバーを構築している場合は、プロトコルの詳細とスキーマの例については [MCP エリシテーション仕様](https://modelcontextprotocol.io/docs/learn/client-concepts#elicitation)を参照してください。
 
-[プロトコルリビジョン 2026-07-28](#mcp-client-runtimes) を使用する接続では、Claude Code はクライアント機能で `elicitation: {form: {}, url: {}}` を宣言するため、そこのサーバーはプロトコルの標準エリシテーション要求を通じてどちらのモードでもリクエストできます。
+### Claude Code が宣言するエリシテーションモード
+
+MCP サーバーを構築する場合、Claude Code が接続時に送信するクライアント機能によって、サーバーがどのエリシテーションモードをリクエストできるかがサーバーに伝えられます。Claude Code は次の接続で `elicitation: {form: {}, url: {}}` を宣言するため、これらのいずれの接続のサーバーも両方のモードをリクエストできます。
+
+* [プロトコルリビジョン 2026-07-28](#mcp-client-runtimes) を使用する接続
+* それ以前のプロトコルリビジョン（2025-11-25 以前）での、ユーザーの Claude Code MCP 設定にある stdio、`sse`、`http`、`ws` サーバーへの接続。Claude Code v2.1.287 以降が必要です
+
+それ以前のリビジョンでのその他の接続（[claude.ai コネクタ](#use-mcp-servers-from-claude-ai)への接続など）では、Claude Code は空の `elicitation: {}` を宣言します。これはフォームモードでのエリシテーション要求のみを許可します。
+
+Java MCP SDK 0.17.0 以前で構築されたサーバーは、`form` と `url` を含む宣言を拒否する場合があります。[MCP server rejected the elicitation capability](https://code.claude.com/docs/ja/errors.md#mcp-server-rejected-the-elicitation-capability) を参照してください。
 
 ## MCP リソースを使用する
 

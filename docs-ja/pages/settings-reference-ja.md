@@ -2037,13 +2037,13 @@ macOS サンドボックスが検索できる追加の XPC および Mach サー
 * **Type**: 文字列の配列。各サービス名。単一の末尾 `*` はプレフィックスと一致し、`"*"` だけはすべてのサービスと一致します
 * **Default**: 未設定
 
-これにより、`com.apple.coresimulator.` プレフィックスの下のすべてのサービスが許可されます：
+次の例では、`com.apple.CoreSimulator.` プレフィックス配下のすべてのサービスを許可します。
 
 ```json settings.json theme={null}
 {
   "sandbox": {
     "network": {
-      "allowMachLookup": ["com.apple.coresimulator.*"]
+      "allowMachLookup": ["com.apple.CoreSimulator.*"]
     }
   }
 }
@@ -4729,12 +4729,12 @@ git sparse-checkout を通じて各 worktree にリストされたディレク�
 * **タイプ**: 文字列の配列、リポジトリルートに相対的なディレクトリパス
 * **デフォルト**: 未設定。各 worktree はツリー全体をチェックアウトします
 
-この例は、各 worktree で `packages/my-app` と `shared/utils` のみをチェックアウトします（ルートレベルのファイルを含む）：
+リストに `.claude` を含めると、各 worktree にもリポジトリの `.claude/settings.json` と `.claude/rules/` が含まれるようになります。この例は、各 worktree で `.claude`、`packages/my-app`、`shared/utils` のみをチェックアウトします（ルートレベルのファイルを含む）：
 
 ```json settings.json theme={null}
 {
   "worktree": {
-    "sparsePaths": ["packages/my-app", "shared/utils"]
+    "sparsePaths": [".claude", "packages/my-app", "shared/utils"]
   }
 }
 ```
@@ -5503,17 +5503,17 @@ Claude Desktop または Cowork で開始または最後に続行したセッシ
 
 チェックがスキップされた場合、WebFetch はブロックリストを参照せずに任意の URL を試行するため、Claude が到達できるドメインを制限する必要がある場合は [`WebFetch` 権限ルール](https://code.claude.com/docs/ja/permissions#webfetch) と組み合わせてください。
 
-## エンタープライズおよび管理設定
+## エンタープライズ設定と管理設定
 
-組織が管理設定を計算、更新、および組み合わせるために使用するキー。[管理設定の設定](https://code.claude.com/docs/ja/admin-setup.md)を参照してください。
+組織が管理設定の算出、更新、組み合わせに使用するキーです。[管理設定をセットアップする](https://code.claude.com/docs/ja/admin-setup.md)を参照してください。
 
 ### `disableSideloadFlags`
 
-起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` CLI フラグを拒否します。これらのフラグは、ユーザーが [`strictKnownMarketplaces`](#strictknownmarketplaces) を単一実行でバイパスするために渡す可能性があります。Claude Code はエラーで終了し、拒否されたフラグを名前で指定します。[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、Claude Code はセッションを開始し、サーバーが配信した `--mcp-config` エントリをドロップします。ただし、プロセス内 `type: "sdk"` エントリと [Claude Tag](https://code.claude.com/docs/ja/claude-tag.md) セッションの Slack ツールは除きます。Claude Code v2.1.193 以降が必要です。
+起動時に `--plugin-dir`、`--plugin-url`、`--agents`、`--mcp-config` の CLI フラグを拒否します。これらのフラグを使うと、ユーザーは 1 回の実行に限り [`strictKnownMarketplaces`](#strictknownmarketplaces) を回避できてしまいます。Claude Code は拒否したフラグを示すエラーを出して終了します。[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、Claude Code は代わりにセッションを開始し、サーバーから配信された `--mcp-config` エントリのうち、インプロセスの `type: "sdk"` エントリと [Claude Tag](https://code.claude.com/docs/ja/claude-tag.md) セッションの Slack ツールを除くすべてを破棄します。Claude Code v2.1.193 以降が必要です。
 
 * **スコープ**: [`Managed`](#scopes)
-* **タイプ**: ブール値
-  * `true`: Claude Code は起動時に `--plugin-dir`、`--plugin-url`、`--agents`、および `--mcp-config` を拒否し、エラーで終了して名前を指定します。クラウドセッションでは、セッションを開始し、サーバーが配信した `--mcp-config` エントリをドロップします。ただし、プロセス内 `type: "sdk"` エントリと Claude Tag セッションの Slack ツールは除きます
+* **型**: Boolean
+  * `true`: Claude Code は起動時に `--plugin-dir`、`--plugin-url`、`--agents`、`--mcp-config` を拒否し、それらを示すエラーを出して終了します。クラウドセッションでは、代わりにセッションを開始し、サーバーから配信された `--mcp-config` エントリのうち、インプロセスの `type: "sdk"` エントリと Claude Tag セッションの Slack ツールを除くすべてを破棄します
   * `false`: Claude Code はこれらのフラグを受け入れます
 * **デフォルト**: `false`
 
@@ -5523,27 +5523,30 @@ Claude Desktop または Cowork で開始または最後に続行したセッシ
 }
 ```
 
-Claude Code は、サーバーがすべてプロセス内 `type: "sdk"` エントリである `--mcp-config` を受け入れます。これにより、Agent SDK と VS Code 拡張機能は動作し続けます。ユーザーは `claude mcp add` またはファイル `.mcp.json` でサーバーを追加できます。サーバーごとの制御については、[`allowedMcpServers`](https://code.claude.com/docs/ja/managed-mcp) も設定してください。Claude Code v2.1.193 以降が必要です。
+サーバーがすべてインプロセスの `type: "sdk"` エントリである `--mcp-config` は引き続き受け入れられるため、Agent SDK と VS Code 拡張機能は引き続き動作します。ユーザーは引き続き `claude mcp add` や `.mcp.json` ファイルでサーバーを追加できます。サーバーごとに制御するには、[`allowedMcpServers`](https://code.claude.com/docs/ja/managed-mcp) もあわせて設定してください。Claude Code v2.1.193 以降が必要です。
 
-同じチェックは、[`CLAUDE_CODE_PLUGIN_DIRS`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数で名前が付けられたプラグインフォルダをカバーします。これには Claude Code v2.1.280 以降が必要です。変数がフォルダを名前で指定する場合、Claude Code は同じエラーで終了し、エラーは変数をアンセットするように指示します。
+`disableSideloadFlags` は、次のソースからのプラグインフォルダーも拒否します。
 
-クラウドセッションでは、Claude Code はセッション中の MCP 更新も無視します。これは、クラウドセッション構成と SDK `setMcpServers()` 呼び出しの背後にあるパスです。プロセス内 `type: "sdk"` エントリと Claude Tag セッションの Slack ツールはそこでも除外されたままです。v2.1.268 より前では、このドロップと起動ドロップの両方も Claude Tag セッションの Slack ツールを削除していました。v2.1.239 より前では、サーバーが配信した `--mcp-config` はクラウドセッションの開始をブロックしていました。
+* **[`CLAUDE_CODE_PLUGIN_DIRS`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数**: この変数がプラグインフォルダーを指定している場合、Claude Code は起動時に、この変数名を示して設定解除を求めるエラーを出して終了します。Claude Code v2.1.280 以降が必要です
+* **Agent SDK の [`addPlugins`](https://code.claude.com/docs/ja/agent-sdk/typescript#load-more-plugin-folders-with-addplugins) オプション**: アプリケーションが `addPlugins` で `reloadPlugins()` にプラグインフォルダーを渡すと、その呼び出しはエラーで失敗します。セッションは既存のプラグインのまま実行を続けます。Claude Code v2.1.301 以降が必要です
 
-デスクトップアプリは、claude.ai から同期されたプラグインや、組織がアプリを通じてデプロイするプラグインを含む、いくつかのプラグインを自身で管理します。MDM、OS レベルのポリシー、または管理設定ファイルを通じてこのキーをデバイスにデプロイする場合、デスクトップアプリはそれらのプラグインを、そのデバイス上の以下のセッションに渡しません:
+クラウドセッションでは、Claude Code はサーバーから配信されるセッション途中の MCP 更新も無視します。これは、クラウドセッションの設定や、それらのセッションに届く SDK の `setMcpServers()` 呼び出しが使う経路です。ここでも、インプロセスの `type: "sdk"` エントリと Claude Tag セッションの Slack ツールは対象外です。v2.1.268 より前では、この破棄と起動時の破棄の両方で Claude Tag セッションの Slack ツールも削除されていました。v2.1.239 より前では、サーバーから配信された `--mcp-config` によってクラウドセッションの開始がブロックされていました。
 
-* **[ユーザーのマシン上のコードセッション](https://code.claude.com/docs/ja/desktop.md#environment-configuration)**: ユーザーの claude.ai アカウントに対して有効になっているスキルなしでも開始します。Claude Code が管理設定のマーケットプレイスからインストールするプラグインは引き続きロードされます。[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) では、デバイスの `org-plugins` ディレクトリにデプロイするプラグインからの MCP サーバーは利用可能なままです。デスクトップアプリが自身でそれらに接続するため。Claude Desktop v1.37937.0 より前では、これらのセッションは起動時に失敗していました。
-* **[ユーザーのマシン上の Cowork セッション](https://code.claude.com/docs/ja/managed-settings.md#where-and-when-a-policy-applies)**: それらのプラグイン内のスキルとユーザーの claude.ai アカウントに対して有効になっているスキルは利用可能なままです。[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) では、デバイスの `org-plugins` ディレクトリにデプロイするプラグインからの MCP サーバーは利用可能なままです。デスクトップアプリが自身でそれらに接続するため。Claude Desktop v1.44121.0 より前では、これらのセッションは起動時に失敗していました。
+デスクトップアプリは、claude.ai から同期されたプラグインや、組織がアプリを通じてデプロイしたプラグインなど、一部のプラグインを自身で管理します。MDM、OS レベルのポリシー、または管理設定ファイルを通じてこのキーをデバイスにデプロイすると、デスクトップアプリはそのデバイス上の次のセッションにそれらのプラグインを渡しません。
+
+* **[ユーザーのマシン上の Code セッション](https://code.claude.com/docs/ja/desktop.md#environment-configuration)**: これらのセッションは、ユーザーの claude.ai アカウントで有効になっているスキルも読み込まれない状態で開始されます。管理設定内のマーケットプレイスから Claude Code がインストールするプラグインは引き続き読み込まれます。[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) では、デバイスの `org-plugins` ディレクトリにデプロイしたプラグインの MCP サーバーも引き続き利用できます。デスクトップアプリがそれらに直接接続するためです。Claude Desktop v1.37937.0 より前では、これらのセッションは代わりに起動時に失敗していました。
+* **[ユーザーのマシン上の Cowork セッション](https://code.claude.com/docs/ja/managed-settings.md#where-and-when-a-policy-applies)**: それらのプラグイン内のスキルと、ユーザーの claude.ai アカウントで有効になっているスキルは引き続き利用できます。[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) では、デバイスの `org-plugins` ディレクトリにデプロイしたプラグインの MCP サーバーも引き続き利用できます。デスクトップアプリがそれらに直接接続するためです。Claude Desktop v1.44121.0 より前では、これらのセッションは代わりに起動時に失敗していました。
 
 ### `forceRemoteSettingsRefresh`
 
-Claude Code が [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) を新たに取得するまで CLI 起動をブロックします。取得に失敗した場合、Claude Code はキャッシュされた設定または設定なしで続行する代わりに終了します。環境が管理ポリシーなしでセッションが実行される短い時間枠を受け入れられない場合に設定します。
+Claude Code が[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を新たに取得するまで CLI の起動をブロックします。取得に失敗した場合、Claude Code はキャッシュされた設定や設定なしで続行せずに終了します。セッションが管理ポリシーなしで実行される時間がわずかでも許容できない環境で設定してください。
 
-キーが設定されていない場合、Claude Code は取得時に起動をブロックしません。ただし、開発者が起動時にサインインする場合、取得を最大 5 秒間待機します。Cloud ゲートウェイセッションは常に待機し、ゲートウェイに到達できない場合は終了します。
+このキーが未設定の場合、Claude Code は取得のために起動をブロックしませんが、開発者が起動時にサインインする場合は取得を最大 5 秒待ちます。Cloud ゲートウェイセッションは常に待機し、ゲートウェイに到達できない場合は終了します。
 
-* **スコープ**: [`Managed`](#scopes)。Claude Code は、最優先度のソースでなくても、管理者が制御する管理ソースからの `true` を尊重します。
-* **タイプ**: ブール値
-  * `true`: Claude Code は起動をブロックして、サーバー管理設定を新たに取得するまで待機し、取得に失敗した場合は終了します
-  * `false`: Claude Code は取得時に起動をブロックしません。ただし、サインイン起動では最大 5 秒間待機します
+* **スコープ**: [`Managed`](#scopes)。Claude Code は、管理者が制御する任意の管理ソースからの `true` を、最も優先度の高いソースでなくても尊重します。
+* **型**: Boolean
+  * `true`: Claude Code はサーバー管理設定を新たに取得するまで起動をブロックし、取得に失敗した場合は終了します
+  * `false`: Claude Code は取得のために起動をブロックしませんが、サインインを伴う起動では取得を最大 5 秒待ちます
 * **デフォルト**: `false`
 
 ```json managed-settings.json theme={null}
@@ -5552,21 +5555,21 @@ Claude Code が [サーバー管理設定](https://code.claude.com/docs/ja/serve
 }
 ```
 
-MDM プロファイルまたは管理設定ファイルで設定して、最初のサーバーペイロードが到着する前に失敗時閉鎖起動を強制します。Claude Code は、サーバー管理設定を取得するセッションでのみチェックを適用します。[それらを取得しないセッション](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)は待機なしで開始します。`claude auth` サブコマンドは除外されるため、ユーザーは期限切れの認証情報が取得に失敗する理由である場合に再認証できます。[失敗時閉鎖起動を強制する](https://code.claude.com/docs/ja/server-managed-settings.md#enforce-fail-closed-startup)を参照してください。
+最初のサーバーペイロードが届く前にフェイルクローズの起動を強制するには、MDM プロファイルまたは管理設定ファイルで設定してください。Claude Code はサーバー管理設定を取得するセッションでのみこのチェックを適用するため、[それらを取得しない](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)セッションは待機せずに開始されます。`claude auth` サブコマンドは対象外なので、認証情報の期限切れが取得失敗の原因である場合でも、ユーザーは再認証できます。[フェイルクローズの起動を強制する](https://code.claude.com/docs/ja/server-managed-settings.md#enforce-fail-closed-startup)を参照してください。
 
 ### `managedSourcesBehavior`
 
-Claude Code が、組織が配信する最優先度の [管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) のみを適用するか、配信するすべての管理者ソースを組み合わせるかを選択します。デフォルトでは、Claude Code は [ポリシーキー](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) を含む最優先度のソースを取得し、残りを無視します。ポリシーキーは、このキーと `wslInheritsWindowsSettings` 以外の設定キーです。そのデフォルトでは、サーバー管理設定または MDM ポリシーがポリシーキーを配信すると、`managed-settings.json` ファイルは [Claude Code がすべての管理ソースから読み取るキー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source) のみを提供します。`"merge"` を使用すると、配信するすべての管理ソースがそのキーを 1 つの組み合わせたポリシーに提供します。Claude Code v2.1.242 以降が必要です。
+組織が配信する[管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)のうち最も優先度の高いものだけを Claude Code が適用するか、配信されるすべての管理ソースを組み合わせるかを選択します。デフォルトでは、Claude Code は[ポリシーキー](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を含む最も優先度の高いソースを採用し、残りは無視します。ポリシーキーとは、このキーと `wslInheritsWindowsSettings` 以外の任意の設定キーです。このデフォルトでは、サーバー管理設定または MDM ポリシーがポリシーキーを配信すると、`managed-settings.json` ファイルは[Claude Code がすべての管理ソースから読み取るキー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source)のみを提供します。`"merge"` を指定すると、配信されるすべての管理ソースがそれぞれのキーを 1 つの組み合わされたポリシーに提供します。Claude Code v2.1.242 以降が必要です。
 
-`"merge"` は、[ランク付けされた](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) 最優先度のソースの下のすべてのソースが管理者の制御下にある場合にのみ設定してください。Claude Code は、`permissions.allow` ルールなどの下位ソースからのエントリをポリシーに追加します。
+`"merge"` は、最も優先度の高いソースより下位に[ランク付けされる](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)すべてのソースが管理者の制御下にある場合にのみ設定してください。その場合、Claude Code は `permissions.allow` ルールなど、下位のソースのエントリをポリシーに追加するためです。
 
-* **スコープ**: [`Managed`](#scopes)。Claude Code はこのキーを、このキーまたはポリシーキーを含む最優先度のソースから読み取り、ランク付けされた下位のすべてのソースでこのキーを無視します。下位ソースは、上位のソースとの組み合わせにオプトインできません。Windows HKCU レジストリも [埋め込みホストからの親設定](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy) も、マージに参加しません。
-* **タイプ**: 文字列、次のいずれか:
-  * `"first-wins"`: ポリシーキーを含む最優先度のソースがポリシーを提供し、下位ソースは [Claude Code がすべての管理ソースから読み取るキー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source) のみを提供します
-  * `"merge"`: 配信するすべての管理ソースがそのキーを提供し、以下のルールで組み合わせられます
+* **スコープ**: [`Managed`](#scopes)。Claude Code は、このキーまたはポリシーキーのいずれかを含む最も優先度の高いソースからこのキーを読み取り、それより下位のすべてのソースにあるこのキーを無視します。そのため、下位のソースが自らを上位のソースとの組み合わせに参加させることはできません。Windows HKCU レジストリと[埋め込みホストからの親設定](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy)は、どちらもマージに参加しません。
+* **型**: 文字列。次のいずれか:
+  * `"first-wins"`: ポリシーキーを含む最も優先度の高いソースがポリシーを提供し、下位のソースは[Claude Code がすべての管理ソースから読み取るキー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source)のみを提供します
+  * `"merge"`: 配信されるすべての管理ソースがそれぞれのキーを提供し、以下のルールで組み合わされます
 * **デフォルト**: `"first-wins"`
 
-デプロイする最優先度のソースでキーを配信します。サーバー管理設定を受け取らないマシンは、Claude Code がこのキーまたはポリシーキーを含む最優先度のソースからキーを読み取るため、MDM プロファイルにもキーが必要です。`managed-settings.json` ファイルは最下位の管理ソースであるため、そこに設定された `"merge"` は、それと組み合わせる下位ソースがありません。サーバー管理設定では、キーは次のようになります:
+このキーは、デプロイする中で最も優先度の高いソースで配信してください。サーバー管理設定を一度も受け取らないマシンでは、MDM プロファイルにもこのキーが必要です。Claude Code は、このキーまたはポリシーキーを含む最も優先度の高いソースからこのキーを読み取るためです。`managed-settings.json` ファイルは最も低くランク付けされる管理ソースなので、そこで `"merge"` を設定しても、組み合わせる下位のソースがありません。サーバー管理設定では、このキーは次のようになります。
 
 ```json theme={null}
 {
@@ -5574,38 +5577,38 @@ Claude Code が、組織が配信する最優先度の [管理ソース](https:/
 }
 ```
 
-`"merge"` では、Claude Code は各キーをそのタイプで組み合わせます。このテーブルは各タイプのルールを示します。制限許可リスト、値全体取得、および最優先度ソースのみの行は、カバーするすべてのキーを名前で指定し、他の行は例を示します:
+`"merge"` では、Claude Code は各キーをその種類に応じて組み合わせます。次の表は種類ごとのルールを示しています。制限許可リスト、値全体の採用、最上位ソースのみの行は対象となるすべてのキーを挙げており、その他の行は例を示しています。
 
-| キーのタイプ | Claude Code がそれを組み合わせる方法 | キー |
+| キーの種類 | Claude Code による組み合わせ方 | キー |
 | :- | :- | :- |
-| リスト | すべてのソースからのエントリを組み合わせます | [`permissions.allow`](#permissions-allow)、[`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains)、およびその他のリストキー |
-| ロック | ソースが設定する最も厳密な値を適用します。ソースが厳密な値を設定しない場合、最優先度のソースからのみより緩い値を適用します | [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)、[`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode)、およびその他のブール値または列挙型ロック |
-| 制限許可リスト | 下位ソースからのエントリを追加せずに、それを設定する最優先度のソースから全体を取得します。最優先度のソースが設定しない場合、次のソースから全体を取得します | [`availableModels`](#availablemodels)、[`allowedMcpServers`](#allowedmcpservers)、[`allowedProviders`](#allowedproviders)、[`strictKnownMarketplaces`](#strictknownmarketplaces)、[`allowedChannelPlugins`](#allowedchannelplugins)、および [`fallbackModel`](#fallbackmodel) チェーン |
-| 値全体取得 | 下位ソースからのエントリまたはフィールドを組み合わせずに、それを設定する最優先度のソースから全体を取得します。最優先度のソースが設定しない場合、次のソースから全体を取得します | [`sandbox.credentials.awsPairs`](#sandbox-credentials-awspairs)、[`sandbox.ripgrep`](#sandbox-ripgrep) |
-| 提供される MCP サーバー | すべてのソースからサーバー名を組み合わせます。2 つのソースが同じ名前を設定する場合、上位ソースの全体エントリを適用します | [`managedMcpServers`](#managedmcpservers) |
-| 最優先度のソースからのみ読み取ります | ポリシーキーを含む最優先度のソースからのみキーを読み取るため、最優先度のソースが何も設定しない場合でも、下位ソースの値は無視されます | [`apiKeyHelper`](#apikeyhelper)、[`awsAuthRefresh`](#awsauthrefresh)、[`awsCredentialExport`](#awscredentialexport)、[`gcpAuthRefresh`](#gcpauthrefresh)、[`otelHeadersHelper`](#otelheadershelper)、`proxyAuthHelper`、[`forceLoginOrgUUID`](#forceloginorguuid)、[`forceLoginMethod`](#forceloginmethod) の `"claudeai"` および `"console"` 値、[`parentSettingsBehavior`](#parentsettingsbehavior)、[`modelPicker`](#modelpicker)、[`policyHelper`](#policyhelper)、[`permissions.defaultMode`](#permissions-defaultmode) |
-| `env` | [管理ソース全体で変数ごとにマージします](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source)。`"first-wins"` と `"merge"` の両方で | [`env`](#env) |
-| その他のすべてのキー | それを設定する最優先度のソースから値を取得します | [`cleanupPeriodDays`](#cleanupperioddays)、[`model`](#model) |
+| リスト | すべてのソースのエントリを組み合わせます | [`permissions.allow`](#permissions-allow)、[`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains)、その他のリストキー |
+| ロック | いずれかのソースが設定する最も厳しい値を適用します。厳しい値を設定するソースがない場合は、最上位のソースからのみ緩い値を適用します | [`allowManagedPermissionRulesOnly`](#allowmanagedpermissionrulesonly)、[`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode)、その他の Boolean または列挙型のロック |
+| 制限許可リスト | リストを設定している最上位のソースからリスト全体を採用し、下位のソースのエントリは追加しません。最上位のソースが設定していない場合は、次の下位のソースから全体を採用します | [`availableModels`](#availablemodels)、[`allowedMcpServers`](#allowedmcpservers)、[`allowedProviders`](#allowedproviders)、[`strictKnownMarketplaces`](#strictknownmarketplaces)、[`allowedChannelPlugins`](#allowedchannelplugins)、[`fallbackModel`](#fallbackmodel) チェーン |
+| 値全体の採用 | 値を設定している最上位のソースから値全体を採用し、下位のソースのエントリやフィールドは組み合わせません。最上位のソースが設定していない場合は、次の下位のソースから全体を採用します | [`sandbox.credentials.awsPairs`](#sandbox-credentials-awspairs)、[`sandbox.ripgrep`](#sandbox-ripgrep) |
+| 提供される MCP サーバー | すべてのソースのサーバー名を組み合わせます。2 つのソースが同じ名前を設定している場合は、上位のソースのエントリ全体を適用します | [`managedMcpServers`](#managedmcpservers) |
+| 最も優先度の高いソースからのみ読み取り | ポリシーキーを含む最も優先度の高いソースからのみキーを読み取るため、最上位のソースが何も設定していない場合でも下位のソースの値は無視されます | [`apiKeyHelper`](#apikeyhelper)、[`awsAuthRefresh`](#awsauthrefresh)、[`awsCredentialExport`](#awscredentialexport)、[`gcpAuthRefresh`](#gcpauthrefresh)、[`otelHeadersHelper`](#otelheadershelper)、`proxyAuthHelper`、[`forceLoginOrgUUID`](#forceloginorguuid)、[`forceLoginMethod`](#forceloginmethod) の `"claudeai"` と `"console"` の値、[`parentSettingsBehavior`](#parentsettingsbehavior)、[`modelPicker`](#modelpicker)、[`policyHelper`](#policyhelper)、[`permissions.defaultMode`](#permissions-defaultmode) |
+| `env` | `"first-wins"` と `"merge"` のどちらでも、[管理ソース間で変数ごとにマージします](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source) | [`env`](#env) |
+| その他すべてのキー | 値を設定している最上位のソースから値を採用します | [`cleanupPeriodDays`](#cleanupperioddays)、[`model`](#model) |
 
-`sandbox.credentials.awsPairs` と `sandbox.ripgrep` を全体で取得するには、Claude Code v2.1.257 以降が必要です。
+`sandbox.credentials.awsPairs` と `sandbox.ripgrep` を全体として採用するには、Claude Code v2.1.257 以降が必要です。
 
-いくつかのキーは、テーブルが示さない条件を追加します:
+いくつかのキーには、表に示されていない条件が加わります。
 
-* **[`policyHelper`](#policyhelper)**: Claude Code は、ポリシーキーを含む最優先度のソースが MDM ポリシーまたは管理設定ファイルである場合にのみそれを尊重します。サーバー管理設定では適用されません。
-* **[`modelOverrides`](#modeloverrides)**: `availableModels` とペアになります。Claude Code は、それを設定する最優先度のソースから `modelOverrides` を取得します。ただし、上位ソースが `modelOverrides` なしで `availableModels` を設定する場合は除きます。その場合、すべてのソースから `modelOverrides` を無視します。
-* **[`forceLoginGatewayUrl`](#forcelogingatewayurl)、[`gatewayInternalNetworks`](#gatewayinternalnetworks)、および [`forceLoginMethod`](#forceloginmethod) の `"gateway"` 値**: Claude Code はサーバー管理設定からそれらのいずれも読み取りません。そのため、そこでの値は適用されず、MDM ポリシーまたは管理設定ファイルで設定されたものを隠しません。マシン上の管理ソースの中で、ポリシーキーを含む最優先度のソースのみがそれらを提供します。サーバー管理設定も存在するかどうかに関わらず。
-* **[`allowedProviders`](#allowedproviders)**: テーブルのルールの後、マシン自体のリストは結果を制限し続けます。そのエントリの Scope ノートが述べているように。
+* **[`policyHelper`](#policyhelper)**: Claude Code は、ポリシーキーを含む最上位のソースが MDM ポリシーまたは管理設定ファイルである場合にのみこれを尊重するため、サーバー管理設定のもとでは適用されません。
+* **[`modelOverrides`](#modeloverrides)**: `availableModels` と対になります。Claude Code は `modelOverrides` を設定している最上位のソースから採用しますが、上位のソースが `modelOverrides` なしで `availableModels` を設定している場合は例外です。その場合、すべてのソースの `modelOverrides` を無視します。
+* **[`forceLoginGatewayUrl`](#forcelogingatewayurl)、[`gatewayInternalNetworks`](#gatewayinternalnetworks)、[`forceLoginMethod`](#forceloginmethod) の `"gateway"` の値**: Claude Code はこれらをサーバー管理設定から読み取ることはないため、そこにある値は適用されず、MDM ポリシーや管理設定ファイルで設定された値を隠すこともありません。マシン上の管理ソースのうち、ポリシーキーを含む最上位のものだけがこれらを提供します。これはサーバー管理設定も存在するかどうかに関係ありません。
+* **[`allowedProviders`](#allowedproviders)**: 表のルールを適用した後も、そのエントリのスコープの注記にあるとおり、マシン自身のリストが結果を引き続き制限します。
 
-マシンで組み合わせたソースを確認するには、`/status` を実行し、[`Setting sources` 行を読んでください](https://code.claude.com/docs/ja/managed-settings#read-the-source-in-/status)。
+マシン上でどのソースが組み合わされたかを確認するには、`/status` を実行して [`Setting sources` 行を確認してください](https://code.claude.com/docs/ja/managed-settings#read-the-source-in-/status)。
 
 ### `parentSettingsBehavior`
 
-Claude Code が、Agent SDK または IDE 拡張機能などの埋め込みホストプロセスによって提供される管理設定を適用するかどうかを選択します。管理者がデプロイした管理層も存在する場合。`"first-wins"` では、Claude Code はホスト提供の設定をドロップします。`"merge"` では、制限のみのフィルターを通じて管理層の下で適用します。ホストが起動するセッションに独自の制限を渡す必要がある場合、`"merge"` を設定します。たとえば、Claude Desktop がゲートウェイの出力許可リストを配信する場合。
+管理者がデプロイした管理ティアも存在する場合に、Agent SDK や IDE 拡張機能などの埋め込みホストプロセスが提供する管理設定を Claude Code が適用するかどうかを選択します。`"first-wins"` では、Claude Code はホストが提供する設定を破棄します。`"merge"` では、制限方向のみのフィルターを通して、管理ティアの下位にそれらを適用します。ホストが起動するセッションに独自の制限を渡す必要がある場合、たとえば Claude Desktop がゲートウェイの送信許可リストを配信する場合に `"merge"` を設定してください。
 
-* **スコープ**: [`Managed`](#scopes)。Claude Code はそれを最優先度の管理者制御管理ソースから読み取ります。
-* **タイプ**: 文字列、次のいずれか:
-  * `"first-wins"`: Claude Code は、管理者がデプロイした管理層が存在する場合、ホスト提供の設定をドロップします
-  * `"merge"`: Claude Code は、制限のみのフィルターを通じて管理層の下でホスト提供の設定を適用します
+* **スコープ**: [`Managed`](#scopes)。Claude Code は、管理者が制御する最も優先度の高い管理ソースからこれを読み取ります。
+* **型**: 文字列。次のいずれか:
+  * `"first-wins"`: 管理者がデプロイした管理ティアが存在する場合、Claude Code はホストが提供する設定を破棄します
+  * `"merge"`: Claude Code は、制限方向のみのフィルターを通して、ホストが提供する設定を管理ティアの下位に適用します
 * **デフォルト**: `"first-wins"`
 
 ```json managed-settings.json theme={null}
@@ -5614,21 +5617,21 @@ Claude Code が、Agent SDK または IDE 拡張機能などの埋め込みホ�
 }
 ```
 
-管理者がデプロイした管理層が存在しない場合、このキーは効果がありません。ホストの設定は、唯一の管理層として適用されます。制限値にフィルターされたままです。フィルターの制限と管理ソースの相互作用については、[埋め込みホストからの親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts) および [親設定を制限する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings) を参照してください。
+管理者がデプロイした管理ティアが存在しない場合、このキーは効果がありません。その場合、ホストの設定が唯一の管理ティアとして適用され、引き続き制限方向の値にフィルタリングされます。フィルターの制限と管理ソース間の相互作用については、[埋め込みホストからの親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts)と[親設定を制限する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)を参照してください。
 
 ### `policyHelper`
 
-起動時に管理設定を計算するためにデプロイする実行可能ファイルを実行します。デバイスの状態、ID、またはリモートサービスから静的ファイルの代わりにポリシーを導出できます。Claude Code はヘルパーを実行してから最初のプロンプトを受け入れ、それが出力する設定をセッションの管理設定として扱います。
+起動時に管理設定を算出する、ユーザーがデプロイした実行ファイルを実行します。これにより、静的なファイルではなく、デバイスの状態、ID、またはリモートサービスからポリシーを導出できます。Claude Code は最初のプロンプトを受け付ける前にヘルパーを実行し、ヘルパーが出力する設定をそのセッションの管理設定として扱います。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。Claude Code は、[ポリシーキー](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) を含む最優先度の管理ソースからキーを読み取り、そのソースが 3 つのうちの 1 つである場合にのみヘルパーを実行します。サーバー管理設定、HKCU レジストリ、およびホスト提供の親設定ではキーを無視します。
-* **タイプ**: `path`、`timeoutMs`、および `refreshIntervalMs` を含むオブジェクト
-* **デフォルト**: 設定されていないため、ヘルパーは実行されません
+* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取られます。Claude Code は、[ポリシーキー](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を含む最も優先度の高い管理ソースからこのキーを読み取り、そのソースがこれら 3 つのいずれかである場合にのみヘルパーを実行します。サーバー管理設定、HKCU レジストリ、ホストが提供する親設定にあるこのキーは無視されます。
+* **型**: `path`、`timeoutMs`、`refreshIntervalMs` を持つオブジェクト
+* **デフォルト**: 未設定。ヘルパーは実行されません
 
-サーバー管理設定が起動時にポリシーを配信する場合、ヘルパーのソースより優先され、ヘルパーは実行されません。
+起動時にサーバー管理設定がポリシーを配信する場合、それがヘルパーのソースより優先され、ヘルパーは実行されません。
 
-後の設定取得がサーバー管理設定が削除されたことを報告する場合、Claude Code はその時点でヘルパーを実行します。次の起動を待つ代わりに。その出力はセッションの残りを管理し、失敗した実行は [失敗した起動実行](#helper-failures) と同じメッセージでセッションを終了します。
+その後の設定取得でサーバー管理設定が削除されたと報告された場合、Claude Code は次回の起動を待たずにその時点でヘルパーを実行します。その出力がセッションの残りを制御し、実行が失敗した場合は[起動時の実行の失敗](#helper-failures)と同じメッセージでセッションが終了します。
 
-この例は、5 秒のタイムアウトでヘルパーを実行し、5 分ごとに再実行します:
+この例では、5 秒のタイムアウトでヘルパーを実行し、5 分ごとに再実行します。
 
 ```json managed-settings.json theme={null}
 {
@@ -5640,11 +5643,11 @@ Claude Code が、Agent SDK または IDE 拡張機能などの埋め込みホ�
 }
 ```
 
-#### ヘルパー出力を書き込む
+#### ヘルパーの出力を記述する
 
-Claude Code はヘルパーを引数なしで実行し、その環境に `CLAUDE_CODE_VERSION` を設定し、stdout から JSON エンベロープを読み取ります。1 MiB でキャップされます。
+Claude Code は引数なしでヘルパーを実行し、その環境に `CLAUDE_CODE_VERSION` を設定して、stdout から JSON エンベロープを読み取ります。上限は 1 MiB です。
 
-設定を `managedSettings` キーの下に配置します。`managedSettings` キーのない裸の設定オブジェクトは、`managedSettings` が未定義で何も適用されず、Claude Code はエラーを報告しません:
+設定は `managedSettings` キーの下に置いてください。`managedSettings` キーのない裸の設定オブジェクトは、`managedSettings` が未定義の状態でパースされて何も適用されず、Claude Code はエラーを報告しません。
 
 ```json theme={null}
 {
@@ -5654,39 +5657,39 @@ Claude Code はヘルパーを引数なしで実行し、その環境に `CLAUDE
 }
 ```
 
-ヘルパーが `managedSettings` を出力する場合、そのオブジェクトは実行の唯一の管理設定ソースになります。Claude Code は MDM、ファイル、および HKCU ソースを無視し、[クロスソースキー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source) をヘルパーの出力からのみ読み取り、[親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts) をマージしません。
+ヘルパーが `managedSettings` を出力すると、そのオブジェクトがその実行における唯一の管理設定ソースになります。Claude Code は MDM、ファイル、HKCU のソースを無視し、[ソース横断キー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source)をヘルパーの出力のみから読み取り、[親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts)をマージすることはありません。
 
-起動 `forceRemoteSettingsRefresh` チェックはヘルパーの前に実行され、任意の管理ソースを読み取ります。ヘルパーが `managedSettings` を省略するエンベロープで `0` で終了する場合、管理設定を提供しません。他のソースは通常どおり適用されます。
+起動時の `forceRemoteSettingsRefresh` チェックはヘルパーより前に実行され、任意の管理ソースを読み取ります。`managedSettings` を省略したエンベロープで `0` で終了するヘルパーは管理設定を提供せず、他のソースが通常どおり適用されます。
 
 #### ヘルパーの失敗
 
-ヘルパー実行は次の場合に失敗します:
+次の場合、ヘルパーの実行は失敗します。
 
-* `path` は [`policyHelper.path`](#policyhelper-path) のルールを破ります。
-* `path` に通常ファイルがありません。Claude Code は、同じ `timeoutMs` 予算内でヘルパーを開始する前にファイルをチェックするため、応答しないネットワークマウントは実行を失敗させる可能性があります。
-* ヘルパーが 0 以外で終了し、`timeoutMs` が経過してもまだ実行中であるか、まったく開始しません。たとえば、実行可能でないため。
-* ヘルパーが stdout または stderr に 1 MiB 以上を書き込みます。
-* stdout は単一の JSON オブジェクトではないか、その `managedSettings` に [Claude Code が修復できないスキーマ違反](https://code.claude.com/docs/ja/managed-settings.md#find-entries-claude-code-dropped) があります。
+* `path` が [`policyHelper.path`](#policyhelper-path) のルールに違反している。
+* `path` に通常ファイルが存在しない。Claude Code はヘルパーを起動する前に、同じ `timeoutMs` の予算内でファイルを確認するため、応答しないネットワークマウントによって実行が失敗する場合があります。
+* ヘルパーが 0 以外で終了した、`timeoutMs` が経過してもまだ実行中である、または実行可能でないなどの理由でまったく起動しない。
+* ヘルパーが stdout または stderr に 1 MiB を超えて書き込んだ。
+* stdout が単一の JSON オブジェクトではない、またはその `managedSettings` に [Claude Code が修復できないスキーマ違反](https://code.claude.com/docs/ja/managed-settings.md#find-entries-claude-code-dropped)がある。
 
-起動実行が失敗する場合、Claude Code は理由を出力し、起動を拒否します。0 以外の終了後、理由にはヘルパーの stderr が含まれます。stderr が空の場合は stdout が含まれます。タイムアウト後、理由は `timeoutMs` 制限を名前で指定し、ヘルパーの出力は含まれません。拒否は、対話型セッション、`claude -p`、Agent SDK セッション、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)、およびほとんどのサブコマンドをカバーします。
+起動時の実行が失敗すると、Claude Code は理由を出力して起動を拒否します。0 以外で終了した場合、理由にはヘルパーの stderr が含まれ、stderr が空の場合は stdout が含まれます。タイムアウトした場合、理由には `timeoutMs` の上限が示され、ヘルパーの出力は含まれません。この拒否は、対話型セッション、`claude -p`、Agent SDK セッション、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)、およびほとんどのサブコマンドに適用されます。
 
-拒否は意図的なため、停止復旧が必要なヘルパーは独自のキャッシュから提供し、`0` で終了する必要があります。
+この拒否は意図的なものです。そのため、障害への耐性が必要なヘルパーは、自身のキャッシュから応答して `0` で終了するようにしてください。
 
-バックグラウンド更新が失敗する場合、Claude Code は最後に成功したポリシーを有効に保ち、`/status` は失敗した更新をその理由とともに表示します。更新が成功するまで。各更新は、起動実行と同じ `timeoutMs` および失敗ルールの下で実行されます。
+バックグラウンドでの更新が失敗した場合、Claude Code は最後に成功したポリシーを有効なまま維持し、更新が成功するまで `/status` に失敗した更新とその理由を表示します。各更新は、起動時の実行と同じ `timeoutMs` と失敗のルールのもとで実行されます。
 
-`--debug` を使用すると、Claude Code はすべての実行からヘルパーの stderr を [デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md) に書き込みます。
+`--debug` を指定すると、Claude Code はすべての実行におけるヘルパーの stderr を[デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md)に書き込みます。
 
-Claude Code は無効な `policyHelper` 値を [ドロップされたエントリ](https://code.claude.com/docs/ja/managed-settings.md#find-entries-claude-code-dropped) として報告し、残りの管理設定でセッションを開始します。ヘルパーを実行しません。無効な値には、裸のパス文字列と [その最小値](#policyhelper-timeoutms) より低い `timeoutMs` が含まれます。
+Claude Code は、無効な `policyHelper` の値を[破棄されたエントリ](https://code.claude.com/docs/ja/managed-settings.md#find-entries-claude-code-dropped)として報告し、ヘルパーを実行せずに残りの管理設定でセッションを開始します。無効な値には、裸のパス文字列や、[最小値](#policyhelper-timeoutms)を下回る `timeoutMs` などがあります。
 
-ヘルパーをオフにするには、それを設定するソースからキーを削除します。
+ヘルパーをオフにするには、このキーを設定しているソースからキーを削除してください。
 
 ### `policyHelper.path`
 
-Claude Code が実行するヘルパー実行可能ファイルに名前を付けます。パスがルールを破る場合に何が起こるかについては、[ヘルパーの失敗](#helper-failures) を参照してください。
+Claude Code が実行するヘルパー実行ファイルを指定します。パスが以下のルールに違反した場合の動作については、[ヘルパーの失敗](#helper-failures)を参照してください。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
-* **タイプ**: 文字列、正規化された形式の絶対パス。`.` または `..` セグメントなし。Windows では、`.exe` で終わるドライブレターまたは UNC パス
-* **デフォルト**: なし。`policyHelper` が設定されている場合は必須
+* **スコープ**: [`Managed`](#scopes)。[`policyHelper`](#policyhelper) が読み取られる場所、つまり macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取られます。
+* **型**: 文字列。`.` や `..` のセグメントを含まない、正規化された形式の絶対パス。Windows では、`.exe` で終わるドライブレターパスまたは UNC パス
+* **デフォルト**: なし。`policyHelper` を設定する場合は必須
 
 ```json managed-settings.json theme={null}
 {
@@ -5698,10 +5701,10 @@ Claude Code が実行するヘルパー実行可能ファイルに名前を付�
 
 ### `policyHelper.timeoutMs`
 
-Claude Code がヘルパーを待機する時間を設定してから、実行を失敗として扱います。タイムアウトした実行は 0 以外の終了と同じ方法で失敗するため、起動時に Claude Code は起動を拒否します。
+Claude Code が実行を失敗として扱うまでにヘルパーを待つ時間を設定します。タイムアウトした実行は 0 以外での終了と同じように失敗するため、起動時には Claude Code は起動を拒否します。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
-* **タイプ**: 整数、ミリ秒、最小 `1000`
+* **スコープ**: [`Managed`](#scopes)。[`policyHelper`](#policyhelper) が読み取られる場所、つまり macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取られます。
+* **型**: 整数。ミリ秒、最小値は `1000`
 * **デフォルト**: `10000`
 
 ```json managed-settings.json theme={null}
@@ -5715,13 +5718,13 @@ Claude Code がヘルパーを待機する時間を設定してから、実行�
 
 ### `policyHelper.refreshIntervalMs`
 
-Claude Code がバックグラウンドでヘルパーを間隔で再実行するようにして、ポリシーの変更が実行中のセッションに到達するようにします。更新が成功する場合、その出力は前の管理設定を再起動なしで置き換えます。更新が失敗する場合、Claude Code は既に持っているポリシーを保ちます。
+Claude Code にバックグラウンドで一定間隔ごとにヘルパーを再実行させ、ポリシーの変更が実行中のセッションに反映されるようにします。更新が成功すると、その出力が再起動なしで以前の管理設定を置き換えます。更新が失敗すると、Claude Code は既存のポリシーを維持します。
 
-* **スコープ**: [`Managed`](#scopes)。macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取ります。[`policyHelper`](#policyhelper) が読み取られる場所。
-* **タイプ**: 整数、ミリ秒: 更新を無効にするには `0`。それ以外の場合は最小 `60000`
-* **デフォルト**: 設定されていないため、Claude Code はヘルパーを起動時に 1 回実行します
+* **スコープ**: [`Managed`](#scopes)。[`policyHelper`](#policyhelper) が読み取られる場所、つまり macOS plist、Windows HKLM レジストリ、または管理設定ファイルから読み取られます。
+* **型**: 整数。ミリ秒。`0` で更新を無効化し、それ以外は `60000` 以上
+* **デフォルト**: 未設定。Claude Code は起動時に 1 回だけヘルパーを実行します
 
-この例は、5 分ごとにヘルパーを再実行します:
+この例では、5 分ごとにヘルパーを再実行します。
 
 ```json managed-settings.json theme={null}
 {
@@ -5734,11 +5737,11 @@ Claude Code がバックグラウンドでヘルパーを間隔で再実行す�
 
 ### `wslInheritsWindowsSettings`
 
-WSL 上の Claude Code が Windows ポリシーチェーンから管理設定を読み取るようにします。HKLM と Windows 管理設定ファイルが `/etc/claude-code` と下の HKCU より優先されます。チェーンがオンの間、Claude Code は [Windows 管理ドキュメントが存在しない](https://code.claude.com/docs/ja/managed-settings.md#present-admin-documents) 場合にのみ `/etc/claude-code` を読み取ります。HKLM レジストリ値または `C:\Program Files\ClaudeCode\` フォルダ内。Windows に既にデプロイしているポリシーを WSL セッションに拡張するために設定します。同じマシン上で、ホストセッションと同じルールに従うようにします。Claude Code は、HKLM レジストリキーまたは管理設定ファイルまたは `C:\Program Files\ClaudeCode\` の下のドロップインで設定されている場合にのみそれを尊重します。どちらも Windows 管理者が書き込む必要があります。
+WSL 上の Claude Code に Windows のポリシーチェーンから管理設定を読み取らせます。このチェーンでは、HKLM と Windows の管理設定ファイルが `/etc/claude-code` より優先され、その下位に HKCU が置かれます。チェーンがオンの間、Claude Code は、HKLM レジストリの値または `C:\Program Files\ClaudeCode\` フォルダーに [Windows の管理ドキュメントが存在しない](https://code.claude.com/docs/ja/managed-settings.md#present-admin-documents)場合にのみ `/etc/claude-code` を読み取ります。Windows ですでにデプロイしているポリシーを同じマシン上の WSL セッションにも拡張し、ホストのセッションと同じルールに従わせる場合に設定してください。Claude Code は、HKLM レジストリキー、または `C:\Program Files\ClaudeCode\` 配下の管理設定ファイルやドロップインで設定されている場合にのみこれを尊重します。どちらも書き込みに Windows の管理者権限が必要です。
 
-* **スコープ**: [`Managed`](#scopes)。管理者制御の Windows ソースで。
-* **タイプ**: ブール値
-  * `true`: WSL 上の Claude Code は Windows ポリシーチェーンから管理設定を読み取り、Windows 管理ドキュメントが存在しない場合にのみ `/etc/claude-code` を読み取ります
+* **スコープ**: [`Managed`](#scopes)。管理者が制御する Windows ソース内。
+* **型**: Boolean
+  * `true`: WSL 上の Claude Code は Windows のポリシーチェーンから管理設定を読み取り、Windows の管理ドキュメントが存在しない場合にのみ `/etc/claude-code` を読み取ります
   * `false`: WSL は `/etc/claude-code` のみを読み取ります
 * **デフォルト**: `false`。WSL は `/etc/claude-code` のみを読み取ります
 
@@ -5748,9 +5751,9 @@ WSL 上の Claude Code が Windows ポリシーチェーンから管理設定を
 }
 ```
 
-管理ソースがチェーンをオンにすると、HKCU ポリシーは HKCU もキーを `true` に設定する場合にのみ WSL に参加します。そのコピーはチェーンをそれ自体でオンにしません。このキーのみを含む Windows ソース。`true` または `false` に設定されている場合、ポリシーソースとしてカウントされません。下位優先度のソースはまだポリシーを提供します。このキーはネイティブ Windows に効果がありません。
+管理ソースがチェーンをオンにすると、WSL 上で HKCU のポリシーがチェーンに加わるのは、HKCU もこのキーを `true` に設定している場合に限られます。HKCU のこの設定だけでチェーンがオンになることはありません。このキーのみを含む Windows ソースは、`true` と `false` のどちらに設定されていてもポリシーソースとして扱われないため、下位のソースが引き続きポリシーを提供します。このキーはネイティブの Windows には影響しません。
 
-Claude Code は `true` と `false` を引用符の有無にかかわらず読み取り、`null` をキーの削除として読み取ります。他の値を保持する管理者制御の Windows ソースは、[存在する管理ドキュメント](https://code.claude.com/docs/ja/managed-settings.md#present-admin-documents) としてカウントされます。チェーンがオンの場合: `/etc/claude-code` も HKCU も適用されず、起動警告がキーを名前で指定します。読み取ることができない HKLM 値または Windows フォルダファイルも、チェーンがオンかどうかに関わらず `/etc/claude-code` が適用されるのを防ぎます。Claude Code v2.1.282 以降が必要です。
+Claude Code は、`true` と `false` を引用符の有無にかかわらず読み取り、`null` をキーの削除として読み取ります。管理者が制御する Windows ソースがそれ以外の値を持つ場合、チェーンがオンになった[存在する管理ドキュメント](https://code.claude.com/docs/ja/managed-settings.md#present-admin-documents)として扱われます。この場合、`/etc/claude-code` と HKCU のどちらも適用されず、起動時の警告でこのキーが示されます。存在するものの読み取れない HKLM の値や Windows フォルダーのファイルも、チェーンがオンかどうかにかかわらず `/etc/claude-code` が適用されないようにします。Claude Code v2.1.282 以降が必要です。
 
 ## グローバル設定
 

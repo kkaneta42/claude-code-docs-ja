@@ -224,7 +224,7 @@ claude --continue --fork-session
 * **`/compact [instructions]`**：履歴を概要に置き換え、オプションで指定した内容に焦点を当てます
 * **`/context`**：現在コンテキストを消費しているものを表示します
 
-圧縮が CLAUDE.md、skills、およびルールとどのように相互作用するかについては、[コンテキストウィンドウガイド](https://code.claude.com/docs/ja/context-window.md)を参照してください。クリアと圧縮のどちらを使用するかについての戦略については、[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md#manage-your-session)を参照してください。
+コンテキスト圧縮が CLAUDE.md、スキル、およびルールとどのように相互作用するかについては、[コンテキストウィンドウガイド](https://code.claude.com/docs/ja/context-window.md)を参照してください。クリアと圧縮のどちらを使用するかについての戦略については、[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md#keep-cost-and-context-down)を参照してください。
 
 ## セッションデータをエクスポートして見つける
 
@@ -249,7 +249,7 @@ claude -p --resume <session-id> --output-format json "summarize what we changed"
 
 デフォルトでは、Claude Code はトランスクリプトを `~/.claude/projects/<project>/<session-id>.jsonl` に JSONL として保存します。ここで `<project>` は作業ディレクトリパスで、英数字以外の文字が `-` に置き換えられています。作業ディレクトリの変換後の名前が 200 文字を超える場合、Claude Code は名前を 200 文字に切り詰め、フルパスのハッシュを追加するため、ディレクトリ名はファイルシステムの制限内に留まります。
 
-各行はメッセージ、ツール使用、またはメタデータエントリの JSON オブジェクトです。エントリ形式は Claude Code の内部形式であり、バージョン間で変更されるため、これらのファイルを直接解析するスクリプトはリリースごとに破損する可能性があります。セッションデータを構築するには、代わりに `/export` または [スクリプトインターフェース](#access-conversations-from-scripts) を使用してください。
+各行は JSON オブジェクトで、メッセージ、ツール使用またはその結果、Claude Code がモデルに送信したリクエストの記録、またはメタデータエントリのいずれかです。エントリ形式は Claude Code の内部形式であり、バージョン間で変更されるため、これらのファイルを直接解析するスクリプトはリリースごとに破損する可能性があります。セッションデータを構築するには、代わりに `/export` または [スクリプトインターフェース](#access-conversations-from-scripts) を使用してください。
 
 場所、保持期間、および書き込み動作は設定可能です。
 

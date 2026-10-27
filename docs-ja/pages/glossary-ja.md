@@ -373,7 +373,7 @@ Claude が [session](#session) 内で行う 1 つの完全な応答です。Turn
 
 もっともらしく見える結果をそのまま受け入れるのではなく、作業が実際に完了したことをセッションが確認する方法です。テストスイート、ビルド、スクリーンショット比較など、Claude が実行できるチェックを提供すると、Claude は 1 回の試行で停止せず、チェックが成功するまで反復します。検証ループは [`/goal`](https://code.claude.com/docs/ja/goal)、無人実行、および[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)の前提条件です。検証ループがなければ、エージェントが完了したかどうかを判断するのはエージェント自身だけになります。
 
-詳細情報: [Claude に作業を検証する方法を提供する](https://code.claude.com/docs/ja/best-practices.md#give-claude-a-way-to-verify-its-work)
+詳細情報: [Claude に実行できるチェックを提供する](https://code.claude.com/docs/ja/best-practices.md#give-claude-a-check-to-run)
 
 ## W
 

@@ -170,9 +170,11 @@ Claude Code は起動時に Anthropic のサーバーから設定をフェッチ
 
 **キャッシュされた設定がある 2 回目以降の起動時:**
 
-* キャッシュされた設定は起動時に即座に適用されます。ただし、キャッシュされた `modelPricing` と `managedMcpServers` の値、およびサーバーがペイロードを確認するまで Claude Code が保留する環境変数は除きます
+* キャッシュされた設定は起動時に即座に適用されます。ただし、キャッシュされた `modelPricing` と `managedMcpServers` の値、サーバーがペイロードを確認するまで Claude Code が保留する環境変数、キャッシュされたプラグインリストによる[組み込みガード](https://code.claude.com/docs/ja/plugins/mods/admin.md#know-what-happens-by-default)の削除、位置の変更、または無効化、そしてエンドポイント管理ソースが独自にプラグインを列挙または有効化しているマシンでは、キャッシュされたリストのみが有効化しているプラグインの[組織としての扱い](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)は除きます
 * キャッシュされた [`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) は、セッションのフェッチがペイロードを確認するまで適用されません。それまでの間、開発者が `/usage` やステータスラインで目にするコストの数値は定価になります
 * キャッシュされた [`managedMcpServers`](https://code.claude.com/docs/ja/settings-reference#managedmcpservers) ブロックは、セッションのフェッチがペイロードを確認するまで適用されません。Claude Code は MCP サーバーに接続する前に、そのフェッチを最大 30 秒間待機します。フェッチが失敗するかタイムアウトした場合、セッションは組織のサーバーなしで開始され、`/status` にその旨が表示されます。サーバーは後続のフェッチで確認された時点で接続されます。初回起動時を含む動作の詳細については、[提供されたサーバーが接続されるタイミング](https://code.claude.com/docs/ja/managed-mcp.md#when-provided-servers-connect)を参照してください。Claude Code v2.1.259 以降が必要です
+* キャッシュされた [`prependPlugins`](https://code.claude.com/docs/ja/settings-reference#prependplugins)、[`appendPlugins`](https://code.claude.com/docs/ja/settings-reference#appendplugins)、または [`enabledPlugins`](https://code.claude.com/docs/ja/settings-reference#enabledplugins) の値は、セッションのフェッチがペイロードを確認するまで、組み込みガードを削除したり、その位置を変更したり、オフにしたりすることはできません
+* [エンドポイント管理ソース](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism)が独自にプラグインを列挙または有効化しているマシンでは、キャッシュされたリストのみが有効化しているプラグインは、フェッチがペイロードを確認するまで、組織のものではなく[ユーザーのもの](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)として扱われます
 * Claude Code はバックグラウンドで最新の設定をフェッチします
 * キャッシュされた設定はネットワーク障害が発生しても維持されます。起動時のフェッチが失敗した場合、Claude Code は対話型セッションで、キャッシュされたポリシーが有効であることを警告します
 * フェッチが成功するまで、起動時に保留された値は保留されたままです

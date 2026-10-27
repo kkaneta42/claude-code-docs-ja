@@ -470,9 +470,9 @@ matcher によってフックのスコープが `ExitPlanMode` のみに限定�
 
 matcher はできるだけ限定的にしてください。`.*` でマッチさせたり matcher を空のままにしたりすると、ファイルの書き込みやシェルコマンドを含む、すべてのツールの権限プロンプトが自動承認されてしまいます。決定フィールドの全体については、[PermissionRequest リファレンス](https://code.claude.com/docs/ja/hooks.md#permissionrequest-decision-control)を参照してください。
 
-## hooks の仕組み
+## フックの仕組み
 
-Claude Code は、ライフサイクルの特定のポイントで hook イベントを発火させます。イベントが発火すると、Claude Code はすべてのマッチングする hooks を並列で実行します。重複するハンドラーの扱い方については、[Hook ハンドラーフィールド](https://code.claude.com/docs/ja/hooks.md#hook-handler-fields) を参照してください。以下の表は各イベントとそれがトリガーされるときを示しています：
+Claude Code は、ライフサイクルの特定の時点でフックイベントを発火させます。イベントが発火すると、Claude Code は一致するフックを並列に実行します。重複したハンドラーの扱いについては [フックハンドラーのフィールド](https://code.claude.com/docs/ja/hooks.md#hook-handler-fields) を参照してください。以下の表は、各イベントとそれがトリガーされるタイミングを示しています。
 
 | イベント | 発火するタイミング |
 | :- | :- |
@@ -510,20 +510,20 @@ Claude Code は、ライフサイクルの特定のポイントで hook イベ�
 | `ElicitationResult` | ユーザーが MCP エリシテーションに応答した後、レスポンスがサーバーに送り返される前 |
 | `SessionEnd` | セッションが終了するとき |
 
-各 hook には、それがどのように実行されるかを決定する `type` があります。ほとんどの hooks は `"type": "command"` を使用し、シェルコマンドを実行します。他の 4 つのタイプが利用可能です：
+各フックには、実行方法を決める `type` があります。ほとんどのフックは、シェルコマンドを実行する `"type": "command"` を使用します。ほかに 4 つのタイプが利用できます。
 
-* `"type": "http"`：イベントデータを URL に POST します。[HTTP hooks](#http-hooks) を参照してください。
-* `"type": "mcp_tool"`：設定済みの MCP サーバー上のツールを呼び出します。[MCP tool hooks](https://code.claude.com/docs/ja/hooks.md#mcp-tool-hook-fields) を参照してください。
-* `"type": "prompt"`：シングルターン LLM 評価。[プロンプトベースの hooks](#prompt-based-hooks) を参照してください。
-* `"type": "agent"`：ツールアクセス付きマルチターン検証。エージェント hooks は実験的であり、変更される可能性があります。[エージェントベースの hooks](#agent-based-hooks) を参照してください。
+* `"type": "http"`：イベントデータを URL に POST します。[HTTP フック](#http-hooks) を参照してください。
+* `"type": "mcp_tool"`：設定済みの MCP サーバー上のツールを呼び出します。[MCP ツールフック](https://code.claude.com/docs/ja/hooks.md#mcp-tool-hook-fields) を参照してください。
+* `"type": "prompt"`：シングルターンの LLM 評価です。[プロンプトベースのフック](#prompt-based-hooks) を参照してください。
+* `"type": "agent"`：ツールにアクセスできるマルチターンの検証です。エージェントフックは実験的な機能であり、変更される可能性があります。[エージェントベースのフック](#agent-based-hooks) を参照してください。
 
-### 複数の hooks からの結果を組み合わせる
+### 複数のフックの結果を組み合わせる
 
-複数の hooks が同じイベントにマッチする場合、すべての hook のコマンドが完了してから Claude Code は結果をマージします。1 つの hook が `deny` を返しても、兄弟 hooks の実行は停止されません。1 つの hook の `deny` が別の hook の副作用を抑制することに依存しないでください。
+複数のフックが同じイベントに一致した場合、Claude Code は、すべてのフックのコマンドが完了するまで実行してから結果をマージします。あるフックが `deny` を返しても、兄弟フックの実行は止まりません。あるフックの `deny` によって、別のフックの副作用を抑止できると想定しないでください。
 
-すべてのマッチングする hooks が完了した後、Claude Code はそれらの出力を組み合わせます。`PreToolUse` 許可決定については、最も制限的な答えが適用されます。順序は `deny`、`defer`、`ask`、`allow` です。`additionalContext` からのテキストはすべての hook から保持され、Claude に一緒に渡されます。
+一致するすべてのフックが完了すると、Claude Code はそれらの出力を組み合わせます。`PreToolUse` の権限の判定では、`deny`、`defer`、`ask`、`allow` の順で、最も制限の厳しい回答が適用されます。`additionalContext` のテキストはすべてのフックから保持され、まとめて Claude に渡されます。
 
-以下の例は `Bash` に 2 つの `PreToolUse` hooks を登録しています。最初のものはすべてのコマンドをログファイルに追加して 0 で終了します。2 番目のものはスクリプトを実行し、コマンドに `rm -rf` が含まれている場合は 2 で終了して拒否します：
+以下の例では、`Bash` に対して 2 つの `PreToolUse` フックを登録しています。1 つ目はすべてのコマンドをログファイルに追記して終了コード 0 で終了します。2 つ目は、コマンドに `rm -rf` が含まれる場合に終了コード 2 で終了して拒否するスクリプトを実行します。
 
 ```json theme={null}
 {
@@ -547,21 +547,21 @@ Claude Code は、ライフサイクルの特定のポイントで hook イベ�
 }
 ```
 
-Claude が `rm -rf /tmp/build` を実行しようとするとき、両方の hooks が並列で実行されます。ログ hook はコマンドを `~/.claude/bash.log` に書き込み、0 で終了します。これは決定がないことを報告します。ガードレール hook は 2 で終了し、ツール呼び出しを拒否します。deny が優先されるため、Claude Code はコマンドをブロックし、Claude にガードレールの stderr を表示します。ログエントリはまだ書き込まれます。なぜなら、ログ hook は既に実行されているからです。
+Claude が `rm -rf /tmp/build` を実行しようとすると、両方のフックが並列に実行されます。ログ記録フックはコマンドを `~/.claude/bash.log` に書き込んで終了コード 0 で終了し、これは判定なしを意味します。ガードレールフックは終了コード 2 で終了し、ツール呼び出しを拒否します。拒否が優先されるため、Claude Code はコマンドをブロックし、ガードレールの stderr を Claude に表示します。ログ記録フックはすでに実行済みであるため、ログのエントリは書き込まれたままになります。
 
 ### 入力を読み取り、出力を返す
 
-Hooks は stdin、stdout、stderr、および終了コードを通じて Claude Code と通信します。イベントが発火すると、Claude Code はイベント固有のデータを JSON としてスクリプトの stdin に渡します。スクリプトはそのデータを読み取り、作業を行い、終了コードを通じて Claude Code に次に何をするかを伝えます。
+フックは、stdin、stdout、stderr、および終了コードを通じて Claude Code とやり取りします。イベントが発火すると、Claude Code はイベント固有のデータを JSON としてスクリプトの stdin に渡します。スクリプトはそのデータを読み取って処理を行い、終了コードによって次に何をすべきかを Claude Code に伝えます。
 
-#### Hook 入力
+#### フックの入力
 
-すべてのイベントには `session_id`（セッションの一意の ID）や `cwd`（イベントが発火したときの作業ディレクトリ）などの共通フィールドが含まれていますが、各イベントタイプは異なるデータを追加します。Claude が Bash コマンドを実行するとき、`PreToolUse` hook は stdin で次のフィールドを受け取ります：
+すべてのイベントには、セッションの一意な ID である `session_id` や、イベント発火時の作業ディレクトリである `cwd` などの共通フィールドが含まれますが、イベントタイプごとに異なるデータが追加されます。Claude が Bash コマンドを実行するとき、`PreToolUse` フックは stdin で次のフィールドを受け取ります。
 
-* `hook_event_name`：hook をトリガーしたイベント
+* `hook_event_name`：フックをトリガーしたイベント
 * `tool_name`：Claude が使用しようとしているツール
-* `tool_input`：Claude がツールに渡した引数。Bash の場合、その `command` フィールドはシェルコマンドを保持します。
+* `tool_input`：Claude がツールに渡した引数。Bash の場合、その `command` フィールドにシェルコマンドが入ります。
 
-たとえば、`npm test` コマンドの hook 入力は次のようになります：
+たとえば、`npm test` コマンドのフック入力は次のようになります。
 
 ```json theme={null}
 {
@@ -575,11 +575,11 @@ Hooks は stdin、stdout、stderr、および終了コードを通じて Claude 
 }
 ```
 
-スクリプトはその JSON を解析し、これらのフィールドのいずれかに基づいて動作できます。`UserPromptSubmit` hooks は代わりに `prompt` テキストを取得し、`SessionStart` hooks は `source`（`startup`、`resume`、`clear`、`compact`、または `fork`）を取得するなど。リファレンスの [共通入力フィールド](https://code.claude.com/docs/ja/hooks.md#common-input-fields) で共有フィールドを参照し、各イベントのセクションでイベント固有のスキーマを参照してください。
+スクリプトはこの JSON を解析し、これらのフィールドのいずれかに基づいて処理を行えます。`UserPromptSubmit` フックは代わりに `prompt` テキストを受け取り、`SessionStart` フックは `startup`、`resume`、`clear`、`compact`、`fork` のいずれかの `source` を受け取る、といった具合です。共通フィールドについてはリファレンスの [共通入力フィールド](https://code.claude.com/docs/ja/hooks.md#common-input-fields) を、イベント固有のスキーマについては各イベントのセクションを参照してください。
 
-#### Hook 出力
+#### フックの出力
 
-スクリプトは stdout または stderr に書き込み、特定のコードで終了することで、Claude Code に次に何をするかを伝えます。以下は、コマンドをブロックする `PreToolUse` hook の例です：
+スクリプトは、stdout または stderr に書き込み、特定のコードで終了することで、次に何をすべきかを Claude Code に伝えます。次の `PreToolUse` フックはコマンドをブロックします。
 
 ```bash theme={null}
 #!/bin/bash
@@ -587,31 +587,31 @@ INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command')
 
 if echo "$COMMAND" | grep -q "drop table"; then
-  echo "Blocked: dropping tables is not allowed" >&2  # stderr は Claude のフィードバックになります
-  exit 2 # exit 2 = アクションをブロック
+  echo "Blocked: dropping tables is not allowed" >&2  # stderr becomes Claude's feedback
+  exit 2 # exit 2 = block the action
 fi
 
-exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
+exit 0  # exit 0 = no decision; the normal permission flow applies
 ```
 
-0 と 2 以外の終了コードで有効な JSON 出力がない場合、ほとんどのイベントではアクションが続行されます。ただし、そのフックが [失敗時にアクションをブロックする](https://code.claude.com/docs/ja/hooks.md#block-the-action-when-a-hook-fails) ものである場合は除きます。`onFailure` が `"block"` に設定されたフックはその一例です。異議がないことを報告するには 0 で終了し、アクションをブロックするには 2 で終了します：
+終了コードが 0 と 2 以外で、有効な JSON 出力がない場合、ほとんどのイベントではアクションが続行されます。ただし、そのフックが [失敗時にアクションをブロックする](https://code.claude.com/docs/ja/hooks.md#block-the-action-when-a-hook-fails) フックである場合は除きます。`onFailure` が `"block"` に設定されたフックがその一例です。異議がないことを伝えるには終了コード 0 で、アクションをブロックするには終了コード 2 で終了します。
 
-* **終了 0**：`PreToolUse` hook から 0 で終了しても、ツール呼び出しは通常の [権限フロー](https://code.claude.com/docs/ja/permissions.md) を経由します。終了 0 はツール呼び出しを承認しないためです。`UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、および `PostModelSwitch` hooks の場合、Claude Code は [プレーンテキストとして扱う](https://code.claude.com/docs/ja/hooks.md#exit-code-0) stdout を Claude のコンテキストに追加します。
-* **終了 2**：stderr に理由を書き込みます。イベントによって、Claude がそれをフィードバックとして受け取って調整できる場合、ユーザーに表示される場合、`ConfigChange` や `Elicitation` のようにメッセージが表示されない場合があります。一部のイベントはブロックできません：`SessionStart` などの場合、終了 2 は stderr をユーザーに表示し、実行は続行されます。[イベントごとの終了コード 2 の動作](https://code.claude.com/docs/ja/hooks.md#exit-code-2-behavior-per-event) で完全なリストを参照してください。
-* **その他の終了コード**：`WorktreeCreate` がゼロ以外の終了で失敗するなどのイベントごとの例外については、[終了コード出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を参照してください。その他のイベントでは、そのフックが失敗時にアクションをブロックするものでない限り、フックが stdout に出力した内容から該当するケースを確認してください：
-  * スキーマ検証に合格した解析済みオブジェクト：Claude Code は終了コードを無視し、JSON だけが結果を決定し、フックはエラーとして報告されません。
-  * スキーマ検証に失敗した解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](https://code.claude.com/docs/ja/hooks.md#exit-code-0) ものの有効な JSON ではない stdout：アクションはブロックしないエラーとして続行されます。検証またはパースのメッセージについては、`<hook name> hook error` 通知を確認してください。
-  * Claude Code が [プレーンテキストとして扱う](https://code.claude.com/docs/ja/hooks.md#exit-code-0) stdout、または空の stdout：アクションはブロックしないエラーとして続行されます。トランスクリプトには `<hook name> hook error` 通知が表示され、続いて `Failed with non-blocking status code:` を先頭に付けた stderr の最初の行が表示されます。stderr 全体をキャプチャするには、`claude --debug` を使用するか、セッション中に `/debug` を実行して [デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks) を有効にしてください。
+* **終了コード 0**：`PreToolUse` フックから終了コード 0 で終了した場合でも、ツール呼び出しは通常の [権限フロー](https://code.claude.com/docs/ja/permissions.md) を経由します。終了コード 0 はツール呼び出しを承認するものではないためです。`UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch` フックでは、Claude Code は [プレーンテキストとして扱う](https://code.claude.com/docs/ja/hooks.md#exit-code-0) stdout を Claude のコンテキストに追加します。
+* **終了コード 2**：stderr に理由を書き込みます。イベントに応じて、Claude が調整できるようにフィードバックとして受け取るか、ユーザーに表示されるか、あるいは `ConfigChange` や `Elicitation` のようにメッセージが表示されないかのいずれかになります。ブロックできないイベントもあります。`SessionStart` などでは、終了コード 2 は stderr をユーザーに表示し、実行は続行されます。完全な一覧については [イベントごとの終了コード 2 の動作](https://code.claude.com/docs/ja/hooks.md#exit-code-2-behavior-per-event) を参照してください。
+* **その他の終了コード**：0 以外の終了コードで失敗する `WorktreeCreate` など、イベントごとの例外については [終了コードの出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を参照してください。その他のイベントでは、フックが失敗時にアクションをブロックするものでない限り、フックが stdout に出力した内容から該当するケースを確認してください。
+  * スキーマ検証に合格する解析済みオブジェクト：Claude Code は終了コードを無視し、JSON のみで結果が決まり、フックはエラーとして報告されません。
+  * スキーマ検証に失敗する解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](https://code.claude.com/docs/ja/hooks.md#exit-code-0) ものの有効な JSON ではない stdout：アクションは非ブロッキングエラーとして続行されます。検証または解析のメッセージについては、`<hook name> hook error` の通知を確認してください。
+  * Claude Code が [プレーンテキストとして扱う](https://code.claude.com/docs/ja/hooks.md#exit-code-0) stdout、または空の stdout：アクションは非ブロッキングエラーとして続行されます。トランスクリプトには `<hook name> hook error` の通知が表示され、その後に `Failed with non-blocking status code:` が先頭に付いた stderr の 1 行目が表示されます。stderr の全体を取得するには、`claude --debug` を使用するか、セッション中に `/debug` を実行して [デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks) を有効にしてください。
 
 #### 構造化 JSON 出力
 
-終了コードはブロックするか沈黙するかのみを許可します。より多くの制御のために、終了 0 して stdout に JSON オブジェクトを出力します。
+終了コードでは、ブロックするか何もしないかしか選べません。より細かく制御するには、代わりに終了コード 0 で終了し、JSON オブジェクトを stdout に出力します。
 
 > [!NOTE]
 >
-> 終了 2 で stderr メッセージでブロックするか、終了 0 で JSON で構造化制御を使用します。hook ごとに 1 つのアプローチを選択してください。混在させた場合の動作については、[終了コード出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を参照してください。
+> stderr のメッセージとともにブロックするには終了コード 2 を、構造化された制御には JSON とともに終了コード 0 を使用します。フックごとにいずれか一方の方法を選んでください。両者を混在させた場合の動作については、[終了コードの出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を参照してください。
 
-たとえば、`PreToolUse` hook はツール呼び出しを拒否して理由を Claude に伝えたり、ユーザーの承認のためにエスカレートしたりできます：
+たとえば、`PreToolUse` フックはツール呼び出しを拒否してその理由を Claude に伝えたり、承認を求めてユーザーにエスカレーションしたりできます。
 
 ```json theme={null}
 {
@@ -623,23 +623,24 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 }
 ```
 
-`"deny"` を使用すると、Claude Code はツール呼び出しをキャンセルし、`permissionDecisionReason` を Claude にフィードバックとして返します。
+`"deny"` の場合、Claude Code はツール呼び出しをキャンセルし、`permissionDecisionReason` を Claude にフィードバックします。
 
-`PreToolUse` では、`"ask"` を返してユーザーに通常の権限プロンプトを表示したり、`"allow"` を返して対話的な権限プロンプトをスキップしたりすることもできます。`"allow"` の場合でも、拒否ルールと確認ルール（エンタープライズの管理 deny リストを含む）は引き続き適用され、次に対するプロンプトも引き続き表示されます：
+`PreToolUse` では、`"ask"` を返してユーザーに通常の権限プロンプトを表示したり、`"allow"` を返して対話的な権限プロンプトをスキップしたりすることもできます。`"allow"` の場合でも、エンタープライズ管理の拒否リストを含む拒否ルールと確認ルールは引き続き適用され、次の場合のプロンプトも表示されます。
 
 * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths) からの読み取り
-* [`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール
-* その設定が Claude Code に届くセッションで [組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツール
+* [`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール
+* [Agent SDK アプリが `always_ask` を指定したツール](https://code.claude.com/docs/ja/agent-sdk/custom-tools#require-approval-for-specific-tools) の呼び出し（[権限モードがその呼び出しを承認する](https://code.claude.com/docs/ja/agent-sdk/typescript.md#permission-modes-that-can-approve-an-always_ask-call) 場合を除く）
+* その設定が Claude Code に及ぶセッションにおいて、[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools) コネクタツール
 
-  plan モードでの `"allow"` の動作については、[plan モードでのフックによる承認](https://code.claude.com/docs/ja/permissions.md#hook-approvals-in-plan-mode) を参照してください。
+plan モードでの `"allow"` の動作については、[plan モードでのフックによる承認](https://code.claude.com/docs/ja/permissions.md#hook-approvals-in-plan-mode) を参照してください。
 
-4 番目の値 `"defer"` は、`-p` フラグ付きの [非対話モード](https://code.claude.com/docs/ja/headless.md) で利用可能です。これを返すと、ツール呼び出しを保持したままターンが終了するため、Agent SDK ラッパーが入力を収集して再開できます。リファレンスの [ツール呼び出しを後で延期する](https://code.claude.com/docs/ja/hooks.md#defer-a-tool-call-for-later) を参照してください。
+4 つ目の値である `"defer"` は、`-p` フラグを使用した [非対話モード](https://code.claude.com/docs/ja/headless.md) で利用できます。これを返すと、ツール呼び出しを保持したままターンが終了するため、Agent SDK のラッパーが入力を収集して再開できます。リファレンスの [ツール呼び出しを後回しにする](https://code.claude.com/docs/ja/hooks.md#defer-a-tool-call-for-later) を参照してください。
 
-`PreModelSwitch` hook は同じ `permissionDecision` フィールドを返します：`"allow"` はモデルスイッチを進行させ、`"deny"` はそれをキャンセルします。`"ask"` はインタラクティブセッションで `/model` を実行するときに確認を求めます。他の場所では、Claude Code は `"ask"` を拒否として扱います。[PreModelSwitch 決定制御](https://code.claude.com/docs/ja/hooks.md#premodelswitch-decision-control) を参照してください。
+`PreModelSwitch` フックも同じ `permissionDecision` フィールドを返します。`"allow"` はモデルの切り替えを続行させ、`"deny"` はキャンセルします。`"ask"` は、対話セッションで `/model` を実行したときに切り替えの確認を求めます。それ以外の場面では、Claude Code は `"ask"` を拒否として扱います。[PreModelSwitch の判定制御](https://code.claude.com/docs/ja/hooks.md#premodelswitch-decision-control) を参照してください。
 
-他のイベントは異なる決定パターンを使用します。たとえば、`PostToolUse` および `Stop` hooks はトップレベルの `decision: "block"` フィールドを使用し、`PermissionRequest` は `hookSpecificOutput.decision.behavior` を使用します。リファレンスの [サマリーテーブル](https://code.claude.com/docs/ja/hooks.md#decision-control) でイベント別の完全な内訳を参照してください。
+その他のイベントでは、異なる判定パターンを使用します。たとえば、`PostToolUse` と `Stop` フックはトップレベルの `decision: "block"` フィールドを使用し、`PermissionRequest` は `hookSpecificOutput.decision.behavior` を使用します。イベントごとの詳細な内訳については、リファレンスの [概要表](https://code.claude.com/docs/ja/hooks.md#decision-control) を参照してください。
 
-`UserPromptSubmit` hooks の場合、代わりに `hookSpecificOutput.additionalContext` を使用して Claude のコンテキストにテキストを注入します。`additionalContext` を `hookSpecificOutput` の内側にネストします。JSON の最上位レベルに配置すると、Claude Code はそれを無視します。たとえば、この出力はすべてのプロンプトに現在のブランチ状態を追加します：
+`UserPromptSubmit` フックでは、Claude のコンテキストにテキストを挿入するために、代わりに `hookSpecificOutput.additionalContext` を使用します。`additionalContext` は `hookSpecificOutput` の内側にネストしてください。JSON のトップレベルに配置すると、Claude Code は何も通知せずにそれを無視します。たとえば、次の出力はすべてのプロンプトに現在のブランチの状態を追加します。
 
 ```json theme={null}
 {
@@ -650,13 +651,13 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 }
 ```
 
-ブロックプロンプトとセッションタイトルの設定を含む完全な出力形状については、[UserPromptSubmit 決定制御](https://code.claude.com/docs/ja/hooks.md#userpromptsubmit-decision-control) を参照してください。
+プロンプトのブロックやセッションタイトルの設定を含む出力の完全な形式については、[UserPromptSubmit の判定制御](https://code.claude.com/docs/ja/hooks.md#userpromptsubmit-decision-control) を参照してください。
 
-`type: "prompt"` の Hooks は出力を異なる方法で処理します：[プロンプトベースの hooks](#prompt-based-hooks) を参照してください。
+`type: "prompt"` のフックは出力の扱いが異なります。[プロンプトベースのフック](#prompt-based-hooks) を参照してください。
 
-### マッチャーで hooks をフィルタリングする
+### matcher でフックを絞り込む
 
-マッチャーなしでは、hook はそのイベントのすべての発生で発火します。マッチャーを使用すると、それを絞り込むことができます。たとえば、ファイル編集後にのみフォーマッターを実行したい場合（すべてのツール呼び出しの後ではなく）、`PostToolUse` hook にマッチャーを追加します：
+matcher がない場合、フックはそのイベントが発生するたびに発火します。matcher を使うと、これを絞り込めます。たとえば、すべてのツール呼び出しの後ではなく、ファイル編集の後にのみフォーマッターを実行したい場合は、`PostToolUse` フックに matcher を追加します。
 
 ```json theme={null}
 {
@@ -673,40 +674,40 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 }
 ```
 
-`"Edit|Write"` マッチャーは `Edit` または `Write` ツール呼び出しでのみ発火し、`Bash`、`Read`、または他のツールでは発火しません。カンマもまた同じ方法で代替を区切るため、`"Edit, Write"` は同等です。[マッチャーパターン](https://code.claude.com/docs/ja/hooks.md#matcher-patterns) を参照して、プレーン名と正規表現がどのように評価されるかを確認してください。
+`"Edit|Write"` matcher は、Claude が `Edit` または `Write` ツールを使用したときにのみ発火し、`Bash`、`Read`、その他のツールを使用したときには発火しません。カンマも同様に選択肢を区切るため、`"Edit, Write"` も同等です。単純な名前と正規表現がどのように評価されるかについては、[matcher のパターン](https://code.claude.com/docs/ja/hooks.md#matcher-patterns) を参照してください。
 
 > [!NOTE]
 >
-> Claude はまた、シェルコマンドを実行することでファイルを作成または変更できます。コンプライアンススキャンまたは監査ログなど、hook がすべてのファイル変更を確認する必要がある場合は、ターンごとに 1 回作業ツリーをスキャンする [`Stop`](https://code.claude.com/docs/ja/hooks#stop) hook を追加してください。呼び出しごとのカバレッジの場合は、`Bash|PowerShell` もマッチさせ、スクリプトで `git status --porcelain` を使用して変更されたファイルと追跡されていないファイルをリストアップしてください。[PowerShell hook 入力セクション](https://code.claude.com/docs/ja/hooks.md#powershell) は、`Bash` だけをマッチさせるのが十分でない理由を説明しています。ディスク上の特定のファイルが変更されたときに hook を実行するには、それを書き込んだものが何であれ、[FileChanged](https://code.claude.com/docs/ja/hooks.md#filechanged) hook を使用してください。
+> Claude はシェルコマンドを実行してファイルを作成または変更することもできます。コンプライアンススキャンや監査ログの記録など、フックがすべてのファイル変更を把握する必要がある場合は、ターンごとに 1 回作業ツリーをスキャンする [`Stop`](https://code.claude.com/docs/ja/hooks#stop) フックを追加してください。代わりに呼び出しごとに網羅したい場合は、`Bash|PowerShell` にも一致させ、スクリプトで `git status --porcelain` を使って変更されたファイルと追跡されていないファイルを一覧表示するようにします。`Bash` だけに一致させるのでは不十分な理由については、[PowerShell フックの入力セクション](https://code.claude.com/docs/ja/hooks.md#powershell) で説明しています。書き込んだのが何であれ、特定のファイルがディスク上で変更されたときにフックを実行するには、[FileChanged](https://code.claude.com/docs/ja/hooks.md#filechanged) フックを使用してください。
 
-各イベントタイプは特定のフィールドでマッチします：
+各イベントタイプは、特定のフィールドに対して照合されます。
 
-| イベント | マッチャーがフィルタリングするもの | マッチャー値の例 |
+| イベント | matcher が絞り込む対象 | matcher の値の例 |
 | :- | :- | :- |
 | `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied` | ツール名 | `Bash`、`Edit\|Write`、`mcp__.*` |
-| `SessionStart` | セッションがどのように開始されたか | `startup`、`resume`、`clear`、`compact`、`fork` |
-| `Setup` | どの CLI フラグがセットアップをトリガーしたか | `init`、`maintenance` |
+| `SessionStart` | セッションの開始方法 | `startup`、`resume`、`clear`、`compact`、`fork` |
+| `Setup` | セットアップをトリガーした CLI フラグ | `init`、`maintenance` |
 | `SessionEnd` | セッションが終了した理由 | `clear`、`resume`、`logout`、`prompt_input_exit`、`other` |
-| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
-| `SubagentStart` | エージェントタイプ | `general-purpose`、`Explore`、`Plan`、またはカスタムエージェント名 |
-| `PreCompact`、`PostCompact` | 圧縮をトリガーしたもの | `manual`、`auto` |
-| `PreModelSwitch`、`PostModelSwitch` | セッションが切り替わるモデルの正規名（[PreModelSwitch](https://code.claude.com/docs/ja/hooks.md#premodelswitch) で説明） | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*` |
-| `SubagentStop` | エージェントタイプ | `SubagentStart` と同じ値 |
-| `ConfigChange` | 設定ソース | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills` |
-| `DirectoryAdded` | ディレクトリがどのように追加されたか | `slash_command`、`register_repo_root` |
-| `StopFailure` | エラータイプ | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
-| `InstructionsLoaded` | ロード理由 | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact` |
-| `Elicitation` | MCP サーバー名 | 設定した MCP サーバー名 |
+| `Notification` | 通知の種類 | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
+| `SubagentStart` | エージェントの種類 | `general-purpose`、`Explore`、`Plan`、またはカスタムエージェント名 |
+| `PreCompact`、`PostCompact` | コンテキスト圧縮をトリガーしたもの | `manual`、`auto` |
+| `PreModelSwitch`、`PostModelSwitch` | [PreModelSwitch](https://code.claude.com/docs/ja/hooks.md#premodelswitch) で説明されている、セッションの切り替え先モデルの正規名 | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*` |
+| `SubagentStop` | エージェントの種類 | `SubagentStart` と同じ値 |
+| `ConfigChange` | 設定のソース | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills` |
+| `DirectoryAdded` | ディレクトリが追加された方法 | `slash_command`、`register_repo_root` |
+| `StopFailure` | エラーの種類 | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
+| `InstructionsLoaded` | 読み込みの理由 | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact` |
+| `Elicitation` | MCP サーバー名 | 設定済みの MCP サーバー名 |
 | `ElicitationResult` | MCP サーバー名 | `Elicitation` と同じ値 |
-| `FileChanged` | リテラルファイル名を監視（[FileChanged](https://code.claude.com/docs/ja/hooks.md#filechanged) を参照） | `.envrc\|.env` |
-| `UserPromptExpansion` | コマンド名 | スキルまたはコマンド名 |
-| `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`CwdChanged`、`MessageDisplay` | マッチャーサポートなし | すべての発生で常に発火 |
+| `FileChanged` | 監視するファイル名のリテラル（[FileChanged](https://code.claude.com/docs/ja/hooks.md#filechanged) を参照） | `.envrc\|.env` |
+| `UserPromptExpansion` | コマンド名 | スキル名またはコマンド名 |
+| `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`CwdChanged`、`MessageDisplay` | matcher 非対応 | 発生するたびに常に発火 |
 
-以下のタブは、異なるイベントタイプのいくつかのマッチャーを示しています。
+以下のタブでは、さまざまなイベントタイプに対する matcher の例をさらにいくつか示します。
 
 **すべての Bash コマンドをログに記録する**
 
-`Bash` ツール呼び出しのみをマッチし、各コマンドをファイルにログに記録します。`PostToolUse` イベントはコマンドが完了した後に発火するため、`tool_input.command` は実行されたものを含みます。Hook は stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` はコマンド文字列のみを抽出し、`>>` はログファイルに追加します：
+`Bash` ツールの呼び出しのみに一致させ、各コマンドをファイルにログとして記録します。`PostToolUse` イベントはコマンドの完了後に発火するため、`tool_input.command` には実行された内容が含まれます。フックは stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` がコマンド文字列のみを抽出し、`>>` がそれをログファイルに追記します。
 
 ```json theme={null}
 {
@@ -726,11 +727,11 @@ exit 0  # exit 0 = 決定なし。通常の権限フローが適用されます
 }
 ```
 
-**MCP ツールをマッチさせる**
+**MCP ツールに一致させる**
 
-MCP ツールは組み込みツールとは異なる命名規則を使用します：`mcp__<server>__<tool>`。ここで `<server>` は MCP サーバー名で、`<tool>` はそれが提供するツールです。たとえば、`mcp__github__search_repositories` または `mcp__filesystem__read_file`。[プラグインバンドルサーバー](https://code.claude.com/docs/ja/mcp.md#plugin-provided-mcp-servers) からのツールは、`mcp__plugin_my-plugin_db__query` などのスコープ付きサーバーセグメントを使用します。特定のサーバーからすべてのツールをターゲットするために正規表現マッチャーを使用するか、`mcp__.*__write.*` のようなパターンでサーバー全体でマッチします。リファレンスの [MCP ツールをマッチさせる](https://code.claude.com/docs/ja/hooks.md#match-mcp-tools) を参照して、完全な例のリストを確認してください。
+MCP ツールは、組み込みツールとは異なる命名規則 `mcp__<server>__<tool>` を使用します。ここで `<server>` は MCP サーバー名、`<tool>` はそのサーバーが提供するツールです。たとえば、`mcp__github__search_repositories` や `mcp__filesystem__read_file` などです。[プラグインにバンドルされたサーバー](https://code.claude.com/docs/ja/mcp.md#plugin-provided-mcp-servers) のツールは、代わりに `mcp__plugin_my-plugin_db__query` のようにスコープ付きのサーバーセグメントを使用します。特定のサーバーのすべてのツールを対象にするには正規表現の matcher を使用し、サーバーをまたいで一致させるには `mcp__.*__write.*` のようなパターンを使用します。例の完全な一覧については、リファレンスの [MCP ツールに一致させる](https://code.claude.com/docs/ja/hooks.md#match-mcp-tools) を参照してください。
 
-以下のコマンドは hook の JSON 入力からツール名を `jq` で抽出し、stderr に書き込みます。stderr に書き込むことで stdout をクリーンに保ち、メッセージを [デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks) に送信します：
+以下のコマンドは、`jq` を使ってフックの JSON 入力からツール名を抽出し、stderr に書き込みます。stderr に書き込むことで、stdout を JSON 出力用にクリーンに保ち、メッセージを [デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks) に送ることができます。
 
 ```json theme={null}
 {
@@ -752,7 +753,7 @@ MCP ツールは組み込みツールとは異なる命名規則を使用しま�
 
 **セッション終了時にクリーンアップする**
 
-`SessionEnd` イベントはセッションが終了した理由のマッチャーをサポートします。この hook は `clear`（`/clear` を実行するとき）でのみ発火し、通常の終了では発火しません：
+`SessionEnd` イベントは、セッションが終了した理由に対する matcher をサポートしています。このフックは、`/clear` を実行したときに設定される `clear` の理由でのみ発火し、通常の終了では発火しません。
 
 ```json theme={null}
 {
@@ -772,11 +773,11 @@ MCP ツールは組み込みツールとは異なる命名規則を使用しま�
 }
 ```
 
-#### `if` フィールドでツール名と引数でフィルタリングする
+#### `if` フィールドでツール名と引数によって絞り込む
 
-`if` フィールドは [許可ルール構文](https://code.claude.com/docs/ja/permissions.md) を使用して、ツール名と引数の両方で hooks をフィルタリングするため、hook プロセスはツール呼び出しがマッチするときにのみ生成されます。これは `matcher` を超えており、ツール名のみでグループレベルでフィルタリングします。
+`if` フィールドは [権限ルールの構文](https://code.claude.com/docs/ja/permissions.md) を使用して、ツール名と引数の両方でフックを絞り込みます。これにより、ツール呼び出しが一致した場合にのみフックのプロセスが起動されます。これは、グループレベルでツール名のみによって絞り込む `matcher` よりも踏み込んだ絞り込みです。
 
-たとえば、すべての Bash コマンドではなく、Claude が `git` コマンドを使用するときにのみ hook を実行するには：
+たとえば、次の設定では、すべての Bash コマンドではなく、Claude が `git` コマンドを使用したときにのみフックを実行します。
 
 ```json theme={null}
 {
@@ -797,41 +798,41 @@ MCP ツールは組み込みツールとは異なる命名規則を使用しま�
 }
 ```
 
-Hook コマンドが実行されるかどうかは、`if` パターンの形状と Claude が呼び出している Bash コマンドによって異なります：
+フックのコマンドが実行されるかどうかは、`if` パターンの形と、Claude が呼び出す Bash コマンドによって決まります。
 
-| `if` パターン | Bash コマンド | Hook は実行されるか？ | 理由 |
+| `if` パターン | Bash コマンド | フックは実行されるか | 理由 |
 | :- | :- | :- | :- |
-| `Bash(git *)` | `git push` | はい | コマンド名がマッチします |
-| `Bash(git *)` | `npm test && git push` | はい | 各サブコマンドがチェックされます。`git push` がマッチします |
-| `Bash(git *)` | `echo $(git log)` | はい | `$()` とバッククォート内のコマンドがチェックされます。`git log` がマッチします |
-| `Bash(git *)` | `echo $(date)` | いいえ | サブコマンドが `git *` にマッチしません |
-| `Bash(git push *)` | `echo $(date)` | はい | コマンド名以上を指定するパターンは、`$()`、バッククォート、または `$VAR` で hook を実行します |
+| `Bash(git *)` | `git push` | はい | コマンド名が一致する |
+| `Bash(git *)` | `npm test && git push` | はい | 各サブコマンドがチェックされ、`git push` が一致する |
+| `Bash(git *)` | `echo $(git log)` | はい | `$()` やバッククォート内のコマンドもチェックされ、`git log` が一致する |
+| `Bash(git *)` | `echo $(date)` | いいえ | `git *` に一致するサブコマンドがない |
+| `Bash(git push *)` | `echo $(date)` | はい | コマンド名以上を指定するパターンでは、`$()`、バッククォート、`$VAR` があるとフックがいずれにせよ実行される |
 
-Claude Code がどのコマンドが Bash 入力を実行するかを判断できない場合、パターンに関係なく hook を実行します。[Bash マッチングテーブル](https://code.claude.com/docs/ja/hooks.md#bash-if-matching) は、Claude Code がサブコマンドで絞り込むことができる、またはできないコマンド形状をカバーしています。フィルターはベストエフォートであるため、ハード allow または deny を強制するには、hook ではなく [許可システム](https://code.claude.com/docs/ja/permissions.md) を使用してください。
+Bash の入力がどのコマンドを実行するかを Claude Code が判断できない場合、パターンにかかわらずフックが実行されます。Claude Code がサブコマンド単位で絞り込めるコマンドの形と絞り込めない形については、[Bash の照合表](https://code.claude.com/docs/ja/hooks.md#bash-if-matching) を参照してください。この絞り込みはベストエフォートであるため、厳密な許可や拒否を強制するには、フックではなく [権限システム](https://code.claude.com/docs/ja/permissions.md) を使用してください。
 
-`if` フィールドは許可ルールと同じパターンを受け入れます：`"Bash(git *)"`、`"Edit(*.ts)"` など。複数のツール名をマッチさせるには、それぞれ独自の `if` 値を持つ別のハンドラーを使用するか、パイプ交替がサポートされている `matcher` レベルでマッチします。
+`if` フィールドは、権限ルールと同じパターン（`"Bash(git *)"`、`"Edit(*.ts)"` など）を受け付けます。複数のツール名に一致させるには、それぞれ独自の `if` 値を持つ個別のハンドラーを使用するか、パイプによる選択がサポートされている `matcher` レベルで照合してください。
 
-`if` はツールイベントでのみ機能します：`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、および `PermissionDenied`。他のイベントに追加すると、hook が実行されるのを防ぎます。
+`if` はツールイベント（`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`）でのみ機能します。それ以外のイベントに追加すると、フックは実行されなくなります。
 
-### hook の場所を設定する
+### フックの場所を設定する
 
-Hook を追加する場所がそのスコープを決定します：
+フックを追加する場所によって、そのスコープが決まります。
 
-| 場所 | スコープ | 共有可能 |
+| 場所 | スコープ | 共有可能か |
 | :- | :- | :- |
-| `~/.claude/settings.json` | すべてのプロジェクト | いいえ、マシンにローカル |
-| `.claude/settings.json` | 単一プロジェクト | はい、リポジトリにコミット可能 |
-| `.claude/settings.local.json` | 単一プロジェクト | いいえ、gitignored |
-| 管理ポリシー設定 | 組織全体 | はい、管理者制御 |
-| [Plugin](https://code.claude.com/docs/ja/plugins/overview.md) `hooks/hooks.json` | プラグインが有効なとき | はい、プラグインにバンドル |
-| [Skill](https://code.claude.com/docs/ja/skills.md) frontmatter | スキルが呼び出されたら、セッションの残り。[スキルとエージェントの Hooks](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents) を参照してください。 | はい、スキルファイルで定義 |
-| [Subagent](https://code.claude.com/docs/ja/sub-agents.md) frontmatter | そのサブエージェントが実行されている間 | はい、サブエージェントファイルで定義 |
+| `~/.claude/settings.json` | すべてのプロジェクト | いいえ、ローカルマシンのみ |
+| `.claude/settings.json` | 単一のプロジェクト | はい、リポジトリにコミット可能 |
+| `.claude/settings.local.json` | 単一のプロジェクト | いいえ、Claude Code がこのファイルに設定を保存した時点で gitignore される |
+| 管理ポリシー設定 | 組織全体 | はい、管理者が制御 |
+| [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md) の `hooks/hooks.json` | プラグインが有効なとき | はい、プラグインにバンドル |
+| [スキル](https://code.claude.com/docs/ja/skills.md) のフロントマター | スキルが呼び出された後、セッションの残りの期間。[スキルとエージェントにおけるフック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents) を参照 | はい、スキルファイル内で定義 |
+| [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) のフロントマター | そのサブエージェントの実行中 | はい、サブエージェントファイル内で定義 |
 
-Claude Code で [`/hooks`](https://code.claude.com/docs/ja/hooks#the-%2Fhooks-menu) を実行して、イベント別にグループ化されたすべての設定済み hooks を参照します。
+Claude Code で [`/hooks`](https://code.claude.com/docs/ja/hooks#the-%2Fhooks-menu) を実行すると、設定済みのすべてのフックをイベントごとにグループ化して参照できます。
 
-hooks を無効にするには、設定ファイルで `"disableAllHooks": true` を設定します。Claude Code は [設定の優先順位](https://code.claude.com/docs/ja/hooks.md#disable-or-remove-hooks) の後に残された値を読み取るため、プロジェクトの設定ファイルはあなたのものをオーバーライドできます。管理設定で設定された Hooks は、`disableAllHooks` がそこにも設定されていない限り、実行されます。各レベルの完全な範囲については、[`disableAllHooks`](https://code.claude.com/docs/ja/settings-reference#disableallhooks) を参照してください。
+フックを無効にするには、設定ファイルで `"disableAllHooks": true` を設定します。Claude Code は [設定の優先順位](https://code.claude.com/docs/ja/hooks.md#disable-or-remove-hooks) が適用された後に残った値を読み取るため、プロジェクトの設定ファイルがユーザーの設定を上書きすることがあります。管理設定で構成されたフックは、そこでも `disableAllHooks` が設定されていない限り実行され続けます。各レベルの影響範囲の詳細については、[`disableAllHooks`](https://code.claude.com/docs/ja/settings-reference#disableallhooks) を参照してください。
 
-Claude Code が実行中に設定ファイルを直接編集する場合、ファイルウォッチャーは通常、hook の変更を自動的に取得します。
+Claude Code の実行中に設定ファイルを直接編集した場合、通常はファイルウォッチャーがフックの変更を自動的に検出します。
 
 ## プロンプトベースの hooks
 
@@ -963,6 +964,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 * **`"allow"` に対して引き続き有効なもの**：`"allow"` を返すフックは、設定の拒否ルールを回避することはできず、以下のプロンプトを抑制することもできません。
   * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取り
   * [`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール
+  * [Agent SDK アプリが `always_ask` を指定したツール](https://code.claude.com/docs/ja/agent-sdk/custom-tools#require-approval-for-specific-tools)の呼び出し（ただし、[権限モードがその呼び出しを承認する](https://code.claude.com/docs/ja/agent-sdk/typescript.md#permission-modes-that-can-approve-an-always_ask-call)場合を除く）
   * その設定が Claude Code に反映されるセッションにおいて、[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール
 
 [plan モード](https://code.claude.com/docs/ja/permissions.md#hook-approvals-in-plan-mode)では、`PreToolUse` フックがファイル編集に対して `"allow"` を返しても、フックがない場合にその編集が受けるのと同じプロンプト、ブロック、または承認が適用されます。フックによる承認に対するこの制限を解除するには、[プランを承認する](https://code.claude.com/docs/ja/permission-modes.md#review-and-approve-a-plan)か、別の権限モードに切り替えてください。

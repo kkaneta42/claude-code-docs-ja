@@ -68,6 +68,7 @@
 | `code.claude.com` および `claude.com` | 443 | 組み込みの claude-code-guide エージェントによるドキュメント検索と、セッション中の事前承認された WebFetch リクエストの場合。これらのホストをブロックするとドキュメント検索のみに影響します。 |
 | `*.frame.claudeusercontent.com` | 443 | 組織内のセッションで [Artifact ツール](https://code.claude.com/docs/ja/artifacts.md#availability)が利用可能な場合のみ。デフォルトはプランによって異なり、そこの利用可能性テーブルに従います。ランナーで `CLAUDE_CODE_DISABLE_ARTIFACT=1` を設定して、組織設定に関係なくツールを無効に保ちます。 |
 | `registry.npmjs.org` | 443 | セッションがプラグインをインストールする場合、npm ソースプラグインパッケージのフェッチとプラグインの Node.js 依存関係のインストール、または `npx` で起動された MCP サーバーが実行される場合。 |
+| ビルドで使用するパッケージレジストリの内部ミラー、またはレジストリ自体 | 443、またはミラーのポート | セッションがリポジトリをビルドまたはテストするために依存関係をインストールする場合 |
 | `http-intake.logs.us5.datadoghq.com` | 443 | Anthropic 運用メトリクス。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` が設定されている場合のみ。セルフホスト環境ではデフォルトでオフです。 |
 | `browser-intake-us5-datadoghq.com` | 443 | Anthropic エラーレポートアップロード。セッションのアカウントで[エラーレポート](https://code.claude.com/docs/ja/data-usage.md#telemetry-services)が有効な場合のみ送信されます。`DISABLE_ERROR_REPORTING=1` または `DISABLE_TELEMETRY=1` で抑制されます。 |
 | モデルリクエスト、モデル検索、認証情報の更新に使用するクラウドプロバイダーのエンドポイント（`bedrock-runtime.us-east-1.amazonaws.com` や `aiplatform.googleapis.com` など） | 443 | ランナーが[モデルリクエストを Amazon Bedrock または Google Cloud の Agent Platform に送信する](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#send-model-requests-to-bedrock-or-agent-platform)場合のみ |
@@ -631,7 +632,7 @@ secrets:
 
 最初のシグナルに続く最初の 2 つのステージでは、ランナーはセッションをリリースし、リリースされたセッションはユーザーが次のメッセージを送信するときに新しいランナーで再開されます。最初のシグナルからカウントして、ランナーは 3 つのステージを通じて移動します：
 
-* **最初の `n` 分間**：ランナーは通常セッションを提供し、`--startup-timeout-min` と `--kill-session-after-min` を適用し続けます。[`--release-idle-session-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags)も設定した場合、ランナーはユーザーがその時間アイドル状態だったセッションをリリースします。それなしでは、アイドルセッションはランナーに留まります。
+* **最初の `n` 分間**：ランナーは通常セッションを提供し、`--startup-timeout-min` と `--kill-session-after-min` を適用し続けます。[`--release-idle-session-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags)も設定した場合、[そのセッションを保持](#keep-an-idle-session-while-its-processes-run)しない限り、ランナーはユーザーがその時間アイドル状態だったセッションをリリースします。それなしでは、アイドルセッションはランナーに留まります。
 * **`n` 分が経過したとき**：ランナーは、アイドルかどうかにかかわらず、まだ保持しているすべてのセッションをリリースします。ランナーはターン途中のセッションのターンが終了するのを待ち、ターンのバックグラウンドタスクのためにさらに最大 60 秒待ってから、そのセッションをリリースします。
 * **リリース後の猶予が経過したとき**：ランナーはまだ保持しているセッションをドレインし、コントロールプレーンは各ドレインされたセッションを別のランナーにすぐに再キューイングします。リリース後の猶予は `n` 分が経過したときに開始され、デフォルトでは 75 秒です。`--drain-wait-sec` を 60 秒より大きく設定した場合、リリース後の猶予は代わりに `--drain-wait-sec` + 15 秒になります。
 
@@ -716,7 +717,7 @@ secrets:
 
 ### 固定フリートでアイドル状態のセッションを解放する
 
-固定フリートですべてのランナーがオンラインであるにもかかわらずセッションがキューに入ったままになる場合、アイドル状態のセッションが原因である可能性があります。デフォルトでは、セッションはターンが終了した後もスロットを保持し、そのランナーはそのセッションの[オーナー](https://code.claude.com/docs/ja/self-hosted-environments#key-concepts)にロックされたままになります。チームの[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)が実行のたびに新しいセッションを開始する場合、そのアイドル状態のセッションがすべてのスロットを埋めてしまう可能性があります。
+すべてのランナーがオンラインであるにもかかわらず、固定フリート上でセッションがキューに滞留し続ける場合は、アイドル状態のセッションが原因である可能性があります。デフォルトでは、セッションはターンが終了した後もスロットを保持し続け、そのランナーはそのセッションの[オーナー](https://code.claude.com/docs/ja/self-hosted-environments#key-concepts)にロックされたままになります。他のオーナーのセッションは、そのランナーの空きスロットを使用できません。チームの[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)が実行のたびに新しいセッションを開始する場合、そのアイドル状態のセッションがすべてのスロットを埋めてしまう可能性があります。
 
 確認するには、各ランナーの [Prometheus メトリクス](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#prometheus-metrics)で `claude_code_self_hosted_runner_session_idle_seconds` を読み取ります。ランナーが保持する各セッションには独自の系列があり、セッションがビジー状態の間は `0`、それ以外の場合はアイドル状態になってからの秒数を示します。許容するアイドル時間を選択してください。作業途中で人が取る休止よりも長く、かつスケジュールタスクの次の実行が始まる前に各実行が解放されるほど短い時間にします。系列をその時間と比較します。
 
@@ -725,11 +726,56 @@ secrets:
 * **系列がないランナー**: そのランナーを保持しているセッションはありません。[トラブルシューティング](#troubleshooting)の **Sessions stay queued** を参照してください。
 * **メトリクスが応答しないランナー**: プロセスが終了している可能性があります。[ランナーが終了したとき](#when-the-runner-exits)の **An environment that looks healthy** を参照してください。
 
-アイドル状態のセッションを解放するには、すべてのランナーを [`--release-idle-session-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) とその時間（分単位）を指定して起動します（例: `--release-idle-session-min 30`）。ランナーは、スケジュールタスクと人のどちらが開始したかにかかわらず、その時間アイドル状態が続いたセッションを解放します。
+アイドル状態のセッションを解放するには、すべてのランナーを [`--release-idle-session-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) とその時間（分単位）を指定して起動します（例: `--release-idle-session-min 30`）。ランナーは、スケジュールタスクと人のどちらが開始したかにかかわらず、その時間アイドル状態が続いたセッションを解放します。ただし、[残したプロセスのためにセッションを保持する](#keep-an-idle-session-while-its-processes-run)場合は除きます。
 
 * **プッシュされていない作業**: 解放されたセッションは次のメッセージで再開されますが、プッシュしていなかった作業は失われます。コミットを保持するには、[再開されたセッションはプッシュされていない作業を失う](#additional-limitations)を参照してください。
 * **ランナーの終了**: 最後のセッションを解放したランナーは[通常の終了](#when-the-runner-exits)を開始します。[デプロイを強化する](#harden-your-deployment)で説明しているように、スーパーバイザーが新しいファイルシステム上でランナーを再起動するようにしてください。
 * **アイドル状態にならないセッション**: [一部のセッションはアイドル状態としてカウントされない](#some-sessions-don’t-count-as-idle)ため、[`--kill-session-after-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) も設定します
+
+### プロセスの実行中はアイドル状態のセッションを保持する
+
+`nohup` ジョブなど、セッションがホスト上に残したプロセスが終了するまでアイドル状態のセッションを保持するには、[`--hold-idle-file`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動し、ホストからそのファイルを touch し続けます。Claude Code v2.1.311 以降が必要です。
+
+以下の手順は、ホスト上で root 以外のユーザーとしてランナーを実行していることを前提としています。ランナーを `root` として実行している場合、そのセッションが自らファイルを touch できてしまうため、まず専用ユーザーとして実行するようにしてください。
+
+**1. ファイルのパスを選ぶ**
+
+`/var/lib/claude-hold/hold-idle` など、セッションが書き込めないディレクトリ（親ディレクトリを含む）にあるローカルの通常ファイルを選び、セッションがそのファイルに書き込めないようにします。ランナーとそのセッションは 1 つの OS ユーザーを共有するため、まずそのディレクトリを `root` などの別のユーザーの所有で、モード `755` で作成します。
+
+**2. ランナーを起動する**
+
+シェルから、`--hold-idle-file`、`--release-idle-session-min`、および [`--max-hold-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動します。`--max-hold-min` は保持の上限で、セッションがアイドル状態になった時点から数えます。指定しない場合、上限は 1 日です。`--release-idle-session-min` より大きい値を設定してください。そうしないと何も保持されません。この例では、アイドル状態のセッションを 30 分後に解放し、保持されたセッションをアイドル状態になってから最大 4 時間後に解放します。
+
+```bash theme={null}
+claude self-hosted-runner \
+  --environment-secret-file /etc/claude/environment-secret \
+  --release-idle-session-min 30 \
+  --hold-idle-file /var/lib/claude-hold/hold-idle \
+  --max-hold-min 240
+```
+
+**3. プロセスの実行中にファイルを touch する**
+
+プロセスの実行中は、ディレクトリの所有者としてホストからファイルを `touch` します。間隔は 3 分未満にしてください。最初の `touch` でファイルが作成されます。たとえば、`root` の crontab に次の行を追加します。
+
+```text theme={null}
+* * * * * pgrep -x nightly-build > /dev/null && touch /var/lib/claude-hold/hold-idle
+```
+
+この行は 1 分ごとに実行され、`nightly-build` という名前のプロセスが実行されている間ファイルを touch するため、そのプロセスを開始したセッションは上限まで保持されます。`pgrep` によるチェックは、セッションが残したプロセスをホストで検出する方法に置き換えてください。
+
+チェックはプロセスが終了したら一致しなくなる必要があります。そうしないと、そのランナー上のすべてのアイドル状態のセッションが上限まで保持されたままになります。
+
+**4. 保持を確認する**
+
+プロセスの実行中は、ファイルの更新時刻が 3 分以内に保たれていることを確認します。セッションのアイドル時間が尽きたら、ランナーのログで `idle release held` を探します。そのような行が表示されない場合は、ランナーが起動時にログに記録する `watchdog config` 行の `leftover-hold=` を確認してください。ファイルと上限、または何も保持されない理由が示されます。
+
+最後の `touch` から 3 分後に保持は終了します。さらに約 1 分以内に、ログに `idle release no longer held` が表示され、ランナーはセッションを解放します。
+
+ファイルが更新され続けている間でも、次のような場合には保持が終了することがあります。
+
+* **上限を超えた場合**: `--max-hold-min` の時間が尽きた場合です。より長く保持するには、値を引き上げます
+* **強制的な解放**: [`--retire-at`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags)、[`--defer-shutdown-max-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags)、または [`--kill-session-after-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定していて、その制限に達した場合です。より長く保持するには、より遅い制限を設定します
 
 ## 既知の問題と制限事項
 
@@ -808,7 +854,7 @@ claude self-hosted-runner doctor
 * **ピックアップ直後にセッションが失敗する**: claude.ai/code でセッションを開いてエラーを確認してください。git が認証できなかったことをエラーが示している場合は、ランナーの [git 認証情報](#configure-git)を確認してください。`--use-anthropic-git-proxy` 付きで起動したランナーでは、[git プロキシを使用するランナーでセッションの開始に失敗した場合](#when-anthropic-doesnt-serve-a-session)を参照してください。
 
   書き込めないベースディレクトリは、セッションを失敗させるのではなく、起動時にランナーを停止させます。このリストの **ランナーが起動時に `cannot create or write to base directory` で終了する** の項目を参照してください。
-* **セッションはピックアップされたが、Claude が最初のメッセージに応答しない**: ランナーがプロキシ経由で `api.anthropic.com` に到達している場合は、セッションの `/worker/events/stream` レスポンスを到着したとおりに通過させるようにプロキシを設定してください。ランナーのタイムアウトを引き上げても解決しません。ランナーのログで原因を確認するには、[セッションはピックアップされたが、Claude が最初のメッセージに応答しない](#when-a-sessions-first-message-is-never-answered)を参照してください。
+* **セッションはピックアップされたが、Claude が最初のメッセージに応答しない**: ランナーがプロキシ経由で `api.anthropic.com` に到達している場合は、セッションの `/worker/events/stream` レスポンスを到着次第通過させるようにプロキシを設定してください。ランナーのタイムアウトを引き上げても解決しません。ランナーのログで原因を確認するには、[セッションはピックアップされたが、Claude が最初のメッセージに応答しない](#when-a-sessions-first-message-is-never-answered)を参照してください。
 * **`--use-anthropic-git-proxy` を設定したランナーでセッションの開始に失敗する**: ランナーのログで `access denied by the git proxy`、または `/git_proxy/` を含む `api.anthropic.com` アドレスを示す git エラーを探してください。Anthropic がセッションを処理したかどうかを判断して原因を修正するには、[git プロキシを使用するランナーでセッションの開始に失敗した場合](#when-anthropic-doesnt-serve-a-session)を参照してください。
 * **認証を行うエグレスプロキシ経由でセッションがネットワークに到達できない**: [`--proxy-authorization-command` または `--proxy-authorization-file`](#authenticate-to-an-egress-proxy) で設定したソースが失敗する、30 秒後にタイムアウトする、または空の値を返す場合、ランナーはその接続に `502 Bad Gateway` で応答し、理由をログに記録します。ランナーはそのログ内でコマンドの stderr を秘匿し、ヘッダー値をログに記録することはありません。`--proxy-authorization-command` を使用している場合は、ホスト上でそのコマンドを自分で実行し、ヘッダー値全体が stdout に出力されることを確認してください。代わりにランナーが起動時に `could not start the proxy-authorization listener` で終了する場合、ランナーはループバックリスナーを開けませんでした。
 * **ランナーが `rejecting the malformed poll response` を含む `Poll failed` 行をログに記録する**: ランナーが受け取ったワークポーリングのレスポンスのボディが、キューが想定する JSON ではありません。原因の 1 つは、インターセプトプロキシやキャプティブポータルが独自のページで応答したことです。ランナーがプロキシ経由で接続している場合は、`api.anthropic.com` からのレスポンスを変更せずに通過させるようにプロキシを設定してください。
@@ -828,9 +874,16 @@ claude self-hosted-runner doctor
 * **Claude Tag が Slack に返信を投稿しないことがある**: 返信のリマインダーは、[コントロールプレーンが提供するフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)です。古いランナーは提供されたフックを無視するため、`claude --version` でランナーが Claude Code v2.1.229 以降であることを確認してください。フックは `python3` を実行するため、ランナーイメージ内で `python3 --version` が成功することを確認してください。また、フックをオフにする設定ファイルがないことを確認してください。対象は、`managed-settings.json`、ランナーユーザーの `~/.claude/settings.json`、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` にある `disableAllHooks`、および管理設定内の `allowManagedHooksOnly` またはフックを対象とする [`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization) です。
 * **セッションがリポジトリの 1 つを欠いたまま開始される**: [`checkout` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)のないランナーでは、セッションが読み取るだけのリポジトリについて、git ホストがランナーのアクセスチェックを拒否することがあります。その場合、ランナーはそのリポジトリをスキップし、拒否内容を示す `[runner:warn] could not access context source` 行をログに記録して、残りのリポジトリでセッションを開始します。
 
-  ランナーがスキップするのは明確な拒否の場合のみです。つまり、ホストがリポジトリが見つからないと応答した場合、git がホストの認証情報を見つけられない場合、または認証に失敗した場合です。ネットワーク障害、タイムアウト、HTTP `403` の場合は、セッションが結果をプッシュするリポジトリに対する拒否と同様に、引き続きセッションの開始が失敗します。スキップするとリポジトリがまったくなくなるセッションは、引き続きランナーによって失敗とされます。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用する場合、ランナーは git プロキシ自体が拒否したリポジトリのみをスキップします。
+  ランナー自身の git 認証情報を使用する場合、ホストがリポジトリが見つからないと応答したとき、git がホストの認証情報を見つけられないとき、または認証に失敗したときに、ランナーはリポジトリをスキップすることがあります。
+
+  [`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用する場合、git プロキシが `access denied by the git proxy` でリポジトリを拒否すると、ランナーはそのリポジトリをスキップします。その場合、ログ行には `blocked by the git proxy` と表示されます。確認すべき原因については、[git プロキシを使用するランナーでセッションの開始に失敗した場合](#when-anthropic-doesnt-serve-a-session)の `remote: access denied by the git proxy` のケースを参照してください。
+
+  ネットワーク障害、タイムアウト、またはその他の HTTP `403` の場合は、セッションが結果をプッシュするリポジトリに対する拒否と同様に、引き続きセッションの開始が失敗します。スキップするとリポジトリがまったくなくなるセッションは、引き続きランナーによって失敗とされます。
 
   アクセスチェックはセッションがランナー上で開始されるたびに再度実行されるため、ランナーの git ID に読み取りアクセス権が付与されると、次回の開始時にリポジトリがクローンされます。v2.1.274 より前は、これらの拒否のいずれでもセッションの開始が失敗していました。
+* **ログに `could not read context source` が表示される**: この行は、`could not access context source` とは異なり、git ホストが HTTP `429` を返し続けたか、`git` としてインストールしたラッパーが `75` で終了し続けたことを意味します。ランナーはそのリポジトリをスキップしました。再試行するには、新しいセッションを開始してください。ランナーは、このセッションがランナー上で開始されるたびに、そのリポジトリも再度試行します。
+
+  `checkout` フックがない場合、ランナーはセッションが読み取るだけのリポジトリを、それがセッションのリポジトリの先頭でない限りスキップできます。v2.1.311 より前は、セッションの開始が失敗していました。
 * **セッションが `This runner couldn't read` で開始に失敗する**: ランナーが [git 認証情報](#configure-git)を使って git ホストにリポジトリを要求し、見つからないという応答を受け取りました。リポジトリが存在しないか、その認証情報ではリポジトリにアクセスできません。
   * **ランナーを管理している場合**: ランナーの git 認証情報にリポジトリへの読み取りアクセス権を付与してから、新しいセッションを開始してください。
   * **セッションを開始した場合**: リポジトリが存在しない場合は、正しいリポジトリで新しいセッションを開始してください。ランナーがリポジトリにアクセスできない場合は、ランナーの管理者にアクセス権の付与を依頼してから、新しいセッションを開始してください。
@@ -928,7 +981,7 @@ claude self-hosted-runner doctor
 GET https://api.anthropic.com/v1/code/sessions/<session-id>/worker/events/stream
 ```
 
-* **レスポンスをバッファリングしない**: 到着したとおりに通過させてください。コンテンツタイプは `text/event-stream` です。
+* **レスポンスをバッファリングしない**: 到着次第通過させてください。コンテンツタイプは `text/event-stream` です。
 * **レスポンスを開いたままにする**: レスポンスは最長 1 時間開いたままになることがあります。プロキシにアイドルタイムアウトがある場合は、15 秒よりも十分に長くしてください。Anthropic はデフォルトで少なくともその頻度でキープアライブを送信するためです。
 
 その後、新しいセッションを開始し、Claude が応答することを確認してください。ランナーのタイムアウトを引き上げても解決しません。ランナーがセッションを停止するまでの待ち時間が長くなるだけです。
@@ -943,7 +996,7 @@ GET https://api.anthropic.com/v1/code/sessions/<session-id>/worker/events/stream
 
 | ログ行に含まれる内容 | 対処方法 |
 | :- | :- |
-| `SSE connect failed (no response in 30s)` または `SSE liveness timeout` | プロキシがリクエストを転送し、レスポンスのヘッダーとデータを到着したとおりに通過させ、接続を切断していないことを確認してください |
+| `SSE connect failed (no response in 30s)` または `SSE liveness timeout` | プロキシがリクエストを転送し、レスポンスのヘッダーとデータを到着次第通過させ、接続を切断していないことを確認してください |
 | `SSE connect failed (HTTP` とステータスコード | プロキシ自身のログを確認してください。プロキシ自体がリクエストに応答していた場合は、リクエストがプロキシを通過するようにしてください。 |
 | `SSE connect failed (` とその他のテキスト | 括弧内のテキストがエラーです。プロキシ自身のログで同じ接続を探してください。 |
 | `SSE stream ended by server` が何度も繰り返される | 長時間続くレスポンスに対するプロキシの時間制限を確認してください。このような行が 1 つだけであれば正常です。 |

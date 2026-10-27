@@ -12,35 +12,35 @@ Claude Code v2.1.283 以降では、auto モードはインタラクティブタ
 
 ## 利用可能なモード
 
-各モードは、利便性と監視のバランスを異なる方法で取ります。以下の表は、各モードで Claude がパーミッション プロンプトなしで実行できることを示しています。Manual モードはその設定値である `default` の下に表示されます。
+各モードは、利便性と監視のバランスをそれぞれ異なる形で取っています。次の表は、各モードで Claude が権限プロンプトなしで実行できる操作を示しています。Manual モードは設定値である `default` として記載しています。
 
-| モード | 確認なしで実行されるもの | 最適な用途 |
+| モード | 確認なしで実行される操作 | 最適な用途 |
 | :- | :- | :- |
-| `default` | 読み取りのみ | すべてのアクションを自分で確認する、機密性の高い作業 |
-| [`acceptEdits`](#auto-approve-file-edits-with-acceptedits-mode) | 読み取り、ファイル編集、一般的なファイルシステム コマンド（`mkdir`、`touch`、`mv`、`cp` など） | 確認中のコードを反復処理する |
-| [`plan`](#analyze-before-you-edit-with-plan-mode) | 読み取り、および [auto モード](#eliminate-prompts-with-auto-mode) が利用可能な場合の分類器承認コマンド | コードベースを変更する前に探索する |
-| [`auto`](#eliminate-prompts-with-auto-mode) | すべて、バックグラウンド安全性チェック付き | 長いタスク、プロンプト疲労の軽減 |
-| [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode) | 作業ディレクトリ内のファイル読み取りと事前承認済みツール。プロンプトが表示されるものはすべて拒否されますが、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) がそれらの呼び出しの一部を承認できる場合があります | ロックダウン CI とスクリプト |
-| [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | すべて | 分離されたコンテナと VM のみ |
+| `default` | 読み取りのみ | すべての操作を自分で確認したい場合、機密性の高い作業 |
+| [`acceptEdits`](#auto-approve-file-edits-with-acceptedits-mode) | 読み取り、ファイル編集、一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など） | レビュー中のコードの反復的な修正 |
+| [`plan`](#analyze-before-you-edit-with-plan-mode) | 読み取り、および [auto モード](#eliminate-prompts-with-auto-mode)が利用可能な場合は分類器が承認したコマンド | 変更前のコードベースの調査 |
+| [`auto`](#eliminate-prompts-with-auto-mode) | すべて（バックグラウンドの安全性チェック付き） | 長時間のタスク、プロンプト疲れの軽減 |
+| [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode) | 作業ディレクトリ内のファイル読み取りと事前承認済みのツール。プロンプトが表示されるはずの操作はすべて拒否されますが、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) がそれらの呼び出しの一部を承認することはできます | 厳重に制限された CI やスクリプト |
+| [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | すべて | 隔離されたコンテナや VM のみ |
 
-すべてのアクションを確認するモードは、CLI、`claude --help`、VS Code および JetBrains 拡張機能、デスクトップアプリでは **Manual** という名前です。その設定値は `default` で、フックと SDK 統合ではこの値が使用されます。CLI は、値を入力するあらゆる場所で `manual` をエイリアスとして受け付けます。例えば `claude --permission-mode manual` や `"defaultMode": "manual"` のように指定できます。
+すべての操作を確認するモードは、CLI、`claude --help`、VS Code および JetBrains 拡張機能、デスクトップアプリでは **Manual** という名前で表示されます。その設定値は `default` で、フックや SDK 連携ではこの値が使われます。CLI では値を入力する箇所であればどこでも `manual` をエイリアスとして受け付けます（例: `claude --permission-mode manual` や `"defaultMode": "manual"`）。
 
-[保護されたパス](#protected-paths) への書き込みは、`bypassPermissions` モードおよび bypass 権限が利用可能な plan モード セッション（つまり、[`bypassPermissions` をモード サイクルに含める](#switch-permission-modes) 方法で開始されたインタラクティブ ターミナル セッション）を除いて、自動承認されることはありません。
+[保護されたパス](#protected-paths)への書き込みは、`bypassPermissions` モードと、bypass permissions が利用可能な plan モードのセッション（[モードの切り替えサイクルに `bypassPermissions` が含まれる](#switch-permission-modes)方法で起動された対話型ターミナルセッション）を除き、自動承認されることはありません。
 
-モードはベースラインを設定します。特定のツールを事前承認またはブロックするために、[権限ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) を上に重ねます。拒否ルールは `bypassPermissions` を含むすべてのモードでブロックします。拒否ルールと確認ルールは、Claude が呼び出せる他のツールが少なくとも 1 つある限り、[`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) には適用されません。許可ルールは `bypassPermissions` では効果がありません。
+モードは基本設定を決めるものです。その上に[権限ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)を重ねることで、特定のツールを事前承認またはブロックできます。拒否ルールは `bypassPermissions` を含むすべてのモードでブロックします。Claude が呼び出せるツールが少なくとも 1 つ他に残っている限り、拒否ルールと確認ルールは [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) には適用されません。許可ルールは `bypassPermissions` では効果がありません。
 
-### どのモードも自動承認しないアクション
+### どのモードでも自動承認されない操作
 
-Claude Code は、`bypassPermissions` を含むどのモードでも、以下を自動承認しません。各項目は、各モードで代わりに何が起こるかを説明するセクションにリンクしています。
+Claude Code は、`bypassPermissions` を含むどのモードでも、次の操作を自動承認しません。各項目には、代わりに各モードで何が起こるかを説明するセクションへのリンクがあります。
 
-* 明示的な [確認ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) に一致するツール
-* 組織が [`ask`](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools) に設定したコネクタ ツール（その設定が Claude Code に到達するセッション内）
-* ユーザー インタラクションが必要なツール：組み込みの `AskUserQuestion` ツールと [`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) でマークされた MCP ツール
-* 認識された `rm` および `rmdir` による [重要なパスの削除](#critical-paths)。どの許可ルールや `PreToolUse` フックの `"allow"` でも承認されません
-* [クロス セッション メッセージング セーフガード](#skip-all-checks-with-bypasspermissions-mode)
-* [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオンの場合、作業ディレクトリ外の読み取り：認識されたファイル読み取り Bash コマンドおよび auto モードおよび `bypassPermissions` モードでもサンドボックス外で実行するために承認が必要な [unsandboxed retry](https://code.claude.com/docs/ja/sandboxing.md#the-unsandboxed-retry-escape-hatch)。Claude Code v2.1.257 以降が必要です
+* 明示的な[確認ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)に一致するツール
+* 組織が [`ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に適用されるセッションの場合）
+* ユーザーの操作を必要とするツール: 組み込みの `AskUserQuestion` ツールと、[`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツール
+* 認識された `rm` および `rmdir` による[重要パスの削除](#critical-paths)（どの許可ルールや `PreToolUse` フックの `"allow"` でも承認されません）、および [`Dangerous rm operation not ruled out`](#dangerous-rm-operation-not-ruled-out) としてフラグが付けられた Bash コマンド
+* [セッション間メッセージングの安全策](#skip-all-checks-with-bypasspermissions-mode)
+* [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) が有効な間の作業ディレクトリ外の読み取り: 認識されたファイル読み取り用の Bash コマンドは、auto モードや `bypassPermissions` モードであってもプロンプトを表示します。サンドボックスの外で実行するために承認が必要な[サンドボックス外での再試行](https://code.claude.com/docs/ja/sandboxing.md#the-unsandboxed-retry-escape-hatch)も同様にプロンプトを表示します。Claude Code v2.1.257 以降が必要です。
 
-  シェル パーサーが追跡できないコマンド（例えば、複数回ディレクトリを変更したり、サブシェルを実行したりするコマンド）は、外部パスを指定しない場合でも同じ方法でプロンプトが表示されます。このプロンプトは、コマンドが [sandbox](https://code.claude.com/docs/ja/sandboxing.md) で実行され、sandbox がブロックを強制する場合には適用されません。
+  ディレクトリを複数回変更するコマンドやサブシェルを実行するコマンドなど、シェルパーサーが追跡できないコマンドは、外部のパスを指定していない場合でも同じようにプロンプトを表示します。このプロンプトは、コマンドが[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)内で実行され、サンドボックスがブロックを強制している場合には適用されません。
 
 ## 一般的なセットアップ
 
@@ -265,13 +265,14 @@ claude remote-control --permission-mode acceptEdits
 
 `acceptEdits` モードでは Claude はプロンプトなしに作業ディレクトリ内のファイルを作成および編集できます。このモードがアクティブな間、ステータスバーは `⏵⏵ accept edits on` を表示します。
 
-ファイル編集に加えて、`acceptEdits` モードは一般的なファイルシステム Bash コマンドを自動承認します。`mkdir`、`touch`、`rm`、`rmdir`、`mv`、`cp`、`sed`。これらのコマンドは `LANG=C` または `NO_COLOR=1` のような安全な環境変数、または `timeout`、`nice`、`nohup` のようなプロセスラッパーでプレフィックスされた場合にも自動承認されます。ファイル編集と同様に、自動承認は作業ディレクトリまたは `additionalDirectories` 内のパスにのみ適用されます。
+ファイル編集に加えて、`acceptEdits` モードは一般的なファイルシステム Bash コマンドを自動承認します。`mkdir`、`touch`、`rm`、`rmdir`、`mv`、`cp`、`sed`。`touch` を除き、これらのコマンドは `LANG=C` または `NO_COLOR=1` のような安全な環境変数、または `timeout`、`nice`、`nohup` のようなプロセスラッパーでプレフィックスされた場合にも自動承認されます。ファイル編集と同様に、自動承認は作業ディレクトリまたは `additionalDirectories` 内のパスにのみ適用されます。
 
 次の場合は引き続きプロンプトが表示されます。
 
 * そのスコープ外のパス
 * [保護されたパス](#protected-paths) への書き込み
 * 認識された `rm` と `rmdir` による [重要なパスの削除](#critical-paths)
+* 単純なファイルパス以外のものを伴う `touch`（たとえばオプション、glob、`timeout 5` や `LANG=C` のようなプレフィックス）
 * [組み込みの読み取り専用セット](https://code.claude.com/docs/ja/permissions.md#read-only-commands) を除くその他すべての Bash コマンド
 
 各パスは [シンボリックリンクチェック](https://code.claude.com/docs/ja/permissions.md#symlinks) も通過するため、そのスコープ外に解決される書き込みも自動承認されません。
@@ -369,6 +370,7 @@ auto モードでは、Claude Code は独自の分類器リクエストを送信
 * **Anthropic API への直接接続**: インタラクティブなターミナルセッション、および `-p`、Agent SDK、[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)のセッションで、プランやアカウントの種類を問わず、Anthropic の段階的な展開に応じて。インタラクティブなターミナルセッションでは、Pro、Max、Team プランでは Claude Code v2.1.271 以降、Enterprise プランと Claude API アカウントでは v2.1.278 以降が必要です。`-p`、Agent SDK、VS Code 拡張機能、デスクトップアプリのセッションでは、Claude Code v2.1.281 以降が必要です。v2.1.282 以降、テレメトリをオフにしたなどの理由で[機能フラグを取得しない](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)セッションは、どの種類のセッションでもデフォルトでサーバーに依頼します。
 * **クラウドプロバイダー、または LLM ゲートウェイやプロキシ**: [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry で、また `ANTHROPIC_BASE_URL` を [LLM ゲートウェイまたはプロキシ](https://code.claude.com/docs/ja/llm-gateway)に向けている場合は常に、プランを問わず。デフォルトで依頼するには Claude Code v2.1.278 以降が必要です。
 * **サインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッション**: Claude Code v2.1.280 以降が必要です
+* **Anthropic がホストする環境での[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)**: Web、モバイルアプリ、または **Cloud** を選択したデスクトップアプリから開始した場合、プランを問わず。[クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)によって開始されたセッションは、Anthropic の段階的な展開に応じてサーバーに依頼します。
 
 サーバーがアクションをレビューする場合、その判定によってアクションの扱いが決まります。それ以外に 2 つの結果があり得ます。
 
@@ -647,7 +649,7 @@ claude --permission-mode dontAsk
 
 `bypassPermissions` モードは権限プロンプトとセーフティチェックを無効にするため、[保護されたパス](#protected-paths)への書き込みを含むツール呼び出しが即座に実行されます。
 
-[どのモードでも自動承認されないアクション](#actions-no-mode-auto-approves)は、このモードでもプロンプトが表示されます。[別の組織の公開アーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取るにはユーザーの承認が必要ですが、このモードでは承認を求めないため、Claude はそれを読み取れません。[PowerShell の Remove-Item](#remove-item-in-powershell) の拒否もこのモードで適用されます。
+`bypassPermissions` モードでも、[どのモードでも自動承認されないアクション](#actions-no-mode-auto-approves)はそれぞれ、そのまま実行されるのではなく、プロンプトが表示されるか拒否されます。[別の組織の公開アーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取るにはユーザーの承認が必要ですが、このモードでは承認を求めないため、Claude はそれを読み取れません。[PowerShell の Remove-Item](#remove-item-in-powershell) の拒否もこのモードで適用されます。
 
 このモードでは、および権限バイパスが利用可能なインタラクティブターミナルプランモードセッションでは、2 つの[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)セーフガードが引き続き適用されます。
 
@@ -769,6 +771,7 @@ Bypass permissions was requested at launch and ignored · if that was you, ~/.cl
 * `.devcontainer.json`
 * `.ripgreprc`、`pyrightconfig.json`
 * `.mcp.json`、`.claude.json`
+* セッション開始時に [`--settings`](https://code.claude.com/docs/ja/cli-reference#cli-flags)、`--mcp-config`、または `--agents` に渡したファイル
 * ユーザー、プロジェクト、またはローカルの[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-files-and-who-they-affect)自体がシンボリックリンクである場合に、その設定ファイルが指し示すファイル（たとえば dotfiles リポジトリ内のファイル）。保護されたパスへの書き込みを分類器にルーティングするモードでは、このファイルへの書き込みは、許可ルールに一致する場合でも、代わりにプロンプトを表示します。このファイル自体のパスが別のフォルダの `.claude/settings.json` など設定ファイルのパスでもある場合、その書き込みは他の保護されたパスへの書き込みと同様に分類器に送られます
 
 ## 重要なパス
@@ -844,6 +847,22 @@ Claude Code はこれらの構造内も確認します。
 
 変数の下のグロブまたは末尾のスラッシュの場合、プロンプトはフラグが付いた `rm` に名前を付け、チェックに合格するように書き直す方法を説明します。
 
+### `Dangerous rm operation not ruled out` プロンプト
+
+理由の全文は次のとおりです。
+
+```text theme={null}
+Dangerous rm operation not ruled out — the shell may read this command differently than it was parsed
+```
+
+この理由は、シェルが Claude Code とは異なる方法でコマンドを解釈する可能性があることを意味します。そのため、`rm` が含まれていなくても、チェックされていない部分に削除が含まれている可能性があります。`auto` または `bypassPermissions` モードでは、次の文を含む拒否も同じチェックによるものです。
+
+```text theme={null}
+This command could not be checked for dangerous rm operations: the shell may read it differently than it was parsed.
+```
+
+`bypassPermissions` を含め、[権限モードに応じて](#critical-path-removals-in-each-permission-mode)重要なパスの削除と同じプロンプトまたは拒否が発生します。このコマンドは、`Bash` または `Bash(*)` の許可ルール、サンドボックスの[自動許可モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)、`"allow"` を返す `PreToolUse` フックでは承認できません。コマンドを読んでからプロンプトを承認するか、拒否された場合はシェルで実行してください。
+
 ### マウントされたドライブのプロンプト
 
 マウントされたドライブのプロンプトは、macOS、Linux、WSL で、再帰的な `rm` が `/mnt/c` や `/Volumes/USB/build` など、一覧に記載された[マウントされたドライブのパス](#paths-that-get-the-mounted-drive-prompt)をターゲットにしている場合に表示されます。その理由には `Dangerous rm operation on mounted drive path: <path>` と表示されます。Claude Code は `rm /Volumes/USB/build/*` を `/Volumes/USB/build` の削除として読み取るため、`/*` ターゲットは再帰フラグがなくてもプロンプトが表示されます。
@@ -900,7 +919,7 @@ Claude Code が重要なパスの削除に対して行うことは、権限モ�
 | `plan` | 承認を求めます。[計画中に分類器がコマンドをレビューする](#analyze-before-you-edit-with-plan-mode)場合、バイパス権限が利用できないときは `auto` モードのように処理します |
 | `auto` | ターミナルで承認を求めます（[時間制限](#time-limits-and-denials-in-auto-and-bypasspermissions-modes)付き）。その他の場所では拒否します |
 | `dontAsk` | 拒否します |
-| `bypassPermissions` | 承認を求めます（ターミナルでは時間制限付き） |
+| `bypassPermissions` | ターミナルでは、時間制限が切れる前に承認を求めます。その他の場所については、[各場所での動作](#time-limits-and-denials-in-auto-and-bypasspermissions-modes)を参照してください |
 
 明示的な [ask ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) がコマンドにマッチする場合、Claude Code は `auto` モードでも承認を求めます。時間制限はありません。承認を求めるモードでは、[`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest) はプロンプトに答えることができます。
 
@@ -912,9 +931,32 @@ Claude Code が重要なパスの削除に対して行うことは、権限モ�
 * プロンプトが開いている間に任意のキーを押すと、カウントダウンが停止し、プロンプトは答えを待ち続けます。
 * セッション内でこれらのプロンプトが 3 回答えられずに終了した後、Claude Code はそれらの表示を停止し、重要なパスの削除をすぐに拒否します。新しいメッセージを送信するとカウントが再開されます。
 
-`auto` モードでは、Claude Code がターミナルプロンプトを表示できない場所では、コマンドをすぐに拒否します。例えば、`-p` を使用した[非対話型実行](https://code.claude.com/docs/ja/headless.md)、[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/permissions.md) セッション、VS Code 拡張機能のチャットパネル、デスクトップアプリなどです。拒否は Claude に削除したかったものを報告し、削除をあなたに任せるよう伝えます。
+時間制限は Claude Code v2.1.281 以降で適用されます。ターミナル外での `auto` モードの拒否も同様です。
 
-`auto` および `bypassPermissions` の処理には Claude Code v2.1.281 以降が必要です。これをオフにするには、Claude Code を起動する環境で [`CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT=1`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。`auto` モードでは、重要なパスの削除は代わりに分類器に送信され、`bypassPermissions` モードではプロンプトに時間制限がありません。
+ターミナル以外の場所では、このプロンプトは表示されません。
+
+| 場所 | `auto` | `bypassPermissions` |
+| :- | :- | :- |
+| [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)のチャットパネル | 拒否します | [`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest)が許可しない限り拒否します |
+| [デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md) | 拒否します | `PermissionRequest` フックが許可しない限り拒否します |
+| [`-p` 実行](https://code.claude.com/docs/ja/headless)または [Agent SDK セッション](https://code.claude.com/docs/ja/agent-sdk/permissions.md) | 拒否します | [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) または [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input#handle-tool-approval-requests)が判断します。どちらもない場合、または [`--permission-prompts none`](https://code.claude.com/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs) の下では、`PermissionRequest` フックが許可しない限り拒否します |
+
+削除が拒否された場所ではどこでも、コマンド全体を読んでシェルで実行できます。
+
+各モードでの動作を変更するには、[`CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定します。
+
+* **`bypassPermissions`**: ターミナルプロンプトに時間制限がなくなり、VS Code のチャットパネルでは承認を求めます
+* **`auto`**: ターミナル、VS Code のチャットパネル、`-p` 実行、Agent SDK セッションで、[分類器](#eliminate-prompts-with-auto-mode)が判断します
+
+この変数は、Claude Code の設定ファイルではなく、シェルや SDK の `env` オプションなど、Claude Code を起動する環境で設定します。チャットパネルの場合は、VS Code 自体のユーザー `settings.json` の [`claudeCode.environmentVariables`](https://code.claude.com/docs/ja/vs-code#extension-settings) に追加してから、新しい会話を開始します。
+
+```json theme={null}
+{
+  "claudeCode.environmentVariables": [
+    { "name": "CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT", "value": "1" }
+  ]
+}
+```
 
 ### PowerShell の Remove-Item
 

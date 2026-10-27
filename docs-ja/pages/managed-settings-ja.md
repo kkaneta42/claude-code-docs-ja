@@ -407,7 +407,7 @@ Claude Code は以下のキーをマネージドソースからのみ読み込�
 | [`managedMcpServers`](https://code.claude.com/docs/ja/settings-reference#managedmcpservers) | すべてのユーザーに自身のサーバーと一緒に提供されるリモート MCP サーバー。何かをロックダウンするのではなく、サーバーを提供します。[管理設定を通じてサーバーを提供する](https://code.claude.com/docs/ja/managed-mcp.md#provide-servers-through-managed-settings)を参照してください。Claude Code v2.1.259 以降が必要です |
 | [`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) | Claude Code が最優先のマネージドソースのみを適用するか、[すべてのマネージドソースを構成する](#compose-every-managed-source)かどうか |
 | [`parentSettingsBehavior`](https://code.claude.com/docs/ja/settings-reference#parentsettingsbehavior) | ホスト提供の親設定がマネージドポリシーの下でマージされるかどうか |
-| [`pluginSuggestionMarketplaces`](https://code.claude.com/docs/ja/settings-reference#pluginsuggestionmarketplaces) | Claude Code がユーザーに提案できるプラグインのマーケットプレイス |
+| [`pluginSuggestionMarketplaces`](https://code.claude.com/docs/ja/settings-reference#pluginsuggestionmarketplaces) | Claude Code がターミナルでユーザーに提案できるプラグインのマーケットプレイス |
 | [`pluginTrustMessage`](https://code.claude.com/docs/ja/settings-reference#plugintrustmessage) | インストール前に表示されるプラグイン信頼警告に追加されるカスタムメッセージ |
 | [`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) | 起動時に管理設定を計算する実行可能ファイル。[ポリシーヘルパーで管理設定を計算する](https://code.claude.com/docs/ja/settings-reference.md#policyhelper)を参照してください |
 | [`sandbox.filesystem.allowManagedReadPathsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-filesystem-allowmanagedreadpathsonly) | `true` の場合、管理設定からの `filesystem.allowRead` パスのみが尊重されます。`denyRead` はすべてのソースからマージされます |

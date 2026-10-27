@@ -303,7 +303,7 @@ Claude Code は、フックをライフサイクルイベントで実行し、�
 * CLAUDE.md と git ステータス。組み込みの Explore および Plan エージェントは[どちらもなしで開始](https://code.claude.com/docs/ja/sub-agents.md#what-loads-at-startup) し、定義で [`omitClaudeMd`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) を設定したエージェントは、ユーザー、プロジェクト、ローカル CLAUDE.md ファイルなしで開始します。
 * リードエージェントがプロンプトで渡すコンテキスト
 
-[fork](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation) の場合、Claude Code は親の会話（これまでのところ）、システムプロンプト、ツールをロードします。
+[fork](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation) の場合、Claude Code は代わりに親の会話（これまでのところ）、システムプロンプト、ツールをロードします。
 
 **コンテキストコスト：** メインセッションから分離。
 

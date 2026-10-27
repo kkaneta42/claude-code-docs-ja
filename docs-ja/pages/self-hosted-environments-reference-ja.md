@@ -37,17 +37,19 @@
 | `--git-host-rewrite <from>=<to>` | なし | 未設定 | スプリットホライズン DNS 用に、クローンの前にソース URL の `https://<from>/...` を `https://<to>/...` に書き換えます。繰り返し指定可能です。フラグのみで指定できます。 |
 | `--git-ssh-rewrite <host>` | なし | 未設定 | SSH のみに対応した git ホスト用に、クローンの前にソース URL の `https://<host>/...` を `git@<host>:...` に書き換えます。繰り返し指定可能です。フラグのみで指定できます。 |
 | `--health-port <port>` | `SELF_HOSTED_RUNNER_HEALTH_PORT` | `8080` | `/healthz` と `/metrics` のリスナーのポート。`0` に設定すると無効になります。 |
+| `--hold-idle-file <path>` | `SELF_HOSTED_RUNNER_HOLD_IDLE_FILE` | 未設定 | アイドル状態のセッションをランナー上に保持するために、ホストが変更し続けるファイル。[プロセスの実行中はアイドル状態のセッションを保持する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#keep-an-idle-session-while-its-processes-run)を参照してください。Claude Code v2.1.311 以降が必要です。 |
 | `--hooks-dir <path>` | `SELF_HOSTED_RUNNER_HOOKS_DIR` | 未設定 | ライフサイクルフックスクリプトのディレクトリ。[ライフサイクルフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#lifecycle-hooks)を参照してください。 |
 | `--host-config-snapshot <mode>` | `SELF_HOSTED_RUNNER_HOST_CONFIG_SNAPSHOT` | `disk` | ランナーが各セッションの初期設定に使用する[ホスト設定ディレクトリ](#environment-variable-only-settings)の起動時スナップショットを、どこに保持するかを指定します。`disk` はスナップショットを `--base-dir` 配下のランナー所有のディレクトリにコピーし、各セッションの開始時に、すべてのファイルをメモリ内のダイジェストと照合して検証します。コピー内のファイルが変更されていた場合、そのセッションは失敗し、ランナーは再起動されるまでセッションを拒否します。`memory` はスナップショット全体をヒープ上に保持し、上限は 64 MiB です。上限を超えると、セッションはホスト設定なしで開始され、その旨を示す通知が表示されます。ランナーがディスクスナップショットを書き込めない場合は、失敗をログに記録し、その実行では `memory` を使用します。Claude Code v2.1.271 以降が必要です。 |
 | `--kill-session-after-min <n>` | `SELF_HOSTED_RUNNER_MAX_LIFETIME_MS` | `0` | スタックしたセッションに対する安全上の上限として、セッションを実時間で N 分に制限します。v2.1.260 以降では、ランナーは上限に達したセッションを解放し、そのユーザーの次のメッセージで再開できるようにします。[`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) の猶予期間が終了した時点でセッションがまだランナー上にある場合にのみ、そのセッションを終了させます。v2.1.260 より前は、上限に達した時点でランナーがセッションを終了させていました。詳細と値の選び方については、[アイドルとしてカウントされないセッションがある](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)を参照してください。`0` で無効になります。 |
 | `--lock-to-account <id>` | `SELF_HOSTED_RUNNER_LOCK_TO_ACCOUNT` | 未設定 | 最初のセッションでロックする代わりに、起動時にランナーを特定のアカウントに事前ロックします。環境の組織内のメールアドレスまたは `user_...` ID を受け付けます。事前ロックされたランナーは、アカウントを持たない Claude Tag チャネルのセッションを取得することはありません。 |
 | `--log-file <path>` | `SELF_HOSTED_RUNNER_LOG_FILE` | 未設定 | stdout と stderr に加えて、ランナーのログをファイルにも出力します。ファイルは `0600` の権限で作成されます。`self-hosted-runner doctor` がローカルでログを tail するために必要です。 |
 | `--log-level <level>` | なし | `info` | `info` または `debug` |
+| `--max-hold-min <n>` | `SELF_HOSTED_RUNNER_MAX_HOLD_MS` | `1440` | `--hold-idle-file` を使用している場合でも、保持されているセッションを、アイドル状態になってから N 分後に解放します。`--release-idle-session-min` 以下の値では何も保持されません。`0` で保持がオフになります。Claude Code v2.1.311 以降が必要です。 |
 | `--post-session-hook-timeout-sec <n>` | `SELF_HOSTED_RUNNER_POST_SESSION_HOOK_TIMEOUT_MS` | `60` | ランナーのシャットダウンを含む、すべてのセッション終了時の [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)に割り当てる時間 |
 | `--proxy-authorization-command <command>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_COMMAND` | 未設定 | エグレスプロキシへの接続ごとにランナーが実行するシェルコマンド。前後の空白を除去した stdout を `Proxy-Authorization` ヘッダーの値として使用します。`HTTPS_PROXY` または `HTTP_PROXY` が必要で、`--proxy-authorization-file` と組み合わせることはできません。[エグレスプロキシに認証する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。Claude Code v2.1.238 以降が必要です。 |
 | `--proxy-authorization-file <path>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_FILE` | 未設定 | エグレスプロキシへの接続ごとにランナーが読み取るファイル。前後の空白を除去した内容を `Proxy-Authorization` ヘッダーの値として使用します。別のプロセスがその場でローテーションするトークンには、このフラグを使用してください。`--proxy-authorization-command` と同じ要件があり、それと組み合わせることはできません。[エグレスプロキシに認証する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。Claude Code v2.1.238 以降が必要です。 |
 | `--push-outcome-on-release` | `SELF_HOSTED_RUNNER_PUSH_OUTCOME_ON_RELEASE` | オフ | ドレインやアイドル解放など、ランナーが開始したセッション終了時に、ワークスペースを削除する前に追跡中の成果ブランチを `origin` にプッシュし、進行中のコミットが再起動後も失われないようにします。ベストエフォートで行われます。シャットダウンの時間枠に 30 秒が追加され、プッシュされたブランチから再開するには git 2.29 以降が必要です。有効にする前に、プッシュアクセスを `claude/*` の ref に制限してください。[再開されたセッションではプッシュされていない作業が失われる](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)を参照してください。`checkout` ライフサイクルフックでチェックアウトされたリポジトリはプッシュされません。それらについては、代わりに [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)からスナップショットを取得してください。 |
-| `--release-idle-session-min <n>` | `SELF_HOSTED_RUNNER_SESSION_IDLE_MS` | `0` | ターンが終了するか、セッションがユーザーのアクションを待つ状態になった後、N 分間操作がなければセッションスロットを解放します。完了しないバックグラウンドタスクを保持しているセッションや、実行中のツール呼び出しの内部から承認を要求しているセッションなど、まだターンの途中にあるセッションはアイドルとしてカウントされません。強制的な歯止めとして `--kill-session-after-min` と組み合わせてください。セッションのバックグラウンドタスクが完了した後、ランナーは、その結果を読み取るフォローアップのターンが開始されるまで、最大 [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) の期間、そのセッションをビジーとみなします。ランナーがシャットダウンシグナルを受信するか退役時刻に達するまでの間は、解放によってランナーのアクティブなセッションがなくなると、通常のドレインと同じ終了パスが開始され、`--drain-grace-sec` によって制御されます。[`--defer-shutdown-max-min`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#defer-the-drain-past-the-first-signal) で延期した最初のシグナルの後は、解放によってセッションを 1 つも保持しなくなった時点で、ランナーはすぐに終了します。`0` で無効になります。 |
+| `--release-idle-session-min <n>` | `SELF_HOSTED_RUNNER_SESSION_IDLE_MS` | `0` | ターンが終了するか、セッションがユーザーのアクションを待つ状態になった後、N 分間操作がなければセッションスロットを解放します。[アイドルとしてカウントされないセッションがある](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)ため、`--kill-session-after-min` と組み合わせてください。完了したバックグラウンドタスクは、最大 [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) の期間、セッションをビジー状態に保ちます。解放を遅らせるには、[`--hold-idle-file`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#keep-an-idle-session-while-its-processes-run) を設定してください。`0` で無効になります。 |
 | `--remove-session-state [bool]` | `SELF_HOSTED_RUNNER_REMOVE_SESSION_STATE` | オフ | このランナー上でセッションが終了したとき、結果にかかわらず、`<base-dir>/_sessions/` 配下のセッションごとのディレクトリを削除します。これらのディレクトリに何が保存され、残った場合に誰が読み取れるかについては、[事前ウォームアップされたチェックアウトを再利用する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout)で説明しています。削除はベストエフォートで行われます。クリーンアップが実行される前にランナーが強制終了されたり、ドレインの期限に達したりした場合、セッションごとのディレクトリはそのまま残ります。このフラグをオンにすると、失敗または中断されたセッションのデバッグログはディスクに保持されません。Claude Code v2.1.268 以降が必要です。 |
 | `--retire-at <epoch-seconds>` | `SELF_HOSTED_RUNNER_RETIRE_AT` | 未設定 | 既知の時刻にランナーを強制終了するインフラ向けに、秒単位の絶対 Unix タイムスタンプでランナーを退役させます。解放の手順とマージンの見積もり方については、[ランナーのライフサイクル](https://code.claude.com/docs/ja/self-hosted-environments#runner-lifecycle)で説明しています。2001 年より前または 5138 年より後の値は、フラグでは拒否され、環境変数では無視されます。 |
 | `--server-auto-mode-lists <mode>` | `SELF_HOSTED_RUNNER_SERVER_AUTO_MODE_LISTS` | `no-allow` | コントロールプレーンがセッションとともに送信する [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器ルールリストのうち、どれをそのセッションに届けるかを指定します。値は `all`、`no-allow`、`none` のいずれかです。各値で何が適用されるかについては、[auto モードのルールリスト](#auto-mode-rule-lists)を参照してください。無効な値を指定すると、ランナーは起動時に停止します。Claude Code v2.1.295 以降が必要です。 |
@@ -312,7 +314,10 @@ groups:
 
 ### ランナーの喪失と待機中のセッションでアラートする
 
-[固定フリート](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#scale-the-fleet) では、`ClaudeRunnersBelowFloor` を読み込みます。[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) を使用する場合は、代わりに `ClaudeOrchestratorSessionsWaiting` と `ClaudeOrchestratorQueueWaitHigh` を読み込みます。
+ランナーが失われたとき、セッションが待機しているとき、またはオーケストレーターが停止しているときにアラートを受け取るには、[サンプルアラートルール](#sample-alert-rules) と併せて次の Prometheus アラートルールを読み込みます。
+
+* **[固定フリート](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#scale-the-fleet)**：`ClaudeRunnersBelowFloor`
+* **[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)**：`ClaudeOrchestratorSessionsWaiting`、`ClaudeOrchestratorQueueWaitHigh`、`ClaudeOrchestratorAbsent`
 
 #### 固定フリートがランナーを失ったときにアラートする
 
@@ -369,6 +374,27 @@ groups:
 
 * **しきい値**：常に何らかのセッションが待機している場合は、`ClaudeOrchestratorSessionsWaiting` の `> 0` を、通常見られる数より大きい値に引き上げます
 * **`ClaudeOrchestratorDisconnected`**：[サンプルアラートルール](#sample-alert-rules) から読み込んだままにしておきます。`ClaudeOrchestratorSessionsWaiting` は、名前空間内の最後のオーケストレーターが切断されてから約 2 分後に発火を停止するためです
+
+#### オーケストレーターが停止したときにアラートする
+
+[オーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) 自体が停止していることを把握するには、`ClaudeOrchestratorAbsent` を読み込みます。このアラートは、名前空間内のどのオーケストレーターも 5 分間スクレイプされていないときに発火します。
+
+```yaml theme={null}
+groups:
+  # オンデマンドランナーのみ。claude-runners をオーケストレーターの名前空間に置き換えます。
+  - name: claude-code-self-hosted-on-demand-orchestrator
+    rules:
+      - alert: ClaudeOrchestratorAbsent
+        expr: absent(claude_code_self_hosted_orchestrator_connected{namespace="claude-runners"})
+        for: 5m
+        labels: {severity: critical}
+        annotations:
+          summary: "5 分間オーケストレーターがスクレイプされていません。オーケストレーターが停止している場合、オンデマンドランナーは起動せず、セッションは待機します。まずオーケストレーターのワークロードを確認し、実行中であればそのスクレイプターゲットを確認してください。"
+```
+
+* **名前空間**：`claude-runners` をオーケストレーターの名前空間に置き換え、オーケストレーターを実行する追加の名前空間ごとにアラートをコピーします。ターゲットに `namespace` ラベルがない場合は、matcher を削除してください。そうしないと、アラートは 5 分後に発火し、発火したままになります。
+* **オーケストレーターをスクレイプしない Prometheus サーバー**：そのようなサーバーではアラートが 5 分後に発火し、発火したままになるため、それらのサーバーのルールファイルにはこのアラートを含めないでください
+* **オーケストレーターの他のアラートに頼らない**：それらはオーケストレーター自身が提供するメトリクスを読み取ります。`ClaudeOrchestratorSessionsWaiting`、`ClaudeOrchestratorQueueWaitHigh`、およびオーケストレーターの [サンプルアラートルール](#sample-alert-rules) はすべて、オーケストレーターが停止してから約 10 分以内に発火を停止します。
 
 ### セッション子メトリクスをパススルーする
 

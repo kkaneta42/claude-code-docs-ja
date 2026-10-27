@@ -371,7 +371,7 @@ Deploy the application:
 3. Push to the deployment target
 ```
 
-本文自体は簡潔にしてください。スキルが読み込まれると、そのコンテンツは[ターンをまたいでコンテキストに残る](#skill-content-lifecycle)ため、すべての行が繰り返し発生するトークンコストになります。どのように、またはなぜ行うかを説明するのではなく、何をすべきかを記述し、[CLAUDE.md のコンテンツ](https://code.claude.com/docs/ja/best-practices.md#write-an-effective-claude-md)と同じ簡潔さの基準を適用してください。
+本文自体は簡潔にしてください。スキルが読み込まれると、そのコンテンツは[ターンをまたいでコンテキストに残る](#skill-content-lifecycle)ため、すべての行が繰り返し発生するトークンコストになります。どのように、またはなぜ行うかを説明するのではなく、何をすべきかを記述し、[CLAUDE.md のコンテンツ](https://code.claude.com/docs/ja/best-practices.md#keep-claude-md-short)と同じ簡潔さの基準を適用してください。
 
 ### フロントマターリファレンス
 

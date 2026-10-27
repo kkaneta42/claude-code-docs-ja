@@ -100,7 +100,7 @@ Code タブの以前のバージョンでは、これらのモードを Ask perm
 
 > [!TIP]
 >
-> 複雑なタスクを Plan で開始して、Claude が変更を加える前にアプローチをマップアウトするようにします。プランを承認したら、Accept edits または Manual に切り替えて実行します。このワークフローの詳細については、[最初に探索してからプランしてからコード化する](https://code.claude.com/docs/ja/best-practices.md#explore-first-then-plan-then-code)を参照してください。
+> 複雑なタスクを Plan で開始して、Claude が変更を加える前にアプローチをマップアウトするようにします。プランを承認したら、Accept edits または Manual に切り替えて実行します。このワークフローの詳細については、[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください。
 
 クラウドセッションは Accept edits、Plan、および Auto をサポートしています。Accept edits は`default`モードに対応しています：クラウドセッションはファイル編集を事前に承認するため、セレクタは Manual ではなく Accept edits を表示します。Bypass permissions はクラウドセッションでは利用できません。[自己ホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)のセッションを含みます。
 
@@ -166,7 +166,7 @@ Browser は、Claude in Chrome 拡張機能と同じ[サイト許可リストと
 
 Claude がコードに変更を加えた後、差分ビューを使用して、プルリクエストを作成する前にファイルごとに変更を確認できます。差分ビューを開くには、[セッション詳細パネル](#see-session-details)の **Changes** カードにある `+12 -1` などの行数をクリックします。セッションのタイトルバーにある **Changes** をクリックすることもできます。
 
-特定の行にコメントするには、差分内の任意の行をクリックしてコメントボックスを開きます。フィードバックを入力して**Enter**キーを押してコメントを追加します。複数の行にコメントを追加した後、すべてのコメントを一度に送信します：
+特定の行にコメントするには、行にカーソルを合わせ、行番号の横に表示される **+** をクリックしてコメントボックスを開きます。フィードバックを入力して**Enter**キーを押してコメントを追加します。複数の行にコメントを追加した後、すべてのコメントを一度に送信します：
 
 * **macOS**：**Cmd+Enter**を押す
 * **Windows**：**Ctrl+Enter**を押す
@@ -275,7 +275,7 @@ macOS で\*\*Cmd+/**を、Windows で**Ctrl+/\*\*を押して、Code タブで�
 * **Cmd+Ctrl**：**Ctrl+Alt**を押す
 * **Cmd**：**Ctrl**を押す
 
-セッションサイクリング、ターミナルトグル、およびビューモードトグルはすべてのプラットフォームで**Ctrl**を使用します。
+`Ctrl`で始まるショートカットは、すべてのプラットフォームで同じです。
 
 | ショートカット | アクション |
 | - | - |
@@ -284,7 +284,7 @@ macOS で\*\*Cmd+/**を、Windows で**Ctrl+/\*\*を押して、Code タブで�
 | `Cmd` `Option` `1`–`9` | [現在のレイアウト](#check-which-layout-you-have)の新しいセッション画面で、環境を選択 |
 | `Cmd` `Option` `0` | 現在のレイアウトの新しいセッション画面で、[**New environment** ダイアログ](#create-a-saved-environment)を開く |
 | `Cmd` `W` | セッションを閉じる |
-| `Ctrl` `Tab` / `Ctrl` `Shift` `Tab` | 次または前のセッション |
+| `Ctrl` `Tab` / `Ctrl` `Shift` `Tab` | セッションを切り替え |
 | `Cmd` `Shift` `]` / `Cmd` `Shift` `[` | 次または前のセッション |
 | `Esc` | Claude の応答を停止 |
 | `Tab` / `Right arrow` | 空のプロンプトボックスで[提案されたプロンプトを受け入れる](#accept-a-suggested-prompt) |
@@ -390,7 +390,7 @@ Claude が初めてアプリを使う必要があるとき、セッション内�
 
 ### セッションで並列に作業する
 
-サイドバーの **+ New** をクリックするか、macOS で **Cmd+N** を、Windows で **Ctrl+N** を押して、複数のタスクを並列で作業します。**Ctrl+Tab** と **Ctrl+Shift+Tab** を押してサイドバーのセッションをサイクルします。
+サイドバーの **+ New** をクリックするか、macOS で **Cmd+N** を、Windows で **Ctrl+N** を押して、複数のタスクを並列で作業します。**Ctrl+Tab** と **Ctrl+Shift+Tab** を押してセッションを切り替えます。
 
 2 つ目のセッションを、現在のセッションの横または独自のウィンドウで開くこともできます：
 
@@ -401,9 +401,10 @@ Claude が初めてアプリを使う必要があるとき、セッション内�
 
 #### セッションを独自の worktree で実行する
 
-Git リポジトリであるプロジェクトでは、セッションを開始する前に **Worktree** をオンにすると、プロジェクトの分離されたコピーである独自の [Git worktree](https://code.claude.com/docs/ja/worktrees.md) でセッションを実行できます。デフォルトでは **Worktree** はオフで、Claude はプロジェクトフォルダ自体で作業します。[プロンプトボックスの下の行](#start-a-session)にあるプロジェクトフォルダのコントロールをクリックし、**Worktree** をオンにします。
+Git リポジトリであるプロジェクトでは、セッションを開始する前に **Worktree** をオンにすると、プロジェクトの分離されたコピーである独自の [Git worktree](https://code.claude.com/docs/ja/worktrees.md) でセッションを実行できます。デフォルトでは **Worktree** はオフで、Claude はプロジェクトフォルダ自体で作業します。[現在のレイアウト](#check-which-layout-you-have)では、[プロンプトボックスの下の行](#start-a-session)にある **Worktree** ボタンをオンにします。
 
-* **[保存済み環境](#create-a-saved-environment)を使用する場合**：環境を作成または編集するときに **Worktree** を設定します
+* **[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合**：プロンプトボックスの下の行にプロジェクトフォルダのコントロールが表示されていて **Worktree** ボタンがない場合は、そのコントロールをクリックして **Worktree** をオンにします
+* **[保存済みのローカル環境または SSH 環境](#create-a-saved-environment)のデフォルトとして設定する場合**：環境を作成または編集するときに **Worktree** を設定します
 * **[以前のレイアウト](#check-which-layout-you-have)**：プロンプトボックスの上にあるブランチ名の横の **worktree** チェックボックスを選択します
 
 Worktrees はデフォルトで`<project-root>/.claude/worktrees/`に保存されます。これはカスタムディレクトリに変更できます：
@@ -993,6 +994,28 @@ Linux または macOS のリモートマシンには、サポートされてい�
 * **インストールフォルダ**：Desktop は、ホームディレクトリの `~/.claude/remote/` の下にヘルパープログラムと Claude Code をインストールします。そこからそれらを実行するため、そのフォルダを `noexec` でマウントされたファイルシステム上に置くことはできません。接続する各ユーザーのホームディレクトリに約 1 GB のディスク容量を確保してください。そのフォルダに含まれる内容については、[リモートマシン上のファイルとプロセス](#files-and-processes-on-the-remote-machine)を参照してください。
 * **シェル**：リモートマシン上のアカウントに設定されているシェルは、Bash、Zsh、`sh` と同様に、SSH 経由で送信されたコマンドを実行できる必要があります
 * **ネットワーク**：Claude Code はリモートマシンで実行され、そこからネットワークリクエストを行うため、マシンには [Claude Code が必要とするネットワークアクセス](https://code.claude.com/docs/ja/network-config.md#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop はコンピューター上でダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。Linux のリモートマシンで、それらのリクエストにプロキシが必要な場合は、[SSH セッション用に設定してください](#set-a-proxy-or-a-ca-certificate-for-ssh-sessions)。
+
+#### リモートマシンのホスト鍵を確認する
+
+ホスト鍵とは、リモートマシンが自分がどのマシンであるかを証明するために提示する鍵で、フィンガープリントはその鍵を短くした形です。鍵を信頼すると、コンピューターはその鍵を保存し、以降はその鍵を提示する相手に確認なしで接続します。何かが接続を傍受している可能性があるため、信頼する前に鍵を確認してください。
+
+まず、フィンガープリントが表示された場所から、その鍵がどのマシンのものかを特定します。
+
+* **Desktop が `Connect to <host> for the first time?` と尋ねた場合、または Review new key を選択した場合**: Desktop が示すマシン `<host>`
+* **Desktop が `Connect through <jump host> for the first time?` と尋ねた場合**: 踏み台ホスト。これは接続が経由するマシンで、接続先のマシンではありません
+* **ターミナルで `ssh` が尋ねるか警告した場合**: メッセージに示されたマシン。入力したマシンとは異なる場合があります
+
+そのマシン自体のフィンガープリントを、確認対象の接続経由ではなく、マシン自体から取得します。
+
+* **他の人がマシンを管理している場合**: ホスト鍵のフィンガープリントを問い合わせます
+* **自分が管理していて、Linux または macOS を実行している場合**: マシンのコンソールで、またはすでに信頼している接続経由で、`ssh-keygen -lf /etc/ssh/ssh_host_<type>_key.pub` を実行します。`<type>` には、Desktop または `ssh` がフィンガープリントの横に表示する鍵の種類を小文字で指定します。たとえば `ED25519` や `ssh-ed25519` なら `ed25519` です。
+
+次に、マシン自体のフィンガープリントと表示されたフィンガープリントを比較します。
+
+* **一致する場合**: 鍵を信頼します。Desktop では **Trust and connect** または **Trust new key** を選択し、ターミナルでは `yes` と答えます。
+* **一致しない、または確認できない場合**: 接続しないでください。Desktop では **Cancel** を選択し、ターミナルでは `no` と答えます。他の人がマシンを管理している場合は、表示されたフィンガープリントを伝えてください。
+
+トラブルシューティングの手順からここに来た場合は、どちらの結果でもその手順に戻ってください。
 
 #### SSH セッションのプロキシまたは CA 証明書を設定する
 
@@ -2134,6 +2157,48 @@ Claude が`npm`、`node`、またはその他の CLI コマンドなどのツー
 ### Windows で MCP サーバーが機能しない
 
 MCP サーバートグルが応答しない場合、または Windows でサーバーが接続に失敗する場合、サーバーが設定で正しく設定されていることを確認し、アプリを再起動し、Task Manager でサーバープロセスが実行されていることを確認し、接続エラーについてサーバーログを確認します。
+
+### SSH host key verification failed
+
+以下のいずれかのメッセージは、Desktop が[ホストキー](#check-a-remote-machines-host-key)を拒否したことを意味します：
+
+* `Couldn't connect to <host>` カードの **View details** に表示される `SSH host key verification failed` または `Host denied (verification failed)`
+* プロンプトボックスの横、または **Test connection** の後に表示される `Connection failed: Host key changed or not trusted`
+* 切断されたセッションに表示される `<host>'s host key is not trusted` または `<host>'s host key has changed`
+
+Desktop がキーを拒否するのは通常、コンピューターに保存されているキーと異なる場合、またはそのマシンのキーが保存されていない場合です。再構築または再インストールされたマシンは通常新しいキーを提示し、接続を傍受するものも同様です。再度接続する前に、Desktop がメッセージとともに表示する内容を出発点としてキーを確認してください：
+
+* **Windows を使用していて、Desktop に `Connection failed: Host key changed or not trusted` と表示される場合**：まず [OpenSSH クライアントがない](#ssh-host-key-refused-on-windows-without-an-openssh-client)可能性を除外します
+* **Desktop が `UserKnownHostsFile` を設定するよう指示する場合**：`~/.ssh/config` でこれを `~/.ssh/known_hosts` に設定してから、[ターミナルからキーを確認](#check-the-host-key-from-a-terminal)します
+* **Review new key ボタンが表示される場合**：それを選択し、Desktop が表示するフィンガープリントをそのマシン自体のフィンガープリントと[比較](#check-a-remote-machines-host-key)します。一致する場合は **Trust new key** を選択して保存済みのキーを置き換えます。一致しない場合は **Cancel** を選択します。
+* **Review new key ボタンが表示されない、Desktop に `Couldn't show the new key` と表示される、または Trust new key の後も Desktop がキーを再び拒否する場合**：[ターミナルからキーを確認](#check-the-host-key-from-a-terminal)します
+
+#### ターミナルからホストキーを確認する
+
+Desktop の [SSH 接続](#ssh-sessions)の **SSH host** の値を使用して、コンピューター上で `ssh <SSH host>` を実行します。接続に **SSH port** の値がある場合は `-p <SSH port>` を追加します。Windows では PowerShell を使用してください。Desktop は Git Bash や WSL の `ssh` では接続しないためです。PowerShell で `ssh` が見つからない場合は、[Microsoft の OpenSSH クライアントをインストール](#ssh-host-key-refused-on-windows-without-an-openssh-client)します。
+
+`ssh` がメッセージ内でどのマシンを示しているかを確認します（`<SSH host>` ではなくジャンプホストの場合もあります）。その後、該当するケースに従います：
+
+* **`ssh` が接続を続行するかどうか尋ねる場合**：表示されるフィンガープリントをそのマシン自体のフィンガープリントと[比較](#check-a-remote-machines-host-key)します。一致する場合にのみ `yes` と答えます。
+* **`ssh` がホストキーが変更されたと警告する場合**：警告のフィンガープリントをそのマシン自体のフィンガープリントと[比較](#check-a-remote-machines-host-key)します。一致する場合にのみ、`Offending <type> key in <file>:<line>` が示す行を削除して `ssh` を再実行します。`ssh` が別の行について再び警告する場合は、同様に比較、削除、再実行を行います。
+* **`ssh` が尋ねることなく未知のキーを拒否する場合**：そのマシンの `known_hosts` 行を、確認対象の接続経由ではなく、そのマシンの管理者から入手します。`ssh` のメッセージに含まれる名前をホスト名としてその行を `known_hosts` ファイルに追加し、`ssh` を再実行します。
+* **`ssh` がホストキーについて尋ねずにそのままサインインに進む場合**：まだパスワードを入力しないでください。[`ssh` がすでに信頼しているキーを確認](#check-the-keys-that-ssh-already-trusts)します。
+
+確認または追加したキーを `ssh` が受け入れたら、Desktop で再試行します。Desktop が再びキーを拒否する場合は、[SSH の問題について Desktop のログを取得する](#get-desktops-logs-for-an-ssh-problem)を参照してください。
+
+##### `ssh` がすでに信頼しているキーを確認する
+
+同じ `ssh` コマンドに `-v -S none` を追加して再実行します。出力では、`Server host key:` 行にフィンガープリントが表示され、次の `Host '<name>' is known` 行にそのフィンガープリントが属するマシンが示されます。見つかった各フィンガープリントを、そのマシン自体のフィンガープリントと[比較](#check-a-remote-machines-host-key)します。
+
+* **ジャンプホストに `Server host key:` 行がない場合**：`ssh -v -S none <jump host>` も実行し、そのフィンガープリントも同じ方法で比較します。
+* **フィンガープリントが一致しない、または確認できない場合**：再度接続しないでください。保存されているキーを削除します。`Host '<name>' is known` の下にある `Found key in <file>:<line>` 行に、そのキーを保持するファイルが示されています。`ssh-keygen -R "<name>" -f <file>` を実行します。ホストキーを複数のファイルに保存している場合は、それぞれのファイルからキーを削除します。ファイルを変更できない場合は、コンピューターの管理者に伝えてください。
+* **すべてのフィンガープリントが一致する場合**：Desktop で再試行します。Desktop が再びキーを拒否する場合は、[SSH の問題について Desktop のログを取得する](#get-desktops-logs-for-an-ssh-problem)を参照してください。
+
+### OpenSSH クライアントがない Windows で SSH ホストキーが拒否される
+
+OpenSSH クライアントがない Windows では、Desktop は正しいホストキーであっても `Connection failed: Host key changed or not trusted` と表示して拒否します。Desktop は保存済みのキーを検索するためにこのクライアントを必要とします。クライアントがあるかどうかを確認するには、PowerShell で `ssh` を実行します。PowerShell が `ssh` を認識しない場合は、[Microsoft の OpenSSH クライアント](https://learn.microsoft.com/windows-server/administration/openssh/openssh_install_firstuse)をインストールして Desktop を再起動します。
+
+その後、再度接続します。Desktop が初回接続を行うかどうか尋ねてきた場合は、信頼する前に[マシンのホストキーを確認](#check-a-remote-machines-host-key)してください。それでも Desktop がキーを拒否する場合は、[SSH host key verification failed](#ssh-host-key-verification-failed) のその他のケースに従ってください。
 
 ### ログイン後に SSH 接続が失敗する
 

@@ -203,28 +203,19 @@ Explain the logic in @auth (fuzzy matches auth.js, AuthService.ts, etc.)
 What's in @src/components/ (include a trailing slash for folders)
 ```
 
+### PDF の特定のページを読む
+
 大きな PDF の場合は、ファイル全体ではなく特定のページを読むよう Claude に依頼できます。単一のページ、1～10 ページのような範囲、3 ページ以降のような終わりを指定しない範囲を指定できます。特定のページを読むには、Claude Code を実行しているマシンに [poppler-utils](https://code.claude.com/docs/ja/tools-reference.md#read-tool-behavior) が必要です。
-
-エディターでテキストを選択すると、Claude はハイライトされたコードを自動的に認識できます。プロンプトボックスのフッターには選択されている行数が表示されます。`Option+K`（Mac）/ `Alt+K`（Windows/Linux）を押すと、`@app.ts#5-10` のように、ファイルパスと行番号を含む @メンションが挿入されます。選択範囲インジケーターの **X** をクリックすると選択範囲が解除され、Claude はその選択範囲を受け取らなくなります。別のテキストを選択すると、インジケーターは再び表示されます。
-
-拡張機能は、一部のファイルの選択テキストを Claude に渡しません。
-
-* ファイルがワークスペース内にあり、`files.exclude` または `search.exclude` の設定に一致する場合、Claude が受け取るのは最大でもファイルのパスのみで、選択したテキストは受け取りません。
-* VS Code の `search.useIgnoreFiles` 設定と拡張機能の [`respectGitIgnore` 設定](#extension-settings)の両方がオン（デフォルト）の場合、git が無視するファイルにも同じことが当てはまります。
-
-このフィルターはチャットパネルにのみ適用されます。Claude Code が統合ターミナルで実行されている場合、CLI はファイルに関係なく選択したテキストを送信します。その場合にファイルの内容を Claude に渡さないようにするには、[`Read` の拒否ルール](#the-built-in-ide-mcp-server)を追加します。
-
-何も選択していない場合でも、Claude はエディターで開いているファイルを認識し、プロンプトボックスにはその名前が表示されます。選択したテキストのみを追加するには、[Attach Open File 設定](vscode://settings/claudeCode.attachOpenFile)をオフにします。この設定には Claude Code v2.1.271 以降が必要です。
-
-メッセージに画像やファイルを添付することもできます。
-
-* 画像を添付するには、クリップボードからプロンプトボックスに貼り付けます。
-* ファイルを添付するには、`Shift` を押しながらプロンプトボックスにドラッグします。
-* 添付ファイルをコンテキストから削除するには、その X をクリックします。
 
 ### プロンプトにターミナル出力を含める
 
 `@terminal:name`（`name` はターミナルのタイトル）を使用して、プロンプトでターミナル出力を参照できます。これにより、コピー＆ペーストせずに、コマンド出力、エラーメッセージ、ログを Claude に見せることができます。
+
+### 画像とファイルを添付する
+
+* 画像を添付するには、クリップボードからプロンプトボックスに貼り付けます。
+* ファイルを添付するには、`Shift` を押しながらプロンプトボックスにドラッグします。
+* 添付ファイルをコンテキストから削除するには、その X をクリックします。
 
 ### テキストを貼り付ける
 
@@ -234,6 +225,32 @@ Claude Code は、プロンプトボックスに貼り付けたテキストや�
 
 * 貼り付け時に `Removed 3 invisible characters from the pasted text` のような通知が表示された場合、テキストはそれらの文字を除いて入力されています。
 * 送信時に削除された文字に関する通知が表示された場合、何も送信されていません。クリーンアップされたテキストはプロンプトボックスに戻されています。表示されたとおりのテキストを送信するには、再度送信してください。
+
+### 選択範囲と開いているファイルからの自動コンテキスト
+
+エディターでテキストを選択すると、Claude はハイライトされたコードを自動的に認識できます。プロンプトボックスのフッターには選択されている行数が表示されます。何も選択していない場合でも、Claude はエディターで開いているファイルを認識し、プロンプトボックスにはその名前が表示されます。
+
+`Option+K`（Mac）/ `Alt+K`（Windows/Linux）を押すと、`@app.ts#5-10` のように、ファイルパスと行番号を含む @メンションが挿入されます。
+
+#### 選択範囲と開いているファイルをメッセージに含めない
+
+選択したテキストや開いているファイルがメッセージに含まれないようにするには、VS Code の設定で対応する設定をオフにします。
+
+* **選択したテキスト**: [Attach Selection 設定](vscode://settings/claudeCode.attachSelection)をオフにします。Claude Code v2.1.300 以降が必要です。1 つの選択範囲だけを除外するには、行数の横にある **X** をクリックします。別のテキストを選択すると、行数は再び表示されます。
+* **開いているファイル**: [Attach Open File 設定](vscode://settings/claudeCode.attachOpenFile)をオフにします。Claude Code v2.1.271 以降が必要です。メッセージにそのファイル内で選択したテキストが含まれていない限り、ファイルは含まれません。
+
+Attach Selection がオフの状態でテキストを @メンションとして追加するには、テキストを選択して、Mac では `Option+K`、Windows と Linux では `Alt+K` を押します。
+
+どちらの設定も、VS Code の統合ターミナルで `claude` を実行する場合にも適用されます。
+
+#### 除外または無視されたファイルからの選択テキスト
+
+チャットパネルでは、拡張機能は一部のファイルの選択テキストを渡しません。
+
+* ファイルがワークスペース内にあり、`files.exclude` または `search.exclude` の設定に一致する場合、Claude が受け取るのは最大でもファイルのパスのみで、選択したテキストは受け取りません。
+* VS Code の `search.useIgnoreFiles` 設定と拡張機能の [`respectGitIgnore` 設定](#extension-settings)の両方がオン（デフォルト）の場合、git が無視するファイルにも同じことが当てはまります。
+
+このフィルターはチャットパネルにのみ適用されます。Claude Code が統合ターミナルで実行されている場合、Claude はこれらのファイルで選択したテキストを受け取ることがあります。その場合にファイルの内容を Claude に渡さないようにするには、[`Read` の拒否ルール](https://code.claude.com/docs/ja/permissions#read-and-edit)を追加します。
 
 ### 応答内の LaTeX 数式
 
@@ -694,7 +711,8 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | `preferredLocation` | `panel` | Claude を開く場所：`sidebar`（右側）または `panel`（新しいタブ） |
 | `lockEditorGroups` | `true` | [Claude がタブ用に開始したエディターグループをロック](#choose-where-claude-lives)し、Claude タブにフォーカスがある間に開いたファイルが別のグループで開くようにします。オフにすると、拡張機能はエディターグループを一切ロックしません。Claude Code v2.1.274 以降が必要です |
 | `autosave` | `true` | Claude がファイルを読み書きする前にファイルを自動保存します |
-| `attachOpenFile` | `true` | エディターで開いているファイルをメッセージに追加し、プロンプトボックスに表示します。オフにすると、選択したテキストのみが追加されます。Claude Code v2.1.271 以降が必要です |
+| `attachOpenFile` | `true` | エディターで開いているファイルをメッセージに追加し、プロンプトボックスに表示します。オフにすると、ファイルはテキストを選択した場合にのみ、そのテキストと一緒に追加されます。Claude Code v2.1.271 以降が必要です |
+| `attachSelection` | `true` | エディターで選択したテキストをメッセージに追加し、プロンプトボックスに表示します。オフにしても、[選択範囲を @-メンションとして追加](#automatic-context-from-your-selection-and-open-file)することはできます。Claude Code v2.1.300 以降が必要です |
 | `useCtrlEnterToSend` | `false` | プロンプトの送信に Enter の代わりに Ctrl/Cmd+Enter を使用します |
 | `scrollToBottomOnSend` | `true` | メッセージを送信したときに会話を最下部までスクロールします。オフにすると、会話は表示していた位置のままになります。Claude Code v2.1.275 以降が必要です |
 | `showMessageTimestamps` | `true` | 各メッセージの送信日時を表示します。日付が変わる箇所には日付行が表示されます。Claude Code v2.1.284 以降が必要です。v2.1.290 より前はデフォルトが `false` でした |
@@ -705,7 +723,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | `continueAfterReload` | `true` | ウィンドウの再読み込み後、Claude は復元されたセッションで[中断されたステップを続行](#continue-conversations-after-a-reload)します。Claude Code v2.1.274 以降が必要です |
 | `hideOnboarding` | `false` | オンボーディングチェックリスト（卒業帽アイコン）を非表示にします |
 | `focusView` | `false` | ツール呼び出し、ツールの結果、思考を展開可能な行の中に隠し、ユーザーのプロンプトと Claude の応答だけを残します。Claude の最新の To-Do リストは表示されたままになります。これには Claude Code v2.1.225 以降が必要です。コマンドメニューから Focus view を切り替えることもできます。Claude Code v2.1.221 以降が必要です |
-| `respectGitIgnore` | `true` | .gitignore のパターンをファイル検索および[選択コンテキスト](#reference-files-and-folders)から除外します |
+| `respectGitIgnore` | `true` | .gitignore のパターンをファイル検索および[選択コンテキスト](#selected-text-from-excluded-or-ignored-files)から除外します |
 | `usePythonEnvironment` | `true` | Claude の実行時にワークスペースの Python 環境をアクティブ化します。Python 拡張機能が必要です。 |
 | `environmentVariables` | `[]` | Claude プロセスの環境変数を設定します。共有する構成には、代わりに Claude Code 設定を使用してください。[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) のエントリは、値が絶対パスの場合にのみ適用されます。拡張機能は `~` を展開せず、相対パスの値は無視します。 |
 | `disableLoginPrompt` | `false` | 認証プロンプトをスキップします（サードパーティプロバイダーの構成向け） |
@@ -835,9 +853,10 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 
 **選択範囲と開いているファイルのコンテキスト。** 接続中、CLI は送信する各プロンプトに、現在のエディターの選択範囲とアクティブなファイルのパスをコンテキストとして含めます。このとき、トランスクリプトには `⧉ Selected N lines from <file>` という行が表示されます。次の場合には、このコンテキストが変わります。
 
+* **[Attach Selection 設定](#keep-your-selection-and-open-file-out-of-your-messages)がオフの場合**: CLI は選択範囲をコンテキストとして含めません。
+* **Attach Open File 設定がオフの場合**: CLI は、選択範囲も含める場合にのみ、アクティブなファイルのパスを含めます。
 * **キューに入れたメッセージ**: [Claude の作業中にメッセージをキューに入れた](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)場合、その後に何を選択しても、`Enter` を押した時点の選択範囲が保持されます。
 * **機密ファイル**: `.env` などの機密ファイルを除外するには、そのパスに対する [`Read` 拒否ルール](https://code.claude.com/docs/ja/permissions#read-and-edit)を追加します。一致する拒否ルールがあると、そのファイルの選択テキストと開いているファイルの通知のどちらも Claude に届かなくなります。
-* **Attach Open File がオフの場合**: [Attach Open File 設定](#extension-settings)をオフにすると、CLI はアクティブなファイル内でテキストを選択している間だけ、そのファイルのパスを受け取ります。
 
 **トランスポートと認証。** サーバーは `127.0.0.1` の 10000〜65535 の範囲のランダムなポートにバインドされ、ポートは設定できません。トランスポートと認証トークンは次のように動作します。
 

@@ -31,7 +31,7 @@
 
 > [!TIP]
 >
-> [サブエージェントで調査を実行する](https://code.claude.com/docs/ja/best-practices.md#use-subagents-for-investigation)など、任意のリポジトリでコンテキストを小さく保つワークフロー技術については、[Claude Code のベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)を参照してください。組織内のすべての開発者にベースライン設定をロールアウトするには、[組織向けに Claude Code をセットアップする](https://code.claude.com/docs/ja/admin-setup.md)を参照してください。
+> 任意のリポジトリでコンテキストを小さく保つワークフロー技術については、[Claude Code のベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)を参照してください。その一例が[サブエージェントで調査を実行する](https://code.claude.com/docs/ja/best-practices.md#know-what-subagents-cost)ことで、これによりファイルの読み取りをメインの会話から切り離せます。組織内のすべての開発者にベースライン設定をロールアウトするには、[組織向けに Claude Code をセットアップする](https://code.claude.com/docs/ja/admin-setup.md)を参照してください。
 
 ### サンプルモノレポ
 
@@ -465,7 +465,7 @@ monorepo/
 クロスパッケージの変更を一貫性のあるものに保つのに役立つ 2 つの技術があります。
 
 * **1 つのセッションで Claude に全体の変更を与える**: 共有編集とその呼び出しサイトを一緒に引き渡すことで、各編集の背後にある決定を一貫性のあるものに保ちます。パッケージごとに再導出するのではなく
-* **編集する前に計画する**: [最初に計画](https://code.claude.com/docs/ja/best-practices.md#explore-first-then-plan-then-code)し、[Plan Mode](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode) で Claude が計画をファイルに書き込みます。長いクロスパッケージセッションは [コンテキストをコンパクト化](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)します。Claude Code は各コンパクト化の後に計画ファイルを再度注入するため、計画は会話履歴が存在しない場合でも生き残ります。
+* **編集する前に計画する**: [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode) で最初に計画すると、Claude は計画をファイルに書き込みます。クロスパッケージの長いセッションでは、進行に伴って[コンテキストが圧縮](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)されます。Claude Code は各コンテキスト圧縮の後に計画ファイルを再注入するため、会話履歴が残らない可能性がある場合でも計画は保持されます。
 
 ## 次のステップ
 

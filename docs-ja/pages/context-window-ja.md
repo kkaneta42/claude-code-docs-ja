@@ -70,6 +70,6 @@ Claude Code はコンテキストウィンドウの制限に近づくと自動�
 * [Claude Code を拡張する](https://code.claude.com/docs/ja/features-overview.md): CLAUDE.md とスキルとルールとフックと MCP をいつ使用するか
 * [指示とメモリを保存する](https://code.claude.com/docs/ja/memory.md): CLAUDE.md 階層と自動メモリ
 * [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md): 研究を別のコンテキストウィンドウに委譲する
-* [ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md): コンテキストを主な制約として管理する
+* [ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md#keep-cost-and-context-down): セッションを焦点を絞ったものに保ち、コストを抑える
 * [プロンプト キャッシング](https://code.claude.com/docs/ja/prompt-caching.md): キャッシュされたプレフィックスを無効にするアクション
 * [トークン使用量を削減する](https://code.claude.com/docs/ja/costs.md#reduce-token-usage): コンテキスト使用量を低く保つための戦略
