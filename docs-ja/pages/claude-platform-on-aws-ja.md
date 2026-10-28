@@ -55,7 +55,7 @@ SSO 認証情報がセッション中に期限切れになった場合、[`awsAu
 }
 ```
 
-Claude Code は起動時にこのコマンドを実行して既存の AWS 認証情報を検証できない場合も実行し、ログインが完了するまで `Authentication` パネルにコマンドの出力を表示します。
+Claude Code は、起動時に既存の AWS 認証情報を検証できない場合にもこのコマンドを実行し、ログインが完了するまで `Authentication` パネルにコマンドの出力を表示します。
 
 `awsAuthRefresh` が設定されている場合、`/login` を実行し、**3rd-party platform** を選択してから、**Using 3rd-party platforms** の下で **Claude Platform on AWS · refresh credentials** を選択します。Claude Code は設定されたコマンドを実行し、再起動せずに AWS 認証情報を再度読み込みます。
 
@@ -95,7 +95,7 @@ AWS 上の Claude Platform は、環境に AWS 認証情報が存在する場合
 
 AWS 上の Claude Platform は、直接 Claude API と同じモデル ID を使用します。
 
-デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 5.5 に解決されます。v2.1.280 より前は、v2.1.219 以降では Opus 5 に、v2.1.207 以降では Opus 4.8 に解決されていました。
+デフォルトのエイリアス `fable`、`opus`、`sonnet`、`haiku` は Claude Code の AWS 上の Claude Platform 用の組み込みデフォルトに解決されます。これは最新リリースより遅れる可能性があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` がない場合、`opus` エイリアスは Opus 5.5 に解決されます。v2.1.280 より前は、v2.1.219 以降では Opus 5 に解決されていました。
 
 Claude Code をチームにデプロイする場合、モデル ID を明示的にピン留めして、新しいリリースがすべてのユーザーを一度に移動しないようにします。
 

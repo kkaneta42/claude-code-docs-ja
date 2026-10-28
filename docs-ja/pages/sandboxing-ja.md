@@ -320,6 +320,7 @@ Claude Code は、Bash と Monitor の各呼び出しに対してエントリを
 * **呼び出し内のすべてのコマンドが一致する必要がある**: `npm ci && docker compose build` は、別のエントリが `npm ci` をカバーしていない限り、サンドボックス化されたままです
 * **Claude Code は呼び出しのテキストを照合する**: 内部で `docker` を呼び出すスクリプトや `make` ターゲットは一致せず、`/usr/local/bin/docker` も一致しません
 * **サンドボックス化されたままになる呼び出しがある**: ファイルへのリダイレクト、`cd`、または `$(...)` のようなコマンド置換があると、呼び出し全体がサンドボックス化されたままになります。サンドボックス化されたままになるその他の呼び出しについては、[リファレンスのエントリ](https://code.claude.com/docs/ja/settings-reference.md#sandbox-excludedcommands)に記載されています
+* **`git clone` には相対パスが必要**: 絶対パス、`~` で始まるパス、または `..` セグメントを含むパスを指定するクローンは、エントリの対象になりません。クローン先を作業ディレクトリ内にできる場合は、`vendor/lib` のような `..` セグメントを含まない相対パスを使用するよう Claude に依頼してください
 * **エントリの保存場所が影響する場合がある**: サンドボックスが[管理者によって必須化](#repository-settings-under-an-admin-required-sandbox)されている間、Claude Code は `.claude/settings.json` と `.claude/settings.local.json` 内のエントリを無視します
 
 除外されたコマンドは、通常の権限フローを経由します。
@@ -354,7 +355,7 @@ Claude Code は、Bash と Monitor の各呼び出しに対してエントリを
 
 サンドボックスには独立した 2 つのレイヤーがあります。[ファイルシステム分離](#filesystem-isolation)はサンドボックス化されたコマンドが読み書きできるパスを制御し、[ネットワーク分離](#network-isolation)はそれらが到達できるドメインを制御します。ファイルシステムレイヤーをオフにすると、サンドボックス化されたコマンドはホストのファイルシステムに対して無制限の読み書きアクセスを得ますが、ネットワークの送信先は許可したドメインに限定されたままです。コマンドが何を書き込むかではなく、どこに接続するかを制御する目的でサンドボックスを使う場合に、このレイヤーをオフにしてください。
 
-`sandbox.filesystem.disabled` のデフォルトは `false` です。Claude Code v2.1.216 以降が必要です。
+`sandbox.filesystem.disabled` のデフォルトは `false` です。
 
 > [!WARNING]
 >

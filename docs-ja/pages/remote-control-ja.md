@@ -192,7 +192,7 @@ Remote Control セッションがアクティブになったら、別のデバ�
 VS Code 拡張機能と Desktop アプリにも自動接続のトグルがあります。
 
 * **VS Code 拡張機能**：[コマンドメニュー](https://code.claude.com/docs/ja/vs-code.md#use-the-prompt-box)の Settings セクションにある **Enable Remote Control for all sessions**。
-* **Desktop アプリ**：**Settings > Claude Code > Connect new sessions to Remote Control**。[他のデバイスに表示するセッションを制御する](https://code.claude.com/docs/ja/desktop.md#control-which-sessions-appear-on-your-other-devices)を参照してください。
+* **Desktop アプリ**：**Settings > Code** または **Settings > Claude Code** にある **Connect new sessions to Remote Control**。[他のデバイスに表示するセッションを制御する](https://code.claude.com/docs/ja/desktop.md#control-which-sessions-appear-on-your-other-devices)を参照してください。
 
 代わりに設定ファイルから自動接続をオンにするには、ユーザーの `~/.claude/settings.json` または[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で [`remoteControlAtStartup`](https://code.claude.com/docs/ja/settings-reference#remotecontrolatstartup) を `true` に設定します。プロジェクト設定またはローカル設定（`.claude/settings.json`、`.claude/settings.local.json`）では、Claude Code は `false` を尊重してそのリポジトリの自動接続をオフにしますが、`true` は無視します。そのため、チェックインされたファイルによって、リポジトリを開くすべての人の Remote Control がオンになることはありません。
 
@@ -363,7 +363,7 @@ Claude Code は、お客様がターミナルに入力中または接続され�
   * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、`/reload-plugins`。`/usage-credits` はブラウザを開く代わりに請求 URL を出力します。`/reload-plugins` は、セッションが対話型ターミナルで実行されている場合にのみ動作します。対話型ターミナルのないセッションではこのコマンドは拒否されます。
   * `/model`、`/effort`、`/fast`、`/color`、`/rename`: 値を引数として渡します（例: `/model sonnet` や `/effort high`）。モバイルと Web からは、`/model` と `/effort` はターミナルのピッカーやスライダーの代わりに引数を受け取ります。
   * `/mcp`: モバイルアプリからは、ピッカーを開く代わりにサーバーのステータスのテキスト要約を返します。Web では、`/mcp` を単独で実行すると、要約を返す代わりに [claude.ai コネクタ](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)のディレクトリが開きます。`reconnect`、`enable`、`disable` の[サブコマンド](https://code.claude.com/docs/ja/commands.md#all-commands)は、セッションが対話型ターミナルで実行されている場合、どちらからでも動作します。サーバー名を指定しない `/mcp reconnect` は、失敗した、または認証が必要なすべてのサーバーを再試行します。ピッカーを使わずに claude.ai コネクタを認可するには、[シェルからコネクタを再度認可する](#authorize-a-connector-again-from-your-shell)を参照してください。
-  * `/config`: モバイルアプリからは、`key=value` を渡して設定を変更するか、引数なしで実行して設定可能なキーを一覧表示します。Web では、`/config` は代わりに設定の Claude Code セクションを開きます。
+  * `/config`: モバイルアプリからは、`key=value` を渡して設定を変更するか、引数なしで実行して設定可能なキーを一覧表示します。Web では、`/config` は代わりに **Settings > Code** または **Settings > Claude Code** を開きます。
   * Team と Enterprise では、モバイルや Web からの `/usage-credits` は[管理者への使用クレジットのリクエスト](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)を送信しません。送信には対話型 CLI でのみ表示される確認が必要なため、このコマンドは代わりにそちらで実行するよう案内します。
   * `/autocompact`（v2.1.221 以降）: ウィンドウサイズを引数として渡します（例: `/autocompact 500k`）。引数なしの場合、ターミナルセッションでこのコマンドが表示するダイアログを開く代わりに、現在のウィンドウサイズをテキストとして出力します。
   * `/advisor`（v2.1.260 以降）: モデルを引数として渡すか（例: `/advisor opus`）、`off` を渡してアドバイザーをオフにします。どちらの形式も現在のセッションにのみ適用され、保存済みのデフォルトは変更されません。引数なしの場合、ピッカーを開く代わりに現在のアドバイザーをテキストとして出力します。

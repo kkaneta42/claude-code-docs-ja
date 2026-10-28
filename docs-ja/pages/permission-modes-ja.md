@@ -31,7 +31,7 @@ Claude Code v2.1.283 以降では、auto モードはインタラクティブタ
 
 ### どのモードでも自動承認されない操作
 
-Claude Code は、`bypassPermissions` を含むどのモードでも、次の操作を自動承認しません。各項目には、代わりに各モードで何が起こるかを説明するセクションへのリンクがあります。
+Claude Code は、`bypassPermissions` を含むどのモードでも、次の操作を自動承認しません。ただし、`bypassPermissions` モードでは[危険な `rm` コマンドに対するプロンプトをオフにする](#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode)ことができます。各項目には、代わりに各モードで何が起こるかを説明するセクションへのリンクがあります。
 
 * 明示的な[確認ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)に一致するツール
 * 組織が [`ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に適用されるセッションの場合）
@@ -504,7 +504,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 * 読み取り専用の HTTP リクエスト
 * デフォルトブランチを含む、作業中のリポジトリの任意のブランチへのプッシュ。`production` や `gh-pages` など、名前からデプロイ先や公開先であるとわかるデフォルト以外のブランチは対象外で、分類器はそこへのプッシュを個別に判断します。
 
-  プッシュの内容は引き続き分類器の他のルールに照らしてチェックされ、[`permissions.deny` ルール](https://code.claude.com/docs/ja/permissions#manage-permissions)はすべてのモードで引き続き[記述されたとおりに](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)プッシュコマンドをブロックできます。リモート側のブランチ保護も引き続き適用されます。v2.1.203 から v2.1.211 より前までは、デフォルトブランチへの日常的なプッシュと、開始時のブランチまたは Claude が作成したブランチへのプッシュのみがデフォルトで許可されていました。
+  プッシュの内容は引き続き分類器の他のルールに照らしてチェックされ、[`permissions.deny` ルール](https://code.claude.com/docs/ja/permissions#manage-permissions)はすべてのモードで引き続き[記述されたとおりに](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)プッシュコマンドをブロックできます。リモート側のブランチ保護も引き続き適用されます。
 * 同じセッション内で Claude が以前に作成したジョブそのものの削除
 * タスクの一環としての、セキュリティ関連のコード、設定、脅威モデルの読み取り、レビュー、または作成
 * 同じマルチエージェントセッションで協働するエージェント間のメッセージ
@@ -649,7 +649,7 @@ claude --permission-mode dontAsk
 
 `bypassPermissions` モードは権限プロンプトとセーフティチェックを無効にするため、[保護されたパス](#protected-paths)への書き込みを含むツール呼び出しが即座に実行されます。
 
-`bypassPermissions` モードでも、[どのモードでも自動承認されないアクション](#actions-no-mode-auto-approves)はそれぞれ、そのまま実行されるのではなく、プロンプトが表示されるか拒否されます。[別の組織の公開アーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取るにはユーザーの承認が必要ですが、このモードでは承認を求めないため、Claude はそれを読み取れません。[PowerShell の Remove-Item](#remove-item-in-powershell) の拒否もこのモードで適用されます。
+`bypassPermissions` モードでも、[どのモードでも自動承認されないアクション](#actions-no-mode-auto-approves)はそれぞれ、プロンプトが表示されるか拒否されます。ただし、[危険な `rm` コマンドに対するプロンプトはオフにできます](#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode)。[別の組織の公開アーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取るにはユーザーの承認が必要ですが、このモードでは承認を求めないため、Claude はそれを読み取れません。[PowerShell の Remove-Item](#remove-item-in-powershell) の拒否もこのモードで適用されます。
 
 このモードでは、および権限バイパスが利用可能なインタラクティブターミナルプランモードセッションでは、2 つの[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)セーフガードが引き続き適用されます。
 
@@ -861,7 +861,7 @@ Dangerous rm operation not ruled out — the shell may read this command differe
 This command could not be checked for dangerous rm operations: the shell may read it differently than it was parsed.
 ```
 
-`bypassPermissions` を含め、[権限モードに応じて](#critical-path-removals-in-each-permission-mode)重要なパスの削除と同じプロンプトまたは拒否が発生します。このコマンドは、`Bash` または `Bash(*)` の許可ルール、サンドボックスの[自動許可モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)、`"allow"` を返す `PreToolUse` フックでは承認できません。コマンドを読んでからプロンプトを承認するか、拒否された場合はシェルで実行してください。
+`bypassPermissions` を含め、[権限モードに応じて](#critical-path-removals-in-each-permission-mode)重要なパスの削除と同じプロンプトまたは拒否が発生します。ただし、`bypassPermissions` モードでは[そのプロンプトをオフにする](#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode)ことができます。このコマンドは、`Bash` または `Bash(*)` の許可ルール、サンドボックスの[自動許可モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)、`"allow"` を返す `PreToolUse` フックでは承認できません。コマンドを読んでからプロンプトを承認するか、拒否された場合はシェルで実行してください。
 
 ### マウントされたドライブのプロンプト
 
@@ -923,6 +923,8 @@ Claude Code が重要なパスの削除に対して行うことは、権限モ�
 
 明示的な [ask ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) がコマンドにマッチする場合、Claude Code は `auto` モードでも承認を求めます。時間制限はありません。承認を求めるモードでは、[`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest) はプロンプトに答えることができます。
 
+`bypassPermissions` モードでこれらの削除をプロンプトなしで実行するには、[重要なパスの削除のプロンプトをオフにする](#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode)を参照してください。
+
 ### auto および bypassPermissions モードでの時間制限と拒否
 
 `auto` および `bypassPermissions` モードでは、重要なパスの削除に対するターミナルプロンプトに 2 分間のカウントダウンが表示されます。
@@ -939,7 +941,7 @@ Claude Code が重要なパスの削除に対して行うことは、権限モ�
 | :- | :- | :- |
 | [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)のチャットパネル | 拒否します | [`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest)が許可しない限り拒否します |
 | [デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md) | 拒否します | `PermissionRequest` フックが許可しない限り拒否します |
-| [`-p` 実行](https://code.claude.com/docs/ja/headless)または [Agent SDK セッション](https://code.claude.com/docs/ja/agent-sdk/permissions.md) | 拒否します | [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) または [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input#handle-tool-approval-requests)が判断します。どちらもない場合、または [`--permission-prompts none`](https://code.claude.com/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs) の下では、`PermissionRequest` フックが許可しない限り拒否します |
+| [`-p` 実行](https://code.claude.com/docs/ja/headless)または [Agent SDK セッション](https://code.claude.com/docs/ja/agent-sdk/permissions.md) | 拒否します | [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) または [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input#handle-tool-approval-requests)が判断します。どちらもない場合、または [`--permission-prompts none`](https://code.claude.com/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs) の下では、`PermissionRequest` フックが許可しない限り拒否します。代わりにこれらの削除をプロンプトなしで実行するには、[重要なパスの削除のプロンプトをオフにする](#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode)を参照してください |
 
 削除が拒否された場所ではどこでも、コマンド全体を読んでシェルで実行できます。
 
@@ -957,6 +959,63 @@ Claude Code が重要なパスの削除に対して行うことは、権限モ�
   ]
 }
 ```
+
+### bypassPermissions モードで重要なパスの削除のプロンプトをオフにする
+
+`bypassPermissions` モードで、[重要なパス](#critical-paths)をターゲットとする Bash の `rm` および `rmdir` コマンドをプロンプトなしで実行するには、環境に [`CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1`](https://code.claude.com/docs/ja/env-vars#variables) を設定して Claude Code を起動します。これには Claude Code v2.1.311 以降が必要です。Claude Code はこの変数を起動環境からのみ読み取り、[設定ファイルの `env` ブロック内では無視します](https://code.claude.com/docs/ja/settings-reference#variables-claude-code-ignores-in-env)。例えば、[シェル](https://code.claude.com/docs/ja/env-vars.md#set-variables-in-your-shell)で設定し、そこから `claude` を起動します。
+
+**macOS, Linux, WSL**
+
+```bash theme={null}
+export CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1
+claude --permission-mode bypassPermissions
+```
+
+**Windows PowerShell**
+
+```powershell theme={null}
+$env:CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS = "1"
+claude --permission-mode bypassPermissions
+```
+
+**Windows CMD**
+
+```batch theme={null}
+set CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS=1
+claude --permission-mode bypassPermissions
+```
+
+> [!WARNING]
+>
+> この変数を設定すると、破壊的な削除に対する安全のためのプロンプトが失われます。`rm -rf ~` のようなコマンドが確認なしで実行される可能性があります。内容を失っても問題ない[分離された環境](#skip-all-checks-with-bypasspermissions-mode)でのみ設定してください。
+
+削除がプロンプトなしで実行されるのは、plan モードではなく `bypassPermissions` モード自体の場合のみで、対象は Bash ツールと [Monitor](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) ツールで重要なパスのチェックが警告したものに限られます。これには Claude Code が完全に解析できないコマンドも含まれ、それらもプロンプトなしで実行されます。
+
+#### 重要なパスの削除のプロンプトに関する起動時の通知
+
+`CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS` が機能しているかどうかを確認するには、Claude Code が起動時に出力する行を読みます。`-p` 実行では、この行は stderr に出力されます。Agent SDK アプリでは、[`stderr` オプション](https://code.claude.com/docs/ja/agent-sdk/typescript#options)を渡して読み取ります。行には次のいずれかが表示されます。
+
+* **`is set, so dangerous rm commands can run without a prompt`**: 管理設定とプラグインのフックが読み込まれると、削除はプロンプトなしで実行できます。削除に対して引き続きプロンプトまたは拒否が発生する場合は、[重要なパスの削除のプロンプトがオンのままになる理由](#why-the-critical-path-removal-prompt-stays-on)を参照してください
+* **`has no effect in this session`**: セッション全体を通じて、削除には通常のプロンプトまたは拒否が発生します。これを変更するには、[重要なパスの削除のプロンプトがオンのままになる理由](#why-the-critical-path-removal-prompt-stays-on)で該当するケースを見つけてください
+* **`has no effect while the Windows registry cannot be read for managed settings`**: 削除には通常のプロンプトまたは拒否が発生します。後でレジストリの読み取りに成功すれば、再起動なしで変数が有効になります。削除に対して引き続きプロンプトまたは拒否が発生する場合は、[重要なパスの削除のプロンプトがオンのままになる理由](#why-the-critical-path-removal-prompt-stays-on)を参照してください
+
+行が表示されないからといって、プロンプトがオンになっているとは限りません。`stderr` オプションのない Agent SDK アプリでは行は表示されませんが、削除はプロンプトなしで実行される可能性があります。それ以外の場合は、起動環境で変数を設定したこと、セッションが [`bypassPermissions` モードに入れる](#skip-all-checks-with-bypasspermissions-mode)こと、`claude` が別のセッション内で実行されていないことを確認してください。一部のセッションは[変数なしで起動します](#why-the-critical-path-removal-prompt-stays-on)。
+
+変数を設定していないのにこれらの行のいずれかが表示される場合は、シェルプロファイルなど、変数が設定されている場所を見つけて削除してください。
+
+#### 重要なパスの削除のプロンプトがオンのままになる理由
+
+`CLAUDE_CODE_EVEN_MORE_DANGEROUSLY_SKIP_PERMISSIONS` が効果を持たず、削除に[通常のプロンプトまたは拒否](#critical-path-removals-in-each-permission-mode)が発生し続ける場合は、次のような原因を確認してください。
+
+* **別の仕組みが権限プロンプトを処理している**: [`--permission-prompts none`](https://code.claude.com/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs) なしの [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) または Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input)、任意の matcher を持つ [`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest)、またはそのイベントを処理する [mod](https://code.claude.com/docs/ja/plugins/mods/events.md#hook-the-settings-hook-events)。フック、mod、ツール、またはコールバックを削除して `claude` を再起動してください
+* **[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)のチャットパネルまたは[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)がセッションを実行している**: 代わりに、IDE の統合ターミナルなどのターミナルで `claude` を起動してください
+* **ルールが Bash、Edit、または Read を対象としている**: これらのツールのいずれかを対象とする[拒否ルールまたは ask ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)が、起動時に存在するか、セッション中に Claude Code が読み取った場合です。後で削除しても該当します。ルールを削除して `claude` を再起動してください。ツールを除外するには、拒否ルールの代わりに [`--tools`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を使用してください
+* **[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオンになっている**: この設定を `true` にしているすべての設定ファイルから設定を削除し、`claude` を再起動してください
+* **`claude` が別のセッション内で実行されている**: セッションの Bash ツールまたはフックから起動された `claude` です。コマンドラインで変数を指定していても該当します。自分のシェルから `claude` を起動してください。このネストされたセッションの制限をセキュリティ境界として頼りにしないでください
+* **`PreToolUse` フックが削除に対して `ask` を返している**: フックが返す内容を変更してください
+* **Claude Code がセッションを代わりに起動している**: [バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)、分割ペインの[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイト、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) サーバーが作成するセッションは、変数なしで起動します。自分のシェルから `claude` を起動してください
+* **管理設定を読み取れない**: Claude Code が[管理設定](https://code.claude.com/docs/ja/managed-settings.md)のソースを正常に読み取れていません。サーバー管理設定の読み込みが失敗し続ける場合は、[Remote managed settings failed to load](https://code.claude.com/docs/ja/errors.md#remote-managed-settings-failed-to-load) を参照してください。レジストリのクエリ以外の失敗については、そのソースの管理者に修正を依頼してください
+* **Windows レジストリにクエリできない**: Windows と WSL では、[WSL が設定にレジストリを使用しない](https://code.claude.com/docs/ja/settings-reference.md#wslinheritswindowssettings)場合でも、この変数にはレジストリからの応答が必要です。英語以外の Windows、interop がオフの WSL、または WSL2 カーネル上のコンテナでは、クエリがセッション全体を通じて失敗する可能性があります。interop がオフの場合はオンにしてください。それ以外の場合は、それらの削除を自分で実行してください
 
 ### PowerShell の Remove-Item
 

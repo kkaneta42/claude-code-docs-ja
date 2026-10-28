@@ -301,7 +301,7 @@ claude self-hosted-runner orchestrator \
 | 変数 | 説明 |
 | :- | :- |
 | `CLAUDE_RUNNER_WORK_ORDER_FILE` | 新しいランナーが登録する署名済みワークオーダー JWT を含む一時ファイルへのパス。フック終了後に削除されます。ファイルの内容をログに記録しないでください。 |
-| `CLAUDE_RUNNER_ORDER_ID` | 不透明なべき等性キー。スポーン要求ごとに一意で、Kubernetes リソース名に対して安全です。プロビジョナーの重複排除キーとしてのみ使用してください。 |
+| `CLAUDE_RUNNER_ORDER_ID` | 不透明なべき等性キー。スポーン要求ごとに一意で、Kubernetes リソース名に対して安全です。プロビジョナーの重複排除キーには、オーダー ID のみを使用してください。 |
 | `CLAUDE_RUNNER_SESSION_ID` | この要求が対象とするセッション。セッションの URL に含まれる `session_...` ID の形式です。セッションの再要求のたびに繰り返されるため、ログとルーティングに使用し、重複排除キーとしては使用しないでください。[`--min-idle`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) が設定されている場合、事前ウォーミング要求（特定のセッションの前にスタンバイランナーをブート）では空です。変数が設定されていると仮定しないでください。 |
 | `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID。事前ウォーミング要求では空です。 |
 | `CLAUDE_RUNNER_ATTEMPT` | ログ記録に使用するセッションごとのカウンター。再試行回数でもリクエスト数でもありません。事前ウォーミング要求では `0` ですが、セッションに対する要求でも `0` になる場合があります。 |

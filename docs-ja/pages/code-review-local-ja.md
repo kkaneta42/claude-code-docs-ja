@@ -71,7 +71,7 @@
 * ターミナルセッション。この場合、`/code-review` はレビューを[フォークされたサブエージェント](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent)として実行します
 * テキストまたは JSON 出力を使用する `-p` 実行
 
-[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md#review-your-code)など、指摘事項のリストを要求するホストアプリケーションでは、Claude は代わりに [`ReportFindings` ツール](https://code.claude.com/docs/ja/tools-reference)を通じてレビューの指摘事項を報告します。レポートは指摘事項のリストとして表示され、各エントリにはファイルの場所、1 文の要約、そして指摘事項にカテゴリがある場合は `correctness` などのカテゴリタグが表示されます。ホストからの要求はすべての effort レベルに適用され、Claude Code v2.1.218 以降が必要です。
+[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md#review-your-code)など、指摘事項のリストを要求するホストアプリケーションでは、Claude は代わりに [`ReportFindings` ツール](https://code.claude.com/docs/ja/tools-reference)を通じてレビューの指摘事項を報告します。レポートは指摘事項のリストとして表示され、各エントリにはファイルの場所、1 文の要約、そして指摘事項にカテゴリがある場合は `correctness` などのカテゴリタグが表示されます。ホストからの要求はすべての effort レベルに適用されます。
 
 セッションの後半で Claude が報告済みの指摘事項を修正すると、Claude は再度それらを報告します。その後、Claude Code は更新された指摘事項のリスト内の各指摘事項を、修正済み、スキップ、または変更不要としてマークします。
 
@@ -104,7 +104,7 @@ GitLab マージリクエストに対して `--comment` を渡すと、Claude Co
 effort レベルとフラグの後、Claude Code は行の残りをレビュー対象として読み取ります。`ultra` 引数はこの解釈を変更します。
 
 * **`ultra` を指定した場合**: Claude Code は単一の単語をベースブランチまたは PR 番号として読み取ります。ブランチや PR を指していない長いテキストは、[レビューに添付されるメモ](https://code.claude.com/docs/ja/ultrareview.md#pass-a-request-in-plain-words)になります。`/code-review ultra check my auth changes` は現在のブランチをレビューし、Claude は指摘事項をメモと関連付けます。
-* **`ultra` を指定しない場合**: 残りはすべてレビュー対象になります。これは別のコマンド名で始まる場合も同様です。`/code-review /fix-issue 123` は、`/fix-issue` を 2 つ目の[スタックされたスキル](https://code.claude.com/docs/ja/skills.md#stack-several-skills-in-one-message)として読み込むのではなく、`/fix-issue 123` を対象テキストとしてレビューします。v2.1.218 より前は、`/code-review` の後にスタックされたコマンドは独立したスキルとして展開されていました。
+* **`ultra` を指定しない場合**: 残りはすべてレビュー対象になります。これは別のコマンド名で始まる場合も同様です。`/code-review /fix-issue 123` は、`/fix-issue` を 2 つ目の[スタックされたスキル](https://code.claude.com/docs/ja/skills.md#stack-several-skills-in-one-message)として読み込むのではなく、`/fix-issue 123` を対象テキストとしてレビューします。
 
 ## フォアグラウンドで実行する
 
@@ -113,8 +113,6 @@ effort レベルとフラグの後、Claude Code は行の残りをレビュー�
 * `-p` フラグまたは Agent SDK を使用して、非対話モードで実行します。Claude Code はレビューを待機し、指摘事項を応答に含めます。ただし `ultra` は例外で、[クラウドレビューを待機しません](https://code.claude.com/docs/ja/ultrareview.md#run-ultrareview-non-interactively)。
 * [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars) を `1` に設定します。これにより、他のバックグラウンドタスク機能もオフになります
 * 以前のレビューがまだ進行中の間に、`/code-review` を再度実行します
-
-v2.1.218 より前は、レビューは会話内で実行されていました。
 
 ## Claude にレビューを開始させる
 

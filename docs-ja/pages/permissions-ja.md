@@ -28,8 +28,6 @@ Claude Code は、パワーと安全性のバランスを取るために、段�
 
 「はい、今後は聞かない」を選択し、承認が永続的に保存される場合（Bash コマンドや WebFetch ドメインなど）、Claude Code はルールを git リポジトリのルートにある `.claude/settings.local.json` に保存します。これは[worktrees](https://code.claude.com/docs/ja/worktrees.md)を通じてメインチェックアウトに解決されます。ルールは、そのリポジトリ内のサブディレクトリで開始されたセッションや worktrees 内のセッションを含む、そのリポジトリ内の将来のセッションに適用されます。ファイル変更の承認はファイルに保存されません。表が示すように、セッション終了まで続きます。git リポジトリの外部や Windows 上など、場合によっては Claude Code はリポジトリルートを使用しません。[Claude Code が各ファイルを探す場所](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)は、これらのケースと代わりにルールを保存する場所をリストアップしています。
 
-v2.1.211 より前では、Claude Code は常にルールを開始ディレクトリに保存していたため、worktree またはサブディレクトリで付与された承認はリポジトリの残りの部分に適用されませんでした。以前のバージョンがサブディレクトリまたは worktree に保存したルールは、そこで開始されたセッションに引き続き適用されます。
-
 場合によっては、権限プロンプトは 1 回限りの承認のみを提供し、「今後は聞かない」オプションもセッションの残りの部分のアクションを許可するオプションもありません。Claude Code はプロンプトがそれらが許可するすべてのものを表示できる場合にのみ、これらのオプションを提供するため、プロンプトから保存するルールは、その名前のオプションが許可するものだけをカバーします。プロンプトが 1 回限りの承認のみを提供する場合、アクションを 1 回承認するか、[`/permissions`](#manage-permissions)でルール自体を追加してください。`watch` などの exec ラッパーで始まるコマンドや、`-delete` などのアクションを含む `find` コマンドのプロンプトを表示しないようにするには、[exec ラッパーと `find` アクション](#exec-wrappers-and-find-actions)を参照してください。
 
 ### 権限プロンプトに回答するときにコメントを追加する
@@ -218,7 +216,7 @@ Bash ルールはコマンドテキスト全体に対してマッチし、`*` �
 
 > [!TIP]
 >
-> Claude Code はシェル演算子を認識するため、`Bash(safe-cmd *)` のようなルールで `safe-cmd && other-cmd` というコマンドの実行権限が与えられることはありません。認識されるコマンド区切りは `&&`、`||`、`;`、`|`、`|&`、`&`、および改行です。ルールは各サブコマンドに個別にマッチする必要があります。
+> Claude Code はシェル演算子を認識するため、`Bash(safe-cmd *)` のようなルールで `safe-cmd && other-cmd` というコマンドの実行権限が与えられることはありません。認識されるコマンド区切りは `&&`、`||`、`;`、`|`、`|&`、`&`、および改行です。複合コマンドを確認なしで実行するには、すべてのサブコマンドが許可されている必要があります。たとえば、サブコマンドが許可ルールにマッチする場合や、[読み取り専用コマンド](#read-only-commands)である場合です。
 
 拒否ルールと確認ルールは、いずれかのサブコマンドがマッチした場合に適用されます。これにはサブシェル、コマンド置換、または `for` ループのような制御フローの本体の中にネストされたコマンドも含まれます。`Bash(git clean *)` のような確認ルールは、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)であっても、`cd /tmp && git clean -f` や `echo "$(git clean -f)"` に対して引き続き確認を求めます。
 
@@ -314,7 +312,7 @@ Claude Code は、`make | tee build.log` のようなパイプライン内を含
 
 ### PowerShell
 
-PowerShell の権限ルールは Bash ルールと同じ形式を使用します。`*` によるワイルドカードは任意の位置でマッチし、`:*` サフィックスは末尾の ` *` と同等であり、単独の `PowerShell` または `PowerShell(*)` はすべてのコマンドにマッチします。次の設定は、`Remove-Item` をブロックしつつ、`Get-ChildItem` と `git commit` コマンドを許可します。
+PowerShell の権限ルールは [Bash ルール](#wildcard-patterns)と同じ形式を使用し、単独の `PowerShell` または `PowerShell(*)` はすべてのコマンドにマッチします。次の設定は、`Remove-Item` をブロックしつつ、`Get-ChildItem` と `git commit` コマンドを許可します。
 
 ```json theme={null}
 {
@@ -330,9 +328,9 @@ PowerShell の権限ルールは Bash ルールと同じ形式を使用します
 }
 ```
 
-一般的なエイリアスはマッチング前に正規化されます。コマンドレット名に対して書かれたルールはそのエイリアスにもマッチするため、`PowerShell(Get-ChildItem *)` は `gci`、`ls`、`dir` にもマッチします。マッチングでは大文字と小文字は区別されません。
+一般的なエイリアスは、マッチングの前に正規化されます。コマンドレット名で記述したルールはそれらのエイリアスにもマッチするため、`PowerShell(Get-ChildItem *)` は `gci`、`ls`、`dir` にもマッチします。マッチングでは大文字と小文字は区別されません。
 
-Claude Code は PowerShell の AST を解析し、複合コマンド内の各コマンドを個別にチェックします。パイプライン演算子 `|`、ステートメント区切り `;`、および PowerShell 7 以降ではチェーン演算子 `&&` と `||` によって、複合コマンドはサブコマンドに分割されます。複合コマンドが許可されるには、ルールがすべてのサブコマンドにマッチする必要があります。
+Claude Code は PowerShell の AST を解析し、複合コマンド内の各コマンドを個別にチェックします。パイプライン演算子 `|`、ステートメント区切り `;`、および PowerShell 7 以降ではチェーン演算子 `&&` と `||` によって、複合コマンドはサブコマンドに分割されます。複合コマンドを確認なしで実行するには、すべてのサブコマンドが許可されている必要があります。たとえば、許可ルールにマッチすることで許可されます。
 
 ### Read と Edit
 
@@ -390,7 +388,7 @@ Read ルールと Edit ルールはどちらも、4 つの異なるパターン�
 
 `/permissions` で追加したルールは、保存先の設定ファイルに対応する行に従います。
 
-v2.1.211 以降、ローカル設定のルールは、Claude Code が[ファイルを保存する](#permission-system)リポジトリのルートではなく、セッションの[プライマリ作業ディレクトリ](#working-directories)を基準にします。リポジトリのルートで開始されたセッションでは 2 つのディレクトリは同じです。[worktree](https://code.claude.com/docs/ja/worktrees.md) セッションでは、`Edit(/src/**)` のような共有ルールはその worktree 自体の `src/` ディレクトリにマッチします。
+ローカル設定のルールは、Claude Code が[ファイルを保存する](#permission-system)リポジトリのルートではなく、セッションの[プライマリ作業ディレクトリ](#working-directories)を基準にします。リポジトリのルートで開始されたセッションでは 2 つのディレクトリは同じです。[worktree](https://code.claude.com/docs/ja/worktrees.md) セッションでは、`Edit(/src/**)` のような共有ルールはその worktree 自体の `src/` ディレクトリにマッチします。
 
 ユーザー設定にある `Read(/secrets/**)` のような拒否ルールは、プロジェクト内の `secrets` ディレクトリではなく、`~/.claude/secrets/**` をブロックします。すべてのプロジェクト内で適用されるルールをユーザー設定に書くには、代わりに `//` の絶対パスまたは `~/` のホーム相対パスを使用してください。
 
@@ -524,7 +522,7 @@ Claude Code v2.1.292 以降では、次のいずれの場合も確認はその�
 
 この確認なしでネットワーク共有上のファイルを読み取るには、まず共有にローカルパスを割り当ててください。
 
-* **Windows**: [作業ディレクトリ](#working-directories)で説明されているように、共有をドライブ文字にマッピングし、Claude Code の起動時に `--add-dir` でそのドライブを渡します。後から `/add-dir` で追加したドライブや、設定ファイルの `additionalDirectories` に列挙したドライブの配下の読み取りでは、引き続き確認が求められます。`Z:` にマッピングした共有でこれらの確認をなくすには、PowerShell で `claude --add-dir Z:\` を使用して新しいセッションを開始してください。
+* **Windows**: [作業ディレクトリ](#working-directories)で説明されているように、共有をドライブ文字にマッピングし、Claude Code の起動時に `--add-dir` でそのドライブを渡します。`Z:` にマッピングした共有の場合は、PowerShell で `claude --add-dir Z:\` を実行します。
 * **macOS と Linux**: [Working directory is a network path](https://code.claude.com/docs/ja/errors.md#working-directory-is-a-network-path) で説明されているように、`/mnt` や `/Volumes` 配下のディレクトリなどのローカルパスに共有をマウントし、そこからファイルを読み取ります
 
 ### WebFetch
@@ -711,7 +709,11 @@ Agent SDK の TypeScript の [`additionalDirectories`](https://code.claude.com/d
 
 [主要な作業ディレクトリ](#working-directories)のサブディレクトリからスキル、コマンド、およびサブエージェントをセッション中に読み込むには、そのサブディレクトリのパスで `/add-dir` を実行します。Claude Code はサブディレクトリが既に読み取り可能であるため、プロンプトを表示したり作業ディレクトリを追加したりせずに、セッションの残りの間それらを読み込みます。これには Claude Code v2.1.257 以降が必要です。
 
-Claude Code は現在の作業ディレクトリとその親、`~/.claude/` のユーザーディレクトリ、および管理設定から出力スタイルを検出します。Hooks およびその他の `.claude/settings.json` キーは、現在の作業ディレクトリの `.claude/` フォルダから親ディレクトリへのフォールバックなしで読み込まれ、ユーザーの `~/.claude/settings.json` および管理設定と共に読み込まれます。`.claude/settings.local.json` は git リポジトリルートから読み込まれます。Claude Code がサブディレクトリで起動された場合でも、Windows など Claude Code が[リポジトリルートを使用しない](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)場合を除きます。v2.1.211 より前では、これも現在の作業ディレクトリからのみ読み込まれました。[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/claude-code-features.md#control-filesystem-settings-with-settingsources)セッションはすべてのバージョンで作業ディレクトリから読み込みます。
+#### 出力スタイル、フック、ローカル設定の読み込み元
+
+Claude Code は現在の作業ディレクトリとその親、`~/.claude/` のユーザーディレクトリ、および管理設定から出力スタイルを検出します。フックおよびその他の `.claude/settings.json` キーは、現在の作業ディレクトリの `.claude/` フォルダから親ディレクトリへのフォールバックなしで読み込まれ、ユーザーの `~/.claude/settings.json` および管理設定と共に読み込まれます。
+
+一方、`.claude/settings.local.json` は git リポジトリルートから読み込まれます。Claude Code をサブディレクトリで起動した場合でも同様ですが、Windows など Claude Code が[リポジトリルートを使用しない](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)場合を除きます。
 
 その設定をプロジェクト全体で共有するには、次のいずれかのアプローチを使用します。
 
@@ -771,11 +773,11 @@ Claude Code はワークスペーストラストをそれを起動した場所�
 
 Claude Code はインタラクティブセッションでのみトラストダイアログを表示します。`claude -p` 実行または SDK セッションはダイアログを表示しません。親フォルダを信頼してもこれらのルールにはカウントされないため、[フォルダを信頼する前に実行されるもの](#what-runs-before-you-trust-a-folder)は、これら 2 つの状況で Claude Code がどのリポジトリコンテンツを使用するかを説明しています。
 
-[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)を開始または再開する前に、Claude Code はセッションが実行されるディレクトリのワークスペーストラストもチェックします。信頼していないディレクトリのターミナルから `claude --bg` を実行した場合、トラストダイアログが最初に表示され、それを受け入れるとセッションが開始されます。スクリプト内など、ダイアログが表示できない場所では、コマンドは代わりに[`Workspace not trusted`](https://code.claude.com/docs/ja/errors#workspace-not-trusted-when-dispatching-a-background-session)エラーで終了します。
+[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)を開始または再開する前に、Claude Code はセッションが実行されるディレクトリのワークスペーストラストもチェックします。信頼していないディレクトリのターミナルから `claude --bg` を実行した場合、トラストダイアログが最初に表示され、それを受け入れるとセッションが開始されます。スクリプト内など、ダイアログが表示できない場所では、コマンドは代わりに [`Workspace not trusted`](https://code.claude.com/docs/ja/errors#workspace-not-trusted-when-dispatching-a-background-session) エラーで終了します。
 
 ### ローカル設定ファイルがトラストを必要とする場合
 
-`.claude/settings.local.json` は通常あなた自身のファイルであるため、Claude Code はトラストステップなしにその許可ルールと追加ディレクトリを適用します。ファイルが git で追跡されている場合、または `.claude` がシンボリックリンクである場合、Claude Code はそれをリポジトリ提供として扱い、フォルダを信頼するまでそのルールを保持します。
+`.claude/settings.local.json` は通常ユーザー自身のファイルであるため、Claude Code はトラストステップなしにその許可ルールと追加ディレクトリを適用します。ファイルが git で追跡されている場合、または `.claude` がシンボリックリンクである場合、Claude Code はそれをリポジトリ提供として扱い、フォルダを信頼するまでそのルールを保持します。
 
 Claude Code は git を実行して 2 つを区別し、フォルダを信頼した後にのみ git を実行します。つまり、そのトラストダイアログを受け入れたか、トラストがそれに拡張される親ディレクトリを受け入れたか、`-p` または SDK セッションにいます。これはトラストが受け入れられたとしてカウントされます。それまでは、Claude Code を起動した場所がファイルのルールに何が起こるかを決定します。
 
@@ -784,29 +786,29 @@ Claude Code は git を実行して 2 つを区別し、フォルダを信頼し
 
 > [!NOTE]
 >
-> 設定ホーム例外はトラストステップのみをスキップします。`~/.claude/settings.local.json` は依然として[ローカルスコープ](https://code.claude.com/docs/ja/settings.md#compare-the-scope-of-each-settings-file)であるため、Claude Code はホームディレクトリ自体で起動したセッションでのみそれを読み込み、すべてのプロジェクトでは読み込みません。すべてのプロジェクトに許可ルールを適用するには、代わりにユーザー設定に追加してください。`~/.claude/settings.json`、または `CLAUDE_CONFIG_DIR` が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json`。
+> 設定ホーム例外はトラストステップのみをスキップします。`~/.claude/settings.local.json` は依然として[ローカルスコープ](https://code.claude.com/docs/ja/settings.md#compare-the-scope-of-each-settings-file)であるため、Claude Code はホームディレクトリ自体で起動したセッションでのみそれを読み込み、すべてのプロジェクトでは読み込みません。すべてのプロジェクトに権限ルールを適用するには、代わりにユーザー設定に追加してください。`~/.claude/settings.json`、または `CLAUDE_CONFIG_DIR` が設定されている場合は `$CLAUDE_CONFIG_DIR/settings.json` です。
 
 ### フォルダを信頼する前に実行されるもの
 
-各行はリポジトリが提供できるコンテンツの 1 種類です。列は、フォルダ自体を信頼していない 2 つの状況です。親フォルダのみを信頼したか、そこで `claude -p` または SDK を実行しました。これはトラストダイアログを表示しません。親フォルダ列は[ネストされたリポジトリ](#project-allow-rules-and-workspace-trust)内には適用されません。インタラクティブセッションでは Claude Code はそれのトラストダイアログを表示し、`claude -p` または SDK 実行はそこで `claude -p` 列に従います。
+各行はリポジトリが提供できるコンテンツの 1 種類です。列は、フォルダ自体を信頼していない 2 つの状況です。親フォルダのみを信頼したか、そこで `claude -p` または SDK を実行しました。これはトラストダイアログを表示しません。親フォルダ列は[ネストされたリポジトリ](#project-allow-rules-and-workspace-trust)内には適用されません。インタラクティブセッションでは Claude Code はそれのトラストダイアログを表示し、そこでの `claude -p` または SDK 実行は `claude -p` 列に従います。
 
 | リポジトリが提供するもの | 親フォルダのみを信頼した | `claude -p` または SDK、フォルダは信頼されていない |
 | :- | :- | :- |
-| 設定ファイル内の[Hooks](https://code.claude.com/docs/ja/hooks.md)、[`env`](https://code.claude.com/docs/ja/settings-reference#env)ブロック、[`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper)などのヘルパーコマンド、およびプロジェクトスキルの[hooks](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents)と[`allowed-tools`](https://code.claude.com/docs/ja/skills#pre-approve-tools-for-a-skill) | 使用 | 使用。ワークスペーストラストはどのセッションでもスキルの `allowed-tools` をゲートしません |
-| `.claude/settings.json` 内の `permissions.allow` ルールと `additionalDirectories` | トラストダイアログを受け入れるまで使用されません。ダイアログは再度表示され、それらをリストします | 使用されません。Claude Code は stderr に[`this workspace has not been trusted`](https://code.claude.com/docs/ja/errors#workspace-has-not-been-trusted)警告を出力します |
-| プロジェクト[subagent](https://code.claude.com/docs/ja/sub-agents.md#hooks-in-subagent-frontmatter)のフロントマターフック、プロジェクト[`@skills-dir` プラグイン](https://code.claude.com/docs/ja/plugins/loading#plugins-shared-through-a-repository)、およびリポジトリまたは `--add-dir` ディレクトリからの[`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces)エントリ | 使用されず、ダイアログは提供されません | 使用されません |
-| リポジトリまたは `--add-dir` ディレクトリからの subagent のフロントマター内のインライン[`mcpServers`](https://code.claude.com/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent) | 使用されず、ダイアログは提供されません | 使用されません |
+| 設定ファイル内の[フック](https://code.claude.com/docs/ja/hooks.md)、[`env`](https://code.claude.com/docs/ja/settings-reference#env) ブロック、[`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) などのヘルパーコマンド、およびプロジェクトスキルの[フック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents)と [`allowed-tools`](https://code.claude.com/docs/ja/skills#pre-approve-tools-for-a-skill) | 使用 | 使用。ワークスペーストラストはどのセッションでもスキルの `allowed-tools` をゲートしません |
+| `.claude/settings.json` 内の `permissions.allow` ルールと `additionalDirectories` | トラストダイアログを受け入れるまで使用されません。ダイアログは再度表示され、それらをリストします | 使用されません。Claude Code は stderr に [`this workspace has not been trusted`](https://code.claude.com/docs/ja/errors#workspace-has-not-been-trusted) 警告を出力します |
+| プロジェクト[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#hooks-in-subagent-frontmatter)のフロントマターフック、プロジェクト [`@skills-dir` プラグイン](https://code.claude.com/docs/ja/plugins/loading#plugins-shared-through-a-repository)、およびリポジトリまたは `--add-dir` ディレクトリからの [`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces) エントリ | 使用されず、ダイアログは提供されません | 使用されません |
+| リポジトリまたは `--add-dir` ディレクトリからのサブエージェントのフロントマター内のインライン [`mcpServers`](https://code.claude.com/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent) | 使用されず、ダイアログは提供されません | 使用されません |
 | `.mcp.json` 内のサーバー。リポジトリが[独自の設定で承認](https://code.claude.com/docs/ja/mcp.md#project-server-approvals-and-workspace-trust)するものを含む | Claude Code は接続する前にユーザーに確認します。リポジトリ独自の承認はカウントされません | 承認されているかどうかに関わらず接続されます。SDK は `settingSources` がプロジェクト設定を含む場合にのみそれらを読み込みます。同じフォルダの `claude mcp list` はそのようなサーバーを依然として保留中として報告します |
-| `.mcp.json` 内のサーバー上の[`headersHelper`](https://code.claude.com/docs/ja/mcp#trust-a-folder-before-its-headershelper-runs) | トラストダイアログを受け入れるまで実行されません。ダイアログは再度表示され、ヘルパーが宣言されている場所を名前で指定します。Claude Code はそれまでサーバーを静的 `headers` のみで接続します | 実行されません。Claude Code はサーバーを静的 `headers` のみで接続し、サーバーごとに stderr に[`headersHelper not run`](https://code.claude.com/docs/ja/errors#headershelper-not-run)行を出力します |
+| `.mcp.json` 内のサーバー上の [`headersHelper`](https://code.claude.com/docs/ja/mcp#trust-a-folder-before-its-headershelper-runs) | トラストダイアログを受け入れるまで実行されません。ダイアログは再度表示され、ヘルパーが宣言されている場所を名前で指定します。Claude Code はそれまでサーバーを静的 `headers` のみで接続します | 実行されません。Claude Code はサーバーを静的 `headers` のみで接続し、サーバーごとに stderr に [`headersHelper not run`](https://code.claude.com/docs/ja/errors#headershelper-not-run) 行を出力します |
 
-このフォルダを信頼する必要がある行については、手動で信頼してください。`~/.claude.json` で `projects["<path>"].hasTrustDialogAccepted` を `true` に設定します。`<path>` はリポジトリルート、またはリポジトリ外のフォルダ自体です。Claude Code はスキップされた subagent フックまたはインライン MCP サーバーのデバッグログ行、スキップされた許可ルールの stderr 警告、およびスキップされたヘルパーの `headersHelper not run` 行に正確なキーを出力します。
+このフォルダを信頼する必要がある行については、手動で信頼してください。`~/.claude.json` で `projects["<path>"].hasTrustDialogAccepted` を `true` に設定します。`<path>` はリポジトリルート、またはリポジトリ外のフォルダ自体です。Claude Code はスキップされたサブエージェントフックまたはインライン MCP サーバーのデバッグログ行、スキップされた許可ルールの stderr 警告、およびスキップされたヘルパーの `headersHelper not run` 行に正確なキーを出力します。
 
-あなたが書いていないリポジトリで `claude -p` を実行する前に、マシンで実行される可能性があるものを決定してください。
+自分が書いていないリポジトリで `claude -p` を実行する前に、マシンで実行される可能性があるものを決定してください。
 
 * `--setting-sources user` を渡すか、SDK の `settingSources` をプロジェクト設定なしで設定して、Claude Code がプロジェクトの設定ファイルも `.mcp.json` も読み込まないようにします
-* [`--bare`](https://code.claude.com/docs/ja/headless#start-faster-with-bare-mode)で起動して、Claude Code がプロジェクトから hooks、skills、カスタムコマンド、subagents、プラグイン、または `.mcp.json` サーバーを読み込まないようにします。プロジェクトの `env` ブロックと `awsAuthRefresh` などのヘルパーはその設定ファイルで依然として適用され、Claude Code は `apiKeyHelper` を `--settings` からのみ読み込みます
-* `--settings '{"disableAllHooks": true}'` を渡して、その実行の[hooks をオフにします](https://code.claude.com/docs/ja/hooks.md#disable-or-remove-hooks)。ユーザー設定のみで設定するのは十分ではありません。リポジトリのプロジェクト設定があなたのものより優先され、それを `false` に戻すことができるためです
-* [`disabledMcpjsonServers`](https://code.claude.com/docs/ja/settings-reference#disabledmcpjsonservers)エントリをすべてのセッションタイプで名前で `.mcp.json` サーバーを拒否するために追加します
+* [`--bare`](https://code.claude.com/docs/ja/headless#start-faster-with-bare-mode) で起動して、Claude Code がプロジェクトからフック、スキル、カスタムコマンド、サブエージェント、プラグイン、または `.mcp.json` サーバーを読み込まないようにします。プロジェクトの `env` ブロックと、その設定ファイル内の `awsAuthRefresh` などのヘルパーは依然として適用され、Claude Code は `apiKeyHelper` を `--settings` からのみ読み込みます
+* `--settings '{"disableAllHooks": true}'` を渡して、その実行の[フックをオフにします](https://code.claude.com/docs/ja/hooks.md#disable-or-remove-hooks)。ユーザー設定のみで設定するのは十分ではありません。リポジトリのプロジェクト設定がユーザーの設定より優先され、それを `false` に戻すことができるためです
+* [`disabledMcpjsonServers`](https://code.claude.com/docs/ja/settings-reference#disabledmcpjsonservers) エントリを追加して、すべてのセッションタイプで `.mcp.json` サーバーを名前で拒否します
 
 ## 設定例
 

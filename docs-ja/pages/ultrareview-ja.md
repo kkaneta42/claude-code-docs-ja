@@ -71,7 +71,7 @@ Claude Code v2.1.227 以降では、`github.com` 上のプルリクエストを�
 Claude Code は選択しない限り投稿しません。`--no-post` がデフォルトです。投稿は実行ごとに行う選択です。
 
 * **インタラクティブ**: 起動ダイアログで **Run and post the findings to the PR as me** を選択します。コマンドに `/code-review ultra 1234 --post` のように `--post` を追加すると、Claude Code はその選択を事前選択し、起動前に確認を求めます。
-* **非インタラクティブ**: `--post` フラグを使用して [claude ultrareview サブコマンド](#run-ultrareview-non-interactively)を実行します。フラグを使用してサブコマンドを実行することで投稿に同意するため、Claude Code は確認なしに投稿します。`claude -p '/code-review ultra'` 実行では、Claude Code は検出結果が到着する前に終了するため、何も投稿しません。代わりにサブコマンドを使用してください。
+* **非インタラクティブ**: `--post` フラグを使用して [`claude ultrareview` サブコマンド](#run-ultrareview-non-interactively)を実行します。フラグを使用してサブコマンドを実行することで投稿に同意するため、Claude Code は確認なしに投稿します。`claude -p '/code-review ultra'` 実行では、Claude Code は検出結果が到着する前に終了するため、何も投稿しません。代わりにサブコマンドを使用してください。
 
 Claude Code はマシンから投稿しません。レビューのセッション ID を Anthropic API に送信し、API は Claude に接続した GitHub アカウントを通じてレビューの保存された検出結果をコメントとして投稿します。投稿にはレビュー自体と同じ claude.ai サインインが必要です。投稿はサードパーティプロバイダーでは利用できず、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars) を設定した場合も利用できません。
 
@@ -85,7 +85,7 @@ Claude Code はマシンから投稿しません。レビューのセッショ�
 
 ### プレーンな言葉でリクエストを渡す
 
-Claude Code v2.1.218 以降では、プレーンな言葉で作業内容を説明することもできます。
+プレーンな言葉で作業内容を説明することもできます。
 
 ```text theme={null}
 /code-review ultra check my auth changes
@@ -159,7 +159,9 @@ claude ultrareview origin/main
 
 サブコマンドを実行すると、リポジトリ全体フォールバックと課金および利用規約プロンプトに同意したことになるため、確認のために実行が停止することはありません。自分で実行することが同意としてカウントされます。Claude がたとえば Bash ツールを通じてサブコマンドを代わりに実行する場合、Claude Code はリポジトリ全体レビューを拒否します。
 
-`claude -p '/code-review ultra'` では検出結果を取得できないため、スクリプトでは `claude ultrareview` を使用してください。`-p` の実行はクラウドレビューを起動し、その完了を待たずに終了します。レビューで使用クレジットが課金される場合、`-p` の実行はレビューを起動せずに停止します。v2.1.218 より前では、非対話的セッションの `/code-review ultra` はローカルレビューを実行していました。
+> [!NOTE]
+>
+> `claude -p '/code-review ultra'` では検出結果を取得できないため、スクリプトでは `claude ultrareview` を使用してください。`-p` の実行はクラウドレビューを起動し、その完了を待たずに終了します。レビューで使用クレジットが課金される場合、`-p` の実行はレビューを起動せずに停止します。
 
 | フラグ | 説明 |
 | - | - |

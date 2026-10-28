@@ -679,7 +679,7 @@ hooks:
 
 プロジェクトスキルのフロントマターのフックは、[設定ファイルのフックと同じワークスペース信頼ルール](#workspace-trust)に従います。Claude Code は、ユーザーまたは Claude がスキルを呼び出したときにこれらを登録します。これには、信頼していないフォルダーでの `-p` 実行も含まれます。
 
-プロジェクトサブエージェントのフロントマターのフックは、エージェントファイルの取得元フォルダーについて[ワークスペース信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認した後にのみ実行されます。`-p` セッションは承認したことになりません。[フォルダーを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)ではこれを設定ファイルのルールと比較しており、サブエージェントのページには[どのスコープが対象外か](https://code.claude.com/docs/ja/sub-agents.md#hooks-in-subagent-frontmatter)が記載されています。v2.1.218 より前は、これらのフックは信頼していないフォルダーからも実行される可能性がありました。
+プロジェクトサブエージェントのフロントマターのフックは、エージェントファイルの取得元フォルダーについて[ワークスペース信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認した後にのみ実行されます。`-p` セッションは承認したことになりません。[フォルダーを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)ではこれを設定ファイルのルールと比較しており、サブエージェントのページには[どのスコープが対象外か](https://code.claude.com/docs/ja/sub-agents.md#hooks-in-subagent-frontmatter)が記載されています。
 
 #### スキルのフックの制限
 
@@ -3196,11 +3196,9 @@ WorktreeCreate フックは、標準の許可/ブロックの判定モデルを�
 * **コマンドフック**（`type: "command"`）: パスを stdout の最後の空でない行として出力します。Claude Code はその行を読み取る前に ANSI エスケープコードを取り除くため、`echo` より前に出力されたシェルの起動バナーは無視されます。フックのそれ以外の出力は stderr にリダイレクトしてください。
 * **HTTP フック**（`type: "http"`）: レスポンス本文で `{ "hookSpecificOutput": { "hookEventName": "WorktreeCreate", "worktreePath": "/absolute/path" } }` を返します。
 
-フックが失敗した場合やパスを出力しなかった場合、worktree の作成はエラーで失敗します。
+フックが失敗した場合やパスを生成しなかった場合、worktree の作成はエラーで失敗します。Claude Code は相対パスを、フックが実行されたディレクトリを基準に解決し、パス内の `.` や `..` のセグメントを畳み込みます。解決後のパスが Claude Code が移動できるディレクトリでない場合、セッションはそのパスを示すエラーを出力し、コード 1 で終了します。
 
-Claude Code は相対パスをフックが実行されたディレクトリを基準に解決し、その中の `.` や `..` のセグメントを折りたたみます。結果のパスが Claude Code が移動できるディレクトリでない場合、セッションはそのパスを示すエラーを出力し、終了コード 1 で終了します。
-
-Claude Code は、`.` や `..` のセグメントを含む絶対パス、およびリポジトリのルートより下でシンボリックリンクを経由するパスを拒否します。リポジトリにコミットされたシンボリックリンクによって、worktree がリポジトリの外にリダイレクトされる可能性があるためです。エラーには拒否された構成要素が示されます。リポジトリ内のシンボリックリンクを経由しない、正規化されたパスを返してください。v2.1.216 より前は、worktree の作成はこのチェックを行わずにフックのパスに従っていました。
+Claude Code は、`.` や `..` のセグメントを含む絶対パスと、リポジトリルート以下でシンボリックリンクを経由するパスを拒否します。エラーには拒否された構成要素が示されます。リポジトリにコミットされたシンボリックリンクによって、worktree がリポジトリの外にリダイレクトされる可能性があるためです。リポジトリ内のシンボリックリンクを経由しない、正規化されたパスを返してください。
 
 ### WorktreeRemove
 
@@ -3228,11 +3226,9 @@ git ベースの worktree では、Claude Code は `git worktree remove` でク�
 * **フックが 0 で終了した場合**: worktree は削除済みとみなされます。Claude Code はフックからそれ以外に何も読み取らないため、フックが確実にディレクトリを削除するようにしてください。
 * **フックが 0 以外で終了した場合**: その後も `worktree_path` のディレクトリが存在していれば削除は失敗し、worktree は git へのフォールバックなしにディスク上に残ります。0 以外で終了する前にディレクトリを削除したフックは、削除済みとみなされます。失敗の報告方法については、[WorktreeRemove の入力](#worktreeremove-input)を参照してください。
 
-Claude Code は WorktreeCreate フックが返したパスしか把握していないため、フックで作成された worktree に属するブランチを削除することはありません。WorktreeCreate フックがブランチを作成する場合は、WorktreeRemove フックでそれを削除してください。
+Claude Code は WorktreeCreate フックが返したパスしか知らないため、フックで作成された worktree に属するブランチを削除することはありません。WorktreeCreate フックでブランチを作成する場合は、WorktreeRemove フックでそのブランチを削除してください。Claude Code は、`systemMessage` や `continue` など、WorktreeRemove フックの [JSON 出力フィールド](#json-output)を破棄します。
 
-Claude Code は、`systemMessage` や `continue` などの WorktreeRemove フックの [JSON 出力フィールド](#json-output)を破棄します。
-
-バックグラウンドセッションの削除では、Claude Code はフックを実行する前に保存されている worktree のパスを検証し、シンボリックリンクであるパスや、リポジトリのルートより下でシンボリックリンクを経由するパスを拒否します。この経路では、まだファイルが含まれている worktree に対してフックが実行されるのは、[エージェントビュー](https://code.claude.com/docs/ja/agent-view.md#what-deleting-a-session-removes)で削除を確定した場合のみです。そのような worktree の場合、[`claude rm`](https://code.claude.com/docs/ja/agent-view#manage-sessions-from-the-shell) は代わりにセッションと worktree を保持します。v2.1.216 より前は、これらのチェックなしに保存されたパスに対してフックが実行されていました。
+バックグラウンドセッションの削除では、Claude Code はフックを実行する前に保存されている worktree のパスを検証し、シンボリックリンクであるパスや、リポジトリルート以下でシンボリックリンクを経由するパスを拒否します。この経路では、まだファイルを含む worktree に対してフックが実行されるのは、[エージェントビュー](https://code.claude.com/docs/ja/agent-view.md#what-deleting-a-session-removes)で削除を確定した場合のみです。そのような worktree に対しては、[`claude rm`](https://code.claude.com/docs/ja/agent-view#manage-sessions-from-the-shell) は代わりにセッションと worktree を保持します。
 
 Claude Code は、WorktreeCreate が返したパスをフックの入力の `worktree_path` として渡します。次の例はそのパスを読み取り、ディレクトリを削除します。
 

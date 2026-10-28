@@ -198,16 +198,12 @@ Claude が繰り返すタスク用のワークフローを書く場合、その�
 * プロジェクト内の `.claude/workflows/`。リポジトリをクローンする全員と共有されます
 * ホームディレクトリ内の `~/.claude/workflows/`。すべてのプロジェクトで利用可能で、あなたにのみ表示されます。[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) を設定した場合、この場所はそのパスの下の `workflows/` ディレクトリです。
 
-保存ダイアログは個人用の場所の解決されたパスを表示します。
+保存ダイアログには個人用の場所の解決されたパスが表示されます。Enter を押して保存します。ワークフローは、どちらの場所に保存した場合も、以降のセッションで `/<name>` として実行されます。
 
-Enter を押して保存します。ワークフローは、どちらかの場所からの将来のセッションで `/<name>` として実行されます。
-
-Claude Code は書き込み前に保存場所をシンボリックリンクでチェックし、エラーを表示してシンボリックリンクを通じて書き込みません。チェックする内容は、保存する場所によって異なります。
+Claude Code は書き込み前に保存場所にシンボリックリンクがないかをチェックし、シンボリックリンクを通じて書き込む代わりにエラーを表示します。
 
 * プロジェクト場所: `.claude`、`.claude/workflows`、またはターゲットファイルがシンボリックリンクの場合、Claude Code は拒否します。
 * 個人用の場所: Claude Code はターゲットファイル自体がシンボリックリンクの場合のみ拒否するため、ドットファイルツールで管理される `~/.claude` ディレクトリは引き続き機能します。
-
-v2.1.216 より前は、Claude Code はリンクをたどり、選択した場所の外にファイルを配置する可能性がありました。
 
 複数の `.claude/` ディレクトリを持つモノレポでは、ワークフローを適用するパッケージの横に保持できます。プロジェクト場所に保存すると、作業ディレクトリとリポジトリルートの間に既に存在する最も近い `.claude/workflows/` ディレクトリに書き込むか、まだ存在しない場合はリポジトリルートに書き込みます。プロジェクトワークフローはそのパス沿ったすべての `.claude/workflows/` からも読み込まれ、複数が同じ名前を定義する場合、Claude Code は作業ディレクトリに最も近いものを実行します。
 
@@ -469,9 +465,9 @@ Claude Code は、各ワークフローエージェントのモデルを、[サ�
 | `medium` | 10 エージェント未満 |
 | `large` | 50 エージェント未満 |
 
-デフォルトは `medium` です。ただし、Claude Code v2.1.271 以降で Pro プランでサインインしている場合は `small` です。値を選択するまで、`/config` の行ではその値がデフォルトとして示され、ワークフローの `Running in background` 行には適用中のサイズが表示されます。Claude Code v2.1.219 以降が必要です。それより前のバージョンのデフォルトは `unrestricted` です。
+デフォルトは `medium` です。ただし、Claude Code v2.1.271 以降で Pro プランでサインインしている場合は `small` です。値を選択するまで、`/config` の行ではその値がデフォルトとして示され、ワークフローの `Running in background` 行には適用中のサイズが表示されます。
 
-ガイドラインを変更するには、`/config` の Dynamic workflow size 設定で値を選択するか、`/config workflowSizeGuideline=small` を実行します。v2.1.219 以降では、任意の設定ファイルで [`workflowSizeGuideline` キー](https://code.claude.com/docs/ja/settings-reference#workflowsizeguideline)を設定することもできます。その値は `/config` より優先され、設定ファイルで値が指定されている間、Claude Code は `/config` の行を非表示にします。
+ガイドラインを変更するには、`/config` の Dynamic workflow size 設定で値を選択するか、`/config workflowSizeGuideline=small` を実行します。任意の設定ファイルで [`workflowSizeGuideline` キー](https://code.claude.com/docs/ja/settings-reference#workflowsizeguideline)を設定することもできます。その値は `/config` より優先され、設定ファイルで値が指定されている間、Claude Code は `/config` の行を非表示にします。
 
 変更は次のプロンプトから有効になります。設定にかかわらず、[ランタイムのエージェント上限](#behavior-and-limits)は引き続き適用されます。
 

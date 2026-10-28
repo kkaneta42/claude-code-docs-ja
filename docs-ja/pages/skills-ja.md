@@ -83,7 +83,7 @@ Claude は、失敗したコマンドや欠落したステップなど、実行�
 | サブコマンド | 実行内容 | 最小バージョン |
 | :- | :- | :- |
 | `migrate` | 既存の Claude API コードを新しいモデルに更新する | v2.1.221 より前 |
-| `upgrade` | プロジェクトの Anthropic SDK 依存関係をメジャーバージョン間で移動します。現在は Python `anthropic` パッケージを 0.x から 1.x に移動します | v2.1.236 以降 |
+| `upgrade` | プロジェクトの Anthropic SDK を新しいメジャーバージョンにアップグレードし、その破壊的変更に合わせてコードを更新する | v2.1.236 以降 |
 | `api-version` | Claude API コードを新しい [API バージョン](https://platform.claude.com/docs/en/api/versioning)向けに更新し、リクエストをそのバージョンに切り替える | v2.1.307 以降 |
 | `managed-agents-onboard` | 新しい Managed Agent の作成をウォークスルーする | v2.1.221 より前 |
 | `managed-agents-onboard <url>` | URL のページが説明する Managed Agent を構築する。たとえば [Managed Agents ドキュメント](https://platform.claude.com/docs/en/managed-agents/overview) 内のページなど | v2.1.290 以降 |
@@ -388,11 +388,9 @@ allowed-tools: Read Grep
 Your skill instructions here...
 ```
 
-すべてのフィールドは省略可能です。Claude がスキルを使用するタイミングを判断できるよう、`description` のみ推奨されます。フィールド名はハイフンを含めて表と完全に一致する必要があります。Claude Code は認識できないフィールドをエラーを報告せずに無視します。
+すべてのフィールドは省略可能です。Claude がスキルを使用するタイミングを判断できるよう、`description` のみ推奨されます。フィールド名はハイフンを含めて表と完全に一致する必要があります。Claude Code は認識できないフィールドをエラーを報告せずに無視します。真偽値のフィールドは、`true` と `false` に加えて、大文字小文字を問わず `yes`、`no`、`on`、`off`、`1`、`0` を受け付けます。
 
 Claude Code がフロントマターを読み取るのは、開始の `---` がファイルの最初の行である場合のみです。それ以外の場合は、`---` マーカーを含むファイル全体をスキルコンテンツとして扱います。マーカー間の YAML が解析できない場合でも、スキルはフィールドが何も設定されていない状態で読み込まれます。エラーを見つけて修正するには、[スキルがトリガーされない](#skill-not-triggering)を参照してください。
-
-真偽値のフィールドは、`true` と `false` に加えて、大文字小文字を問わず `yes`、`no`、`on`、`off`、`1`、`0` を受け付けます。v2.1.218 より前は、Claude Code は `true` と `false` のみを認識していました。
 
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
@@ -409,7 +407,7 @@ Claude Code がフロントマターを読み取るのは、開始の `---` が�
 | `effort` | いいえ | このスキルがアクティブなときの [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)。セッションの effort レベルを上書きします。省略した場合、レベルは [effort の解決順序](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)によって決まります。オプション：`low`、`medium`、`high`、`xhigh`、`max`。使用可能なレベルはモデルによって異なります。 |
 | `context` | いいえ | `fork` に設定すると、フォークされたサブエージェントコンテキストで実行されます。[サブエージェントでスキルを実行する](#run-skills-in-a-subagent)を参照してください。 |
 | `agent` | いいえ | `context: fork` が設定されている場合に使用するサブエージェントの種類。 |
-| `background` | いいえ | `context: fork` の場合にのみ適用されます。`false` に設定すると、[バックグラウンドで実行する](#run-skills-in-a-subagent)代わりに、スキルを呼び出したターンでフォークされたサブエージェントの結果を待ちます。デフォルト：`true`。Claude Code v2.1.218 以降が必要です。 |
+| `background` | いいえ | `context: fork` の場合にのみ適用されます。`false` に設定すると、[バックグラウンドで実行する](#run-skills-in-a-subagent)代わりに、スキルを呼び出したターンでフォークされたサブエージェントの結果を待ちます。デフォルト：`true`。 |
 | `hooks` | いいえ | スキルが呼び出されたときに Claude Code が登録し、セッションの残りの間実行し続けるフック。設定形式、`once` オプション、および[スキルフックの制限](https://code.claude.com/docs/ja/hooks.md#limits-on-skill-hooks)については、[スキルとエージェントのフック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents)を参照してください。 |
 | `paths` | いいえ | このスキルがアクティブになるタイミングを制限する glob パターン。カンマ区切りの文字列または YAML リストを受け付けます。設定すると、Claude はパターンに一致するファイルを扱っている場合にのみスキルを自動的に読み込みます。パターンは Claude の現在の作業ディレクトリからの相対パスであり、そのディレクトリ外のファイルは一致しません。[パス固有のルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules)と同じ glob 形式を使用します。 |
 | `shell` | いいえ | このスキル内の `` !`command` `` および ` ```! ` ブロックに使用するシェル。`bash`（デフォルト）または `powershell` を受け付けます。`powershell` を設定すると、[PowerShell ツール](https://code.claude.com/docs/ja/tools-reference.md#powershell-tool)が有効な場合にインラインのシェルコマンドが PowerShell 経由で実行されます。このツールは、Git Bash のない Windows ではデフォルトでオン、Git Bash のある環境では claude.ai および Console アカウントでデフォルトでオンであり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry のセッション、および macOS、Linux、WSL では `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` が必要です。ツールをオフにするには `0` に設定します。 |
@@ -800,7 +798,7 @@ auto モードでは、本来ユーザーの承認が必要なコマンドでも
 >
 > 名前に反して、`context: fork` を持つスキルは[現在の会話のフォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)では実行されません。会話のフォークでは、これまでに話し合った内容がすべてサブエージェントに引き渡されます。タスクがその履歴に依存する場合は、`context: fork` を使用する代わりに会話をフォークしてください。
 
-フォークされたサブエージェントは[バックグラウンド](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)で実行されます。実行中も作業を続けることができ、完了すると結果が会話に届きます。代わりにスキルを呼び出したターンで結果を待つには、フロントマターで `background: false` を設定します。v2.1.218 より前は、フォークされたスキルは完了するまで常にターンをブロックしていました。
+フォークされたサブエージェントは[バックグラウンド](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)で実行されます。実行中も作業を続けることができ、完了すると結果が会話に届きます。代わりにスキルを呼び出したターンで結果を待つには、フロントマターで `background: false` を設定します。
 
 次のような場合には、スキルで `background: false` を設定していなくても、Claude Code は結果を待ちます。
 

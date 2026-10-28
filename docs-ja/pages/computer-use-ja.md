@@ -173,15 +173,15 @@ Claude はマウスを使用するのと同じ方法でシミュレータを制�
 
 ## Desktop アプリとの違い
 
-CLI と Desktop サーフェスは同じコンピュータ使用エンジンを共有します。いくつかの違いがあります。
+CLI と Desktop の各サーフェスは同じコンピューター操作エンジンを共有していますが、いくつかの違いがあります。
 
 | 機能 | Desktop | CLI |
 | :- | :- | :- |
-| プラットフォーム | macOS と Windows | macOS のみ |
-| 有効化 | **Settings > This computer > System** のトグル | `/mcp` で `computer-use` を有効化 |
-| 拒否されたアプリリスト | 設定で設定可能 | まだ利用できません |
-| 自動非表示トグル | オプション | 常にオン |
-| Dispatch 統合 | Dispatch で生成されたセッションはコンピュータ使用を使用できます | 適用されません |
+| プラットフォーム | macOS および Windows | macOS のみ |
+| 有効化 | [設定](https://code.claude.com/docs/ja/desktop.md#enable-computer-use)で切り替え | `/mcp` で `computer-use` を有効化 |
+| 拒否アプリリスト | 設定で構成可能 | まだ利用不可 |
+| 非表示アプリの自動再表示の切り替え | 任意 | 常にオン |
+| Dispatch 連携 | Dispatch から起動されたセッションでコンピューター操作を使用可能 | 該当なし |
 
 ## トラブルシューティング
 

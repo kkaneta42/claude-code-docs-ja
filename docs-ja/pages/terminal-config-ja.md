@@ -290,7 +290,7 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 >
 > 各[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)と並列タスクは、トランスクリプト内で区別できるように 8 つの名前付きカラーの 1 つで表示されます。トークン名は `<color>_FOR_SUBAGENTS_ONLY` パターンに従います。ここで `<color>` は `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` です。これらをオーバーライドして、各名前付きカラーの外観を変更します。たとえば、定義に `color: blue` を持つサブエージェントは、`blue_FOR_SUBAGENTS_ONLY` 値を使用して描画されます。
 >
-> Claude Code は、プロンプト入力で [`ultrathink`](https://code.claude.com/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning) キーワードを 7 色の虹グラデーションでレンダリングします。トークン名は `rainbow_<color>` と `rainbow_<color>_shimmer` パターンに従います。ここで `<color>` は `red`、`orange`、`yellow`、`green`、`blue`、`indigo`、または `violet` です。
+> [`ultrathink`](https://code.claude.com/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning) でターンのエフォートを引き上げられる場合、Claude Code はプロンプト入力内のこの単語を 7 色の虹グラデーションでレンダリングします。トークン名は `rainbow_<color>` と `rainbow_<color>_shimmer` パターンに従います。ここで `<color>` は `red`、`orange`、`yellow`、`green`、`blue`、`indigo`、または `violet` です。
 
 ## フルスクリーンレンダリングに切り替える
 

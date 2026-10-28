@@ -84,7 +84,9 @@ claude mcp add --transport http secure-api https://api.example.com/mcp \
 
 SDK ホストアプリケーション（[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/mcp.md) アプリケーションや [デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md) など）のみが、インプロセス `"type": "sdk"` サーバーを登録できます。Claude Code は `.mcp.json`、`~/.claude.json`、または設定の `"type": "sdk"` エントリをスキップし、`Skipped — MCP server "<name>" declares type "sdk", which only an SDK host application can register` と報告します。
 
-`--output-format stream-json` 実行では、Claude Code はスキップされた `--mcp-config` エントリを `system/init` イベントの [`mcp_server_errors` フィールド](https://code.claude.com/docs/ja/headless#stream-responses) でも報告するため、スクリプトはサーバーが読み込まれなかったことを検出できます。これには Claude Code v2.1.219 以降が必要です。
+> [!NOTE]
+>
+> `--output-format stream-json` の実行では、Claude Code はスキップされた `--mcp-config` エントリを `system/init` イベントの [`mcp_server_errors` フィールド](https://code.claude.com/docs/ja/headless#stream-responses)でも報告するため、スクリプトはサーバーが読み込まれなかったことを検出できます。
 
 ### オプション 2: リモート SSE サーバーを追加する
 
@@ -276,7 +278,11 @@ Claude Code はまた、追跡されていない `.claude/settings.local.json` �
 
 `/mcp` のサーバーのメニューから **Disable** または **Clear authentication** を選択すると、Claude Code はそのサーバーのキャッシュエントリも破棄します。**Reconnect** は接続されたまたは失敗したサーバーでもそれを破棄します。`cached` サーバーでは、**Reconnect** は今すぐサーバーを接続し、エントリを保持します。エントリを破棄した後、次に Claude Code がサーバーに接続するときは、キャッシュではなくサーバーからツールリストを取得します。
 
-サーバーのステータスが `✘ Failed to connect` の場合、`claude mcp list` はそのステータス行に失敗の詳細を追加し、`claude mcp get <name>` は `Issue:` 行に表示します。内容は HTTP ステータスまたはエラーコード、およびサーバーが返したエラーテキストです。`/mcp` のサーバーの詳細ビューにも、同じサーバー報告テキストが `Issue:` 行に含まれます。Claude Code はこの詳細から認証情報のようなテキストを伏せ字にし、シークレットを含む可能性がある展開済みのサーバー URL を含めることはありません。Claude Code は `✘ Connection error` ステータスには詳細を追加しません。そこに出力される例外テキストにはその URL が埋め込まれる可能性があるためです。v2.1.219 より前では、両方のコマンドはステータスコードまたはサーバーのエラーテキストなしで、単なる失敗ステータスのみを表示していました。
+##### 接続の失敗と未設定のサーバー
+
+サーバーのステータスが `✘ Failed to connect` の場合、`claude mcp list` はそのステータス行に失敗の詳細を付け加え、`claude mcp get <name>` はそれを `Issue:` 行に表示します。詳細は HTTP ステータスまたはエラーコードと、サーバーが返したエラーテキストです。`/mcp` のサーバーの詳細ビューでも、`Issue:` 行に同じサーバー報告のテキストが含まれます。
+
+Claude Code はこの詳細から認証情報らしきテキストを編集して伏せ、秘密情報を含む可能性のある展開後のサーバー URL を含めることはありません。`✘ Connection error` ステータスには詳細を付け加えません。そこに出力される例外テキストにはその URL が埋め込まれている可能性があるためです。
 
 `/mcp` から認証を完了し、接続が HTTP ステータスまたはトランスポートエラーコードで失敗し続ける場合、Claude Code は試行後に出力するメッセージにそのコードとサーバーの URL のオリジンを追加します。オリジンはスキームとホスト、および URL にポートが指定されている場合はポートです（例えば `https://mcp.example.com`）。
 

@@ -43,7 +43,7 @@ worktree は新しいチェックアウトなので、そこで開発環境を�
 
 セッション中に Claude に「worktree で作業する」と指示することもでき、Claude は [`EnterWorktree`](https://code.claude.com/docs/ja/tools-reference) ツールを使用して worktree を作成します。worktree に入ると、Claude はターゲットパスを指定して `EnterWorktree` を呼び出すことで、`.claude/worktrees/` の下の別の worktree に直接切り替えることができます。前の worktree はディスク上に変更されずに残ります。
 
-Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパスに入る場合、Claude Code は最初に承認を求めます。この移動により、セッションの作業ディレクトリ、書き込みアクセス、および `CLAUDE.md` や設定などのプロジェクト設定がその場所に移るためです。`EnterWorktree` の[権限ルール](https://code.claude.com/docs/ja/permissions.md)や「今後は確認しない」の選択ではこのプロンプトは抑制されず、`bypassPermissions` モードのみがスキップします。v2.1.206 より前は、Claude は既存の任意の worktree パスに確認なしで入ることができました。
+Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパスに入る場合、Claude Code は最初に承認を求めます。この移動により、セッションの作業ディレクトリ、書き込みアクセス、および `CLAUDE.md` や設定などのプロジェクト設定がその場所に移るためです。`EnterWorktree` の[権限ルール](https://code.claude.com/docs/ja/permissions.md)や「今後は確認しない」の選択ではこのプロンプトは抑制されず、`bypassPermissions` モードのみがスキップします。
 
 > [!NOTE]
 >
@@ -63,7 +63,7 @@ Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパ
 
 `-p` を使用した非対話実行には終了プロンプトがないため、Claude はその worktree をクリーンアップしません。また Claude Code は、作成時に各 worktree に設定したロックを、後続のセッションの[古いロックのスイープ](#clean-up-subagent-and-background-session-worktrees)が解放するまでそのまま残します。削除するには `git worktree remove` を実行します。worktree がロックされているために git が拒否した場合は、先にその worktree に対して `git worktree unlock` を実行してください。
 
-Windows では、worktree を削除しても worktree 外のファイルは削除されません。worktree 内のフォルダーが NTFS ジャンクションやディレクトリのシンボリックリンクなど、別の場所へのリンクである場合、Claude Code はリンクのみを削除し、リンク先のフォルダーは保持します。v2.1.205 より前は、サブディレクトリにネストされたリンクを含む worktree を削除すると、リンク先のフォルダーが削除される可能性がありました。
+Windows では、worktree を削除しても worktree 外のファイルは削除されません。worktree 内のフォルダーが NTFS ジャンクションやディレクトリのシンボリックリンクなど、別の場所へのリンクである場合、Claude Code はリンクのみを削除します。
 
 ## worktree セッションを再開する
 
@@ -81,7 +81,7 @@ worktree 内で[終了](#clean-up-worktrees)せずに終わったセッション
 >
 > v2.1.212 より前は、非対話的な再開は開始ディレクトリにとどまり、`ExitWorktree` は終了するアクティブな worktree セッションがないと報告していました。
 
-Claude Code が git で作成した worktree に Claude が入るか出ると、トランスクリプトもそれに追従します。Claude Code は [`/cd`](https://code.claude.com/docs/ja/commands) と同じ方法で、セッションの新しい作業ディレクトリの下にセッションを記録するため、`/desktop` と `--resume` はそこでセッションを見つけます。終了すると同じ方法で元に戻ります。[`WorktreeCreate` フック](#non-git-version-control)によって作成された worktree は、トランスクリプトを起動ディレクトリに保持します。Claude Code v2.1.198 以降が必要です。
+Claude Code が git で作成した worktree に Claude が入るか出ると、トランスクリプトもそれに追従します。Claude Code は [`/cd`](https://code.claude.com/docs/ja/commands) と同じ方法で、セッションの新しい作業ディレクトリの下にセッションを記録するため、`/desktop` と `--resume` はそこでセッションを見つけます。終了すると同じ方法で元に戻ります。[`WorktreeCreate` フック](#non-git-version-control)によって作成された worktree は、トランスクリプトを起動ディレクトリに保持します。
 
 ## Claude Code が分離を強制する仕組み
 
@@ -139,9 +139,11 @@ Claude Code は定期的なスイープを実行し、Claude がサブエージ�
 
 Claude Code は git で作成するすべての worktree の git メタデータにマーカーを書き込み、スイープはマーカーのない worktree（[`WorktreeCreate` フック](#non-git-version-control)が作成した worktree を含む）を保持します。
 
+#### worktree のロックと手動削除
+
 エージェントの実行中、Claude Code は同時実行のクリーンアップで削除されないように、その worktree に `git worktree lock` をかけ、エージェントが完了するとロックを解放します。Claude Code は、バックグラウンドに送られたセッション用に作成した worktree にも、セッションの実行中に同じロックをかけるため、スイープはその worktree をそのまま残し、`git worktree remove` は削除を拒否します。
 
-スイープは、プロセスが終了したセッションのために Claude Code が設定したロックも解放するため、強制終了されたバックグラウンドセッションが worktree を永続的にロックしたままにすることはありません。スイープは、`git worktree lock` で自分で設定したロックを解放することはありません。v2.1.210 より前は、強制終了されたセッションが残したロックは、`git worktree unlock` を実行するまで残っていました。
+スイープは、プロセスが終了したセッションのために Claude Code が設定したロックも解放するため、強制終了されたバックグラウンドセッションが worktree を永続的にロックしたままにすることはありません。スイープは、`git worktree lock` で自分で設定したロックを解放することはありません。
 
 スイープが保持する worktree をクリーンアップするには、`git worktree remove` を実行し、worktree にコミットされていない変更または追跡されていないファイルがある場合は `--force` を追加します。worktree がロックされているために git が拒否した場合は、先にその worktree に対して `git worktree unlock` を実行してください。
 
@@ -158,7 +160,11 @@ Claude Code の worktree 作成のデフォルトは、ほとんどのセッシ�
 
 `worktree.baseRef` をブランチ名に設定することはできません。特定の既存ブランチから worktree を開始するには、[git で直接作成](#manage-worktrees-manually)してください。
 
-`"fresh"` ベースの場合、Claude Code は `origin/HEAD` を最新の状態に保ちます。過去 24 時間にリポジトリがフェッチされていない場合、デフォルトブランチを 5 秒を上限としてフェッチし、フェッチが失敗した場合はローカルにキャッシュされたリファレンスを使用します。このフェッチはターミナルでの入力を待機しないため、git または ssh がパスワード、鍵のパスフレーズ、または新しい SSH ホストの確認を求める場合も失敗として扱われます。リモートが設定されていない場合、または `origin/HEAD` がローカルにキャッシュされておらずフェッチできない場合、worktree は現在のローカル `HEAD` にフォールバックします。v2.1.208 より前は、fresh の worktree はローカルに既にキャッシュされていた `origin/HEAD` をそのまま使用していました。
+`"fresh"` ベースの場合、Claude Code は `origin/HEAD` を最新の状態に保ちます。
+
+* 過去 24 時間にリポジトリがフェッチされていない場合、デフォルトブランチを 5 秒を上限としてフェッチし、フェッチが失敗した場合はローカルにキャッシュされたリファレンスを使用します。
+* このフェッチはターミナルでの入力を待機しません。git または ssh がパスワード、鍵のパスフレーズ、または新しい SSH ホストの確認を求める場合も、失敗として扱われます。
+* リモートが設定されていない場合、または `origin/HEAD` がローカルにキャッシュされておらずフェッチできない場合、worktree は現在のローカル `HEAD` にフォールバックします。
 
 この例では、すべての新しい worktree が現在の作業からブランチするようにします。
 
@@ -225,8 +231,6 @@ Claude Code はマージされたケースを git の状態のみから検出し
 * `worktree.baseRef` が `"head"` である。
 * 名前がプルリクエストまたはマージリクエストの参照である。
 
-v2.1.208 より前は、名前を再利用すると、Claude Code は常に古い worktree を古いチップで再度開いていました。
-
 ### フックで worktree の作成を置き換える
 
 [`WorktreeCreate` フック](https://code.claude.com/docs/ja/hooks#worktreecreate)を設定すると、`.claude/worktrees/` 以外の場所に worktree を配置することも含め、デフォルトの `git worktree` ロジックを完全に置き換えることができます。完全な例については、[非 git バージョン管理](#non-git-version-control) を参照してください。
@@ -236,8 +240,10 @@ v2.1.208 より前は、名前を再利用すると、Claude Code は常に古�
 worktree は独自のファイルとブランチを持ちますが、以下をメインチェックアウトと共有します。
 
 * **リポジトリの `.git` ディレクトリ**: worktree 内の git コマンドはメインリポジトリの共有 `.git` ディレクトリに書き込み、[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md#filesystem-isolation)はそれらの書き込みを許可するため、サンドボックスが有効な状態でも `git commit` などのコマンドは worktree 内から動作します。
-* **プラグイン**: メインチェックアウトから[プロジェクトスコープ](https://code.claude.com/docs/ja/plugins/loading.md#find-where-a-plugin-is-enabled)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。Claude Code v2.1.200 以降が必要です。
-* **権限の承認**: worktree セッションで Bash コマンドに対して「はい、今後は確認しない」を選択すると、ルールはメインチェックアウトの `.claude/settings.local.json` に保存されるため、メインチェックアウトとリポジトリの他のすべての worktree に適用され、worktree の削除後も残ります。Windows や、Claude Code が[リポジトリルートを使用しない](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)その他のケースでは、ルールはその worktree に残ります。v2.1.211 より前は、worktree で付与された承認はその worktree 内に保存され、他の場所には適用されず、worktree が削除されると失われていました。[承認が保存される場所](https://code.claude.com/docs/ja/permissions.md#permission-system)を参照してください。
+* **プラグイン**: メインチェックアウトから[プロジェクトスコープ](https://code.claude.com/docs/ja/plugins/loading.md#find-where-a-plugin-is-enabled)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。
+* **権限の承認**: worktree セッションで Bash コマンドに対して「はい、今後は確認しない」を選択すると、ルールはメインチェックアウトの `.claude/settings.local.json` に保存されます。このルールはメインチェックアウトとリポジトリの他のすべての worktree に適用され、worktree の削除後も残ります。
+
+  Windows や、Claude Code が[リポジトリルートを使用しない](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)その他のケースでは、ルールはその worktree に残ります。[承認が保存される場所](https://code.claude.com/docs/ja/permissions.md#permission-system)を参照してください。
 * **追跡されていないスキル、エージェント、コマンド**: worktree のチェックアウトのルートに `.claude/skills` ディレクトリがない場合（たとえば `.claude/skills` が gitignore されている場合）、Claude Code は worktree セッションでメインチェックアウトの[プロジェクトスキル](https://code.claude.com/docs/ja/skills.md#where-skills-live)を読み込みます。独自の `.claude/skills` ディレクトリを持つ worktree では、そのコピーのみが読み込まれます。
 
   同じ読み取りの引き継ぎは `.claude/agents` と `.claude/commands` にも適用されます。スキルについては、この引き継ぎには Claude Code v2.1.277 以降が必要です。
@@ -321,6 +327,12 @@ Claude Code が起動時に worktree ディレクトリに入ることができ�
 ### シンボリックリンクされたパスで worktree の作成が失敗する
 
 `.claude`、`.claude/worktrees`、または worktree ディレクトリ自体がシンボリックリンクである場合、Claude Code は worktree の作成を拒否し、エラーにはシンボリックリンクのパスが示されます。シンボリックリンクを削除して再試行してください。v2.1.212 より前は、リポジトリにこれらのパスのいずれかにコミットされたシンボリックリンクが既に含まれていた場合、worktree の作成はそれをたどり、リポジトリの外にファイルを作成する可能性がありました。
+
+### Claude Code が作成した worktree に置き換えられたオブジェクトの元の内容が含まれる
+
+リポジトリで [`git replace`](https://git-scm.com/docs/git-replace) を使用している場合、Claude Code が作成する worktree 内のファイルには、`refs/replace/` エントリが指定する置き換え後の内容ではなく、元のオブジェクトの内容が保持されます。Claude Code は、worktree のファイルをチェックアウトする git コマンドを `GIT_NO_REPLACE_OBJECTS=1` を付けて実行し、その変数に対してエクスポートした値はすべて無視します。
+
+置き換え後の内容を取得するには、`git worktree add` で[自分で worktree を作成](#manage-worktrees-manually)し、その中で Claude Code を起動してください。
 
 ### Claude Code が作成した worktree で Git LFS ファイルがポインターファイルになる
 

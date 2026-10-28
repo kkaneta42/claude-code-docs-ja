@@ -236,7 +236,6 @@ Claude がツール呼び出しで開始した実行は、そのツール呼び�
 
 これらのメッセージの一部がストリームに含まれていない場合は、Claude Code のバージョンを次の最小要件と照らし合わせて確認してください。
 
-* **あらゆるネストの深さでの転送**：v2.1.219 以降
 * **Claude がメインの会話から Skill ツールで開始するフォークされたスキル**：`tool_use` および `tool_result` ブロックには v2.1.86 以降、最初の `user` メッセージとテキストブロックおよび思考ブロックには v2.1.265 以降
 * **フォークされたスキルが生成するサブエージェントのメッセージ、およびサブエージェントや別のフォークされたスキルの中で開始されたフォークされたスキルのメッセージ**：v2.1.275 以降
 * **`/<skill-name>` をプロンプトとして渡して開始したフォークされたスキルのメッセージ**：v2.1.287 以降
@@ -285,9 +284,11 @@ Claude Code は起動時に各 `--mcp-config` エントリを検証し、検証�
 | フィールド | 型 | 説明 |
 | - | - | - |
 | `mcp_servers` | array | セッション内の MCP サーバー（各々 `name` と `status` を含む） |
-| `mcp_server_errors` | array | 設定の検証によってスキップされた `--mcp-config` エントリ（各々 `name`、`type`、`message` を含む）。`type` はスキップカテゴリ（`unknown_type`、`url_missing_type`、`invalid_config`、`reserved_name` など）です。認識しない値は汎用的なスキップとして扱ってください。該当するサーバーは `mcp_servers` に含まれません。エラーがない場合、キーは省略されるため、CI ゲートは配列が空でない場合に失敗させることができます。Claude Code v2.1.219 以降が必要です |
+| `mcp_server_errors` | array | 設定の検証によってスキップされた `--mcp-config` エントリ（各々 `name`、`type`、`message` を含む）。`type` はスキップカテゴリ（`unknown_type`、`url_missing_type`、`invalid_config`、`reserved_name` など）です。認識しない値は汎用的なスキップとして扱ってください。該当するサーバーは `mcp_servers` に含まれません。エラーがない場合、キーは省略されるため、CI ゲートは配列が空でない場合に失敗させることができます |
 
-ターミナルでコマンドを手動で実行する場合、Claude Code は stderr に起動時の警告（例：`Warning: 1 MCP server skipped due to invalid config:`）も出力し、その後にスキップされた各エントリの理由が続きます。stderr をリダイレクトする場合、または CI ランナーや SDK ホストなどのプログラムがそれをキャプチャする場合、Claude Code は警告を出力せず、スキップされたエントリを `mcp_server_errors` フィールドでのみ報告します。この警告には Claude Code v2.1.219 以降が必要です。
+ターミナルでコマンドを手動で実行する場合、Claude Code は stderr に起動時の警告（例：`Warning: 1 MCP server skipped due to invalid config:`）も出力し、その後にスキップされた各エントリの理由が続きます。
+
+stderr をリダイレクトする場合、または CI ランナーや SDK ホストなどのプログラムがそれをキャプチャする場合、Claude Code は警告を出力しません。スキップされたエントリは `mcp_server_errors` フィールドでのみ報告されます。
 
 #### プラグインのインストールを追跡する
 

@@ -166,6 +166,8 @@ Claude Code は、ピン留め変数が設定されていない場合、これ�
 | プライマリモデル | `claude-opus-5-5` |
 | 小型/高速モデル | `claude-sonnet-4-5@20250929` |
 
+v2.1.280 より前は、Google Cloud の Agent Platform 上のプライマリモデルは Opus 5 にデフォルト設定され、`opus` エイリアスは v2.1.219 から Opus 5 に解決されました。
+
 セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Google Cloud の Agent Platform では、Haiku がすべてのプロジェクトまたはリージョンで有効になっていない可能性があるため、Claude Code はバックグラウンドタスクにデフォルトの Sonnet モデルを使用します。2 つの選択がどのモデルがバックグラウンドタスクを実行するかを変更します。
 
 * `--model`、`ANTHROPIC_MODEL`、または `model` 設定でプライマリモデルを選択すると、バックグラウンドタスクはそのモデルを使用します。[`ANTHROPIC_DEFAULT_MODEL`](https://code.claude.com/docs/ja/model-config#set-a-default-model-for-new-sessions)で設定したモデルで Claude Code がセッションを開始する場合、バックグラウンドタスクもそのモデルを使用します。`ANTHROPIC_DEFAULT_SONNET_MODEL` なしで `ANTHROPIC_DEFAULT_OPUS_MODEL` を設定することも、組み込み Sonnet モデルがプロジェクトで有効になっていない可能性があるため、選択としてカウントされます。
@@ -174,8 +176,6 @@ Claude Code は、ピン留め変数が設定されていない場合、これ�
 > [!WARNING]
 >
 > Opus モデルは Sonnet モデルよりトークンあたりの価格が高いため、プライマリモデルをピン留めしない場合は Opus レートで課金されます。Sonnet 4.5 をプライマリモデルとして使用するには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定します。`ANTHROPIC_DEFAULT_SONNET_MODEL` でデフォルトを制御し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定しないデプロイは、制御された Sonnet モデルをデフォルトとして保ちます。
-
-v2.1.280 より前は、Google Cloud の Agent Platform 上のプライマリモデルは Opus 5 にデフォルト設定され、`opus` エイリアスは v2.1.219 から Opus 5 に解決されました。v2.1.207 ～ v2.1.218 では、Google Cloud の Agent Platform 上のプライマリモデルは Opus 4.8 にデフォルト設定され、`opus` エイリアスは Opus 4.8 に解決されました。
 
 モデルをさらにカスタマイズするには、以下を実行します。
 

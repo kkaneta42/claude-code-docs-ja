@@ -45,7 +45,7 @@ Claude が処理中に `/fast` を実行でき、Claude Code は処理の終了�
 * 高速モードがアクティブな間、プロンプトの横に小さい `↯` アイコンが表示されます
 * いつでも `/fast` を再度実行して、高速モードがオンかオフかを確認できます
 
-Opus 5.5 は Claude Code v2.1.280 以降の fast mode のデフォルトです。v2.1.280 より前では、fast mode のデフォルトは v2.1.219 以降では Opus 5、v2.1.154 から v2.1.218 では Opus 4.8 でした。
+Opus 5.5 は Claude Code v2.1.280 以降の fast mode のデフォルトです。v2.1.280 より前では、fast mode のデフォルトは v2.1.219 以降 Opus 5 でした。
 
 `/fast` を再度実行して高速モードを無効にすると、Opus に留まります。別のモデルに切り替えるには、`/model` を使用します。
 
@@ -58,7 +58,7 @@ Opus 5.5 は Claude Code v2.1.280 以降の fast mode のデフォルトです�
 
 モデル切り替えが高速モードをオンまたはオフにするたびに、Claude Code は `Fast mode ON` または `Fast mode OFF` の確認を表示し、高速モードがオンの間は `↯` アイコンが表示されます。これは `/model` で切り替える場合、[`/config model=<model>`](https://code.claude.com/docs/ja/settings)で切り替える場合、または [Remote Control](https://code.claude.com/docs/ja/remote-control.md)を通じて接続されたデバイスから切り替える場合に当てはまります。
 
-Claude Code は、モデル切り替え、再接続、または失敗した[可用性チェック](#use-fast-mode-behind-proxies-and-llm-gateways)の後、Remote Control を通じて接続されたデバイスにセッションの高速モード状態を再送信します。
+Claude Code は、モデル切り替え、再接続、または失敗した[可用性チェック](#use-fast-mode-behind-proxies-and-llm-gateways)の後、Remote Control を通じて接続されたデバイスにセッションの fast mode 状態を再送信します。
 
 ### クラウドセッションで高速モードを使用する
 

@@ -264,13 +264,22 @@ Claude Code はこれらの差分を raw git blob コンテンツから計算す
 * **PR 作成を含む完全なウォークスルー**：[Review and iterate](https://code.claude.com/docs/ja/web-quickstart.md#review-and-iterate) を参照してください
 * **Claude に PR の CI 失敗とレビューコメントを自動的に監視させる**：[プルリクエストの自動修正](#auto-fix-pull-requests)を参照してください
 
+#### 差分ビューで見つからないファイルのトラブルシューティング
+
+差分ビューがベースブランチと比較する際、セッションが変更をプッシュしたかどうかにかかわらず、期待したファイルが差分ビューのファイルリストに表示されないことがあります：
+
+* **まだ変更がプッシュされていない場合**：リストには Claude 自身の編集が含まれますが、Claude が実行したコマンド（フォーマッターなど）による変更は含まれません
+* **変更がプッシュされている場合**：リストにはプッシュされたコミットが含まれますが、最後のプッシュ以降に行われた変更は含まれません
+
+不足している変更をリストに追加するには、Claude にコミットとプッシュを依頼します。
+
 ### コンテキストを管理
 
 クラウドセッションは[組み込みコマンド](https://code.claude.com/docs/ja/commands.md)をサポートしており、テキスト出力を生成します。ターミナルインターフェイスでのみ実行されるコマンド（`/plugin` や `/resume` など）は利用できません。ターミナルでピッカーまたはパネルを開くコマンドはクラウドセッションで異なる動作をします：
 
 * **`/model`、`/effort`、`/color`、`/rename`**：ターミナルピッカーまたはスライダーを開く代わりに、引数として値を渡します。例えば `/model sonnet` のように使用します。引数形式は各コマンドの[利用可能性に関する注記](https://code.claude.com/docs/ja/commands.md#all-commands)に従います。
 * **`/fast`**：アカウントで[利用可能な場合](https://code.claude.com/docs/ja/fast-mode.md#requirements)、セッションの[ファストモード](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-in-cloud-sessions)を切り替えます。セッションの環境で Claude Code v2.1.271 以降が必要です。
-* **`/config`**：ブラウザの claude.ai/code では、値を設定する代わりに設定の Claude Code セクションを開きます。クラウドセッションの設定を変更するには、環境に[環境変数](https://code.claude.com/docs/ja/cloud-environments.md#set-environment-variables)を設定します。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)のスレッド以外で 1 つのリポジトリを持つセッションでは、代わりにキーをそのリポジトリの `.claude/settings.json` にコミットします。[クラウドセッションの設定](https://code.claude.com/docs/ja/settings.md#settings-in-cloud-sessions)には各セッションが読み込むものが記載されています。
+* **`/config`**：ブラウザの claude.ai/code では、値を設定する代わりに **Settings > Code** または **Settings > Claude Code** を開きます。クラウドセッションの設定を変更するには、環境に[環境変数](https://code.claude.com/docs/ja/cloud-environments.md#set-environment-variables)を設定します。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)のスレッド以外で 1 つのリポジトリを持つセッションでは、代わりにキーをそのリポジトリの `.claude/settings.json` にコミットします。[クラウドセッションの設定](https://code.claude.com/docs/ja/settings.md#settings-in-cloud-sessions)には各セッションが読み込むものが記載されています。
 
 [プロジェクトのスレッド](https://code.claude.com/docs/ja/claude-projects.md#choose-models-and-let-claude-manage-context)以外のクラウドセッションでのコンテキスト管理の場合：
 
@@ -337,7 +346,10 @@ Max および Pro アカウントでは、共有は次のように機能しま�
 * **リポジトリアクセス**：検証はデフォルトで有効になっていません
 * **機密コンテンツ**：共有する前にセッションを確認してください。セッションにはプライベート GitHub リポジトリのコードと認証情報が含まれる可能性があります
 
-受信者がリポジトリアクセスを持つことを要求するか、共有セッションから名前を非表示にするには、[**Settings > Claude Code > Sharing settings**](https://claude.ai/settings/claude-code) に移動します。
+受信者がリポジトリアクセスを持つことを要求するか、共有セッションから名前を非表示にするには、claude.ai で Settings を開き、次の操作を行います：
+
+* **Settings メニューに Claude Code ではなく Code が表示される場合**：これらの設定がある [**Privacy**](https://claude.ai/settings/data-privacy-controls) に移動します
+* **それ以外の場合**：[**Claude Code > Sharing settings**](https://claude.ai/settings/claude-code) に移動します
 
 ### セッションをアーカイブ
 

@@ -97,7 +97,7 @@ Claude はその後停止し、待機します。`TODO(human)` コメントで�
   このコマンドは [非対話型モード](https://code.claude.com/docs/ja/headless.md) と Agent SDK セッション、およびモバイルアプリまたは Web から [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md#limitations) 経由でも機能します。この場合、[組み込みスタイル](#built-in-output-styles) のみをリストして選択できます。Claude Code v2.1.269 以降が必要です。
 * **Terminal メニュー**: `/config` を実行し、**Output style** を選択してメニューからスタイルを選択します。
 * **VS Code extension**: [コマンドメニュー](https://code.claude.com/docs/ja/vs-code.md#use-the-prompt-box) を `/` で開き、**Output styles** を選択してスタイルを選択します。カスタムスタイルも含まれます。Claude Code v2.1.257 以降が必要です。
-* **Desktop app**: 設定ファイル（例えば `.claude/settings.local.json`、ターミナルメニューが書き込むファイル）の `outputStyle` フィールドを設定します。`/config` を実行すると、Claude Code は [**Settings > Claude Code**](https://code.claude.com/docs/ja/desktop.md#what%E2%80%99s-not-available-in-desktop) を開きます。メニューではなく設定画面が開きます。
+* **Desktop app**: 設定ファイル（例えば `.claude/settings.local.json`、ターミナルメニューが書き込むファイル）の `outputStyle` フィールドを設定します。デスクトップアプリで `/config` を実行すると、Claude Code はメニューではなく [**Settings > Code** または **Settings > Claude Code** を開きます](https://code.claude.com/docs/ja/desktop.md#what’s-not-available-in-desktop)。
 
 メニューなしでスタイルを設定するには、設定ファイルの `outputStyle` フィールドを直接編集します。
 

@@ -648,7 +648,7 @@ Claude Code は次のメトリクスをエクスポートします。単位の�
 | `claude_code.code_edit_tool.decision` | コード編集ツールの権限判定の数 | なし |
 | `claude_code.active_time.total` | 合計アクティブ時間 | s |
 
-`OTEL_METRICS_EXPORTER` に指定されたエクスポーターが `prometheus` のみの場合、Claude Code はエクスポートされるメトリクスから `USD`、`tokens`、`s` の単位を省略し、スクレイプが有効な Prometheus テキスト形式になるようにします。メトリクス名は変わりません。また、`otlp,prometheus` のようにエクスポーターを組み合わせた設定では単位が保持されます。v2.1.216 より前は、Prometheus のスクレイプに OpenMetrics 専用の `# UNIT` 行が含まれており、一部のスクレイパーで拒否されていました。
+`OTEL_METRICS_EXPORTER` に指定されたエクスポーターが `prometheus` のみの場合、Claude Code はスクレイプ結果が有効な Prometheus テキスト形式となるように、エクスポートされるメトリクスから `USD`、`tokens`、`s` の単位を省略します。メトリクス名は変わりません。また、`otlp,prometheus` のようにエクスポーターを組み合わせた設定では単位は保持されます。
 
 ### メトリクスの詳細
 
@@ -995,12 +995,12 @@ API リクエストが `stop_reason: "refusal"` を返したときに記録さ�
 
     `source` の値は、これらの出所のどれが一致したかを示しません。呼び出しを拒否した出所を特定するには、同じ `tool_use_id` を持つ[セーフティイベント](#safety-event)を探し、その `category` 属性と `rule_source` 属性を読み取ってください。拒否された呼び出しの中には[セーフティイベントがないもの](#calls-without-a-safety-event)もあります。
 
-    Claude Code は、権限プロンプトのリクエスト自体が失敗した場合にも `"config"` を報告します。たとえば、Agent SDK の [`canUseTool`](https://code.claude.com/docs/ja/agent-sdk/typescript#canusetool) コールバックまたは [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) ツールが無効な結果を返した場合や、リクエストの保留中に入力ストリームが閉じられた場合に、そのリクエストは失敗します。v2.1.216 より前は、Claude Code はこれらの失敗を `"user_reject"` として報告していました。
-  * `"hook"`: `PreToolUse` または `PermissionRequest` フックが判定を返しました。
-  * `"user_permanent"`: ユーザーが権限プロンプトで「Yes, and don't ask again for ...」を選択したときに出力されます。この選択により、許可ルールがユーザーの個人設定に保存されます。対話型 CLI では、この選択そのものに対してのみ出力され、保存されたルールに一致する後続の呼び出しでは代わりに `"config"` が出力されます。Agent SDK または非対話型の `-p` セッションでは、最初の選択と後続のルールの一致の両方で `"user_permanent"` が出力されます。承認として扱われます。
-  * `"user_temporary"`: ユーザーが権限プロンプトで 1 回限りの承認として「Yes」を選択した場合、またはファイルの編集や読み取りのプロンプトでセッションの残りの期間アクセスを付与するオプションを選択した場合に出力されます。対話型 CLI では、選択そのものに対してのみ出力され、そのセッションスコープの付与によって許可された後続の呼び出しでは代わりに `"config"` が出力されます。Agent SDK または非対話型の `-p` セッションでは、選択と後続の一致の両方で `"user_temporary"` が出力されます。承認として扱われます。
-  * `"user_abort"`: ユーザーが権限プロンプトに回答せずに閉じたときに出力されます。Agent SDK および非対話型の `-p` セッションでは、`canUseTool` または `--permission-prompt-tool` の権限リクエストが保留中にターンを中断した場合も含まれます。v2.1.216 より前は、Claude Code はその中断を `"user_reject"` として報告していました。拒否として扱われます。
-  * `"user_reject"`: プロンプトが表示されたときにユーザーが「No」を選択したときに出力されます。対話型 CLI では、この選択そのものに対してのみ出力され、ユーザーの個人設定の拒否ルールに一致する呼び出しでは代わりに `"config"` が出力されます。Agent SDK または非対話型の `-p` セッションでは、個人設定の拒否ルールに一致する呼び出しで `"user_reject"` が出力されます。拒否として扱われます。
+    権限プロンプトのリクエスト自体が失敗した場合も、Claude Code は `"config"` を報告します。たとえば、Agent SDK の [`canUseTool`](https://code.claude.com/docs/ja/agent-sdk/typescript#canusetool) コールバックや [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) ツールが無効な結果を返した場合や、リクエストの保留中に入力ストリームが閉じた場合に、そのリクエストは失敗します。
+  * `"hook"`: `PreToolUse` または `PermissionRequest` フックが決定を返しました。
+  * `"user_permanent"`: ユーザーが権限プロンプトで "Yes, and don't ask again for ..." を選択したときに出力されます。この選択により、個人設定に許可ルールが保存されます。インタラクティブな CLI では、その選択自体に対してのみ出力され、保存されたルールに一致する以降の呼び出しでは代わりに `"config"` が出力されます。Agent SDK または非インタラクティブな `-p` セッションでは、最初の選択と以降のルール一致の両方で `"user_permanent"` が出力されます。承認として扱われます。
+  * `"user_temporary"`: ユーザーが権限プロンプトで 1 回限りの承認として "Yes" を選択した場合、またはファイルの編集や読み取りのプロンプトでセッションの残りの期間にアクセスを許可するオプションを選択した場合に出力されます。インタラクティブな CLI では、その選択自体に対してのみ出力され、そのセッションスコープの許可によって許可された以降の呼び出しでは代わりに `"config"` が出力されます。Agent SDK または非インタラクティブな `-p` セッションでは、選択と以降の一致の両方で `"user_temporary"` が出力されます。承認として扱われます。
+  * `"user_abort"`: ユーザーが応答せずに権限プロンプトを閉じたときに出力されます。Agent SDK および非インタラクティブな `-p` セッションでは、`canUseTool` または `--permission-prompt-tool` の権限リクエストの保留中にターンを中断した場合も含まれます。拒否として扱われます。
+  * `"user_reject"`: ユーザーがプロンプトで "No" を選択したときに出力されます。インタラクティブな CLI では、その選択自体に対してのみ出力され、ユーザーの個人設定の拒否ルールに一致する呼び出しでは代わりに `"config"` が出力されます。Agent SDK または非インタラクティブな `-p` セッションでは、個人設定の拒否ルールに一致する呼び出しで `"user_reject"` が出力されます。拒否として扱われます。
 * `classifier_verdict`: 呼び出しに対する auto モードの[分類器](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)の判定結果、または判定結果が得られなかった場合に Claude Code が呼び出しを拒否した理由。Claude Code v2.1.301 以降が必要です
 
   * `"allow"`: 分類器が呼び出しを承認しました

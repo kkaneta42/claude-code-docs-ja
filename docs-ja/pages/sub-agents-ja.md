@@ -352,7 +352,7 @@ experimental:
 * **完全なモデル ID**: `claude-opus-5-5` や `claude-sonnet-5` などの完全なモデル ID を使用します。`--model` フラグと同じ値を受け付けます
 * **inherit**: メインの会話と同じモデルを使用します
 
-Claude がサブエージェントを呼び出す際、その呼び出しに対して `model` パラメータを渡すこともできます。Claude Code は次の順序でサブエージェントのモデルを決定します。
+Claude がサブエージェントを呼び出す際、その呼び出しに対して `model` パラメータを渡すこともできます。Agent ツール呼び出しでは、このパラメータはモデルエイリアス（`sonnet`、`opus`、`haiku`、または `fable`）を受け付けます。Claude はこの呼び出しで完全なモデル ID や `inherit` を渡すことはできません。Claude Code は次の順序でサブエージェントのモデルを決定します。
 
 1. 呼び出しごとの `model` パラメータ
 2. サブエージェント定義の `model` フロントマター（`inherit` はメインの会話のモデルを選択します）
@@ -600,7 +600,7 @@ Claude Code は、次の 2 種類のサーバーについては、エージェ�
 | `default` | Manual モード: 権限を求めるプロンプトを表示します |
 | `acceptEdits` | 作業ディレクトリまたは `additionalDirectories` 内のパスに対するファイル編集と一般的なファイルシステムコマンドを自動的に承認します |
 | `auto` | [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode): バックグラウンドの分類器がコマンドと保護されたディレクトリへの書き込みをレビューします |
-| `dontAsk` | プロンプトを表示することになる呼び出しを自動的に拒否します。ただし、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は[それらの呼び出しの一部](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を引き続き承認できます。明示的に許可されたツールは引き続き機能します。`AskUserQuestion`、[`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、[ネットワークパスからの読み取り](https://code.claude.com/docs/ja/permissions.md#network-paths)、および[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に反映されるセッションの場合）は、許可していても拒否されます |
+| `dontAsk` | プロンプトを表示することになる呼び出しを自動的に拒否します。ただし、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は[それらの呼び出しの一部](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を引き続き承認できます。明示的に許可されたツールは引き続き機能します。`AskUserQuestion`、[`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) とマークされた MCP ツール、[ネットワークパスからの読み取り](https://code.claude.com/docs/ja/permissions.md#network-paths)、および[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に届くセッションの場合）は、許可していても拒否されます |
 | `bypassPermissions` | [権限プロンプトをスキップします](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)。サブエージェントがこのモードで実行されるのは、メインの会話がこのモードの場合のみです |
 | `plan` | plan モード（読み取り専用の探索） |
 
@@ -762,7 +762,7 @@ claude --disallowedTools "Agent(Explore)"
 
 プロジェクトレベルのサブエージェントのフロントマターのフックを実行できるようにするには、エージェントファイルを含むフォルダについて[ワークスペースの信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認します。`~/.claude/agents/` にあるユーザーレベルのサブエージェントのフックと、`--agents` で渡した定義のフックは、この手順なしで実行されます。信頼済みワークスペースのリポジトリ外から `--add-dir` でフォルダを追加した場合は、そのフォルダを別途信頼してください。その `.claude/agents/` のフックはワークスペースの許可を継承しません。
 
-フォルダを信頼するまで、サブエージェントは引き続き実行されますが、Claude Code はそのフロントマターのフックをスキップし、フォルダを信頼する方法を説明するエラーをデバッグログに記録します。これは設定ファイル内のフックに対するルールよりも厳格なルールです。親フォルダを信頼するだけでは不十分で、`-p` セッションは信頼済みとして扱われません。[フォルダを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)で 2 つを比較しています。v2.1.218 より前は、非対話セッションを含め、信頼していないフォルダからでもフロントマターのフックが実行される可能性がありました。
+フォルダを信頼するまで、サブエージェントは引き続き実行されますが、Claude Code はそのフロントマターのフックをスキップし、フォルダを信頼する方法を説明するエラーをデバッグログに記録します。これは設定ファイル内のフックに対するルールよりも厳格なルールです。親フォルダを信頼するだけでは不十分で、`-p` セッションは信頼済みとして扱われません。[フォルダを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)で 2 つを比較しています。
 
 すべての[フックイベント](https://code.claude.com/docs/ja/hooks.md#hook-events)がサポートされています。サブエージェントで最も一般的なイベントは次のとおりです。
 
@@ -1074,13 +1074,6 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 ネストされたサブエージェントは最上位のサブエージェントと同じ方法で設定され、同じ[スコープ](#choose-the-subagent-scope)から解決されます。ネストがオンの間に、読み取り専用のままにしておくべきレビュー役など、特定のサブエージェントが生成を行わないようにするには、その [`tools`](#available-tools) リストから `Agent` を除外するか、`disallowedTools` に追加します。
 
 ターミナルでは、Claude Code はプロンプト入力の下にあるサブエージェントパネルにネストされたサブエージェントをツリーとして表示し、パネル内にまだ子孫を持つ各行に、その数を示す `(+N)` を付けます。行を開くと、そのサブエージェントの兄弟と直接の子が、`main` までのパスとともに表示されます。
-
-> [!NOTE]
->
-> 以前のバージョンでは、デフォルトが異なっていました。
->
-> * **v2.1.172 から v2.1.216**: サブエージェントはデフォルトで最大 5 階層までネストでき、上限は変更できませんでした。
-> * **v2.1.217 から v2.1.218**: 上限のデフォルトは 1 だったため、上限を引き上げない限り、サブエージェントは独自のサブエージェントを生成できませんでした。v2.1.219 でデフォルトが 3 に引き上げられました。
 
 ### 同時実行サブエージェントの上限
 

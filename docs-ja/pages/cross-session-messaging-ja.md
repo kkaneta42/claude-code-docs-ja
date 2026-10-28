@@ -174,7 +174,11 @@ Claude がこのマシンを超えたセッションに送信するときにこ�
 以下のいずれかで完全なテキストが表示されます。
 
 * `Ctrl+O` を押して[トランスクリプトビューア](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)を開き、送信者のセッション名の下で完全なテキストを読みます。
+
+  Claude がビジー状態でまだメッセージを受け取っていない場合は、トランスクリプトの末尾までスクロールしてください。メッセージは `Waiting to be delivered` の下に一覧表示されています。Claude Code v2.1.309 以降が必要です。
+
 * [フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md#use-the-mouse)では、メッセージの一部が省略されているプレビュー行をクリックすると、その場で展開されます。
+
 * [`--verbose`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で開始されたセッションでは、Claude Code はプレビューではなく完全なテキストを表示します。
 
 プレビューは表示内容のみを短縮します。展開するかどうかに関わらず、Claude はメッセージ全体を読みます。

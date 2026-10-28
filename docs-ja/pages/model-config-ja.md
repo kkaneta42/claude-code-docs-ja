@@ -542,7 +542,7 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 次のような場合は、別のレベルが適用されます。
 
 * **ユーザー自身による変更**：effort レベルを選択したり、`/model` でモデルを選んだり、後でセッションを再開したりすると、警告されたリクエストのレベルは引き継がれなくなります。
-* **スキルの effort**：スキルの `effort` フロントマターが警告されたリクエストに設定したレベルはそのターンに適用され、以降のターンは [effort の解決順序](#adjust-effort-level)がフォールバックモデルに与えるレベルで実行されます。
+* **1 ターンだけに設定された effort**：警告されたターンを `ultrathink` で引き上げた場合や、スキルの `effort` フロントマターがそのレベルを設定した場合、そのレベルはそのターンに適用されます。以降のターンは、[effort の解決順序](#adjust-effort-level)がフォールバックモデルに与えるレベルで実行されます。
 
 セッション内で `/effort status` を実行すると有効なレベルを確認でき、`/effort` を実行すると変更できます。
 
@@ -674,7 +674,13 @@ Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus
 
 #### 一度限りの深い推論に ultrathink を使う
 
-プロンプトのどこかに `ultrathink` を含めると、セッションの effort 設定を変更せずに、そのターンでより深い推論を要求できます。Claude Code はこのキーワードを認識し、コンテキスト内に指示を追加します。API に送信される effort レベルは変わりません。「think」、「think hard」、「think more」などのその他の表現は、Claude Code が通常のプロンプトテキストとしてそのまま渡し、キーワードとしては認識しません。
+プロンプトのどこかに `ultrathink` を含めると、セッションの effort 設定を変更せずに、そのターンでより深い推論を要求できます。Claude Code はこのキーワードを認識し、コンテキスト内に指示を追加します。「think」、「think hard」、「think more」などのその他の表現は、Claude Code が通常のプロンプトテキストとしてそのまま渡し、キーワードとしては認識しません。
+
+ターミナルのプロンプトに入力した場合、この単語によってそのターンを `xhigh` の effort に引き上げることもできます。引き上げが可能な場合、この単語は虹色で表示されます。Claude Code v2.1.311 以降が必要です。新しいターンを開始するときに単語が虹色にならない場合は、次のいずれかを試してください。
+
+* 引用符、括弧、パス、コマンドなどの外側に、`/` で始まらないプロンプト内で入力し直す
+* `CLAUDE_CODE_EFFORT_LEVEL` が `xhigh` 未満に設定されている場合は設定を解除する、自分の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を `xhigh` 以上に引き上げる、または組織の管理者に[組織の制限](#organization-effort-limits)を引き上げるよう依頼する
+* セッション内で `/model` を実行し、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.1 のいずれかのモデルに切り替える。Amazon Bedrock 上など、この単語でターンを引き上げられない場合は、代わりに [effort レベルを設定](#set-the-effort-level)してください
 
 #### effort レベルを設定する
 

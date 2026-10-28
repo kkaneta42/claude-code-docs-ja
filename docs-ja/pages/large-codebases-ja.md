@@ -158,7 +158,9 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 拒否ルールは、リポジトリで作業するすべての人、あなただけ、またはマシン上のすべてのセッションに適用できます。これは、どの設定ファイルに配置するかによって異なります。
 
 * **リポジトリで作業するすべての人**: ルールを `.claude/settings.json` にコミットします。Claude をそこから開始する場合はリポジトリルートに配置するか、サブディレクトリから開始する場合は各パッケージの `.claude/` に配置します。このページの他のプロジェクト設定と同様に、そのファイルは親ディレクトリから継承されません。
-* **あなただけ**: リポジトリルートで `.claude/settings.local.json` を使用します。これは開始ディレクトリに関係なく、リポジトリ内のすべての CLI セッションで読み込まれます。ただし、Windows など Claude Code が [リポジトリルートを使用しない](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)場合は除きます。例の `Read(./**/vendor/**/*)` のような相対パターンは、[セッションの現在の作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#read-and-edit)ではなく、リポジトリルートではなく、セッションの現在の作業ディレクトリにアンカーされます。サブディレクトリからセッションを開始する場合は、このファイルのルールを `//` 絶対パスとして記述します。例えば `Read(//absolute/path/to/repo/**/vendor/**/*)` のようにします。v2.1.211 より前では、`.claude/settings.local.json` は開始ディレクトリからのみ読み込まれていました。
+* **自分だけ**: リポジトリルートで `.claude/settings.local.json` を使用します。これは開始ディレクトリに関係なく、リポジトリ内のすべての CLI セッションで読み込まれます。ただし、Windows など Claude Code が[リポジトリルートを使用しない](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)場合は除きます。
+
+  例の `Read(./**/vendor/**/*)` のような相対パターンは、引き続きリポジトリルートではなく[セッションの現在の作業ディレクトリを基準にアンカーされます](https://code.claude.com/docs/ja/permissions.md#read-and-edit)。サブディレクトリからセッションを開始する場合は、このファイルのルールを `Read(//absolute/path/to/repo/**/vendor/**/*)` のような `//` で始まる絶対パスとして記述してください。
 * **すべての人、すべてのセッションで強制**: [管理設定](https://code.claude.com/docs/ja/managed-settings.md)でルールを設定します。ユーザーとプロジェクト設定はこれをオーバーライドできません。
 
 以下の例はビルドアーティファクトとベンダー SDK をブロックします。そのディレクトリパターンは `/**` ではなく `/**/*` で終わるため、各ルールはディレクトリ内のすべてをカバーしますが、ディレクトリ自体はカバーしません。Claude はその後、`ls dist` や `cd build` などでこれらのディレクトリをリストしたり、変更したりできます。
@@ -376,7 +378,7 @@ PR 規約やデプロイチェックリストなど、多くのディレクト�
 常に読み込まれる CLAUDE.md から規約と参照コンテンツを、タスクに関連する場合にのみ読み込まれるメカニズムに移動します。
 
 * [Skills](https://code.claude.com/docs/ja/skills.md): Claude がタスクに関連する場合にのみ読み込む参照資料
-* [Plugins](https://code.claude.com/docs/ja/plugins/overview.md): プラットフォームチームが一元的に所有するスキル、フック、コマンドのバージョン管理されたバンドル
+* [Plugins](https://code.claude.com/docs/ja/plugins/overview.md): プラットフォームチームが一元的に所有し、[管理設定を通じて全員にインストールできる](https://code.claude.com/docs/ja/plugins/org.md#pre-install-and-require-plugins)、スキル、フック、コマンドのバージョン管理されたバンドル
 * [MCP servers](https://code.claude.com/docs/ja/mcp.md): 組織がすでにリポジトリ上でコード検索または RAG インデックスを実行している場合は、MCP ツールとして公開して、Claude がファイルを直接読む代わりにクエリを実行するようにします
 
 プラットフォームチームがこれらを一元的に適用する方法については、[server-managed or endpoint-managed settings](https://code.claude.com/docs/ja/server-managed-settings.md#choose-between-server-managed-and-endpoint-managed-settings)を参照してください。
