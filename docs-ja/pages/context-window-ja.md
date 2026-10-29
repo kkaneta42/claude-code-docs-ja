@@ -43,21 +43,21 @@ Claude Code のコンテキストウィンドウには、セッションにつ�
 
 スキル本体は圧縮後に再度注入されますが、大きなスキルはスキルあたりのキャップに収まるようにトリミングされ、合計予算を超えると最も古い呼び出されたスキルがドロップされます。トリミングはファイルの開始を保持するため、`SKILL.md` の上部に最も重要な指示を配置してください。
 
-## コンテキストがいっぱいになるとき
+## コンテキストがいっぱいになったとき
 
-Claude Code はコンテキストウィンドウの制限に近づくと自動的にコンテキスト圧縮を実行するため、コンテキストウィンドウがいっぱいになってもセッションが終了することはありません。自動パスはタイムラインの `/compact` ステップと同じ方法で機能します。保持される内容については、[コンテキストがいっぱいになるとき](https://code.claude.com/docs/ja/how-claude-code-works.md#when-context-fills-up)を参照してください。アイドル状態のまま放置した会話を Claude Code が圧縮する場合については、[アイドル時の圧縮](https://code.claude.com/docs/ja/settings-reference.md#idlecompaction)を参照してください。
+Claude Code は上限に近づくと自動的にコンテキスト圧縮を行うため、コンテキストウィンドウがいっぱいになってもセッションが終了することはありません。自動圧縮は、タイムラインの `/compact` ステップと同じように動作します。何が保持されるかについては、[コンテキストがいっぱいになったとき](https://code.claude.com/docs/ja/how-claude-code-works.md#when-context-fills-up)を参照してください。放置された会話を Claude Code が圧縮する場合については、[アイドル時の圧縮](https://code.claude.com/docs/ja/settings-reference.md#idlecompaction)を参照してください。
 
-自動パスが実行される前に対応することもできます。
+自動圧縮が実行される前に、自分で対処することもできます。
 
-* **フォーカスを絞ってコンパクション**: `/compact` を指示付きで実行します。例えば、`/compact focus on the auth bug fix` のように、長い新しいタスクを開始する前に実行してください。サマリーは自動パスが重要だと推測するものではなく、あなたが選択したものを保持します。
-* **会話の一部をコンパクション**: `/rewind` を実行し、メッセージを選択して、**ここから要約** または **ここまで要約** を選択してください。各オプションが保持する内容と要約をガイドする方法については、[リワインドと要約](https://code.claude.com/docs/ja/checkpointing.md#rewind-and-summarize)を参照してください。
-* **より早くコンパクション**: [`/autocompact`](https://code.claude.com/docs/ja/commands#all-commands) をトークン数付きで実行します。例えば `/autocompact 500k` のように、自動パスが実行される前にコンテキストウィンドウがどの程度いっぱいになるかを設定してください。受け入れられる値とオーバーライドについては、[自動コンパクトウィンドウを設定](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window)を参照してください。
-* **タスク間でクリア**: 関連のない作業に切り替えるときに `/clear` を実行してください。古い会話は次に必要なファイルを圧迫し、すべてのメッセージでトークンを消費します。
-* **大きな読み込みを委譲**: 研究を[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)に送信して、ファイルコンテンツがあなたのコンテキストウィンドウではなく、そのコンテキストウィンドウに留まるようにしてください。
+* **焦点を指定して圧縮する**: 長い新しいタスクを始める前に、`/compact focus on the auth bug fix` のように指示を付けて `/compact` を実行します。要約には、自動圧縮が重要だと推測する内容ではなく、ユーザーが選んだ内容が残ります。
+* **会話の一部を圧縮する**: `/rewind` を実行してメッセージを選択し、**Summarize from here** または **Summarize up to here** を選びます。各オプションで何が保持されるか、また要約をどのように誘導するかについては、[巻き戻しと要約](https://code.claude.com/docs/ja/checkpointing.md#rewind-and-summarize)を参照してください。
+* **早めに圧縮する**: `/autocompact 500k` のようにトークン数を指定して [`/autocompact`](https://code.claude.com/docs/ja/commands#all-commands) を実行し、自動圧縮が実行されるまでにコンテキストウィンドウがどれだけ埋まるかを設定します。指定できる値と上書きについては、[自動圧縮のウィンドウを設定する](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window)を参照してください。
+* **タスクの合間にクリアする**: 関係のない作業に切り替えるときは `/clear` を実行します。古い会話は次に必要なファイルを押し出し、メッセージごとにトークンを消費します。
+* **大量の読み込みを委任する**: 調査を[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)に任せると、ファイルの内容はユーザーのコンテキストウィンドウではなく、サブエージェントのコンテキストウィンドウにとどまります。
 
-より小さな会話ではなく、より大きなウィンドウが必要な場合、Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、および Sonnet 4.6 は 100 万トークンのコンテキストウィンドウをサポートしています。プランごとの利用可能性と `[1m]` モデルバリアントの選択方法については、[拡張コンテキスト](https://code.claude.com/docs/ja/model-config.md#extended-context)を参照してください。コンテキスト圧縮はより大きな制限でも同じ方法で機能します。
+会話を小さくするのではなく、より大きなウィンドウが必要な場合は、Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、Sonnet 4.6 が 100 万トークンのコンテキストウィンドウに対応しています。プランごとの利用可否と `[1m]` モデルバリアントの選択方法については、[拡張コンテキスト](https://code.claude.com/docs/ja/model-config.md#extended-context)を参照してください。上限が大きくなっても、圧縮は同じように動作します。
 
-自動コンパクションが実行される時点は、あなたのモデルと設定によって異なります。モデルごとの境界については[デフォルト自動コンパクトしきい値](https://code.claude.com/docs/ja/model-config.md#default-auto-compact-thresholds)を参照してください。Claude Code があなたのモデル ID（[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)エイリアスなど）に対して間違ったウィンドウを想定している場合は、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください。
+自動圧縮が実行されるタイミングは、モデルと設定によって異なります。モデルごとの境界については[デフォルトの自動圧縮のしきい値](https://code.claude.com/docs/ja/model-config.md#default-auto-compact-thresholds)を参照してください。また、[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)のエイリアスなど、Claude Code がモデル ID に対して誤ったウィンドウを想定している場合は、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください。
 
 ## あなた自身のセッションを確認する
 

@@ -146,25 +146,25 @@ Backspace を押すたびにワード全体が削除される場合、ターミ�
 
 ## カラーテーマを合わせる
 
-`/theme` コマンドを使用するか、`/config` のテーマピッカーを使用して、ターミナルに合わせた Claude Code テーマを選択します。auto オプションを選択すると、ターミナルの明るい背景または暗い背景が検出されるため、ターミナルが OS の外観の変更に従うたびにテーマが従います。Claude Code はターミナルアプリケーションによって設定されるターミナル自体のカラースキームを制御しません。
+`/theme` コマンド、または `/config` 内のテーマピッカーを使用して、ターミナルに合う Claude Code のテーマを選択します。auto オプションを選択すると、ターミナルのライトまたはダークの背景が検出されるため、ターミナルが OS の外観の変更に追従するたびにテーマも追従します。Claude Code はターミナル自体の配色を制御しません。配色はターミナルアプリケーションによって設定されます。
 
 インターフェースの下部に表示される内容をカスタマイズするには、現在のモデル、作業ディレクトリ、git ブランチ、またはその他のコンテキストを表示する[カスタムステータスライン](https://code.claude.com/docs/ja/statusline.md)を設定します。
 
 ### カスタムテーマを作成する
 
-組み込みプリセットに加えて、`/theme` には定義したカスタムテーマと、インストール済みの[プラグイン](https://code.claude.com/docs/ja/plugins/components.md#themes-and-output-styles)によって提供されたテーマが一覧表示されます。リストの最後にある\*\*新しいカスタムテーマ…\*\*を選択して、対話的に作成します。テーマに名前を付けてから、個別のカラートークンを選択してオーバーライドします。カスタムテーマがハイライトされている間に `Ctrl+E` を押して編集します。
+組み込みのプリセットに加えて、`/theme` には定義済みのカスタムテーマと、インストール済みの[プラグイン](https://code.claude.com/docs/ja/plugins/components.md#themes-and-output-styles)が提供するテーマが一覧表示されます。リストの末尾にある **New custom theme…** を選択すると、対話形式でテーマを作成できます。テーマに名前を付けてから、上書きする個々のカラートークンを選択します。カスタムテーマがハイライトされている状態で `Ctrl+E` を押すと、そのテーマを編集できます。
 
-各カスタムテーマは `~/.claude/themes/` 内の JSON ファイルです。`.json` 拡張子を除いたファイル名がテーマのスラッグであり、テーマを選択すると `custom:<slug>` がテーマの設定として保存されます。ファイルには 3 つのオプションフィールドがあります。
+各カスタムテーマは `~/.claude/themes/` 内の JSON ファイルです。`.json` 拡張子を除いたファイル名がテーマのスラッグとなり、テーマを選択するとテーマ設定として `custom:<slug>` が保存されます。ファイルには 3 つのオプションフィールドがあります。
 
-| フィールド | タイプ | 説明 |
+| フィールド | 型 | 説明 |
 | :- | :- | :- |
-| `name` | string | `/theme` に表示されるラベル。デフォルトはファイル名スラッグ |
-| `base` | string | テーマの開始元となる組み込みプリセット：`dark`、`light`、`dark-daltonized`、`light-daltonized`、`dark-ansi`、または `light-ansi`。デフォルトは `dark` |
-| `overrides` | object | カラートークン名をカラー値にマップします。ここにリストされていないトークンはベースプリセットにフォールスルーします |
+| `name` | string | `/theme` に表示される表示ラベル。デフォルトはファイル名のスラッグです |
+| `base` | string | テーマのベースとなる組み込みプリセット：`dark`、`light`、`dark-daltonized`、`light-daltonized`、`dark-ansi`、または `light-ansi`。デフォルトは `dark` です |
+| `overrides` | object | カラートークン名とカラー値のマップ。ここに記載されていないトークンはベースプリセットの値が使用されます |
 
-カラー値は `#rrggbb`、`#rgb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>` を受け入れます。ここで `<name>` は `red` や `cyanBright` などの 16 個の標準 ANSI カラー名の 1 つです。不明なトークンと無効なカラー値は無視されるため、タイプミスはレンダリングを破壊することはできません。
+カラー値には `#rrggbb`、`#rgb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>` を指定できます。`<name>` は `red` や `cyanBright` などの 16 種類の標準 ANSI カラー名のいずれかです。不明なトークンや無効なカラー値は無視されるため、タイプミスによって表示が壊れることはありません。
 
-次の例は、暗いプリセットを保持しながら、プロンプトアクセント、エラーテキスト、成功テキストを再色付けするテーマを定義しています。
+次の例では、dark プリセットを維持しつつ、プロンプトのアクセント、エラーテキスト、成功テキストの色を変更するテーマを定義しています。
 
 ```json ~/.claude/themes/dracula.json theme={null}
 {
@@ -178,13 +178,13 @@ Backspace を押すたびにワード全体が削除される場合、ターミ�
 }
 ```
 
-Claude Code は `~/.claude/themes/` を監視し、ファイルが追加または変更されるとリロードするため、エディターで行われた編集は再起動なしで実行中のセッションに適用されます。Claude Code の起動時に `~/.claude/themes/` フォルダ自体が存在しなかった場合は、最初のテーマファイルを作成した後に 1 回再起動します。その後、変更は再起動なしで適用されます。
+Claude Code は `~/.claude/themes/` を監視しており、ファイルが追加または変更されると再読み込みするため、エディターで行った編集は再起動なしで実行中のセッションに適用されます。Claude Code の起動時に `~/.claude/themes/` フォルダー自体が存在しなかった場合は、最初のテーマファイルを作成した後に一度再起動してください。それ以降は、変更が再起動なしで適用されます。
 
-以下のリファレンスは、`overrides` で設定できるトークンをカバーしています。`/theme` の対話的エディターは、同じトークンをライブプレビューと共に表示し、さらにオンボーディング画面のカラーなどの単一目的のアクセントをいくつか表示します（ここでは省略されています）。
+以下のリファレンスでは、`overrides` で設定できるトークンについて説明します。`/theme` の対話型エディターでは、同じトークンがライブプレビュー付きで表示されるほか、ここでは省略しているオンボーディング画面の色などの単一用途のアクセントもいくつか表示されます。
 
 > **カラートークンリファレンス**
 >
-> 次の例は、以下のいくつかのグループからトークンを組み合わせています。ブランドアクセント、プランモードボーダー、diff 背景、およびメッセージ背景です。
+> 次の例では、以下のいくつかのグループのトークンを組み合わせています：ブランドアクセント、plan モードの枠線、差分の背景、メッセージの背景です。
 >
 > ```json ~/.claude/themes/midnight.json theme={null}
 > {
@@ -200,86 +200,86 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 > }
 > ```
 >
-> #### テキストとアクセントカラー
+> #### テキストとアクセントの色
 >
-> プライマリブランドアクセントと、インターフェース全体で使用されるフォアグラウンドテキストの色合いを制御します。
->
-> | トークン | 制御対象 |
-> | :- | :- |
-> | `claude` | プライマリブランドアクセント、スピナーとアシスタントラベルに使用 |
-> | `text` | デフォルトのフォアグラウンドテキスト |
-> | `inverseText` | ステータスバッジなどの色付き背景の上に描画されるテキスト |
-> | `inactive` | ヒント、タイムスタンプ、無効な項目などのセカンダリテキスト |
-> | `subtle` | 薄いボーダーと強調されていないセカンダリテキスト |
-> | `suggestion` | オートコンプリート候補とピッカーの選択ハイライト |
-> | `permission` | パーミッションプロンプトとピッカーを含むダイアログボーダー |
-> | `remember` | メモリと `CLAUDE.md` インジケーター |
->
-> #### ステータスカラー
->
-> メッセージとインジケーター全体で成功、失敗、警告状態を通知します。
+> インターフェース全体で使用される主要なブランドアクセントと前景テキストの色合いを制御します。
 >
 > | トークン | 制御対象 |
 > | :- | :- |
-> | `success` | 成功メッセージと合格チェック |
+> | `claude` | 主要なブランドアクセント。スピナーとアシスタントラベルに使用されます |
+> | `text` | デフォルトの前景テキスト |
+> | `inverseText` | ステータスバッジなど、色付きの背景の上に描画されるテキスト |
+> | `inactive` | ヒント、タイムスタンプ、無効な項目などの補助テキスト |
+> | `subtle` | 薄い枠線と目立たない補助テキスト |
+> | `suggestion` | オートコンプリートの候補とピッカー内の選択ハイライト |
+> | `permission` | 権限プロンプトやピッカーを含むダイアログの枠線 |
+> | `remember` | メモリと `CLAUDE.md` のインジケーター |
+>
+> #### ステータスの色
+>
+> メッセージやインジケーター全体で、成功、失敗、警告の状態を示します。
+>
+> | トークン | 制御対象 |
+> | :- | :- |
+> | `success` | 成功メッセージと合格したチェック |
 > | `error` | エラーメッセージと失敗 |
-> | `warning` | 警告、注意メッセージ、および auto モードインジケーター |
-> | `merged` | マージされたプルリクエストステータス |
+> | `warning` | 警告、注意メッセージ、auto モードのインジケーター |
+> | `merged` | マージ済みのプルリクエストのステータス |
 >
 > #### 入力ボックスとモードインジケーター
 >
-> 入力ボックスのボーダーカラーと、パーミッションモードまたはインジケーターがアクティブな間に表示されるアクセントを設定します。
+> 入力ボックスの枠線の色と、権限モードまたはインジケーターがアクティブな間に表示されるアクセントを設定します。
 >
 > | トークン | 制御対象 |
 > | :- | :- |
-> | `promptBorder` | 入力ボックスボーダー |
-> | `planMode` | Plan モードアクセント、プランメッセージ、および Plan モードダイアログ |
-> | `autoAccept` | Accept-edits モードアクセント |
-> | `bashBorder` | `!` シェルコマンドを入力するときの入力ボックスボーダー |
+> | `promptBorder` | 入力ボックスの枠線 |
+> | `planMode` | plan モードのアクセント、plan メッセージ、plan モードのダイアログ |
+> | `autoAccept` | accept-edits モードのアクセント |
+> | `bashBorder` | `!` シェルコマンドを入力しているときの入力ボックスの枠線 |
 > | `ide` | IDE 接続インジケーター |
-> | `fastMode` | Fast モードインジケーター |
-> | `effortUltra` | [ultracode](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level) がオンの間、入力ボックスボーダーの `ultracode` タグ。このカラーのオーバーライドは Claude Code v2.1.239 以降で有効になります |
+> | `fastMode` | fast mode インジケーター |
+> | `effortUltra` | [ultracode](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level) がオンの間、入力ボックスの枠線に表示される `ultracode` タグ。この色の上書きは Claude Code v2.1.239 以降で有効になります |
 >
-> #### Diff レンダリング
+> #### 差分の表示
 >
-> ファイル編集とレビューで追加および削除されたコードを色付けします。
+> ファイル編集やレビューで追加および削除されたコードに色を付けます。
 >
 > | トークン | 制御対象 |
 > | :- | :- |
 > | `diffAdded` | 追加された行の背景 |
 > | `diffRemoved` | 削除された行の背景 |
-> | `diffAddedDimmed` | 編集を拒否した後に表示される薄い diff の追加行の背景 |
-> | `diffRemovedDimmed` | 編集を拒否した後に表示される薄い diff の削除行の背景 |
-> | `diffAddedWord` | 追加された行内のワードレベルハイライト |
-> | `diffRemovedWord` | 削除された行内のワードレベルハイライト |
+> | `diffAddedDimmed` | 編集を拒否した後に表示される淡色表示の差分における、追加された行の背景 |
+> | `diffRemovedDimmed` | 編集を拒否した後に表示される淡色表示の差分における、削除された行の背景 |
+> | `diffAddedWord` | 追加された行内の単語レベルのハイライト |
+> | `diffRemovedWord` | 削除された行内の単語レベルのハイライト |
 >
 > #### フルスクリーンモード
 >
-> Claude Code は、`userMessageBackgroundHover`、`selectionBg`、および `composerSidebarBackground` を[フルスクリーンレンダリングモード](https://code.claude.com/docs/ja/fullscreen.md)でのみ使用します。`userMessageBackground`、`bashMessageBackgroundColor`、および `memoryBackgroundColor` は、デフォルトとフルスクリーンレンダラーの両方で描画します。
+> Claude Code は、`userMessageBackgroundHover`、`selectionBg`、`composerSidebarBackground` を[フルスクリーンレンダリングモード](https://code.claude.com/docs/ja/fullscreen.md)でのみ使用します。`userMessageBackground`、`bashMessageBackgroundColor`、`memoryBackgroundColor` は、デフォルトとフルスクリーンの両方のレンダラーで描画されます。
 >
 > | トークン | 制御対象 |
 > | :- | :- |
-> | `userMessageBackground` | トランスクリプト内のメッセージの背後の背景 |
-> | `userMessageBackgroundHover` | ホバーまたは展開されている間のメッセージの背後の背景 |
-> | `bashMessageBackgroundColor` | トランスクリプト内の `!` シェルコマンドエントリの背後の背景 |
-> | `memoryBackgroundColor` | トランスクリプト内の `#` メモリエントリの背後の背景 |
-> | `selectionBg` | マウスで選択されたテキストの背景 |
-> | `composerSidebarBackground` | 会話の横に表示されるパネル（[差分パネル](https://code.claude.com/docs/ja/fullscreen.md#watch-your-changes-in-the-diff-panel)や [mod のペイン](https://code.claude.com/docs/ja/plugins/mods/interface.md)など）の背景 |
+> | `userMessageBackground` | トランスクリプト内のユーザーのメッセージの背景 |
+> | `userMessageBackgroundHover` | ホバー中または展開中のメッセージの背景 |
+> | `bashMessageBackgroundColor` | トランスクリプト内の `!` シェルコマンドエントリの背景 |
+> | `memoryBackgroundColor` | トランスクリプト内の `#` メモリエントリの背景 |
+> | `selectionBg` | マウスで選択したテキストの背景 |
+> | `composerSidebarBackground` | [差分パネル](https://code.claude.com/docs/ja/fullscreen.md#watch-your-changes-in-the-diff-panel)や [mod のペイン](https://code.claude.com/docs/ja/plugins/mods/interface.md)など、会話の横にあるパネルの背景 |
 >
-> #### 使用量メーターとスピーカーラベル
+> #### 使用量メーターと話者ラベル
 >
-> `/usage` ビューに表示されるバーと、メッセージを Claude のメッセージと区別するラベルを調整します。
+> `/usage` ビューに表示されるバーと、ユーザーのメッセージと Claude のメッセージを区別するラベルを調整します。
 >
 > | トークン | 制御対象 |
 > | :- | :- |
 > | `rate_limit_fill` | 使用量メーターの塗りつぶされた部分 |
 > | `rate_limit_empty` | 使用量メーターの塗りつぶされていない部分 |
-> | `briefLabelYou` | メッセージの `You` ラベルのカラー |
-> | `briefLabelClaude` | アシスタントメッセージの `Claude` ラベルのカラー |
+> | `briefLabelYou` | ユーザーのメッセージに付く `You` ラベルの色 |
+> | `briefLabelClaude` | アシスタントのメッセージに付く `Claude` ラベルの色 |
 >
-> #### シマーバリアントとサブエージェントカラー
+> #### シマーのバリアントとサブエージェントの色
 >
-> いくつかのトークンには、スピナーのアニメーション化されたグラデーションで使用される明るいカラーを提供するペアのシマーバリアントがあります。アニメーションが一致しないように見える場合は、ベーストークンと一緒にシマーをオーバーライドします。
+> いくつかのトークンには対になるシマーのバリアントがあり、スピナーのアニメーショングラデーションで使用される明るい色を提供します。アニメーションの色が合わない場合は、ベーストークンと合わせてシマーも上書きしてください。
 >
 > * `claude` と `claudeShimmer`
 > * `warning` と `warningShimmer`
@@ -288,9 +288,9 @@ Claude Code は `~/.claude/themes/` を監視し、ファイルが追加また�
 > * `inactive` と `inactiveShimmer`
 > * `fastMode` と `fastModeShimmer`
 >
-> 各[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)と並列タスクは、トランスクリプト内で区別できるように 8 つの名前付きカラーの 1 つで表示されます。トークン名は `<color>_FOR_SUBAGENTS_ONLY` パターンに従います。ここで `<color>` は `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` です。これらをオーバーライドして、各名前付きカラーの外観を変更します。たとえば、定義に `color: blue` を持つサブエージェントは、`blue_FOR_SUBAGENTS_ONLY` 値を使用して描画されます。
+> 各[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)と並列タスクは、トランスクリプト内で区別できるように 8 つの名前付きカラーのいずれかで表示されます。トークン名は `<color>_FOR_SUBAGENTS_ONLY` というパターンに従い、`<color>` は `red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、または `cyan` です。これらを上書きすると、各名前付きカラーの見た目を変更できます。たとえば、定義に `color: blue` を持つサブエージェントは、`blue_FOR_SUBAGENTS_ONLY` の値を使用して描画されます。
 >
-> [`ultrathink`](https://code.claude.com/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning) でターンのエフォートを引き上げられる場合、Claude Code はプロンプト入力内のこの単語を 7 色の虹グラデーションでレンダリングします。トークン名は `rainbow_<color>` と `rainbow_<color>_shimmer` パターンに従います。ここで `<color>` は `red`、`orange`、`yellow`、`green`、`blue`、`indigo`、または `violet` です。
+> [`ultrathink`](https://code.claude.com/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning) がターンの effort を引き上げられる場合、Claude Code はプロンプト入力内のその単語を 7 色の虹色グラデーションで表示します。トークン名は `rainbow_<color>` および `rainbow_<color>_shimmer` というパターンに従い、`<color>` は `red`、`orange`、`yellow`、`green`、`blue`、`indigo`、または `violet` です。
 
 ## フルスクリーンレンダリングに切り替える
 

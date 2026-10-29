@@ -395,7 +395,7 @@ Claude Code がフロントマターを読み取るのは、開始の `---` が�
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
 | `name` | いいえ | `/` メニューに表示されるコマンド名。デフォルトはディレクトリ名です。このフィールドと、スキルを呼び出すために入力する名前との関係については、[スキルのコマンド名の決まり方](#how-a-skill-gets-its-command-name)を参照してください。 |
-| `description` | 推奨 | スキルが何をするか、いつ使用するか。Claude はこれを使ってスキルを適用するタイミングを判断します。省略した場合は、markdown コンテンツの最初の空でない行が使用されます。主要なユースケースを先頭に記述してください。コンテキストの使用量を減らすため、スキル一覧では `description` と `when_to_use` を合わせたテキストが 1,536 文字で切り詰められます。 |
+| `description` | 推奨 | スキルが何をするか、いつ使用するか。Claude はこれを使ってスキルを適用するタイミングを判断します。省略した場合は、markdown コンテンツの最初の空でない行が使用されます。主要なユースケースを先頭に記述してください。コンテキストの使用量を減らすため、スキル一覧では `description` と `when_to_use` を合わせたテキストが 1,536 文字で切り詰められます。テキスト内の山括弧は [`&lt;` および `&gt;` として表示されます](#angle-brackets-in-a-skill-description)。 |
 | `when_to_use` | いいえ | トリガーとなるフレーズやリクエストの例など、Claude がスキルを呼び出すべきタイミングについての追加のコンテキスト。スキル一覧で `description` に追加され、1,536 文字の上限に含まれます。 |
 | `argument-hint` | いいえ | 想定される引数を示すためにオートコンプリート中に表示されるヒント。例：`[issue-number]` または `[filename] [format]`。 |
 | `arguments` | いいえ | スキルコンテンツでの [`$name` 置換](#available-string-substitutions)に使う名前付き位置引数。スペース区切りの文字列または YAML リストを受け付けます。名前は順番に引数の位置に対応付けられます。 |
@@ -778,9 +778,9 @@ PowerShell ツールも、実行するコマンドに同じタイムアウト、
 
 デフォルトの `bash` シェルでは、0 以外で終了することが想定されるその他のコマンドには `|| true` を追加してください。問題を検出したときに 1 で終了するチェックスクリプトがその一例です。
 
-#### 注入されたコマンド内の制御文字
+#### シェルコマンドが実行されなかった場合
 
-`No shell command in <name> was run` は、ファイル内の `!` コマンドのいずれかにタブや改行以外の生の制御文字が含まれているため、どのコマンドも実行されないことを意味します。[その文字を見つけて削除する方法](https://code.claude.com/docs/ja/errors.md#no-shell-command-was-run)を参照してください。
+`No shell command in <name> was run` は、そのシェルコマンドのいずれかに、ツールが受け付けない文字が含まれていることを意味します。その文字を見つけて削除するには、[エラーリファレンス](https://code.claude.com/docs/ja/errors.md#no-shell-command-was-run)を参照してください。
 
 #### 注入されたコマンドの権限チェック
 
@@ -1228,6 +1228,13 @@ Claude Code はスキル名と説明のリストをコンテキストに読み�
 `/context` の Skills 行は、予算が適用された後のリストのサイズを報告するため、モデルが受け取るものと一致します。v2.1.196 より前は、この行はすべての説明の完全なテキストをカウントし、設定された予算の数倍大きい値を表示できました。
 
 予算を増やすには、[`skillListingBudgetFraction`](https://code.claude.com/docs/ja/settings-reference#skilllistingbudgetfraction) 設定（例えば `0.02` = 2%）または `SLASH_COMMAND_TOOL_CHAR_BUDGET` 環境変数を固定文字数に設定してください。他のスキルのために予算を解放するには、[`skillOverrides`](#override-skill-visibility-from-settings) で低優先度のエントリを `"name-only"` に設定して、説明なしでリストされるようにしてください。また、ソースで `description` と `when_to_use` テキストをトリミングすることもできます。各エントリの結合テキストは予算に関わらず 1,536 文字でキャップされているため、主要なユースケースを最初に配置してください。キャップは [`skillListingMaxDescChars`](https://code.claude.com/docs/ja/settings-reference#skilllistingmaxdescchars) で設定可能です。
+
+### スキルの説明の山括弧が `&lt;` と `&gt;` として表示される
+
+Claude Code は `description` フィールドと `when_to_use` フィールド内の `<` と `>` を `&lt;` と `&gt;` として表示します。`<branch>` のようなプレースホルダーを表示するには、角括弧または [`argument-hint`](#frontmatter-reference) を使用してください：
+
+* **角括弧**：`<branch>` を `[branch]` に置き換えます。これは入力したとおりに表示されます
+* **`argument-hint`**：プレースホルダーを新しい `argument-hint: <branch>` 行に移動します。これはコマンド名の後に表示されます。スキルを claude.ai または Skills API にもアップロードする場合は、先に[そこで `argument-hint` が受け入れられるかどうかを確認](#using-skill-frontmatter-outside-claude-code)してください。
 
 ### 個人スキルが消えた
 

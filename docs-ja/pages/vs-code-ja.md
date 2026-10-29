@@ -133,7 +133,7 @@ Claude Code でできることのその他のアイデアについては、[一�
   現在のモデルが [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)をサポートしている場合、ピッカーには **Effort** 行も表示され、モデル名ボタンには選択したレベルが表示されます。`max` 以外のレベルを選択すると、Claude Code はそれを現在のモデルのデフォルトとして、ユーザー設定の [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) に保存します。`max` は現在のセッションにのみ適用されます。モデル名ボタンと **Effort** 行には Claude Code v2.1.257 以降が必要です。
 
   [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)が有効で、現在のモデルがそれをサポートしている場合、**Effort** 行の下に **Ultracode** スイッチが表示されます。これをオンにすると、Claude はこのセッションの実質的なタスクごとに、選択した effort レベルで[ワークフロー](https://code.claude.com/docs/ja/workflows.md#let-claude-decide-with-ultracode)を計画します。オンの間、モデル名ボタンにはレベルの後に `· Ultracode` と表示されます。このスイッチには Claude Code v2.1.284 以降が必要です。
-* **コマンドメニュー**: `/` をクリックするか `/` と入力すると、コマンドメニューが開きます。ファイルの添付、モデルの切り替え、拡張思考の切り替えなどのオプションがあります。
+* **コマンドメニュー**: `/` をクリックするか `/` と入力すると、コマンドメニューが開きます。ファイルの添付やモデルの切り替えなどのオプションがあります。
 
   Customize セクションには、MCP サーバー、コマンド、出力スタイル、フック、メモリ、指示、権限、プラグインなどの項目があります。ターミナルアイコンの付いた項目は統合ターミナルで開きます。
 
@@ -191,7 +191,11 @@ Claude Code でできることのその他のアイデアについては、[一�
   Claude がバックグラウンドシェルを開始したもののサブエージェントがない場合など、エージェント数が表示されていないときにマップを開くには、プロンプトボックスに `/tasks` と入力します。マップ内のバックグラウンドタスクと、入力による `/tasks` には Claude Code v2.1.277 以降が必要です。
 
   Claude Code v2.1.286 以降では、**Stop** をクリックするか `Esc` を押すと、現在のターンが終了します。バックグラウンドエージェントは、完了するか、マップから停止するまで実行を続けます。
-* **拡張思考**: 複雑な問題について Claude がより多くの時間をかけて推論できるようにします。コマンドメニュー（`/`）からオンに切り替えます。Claude の推論は会話内に折りたたまれたブロックとして表示されます。ブロックをクリックすると内容を読むことができ、`Ctrl+O` を押すとセッション内のすべての思考ブロックを展開または折りたたむことができます。詳細は[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)を参照してください。
+* **拡張思考**: 複雑な問題について Claude がより多くの時間をかけて推論できるようにします。オフにしたり再びオンにしたりするには、コマンドメニュー（`/`）の Model セクションにある **Thinking** スイッチを使用します。[思考をオフにできない](https://code.claude.com/docs/ja/model-config.md#extended-thinking)モデルでは、メニューに **Thinking** スイッチはなく、思考はオンのままになります。
+
+  `Thought for 12s` のようなラベルだけが表示される思考ブロックにはテキストがなく、クリックしても開きません。思考の要約を表示するには、`~/.claude/settings.json` で [`showThinkingSummaries`](https://code.claude.com/docs/ja/settings-reference#showthinkingsummaries) を `true` に設定し、コマンドパレットから **Developer: Reload Window** を実行します。
+
+  既存の思考ブロックは空のままです。再読み込み後の応答では、ブロックをクリックするか、`Ctrl+O` を押してすべてを展開します。
 * **複数行入力**: `Shift+Enter` を押すと、送信せずに改行を追加できます。これは質問ダイアログの「Other」自由記述入力でも機能します。
 
 ### ファイルとフォルダーを参照する
@@ -333,7 +337,7 @@ Web タブには [Remote Control](https://code.claude.com/docs/ja/remote-control
 
 `/usage` を実行すると Account & usage ダイアログが開き、サインインしているアカウントと使用量が表示されます。使用量の数値はサインイン方法に応じて異なります。
 
-* **claude.ai プラン**: 現在のセッションや週など、プランの制限ごとの使用量バーが表示されます。各バーには、その制限がリセットされるまでの時間が表示されます。
+* **claude.ai プラン**: 現在のセッションや週など、プランの制限ごとの使用量バーが表示されます。
 
   ダイアログでは、プランの制限に影響している要因の内訳も確認できます。
 
@@ -580,6 +584,12 @@ summarize the changes I've made to the auth module
 
 プルリクエストを作成する場合、Claude は実際のコード変更に基づいて説明を生成し、テストまたは実装の決定に関するコンテキストを追加できます。
 
+### worktree に移動した会話を再度開く
+
+再度開いた会話に **This session is in worktree** バナーが表示される場合、その会話の作業ディレクトリは、このウィンドウで開いているフォルダではなく、バナーに示された [worktree](https://code.claude.com/docs/ja/worktrees.md) です。新しい VS Code ウィンドウで worktree を開くには、バナーの **Open worktree** をクリックします。
+
+会話が worktree に移動するのは、たとえば [Claude に worktree で作業するよう依頼した](https://code.claude.com/docs/ja/worktrees.md#ask-claude-to-create-a-worktree)場合です。会話を再度開いたとき、またはパネルが[ウィンドウの再読み込み後に会話を再度開いた](#continue-conversations-after-a-reload)とき、Claude Code がその worktree を `.claude/worktrees/` 配下に作成しており、かつそれがまだ存在する場合は、会話は worktree 内で再開されます。Claude Code v2.1.300 より前のバージョンでは、代わりに空の会話が開かれていました。これらのバージョンを使用している場合は、拡張機能を更新してください。
+
 ## バックグラウンドで作業を実行する
 
 長時間実行されるコマンドやサブエージェントをバックグラウンドに送り、プロンプトボックスから状況を確認します。
@@ -633,7 +643,7 @@ VS Code では、デフォルトでサブエージェントにこのアクショ
 | Insert @-Mention Reference | `Option+K`（Mac）/ `Alt+K`（Windows/Linux） | 現在のファイルと選択範囲への参照を挿入します（エディターがフォーカスされている必要があります） |
 | Accept Change at Cursor | - | [提案された編集を変更ごとにレビュー](#get-started)しているときに、カーソル位置の変更を承認します。Claude Code v2.1.275 以降が必要です |
 | Reject Change at Cursor | - | 提案された編集を変更ごとにレビューしているときに、カーソル位置の変更を元に戻します。Claude Code v2.1.275 以降が必要です |
-| Toggle Focus view | `Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux） | 会話内のツールのアクティビティを非表示または表示にします。Claude パネルまたはサイドバーが表示されている間に機能します。Claude Code v2.1.221 以降が必要です |
+| Toggle Focus view | `Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux） | 会話内のツールのアクティビティを非表示または表示にします。Claude パネルまたはサイドバーが表示されている間に機能します。Windows/Linux では、フォーカスがデバッグコンソールまたはエクスプローラーなどの検索可能なリストにある間は、`Ctrl+Alt+F` を押すと代わりに VS Code の検索が開きます。エディターまたは Claude パネルにフォーカスしてから、もう一度押してください。Claude Code v2.1.221 以降が必要です |
 | Rename Session Tab | - | アクティブな Claude タブのセッション名を変更します。Claude Code v2.1.257 以降が必要です |
 | Add Session Tab to Group | - | アクティブな Claude タブのセッションを、選択または作成した[セッショングループ](#organize-sessions-into-groups)に追加します。Claude Code v2.1.257 以降が必要です |
 | Mark Session as Unread | - | アクティブな Claude タブのセッションを、セッション一覧で未読としてマークします。Claude Code v2.1.257 以降が必要です |
@@ -679,7 +689,7 @@ start "" "vscode://anthropic.claude-code/open"
 | パラメーター | 説明 |
 | - | - |
 | `prompt` | プロンプトボックスに事前入力するテキスト。URL エンコードされている必要があります。プロンプトは事前入力されますが、自動的には送信されません。 |
-| `session` | 新しい会話を開始する代わりに再開するセッション ID。セッションは VS Code で現在開いているワークスペースに属している必要があります。セッションが見つからない場合は、代わりに新しい会話が開始されます。セッションがすでにタブで開いている場合は、そのタブにフォーカスが移ります。セッション ID をプログラムで取得するには、[会話を続ける](https://code.claude.com/docs/ja/headless.md#continue-conversations)を参照してください。 |
+| `session` | 再開するセッションの ID。VS Code で開いているフォルダーのセッションを指定します。Claude Code v2.1.300 以降では、そのフォルダーのリポジトリのメインチェックアウトまたは [worktree](https://code.claude.com/docs/ja/worktrees.md) のセッションも再開できます。セッションが見つからない場合は、代わりに新しい会話が開始されます。セッションがすでにタブで開いている場合は、そのタブにフォーカスが移ります。セッション ID をプログラムで取得するには、[会話を続ける](https://code.claude.com/docs/ja/headless.md#continue-conversations)を参照してください。 |
 
 たとえば、「review my changes」が事前入力されたタブを開くには次のようにします。
 
@@ -916,6 +926,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 | `Claude Code process exited with code 1` またはその他のコード | [Claude Code process exited with code N](https://code.claude.com/docs/ja/errors.md#claude-code-process-exited-with-code-n) |
 | `Could not locate the Claude CLI on PATH` | [Could not locate the Claude CLI on PATH](https://code.claude.com/docs/ja/errors.md#could-not-locate-the-claude-cli-on-path) |
 | `The connection to Claude Code ended before this message completed` | [The connection to Claude Code ended before this message completed](https://code.claude.com/docs/ja/errors.md#the-connection-to-claude-code-ended-before-this-message-completed) |
+| `The Claude Code program for this computer, the <build> build, could not be found` | [The Claude Code program for this computer could not be found](https://code.claude.com/docs/ja/errors.md#the-claude-code-program-for-this-computer-could-not-be-found) |
 | VS Code の統合ターミナルで `claude` が見つからない | [VS Code で CLI を実行する](#run-cli-in-vs-code) |
 
 ### 拡張機能をインストールできない

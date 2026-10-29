@@ -287,41 +287,41 @@ Manual モードから `Shift+Tab` を 1 回押して入るか、直接開始し
 claude --permission-mode acceptEdits
 ```
 
-## プランモードで編集前に分析する
+## plan モードで編集前に分析する
 
-プランモードは Claude に変更を研究して提案するよう指示しますが、実際には変更を加えません。Claude はファイルを読み込み、シェルコマンドを実行して探索し、プランを作成しますが、ソースを編集しません。[bypass 権限が利用可能](#skip-all-checks-with-bypasspermissions-mode)なインタラクティブターミナルセッションを除き、編集はプランを承認するまでブロックされたままです。
+plan モードは、Claude に変更を加えずに調査と変更の提案を行うよう指示します。Claude はファイルを読み取り、シェルコマンドを実行して調査し、計画を作成しますが、ソースは編集しません。[bypass permissions が利用可能](#skip-all-checks-with-bypasspermissions-mode)なインタラクティブなターミナルセッションを除き、計画を承認するまで編集はブロックされたままです。
 
-プランニング中のシェルコマンドの動作はセッションによって異なり、以下のケースのうち最初に該当するものが適用されます。
+計画中のシェルコマンドがどう扱われるかはセッションによって異なり、以下のケースのうち最初に該当するものが適用されます。
 
-* **bypass 権限が利用可能なインタラクティブターミナルセッション**: 分類器もプロンプトもプランニングコマンドには適用されません。[bypassPermissions モードですべてのチェックをスキップ](#skip-all-checks-with-bypasspermissions-mode)は、そこでもまだプロンプトが表示される少数のものをカバーしています。
-* **[オートモード](https://code.claude.com/docs/ja/auto-mode-config.md)が利用可能で、`useAutoModeDuringPlan` 設定がオン**（デフォルトではオンです）: 分類器は[重要パス削除](#critical-paths)以外のシェルコマンドをプロンプトを表示する代わりにレビューします。承認されたコマンドは実行され、拒否されたコマンドはブロックされます。
-* **オートモードが利用不可、または `useAutoModeDuringPlan` がオフ**: [組み込みの読み取り専用セット](https://code.claude.com/docs/ja/permissions.md#read-only-commands)外のコマンドはサンドボックスの[オートアロウモード](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)が有効な場合を含めて承認を求めるプロンプトが表示されます。
+* **bypass permissions が利用可能なインタラクティブなターミナルセッション**: 計画中のコマンドには分類器もプロンプトも適用されません。それでもプロンプトが表示されるいくつかの操作については、[bypassPermissions モードですべてのチェックをスキップする](#skip-all-checks-with-bypasspermissions-mode)を参照してください。
+* **[auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)が利用可能で、`useAutoModeDuringPlan` 設定がオン**（デフォルトでオン）: 分類器が、[クリティカルパスの削除](#critical-paths)以外のシェルコマンドを、プロンプトを表示する代わりにレビューします。承認されたコマンドは実行され、拒否されたコマンドはブロックされます。
+* **auto モードが利用できない、または `useAutoModeDuringPlan` がオフ**: [組み込みの読み取り専用セット](https://code.claude.com/docs/ja/permissions.md#read-only-commands)に含まれないコマンドは、サンドボックスの [auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)が有効な場合も含めて、承認を求めるプロンプトが表示されます。
 
-プランモードに入るには、`Shift+Tab` を押すか、単一のプロンプトに `/plan` を付けます。CLI からプランモードで開始することもできます。
+plan モードに入るには、`Shift+Tab` を押すか、単一のプロンプトの先頭に `/plan` を付けます。CLI から plan モードで開始することもできます。
 
 ```bash theme={null}
 claude --permission-mode plan
 ```
 
-`Shift+Tab` をもう一度押してプランを承認せずにプランモードを終了します。
+計画を承認せずに plan モードを終了するには、もう一度 `Shift+Tab` を押します。
 
-### プランをレビューして承認する
+### 計画をレビューして承認する
 
-プランの準備ができたら、Claude はそれを提示し、どのように進めるかを尋ねます。そのプロンプトから以下を選択できます。
+計画の準備ができると、Claude はそれを提示し、どのように進めるかを尋ねます。そのプロンプトから次の選択肢を選べます。
 
-* **はい、オートモードを使用する**: 承認して[オートモード](#eliminate-prompts-with-auto-mode)で開始します。オートモードがセッションで[利用可能でない](#eliminate-prompts-with-auto-mode)場合（例えば、組織がそれをオフにした場合）、このオプションは**はい、編集を自動受け入れ**と表示されます。bypass 権限を有効にしてセッションを開始した場合、オプションは代わりに**はい、このセッションで BYPASS PERMISSIONS（以降プロンプトなし）に切り替える**と表示されます。
-* **はい、編集を手動で承認する**: 承認して各編集を個別にレビューします。
-* **いいえ、プランニングを続ける**: プランモードにとどまり、Claude に何を変更するかを伝えます。
+* **Yes, and use auto mode**: 承認して [auto モード](#eliminate-prompts-with-auto-mode)で開始します。組織が無効にしているなどの理由で auto モードが[セッションで利用できない](#eliminate-prompts-with-auto-mode)場合、この選択肢は **Yes, auto-accept edits** と表示されます。bypass permissions を有効にしてセッションを開始した場合は、代わりに **Yes, and switch to BYPASS PERMISSIONS (no further prompts) for this session** と表示されます。
+* **Yes, manually approve edits**: 承認し、各編集を個別にレビューします。
+* **No, keep planning**: plan モードにとどまり、変更してほしい内容を Claude に伝えます。
 
-プランを承認するとプランモードを終了し、セッションを各承認オプションが説明する権限モードに切り替えるため、Claude は編集を開始します。再度プランを立てるには、`Shift+Tab` でプランモードに戻すか、次のプロンプトに `/plan` を付けます。
+計画を承認すると plan モードが終了し、セッションは各承認の選択肢に記載された権限モードに切り替わり、Claude が編集を開始します。再度計画するには、`Shift+Tab` で plan モードに戻すか、次のプロンプトの先頭に `/plan` を付けます。
 
-`Ctrl+G` を押して、提案されたプランをデフォルトのテキストエディタで開き、Claude が進める前に直接編集します。[`showClearContextOnPlanAccept`](https://code.claude.com/docs/ja/settings-reference#showclearcontextonplanaccept)が有効な場合、リストはプランを承認してプランニングコンテキストをクリアする最初のオプションを取得します。
+`Ctrl+G` を押すと、提案された計画をデフォルトのテキストエディタで開き、Claude が処理を進める前に直接編集できます。[`showClearContextOnPlanAccept`](https://code.claude.com/docs/ja/settings-reference#showclearcontextonplanaccept) が有効な場合、計画を承認して計画のコンテキストをクリアする選択肢がリストの先頭に追加されます。
 
-プランを受け入れると、セッションはプランに基づいて[生成されたタイトル](https://code.claude.com/docs/ja/sessions.md#name-your-sessions)も取得します。ただし、セッションに既に名前を付けている場合を除きます。
+計画を承認すると、すでにセッションに名前を付けていない限り、計画に基づいて[生成されたタイトル](https://code.claude.com/docs/ja/sessions.md#name-your-sessions)もセッションに付けられます。
 
-### プランモードをデフォルトとして設定する
+### plan モードをデフォルトに設定する
 
-プロジェクトのターミナルセッションのデフォルトをプランモードにするには、`.claude/settings.json` で `defaultMode` を `plan` に設定します。これは[別の権限モードで開始](#start-in-a-different-mode)の下の例として配置されます。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)が開始する会話は、開始権限モードのプロジェクト設定を読み込みません。そこで、VS Code ユーザー設定で `claudeCode.initialPermissionMode` を `plan` に設定してください。
+プロジェクトのターミナルセッションで plan モードをデフォルトにするには、[別の権限モードで開始する](#start-in-a-different-mode)の例に示すように、`.claude/settings.json` で `defaultMode` を `plan` に設定します。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)が開始する会話は、開始時の権限モードについてプロジェクト設定を読み取りません。その場合は、代わりに VS Code のユーザー設定で `claudeCode.initialPermissionMode` を `plan` に設定してください。
 
 ## auto モードで権限プロンプトを排除する
 

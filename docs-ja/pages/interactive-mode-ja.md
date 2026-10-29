@@ -332,7 +332,7 @@ Claude Code がコマンドをバックグラウンドで実行する場合、�
 * ターミナル、デスクトップアプリ、または VS Code 拡張機能から作業するローカルセッションでのバックグラウンドコマンドには時間制限がありません。`-p` 実行やクラウドセッションなど、無人で実行されるセッションでは、Claude Code はバックグラウンドコマンドを[時間制限](https://code.claude.com/docs/ja/tools-reference.md#time-limit-for-background-commands)に達した時点で停止します
 * フォアグラウンド[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)が開始したバックグラウンドコマンドは、そのサブエージェントの実行が終了するときに終了します。完了、失敗、または中断されたかどうかに関わらず。ツール参照の[バックグラウンドコマンドが停止するとき](https://code.claude.com/docs/ja/tools-reference.md#when-a-background-command-stops)を参照してください
 
-バックグラウンドコマンドをオフにするには、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数を `1` に設定してください。これを設定すると、バックグラウンドサブエージェント、バックグラウンドのフォークされたスキル、および `Ctrl+B` も使用できなくなります。[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)で開始しても同じ効果があります。
+バックグラウンドコマンドをオフにするには、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数を `1` に設定してください。これを設定すると、`Ctrl+B` ショートカットや、[スキルのバックグラウンド実行](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent)などの[その他のバックグラウンド機能](https://code.claude.com/docs/ja/env-vars.md#variables)も使用できなくなります。[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)で開始しても同じ効果があります。
 
 **一般的なバックグラウンド実行コマンド：**
 
@@ -738,14 +738,14 @@ Claude Code が待機している間、セッションの下部に、制限が�
 
 ```text theme={null}
 Usage limit reached · limit resets 3:45pm
-Continuing automatically at 3:45pm · esc to cancel
+Continuing automatically at 3:45pm · Esc to cancel
 ```
 
 いずれの行にも、これらの文言の後に追加の内容が続く場合があります。たとえば、1 行目にはヘルプリンク、2 行目には `/usage-credits to continue now` が表示されることがあります。待機が自動的に開始された場合は、会話にも `Usage limit reached · continuing automatically at 3:45pm · esc to cancel` という行が記録されます。
 
 セッションをオープンのままにしておいてください。その後の動作は、待機の終わり方によって異なります。
 
-* **リセット時**：2 行目が `Continuing shortly · esc to cancel` に変わります。その後、会話に `Usage limit reset · continuing automatically` が表示され、Claude Code は Claude に停止した場所からタスクを再開するよう促します。最後のメッセージは再送信されません。
+* **リセット時**：2 行目が `Continuing shortly · Esc to cancel` に変わります。その後、会話に `Usage limit reset · Continuing automatically` が表示され、Claude Code は Claude に停止した場所からタスクを再開するよう促します。最後のメッセージは再送信されません。
 * **コンピューターがスリープした後**：約 30 分以上スリープし、スリープ中に制限がリセットされた場合、1 行目は `Your usage limit has reset`、2 行目は `Press enter to continue` と表示されます。`Enter` キーを押して続行してください。スリープが短かった場合や、リセット前にスリープが終了した場合は、Claude Code が自動的に続行します。
 * **早期**：待機中に `/usage-credits` で[使用クレジットを追加](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)したり、`/upgrade` の後に再度サインインしたり、`/model` でモデルを切り替えたりした場合、Claude Code は使用可能な使用量があるかどうかを確認し、ある場合はすぐに続行します。ブラウザで自分で行ったアップグレードまたは購入の後は確認されません。[`opusplan`](https://code.claude.com/docs/ja/model-config#opusplan-model-setting) および他のモデル設定で異なるモデルでプランモードを実行する場合、Claude Code はリセットを待機します。
 

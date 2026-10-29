@@ -242,7 +242,7 @@ claude mcp remove notion
 /mcp
 ```
 
-リモートサーバーを削除すると、Claude Code はそのサーバー用に保存した OAuth トークンとクライアント登録も削除します。
+リモートサーバーを削除すると、Claude Code はそのサーバー用に保存していた OAuth トークンとクライアント登録も削除します。Claude Code は、トークンを発行した認可サーバーでトークンを取り消すことはしません。認可サーバーが取り消しをサポートしている場合にトークンを取り消すには、`claude mcp remove <name>` の前にシェルで [`claude mcp logout <name>`](#authenticate-from-the-command-line) を実行してください。
 
 #### サーバーステータス
 
@@ -252,9 +252,10 @@ claude mcp remove notion
 
 このリストのステータスは接続試行ではなく設定決定を報告するため、Claude Code はサーバーに接続せずにそれらを出力します。
 
-* ``⏸ Pending approval (run `claude` to approve)``: まだ承認していない `.mcp.json` のプロジェクトスコープのサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方でこれを表示します。`claude` を対話的に実行して確認し、承認してください。
+* ``⏸ Pending approval (run `claude` to approve)``: まだ承認していない `.mcp.json` のプロジェクトスコープのサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方にこれを表示します。`claude` を対話的に実行して確認し、承認してください。
 * `✘ Rejected (see disabledMcpjsonServers in settings)`: [`disabledMcpjsonServers`](https://code.claude.com/docs/ja/settings-reference#disabledmcpjsonservers) エントリが拒否する `.mcp.json` サーバー。Claude Code はそれを `claude mcp get <name>` にのみ表示します。
 * `⊘ Disabled for this project (re-enable via /mcp)`: プロジェクトの [`disabledMcpServers`](#disable-a-server-without-removing-it) リストが名前を付けるサーバー。Claude Code はそれを `claude mcp list` と `claude mcp get <name>` の両方に表示します。`/mcp` パネルからサーバーをオンに戻してください。
+* `✘ Blocked by enterprise managed policy`: 組織のポリシーのいずれかによって拒否されたサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方にこれを表示します。[管理 MCP 設定](https://code.claude.com/docs/ja/managed-mcp.md#how-restrictions-appear-to-users)の許可リスト、拒否リスト、またはその他の制限によってブロックされたサーバーは、このステータスで表示されるのではなく、両方のコマンドから非表示になります。どのポリシーがサーバーをブロックしているかは管理者に確認してください。
 
 #### プロジェクトサーバーの承認とワークスペーストラスト
 
@@ -471,7 +472,7 @@ MCP ツール呼び出しの実行時間を制限するには、次のように�
 自動バックグラウンド化を変更またはオフにするには、次のようにします。
 
 * [`CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS`](https://code.claude.com/docs/ja/env-vars) 環境変数をミリ秒単位で設定してしきい値を変更するか、`0` に設定して自動バックグラウンド化をオフにします。`0` の場合、Claude は対話セッションで [MCP タスクも待機します](#make-claude-wait-for-the-result-of-an-mcp-task)
-* [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars) を `1` に設定します。これにより、バックグラウンドコマンドやバックグラウンドサブエージェントとともにオフになります
+* [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars) を `1` に設定すると、自動バックグラウンド化と[バックグラウンドコマンド](https://code.claude.com/docs/ja/tools-reference.md#background-commands)がオフになります
 
 一部の呼び出しはバックグラウンドに移動しません。
 
@@ -828,22 +829,14 @@ Claude Code は 3 つのスコープ全体で名前によって重複を照合�
 
 Claude Code は `.mcp.json` ファイルの環境変数の展開をサポートしており、チームが設定を共有しながら、マシン固有のパスと API キーなどの機密値の柔軟性を維持できます。
 
-#### サポートされている構文
+サーバーの `command`、`args`、`env`、`url`、または `headers` の値では、次の 2 つの形式のいずれかで環境変数を参照できます：
 
 * `${VAR}` - 環境変数 `VAR` の値に展開されます
-* `${VAR:-default}`：`VAR` が設定されている場合は `VAR` に展開され、そうでない場合は `default` を使用します
-
-#### 展開場所
-
-環境変数は以下で展開できます：
-
-* `command` - サーバー実行可能ファイルのパス
-* `args` - コマンドライン引数
-* `env` - サーバーに渡される環境変数
-* `url` - HTTP サーバータイプの場合
-* `headers` - HTTP サーバー認証の場合
+* `${VAR:-default}`：`VAR` が設定されている場合は `VAR` の値に、設定されていない場合は `default` に展開されます
 
 #### 変数展開を使用した例
+
+このサーバーエントリでは、URL は `API_BASE_URL` の値の後に `/mcp` を続けたもの（デフォルトは `https://api.example.com`）で、API キーは `API_KEY` から取得されます：
 
 ```json theme={null}
 {
@@ -862,6 +855,10 @@ Claude Code は `.mcp.json` ファイルの環境変数の展開をサポート�
 #### デフォルトなしの未設定変数
 
 参照される環境変数が設定されておらず、デフォルト値がない場合、設定はまだロードされます。Claude Code はそのサーバーに対して `claude mcp list` 出力で欠落変数の警告を報告し、展開されていない `${VAR}` テキストをそのまま使用します。変数を設定するか、`:-default` フォールバックを追加して、サーバーが意図した値で起動するようにしてください。リモートサーバーの `url` と `headers` では、一部の認証情報変数は[空として読み込まれます](#credential-variables-that-read-as-empty)。警告はありません。
+
+#### 空文字列に設定された変数
+
+変数を空文字列に設定した場合、その変数は設定済みとして扱われるため、`${VAR:-default}` 参照は `default` ではなく空文字列に展開されます。[例のサーバー](#example-with-variable-expansion)で `API_BASE_URL` を空文字列に設定すると、その `url` は `/mcp` になり、`claude mcp list` は `'url' is not a valid URL` と報告します。デフォルトを使用するには、変数を空文字列に設定するのではなく、設定を解除してください。
 
 #### 空として読み込まれる認証情報変数
 
@@ -1146,9 +1143,16 @@ URL は `https://` を使用する必要があります。メタデータ URL �
 
 そのスコープがピン留めされた `oauth.scopes` にない場合は、それを追加してから `/mcp` を実行し、サーバーを再度認証してください。Claude Code はサーバーが名前を示したスコープではなく、ピン留めされたスコープをリクエストするため、それを追加せずに再度認証すると、取得するトークンには引き続きそのスコープが含まれません。
 
+### 認証プロキシの背後にあるサーバーで OAuth を使用する
+
+MCP サーバーが、独自のヘッダーをチェックするプロキシまたはゲートウェイの背後で OAuth を使用している場合、OAuth リクエストがそのヘッダーなしで到着するとサインインは失敗します。プロキシを通じてサインインするには Claude Code v2.1.299 以降が必要で、ヘッダーとサインインの両方を設定する必要があります。
+
+* **プロキシのヘッダー**：[`--header`](#option-1-add-a-remote-http-server)、`headers` フィールド、または [`headersHelper`](#use-dynamic-headers-for-custom-authentication) で、プロキシが読み取る名前で渡してください
+* **OAuth サインイン**：設定するヘッダーに `Authorization` を含めず、シェルで `claude mcp login <name>` を実行してサインインしてください。`Authorization` ヘッダーを設定すると、Claude Code はそれをサーバーの認証情報として使用し、そのサーバーでは OAuth にフォールバックしません。
+
 ### カスタム認証に動的ヘッダーを使用する
 
-MCP サーバーが Kerberos、短命トークン、または内部 SSO などの OAuth 以外の認証スキームを使用する場合は、`headersHelper` を使用して接続時にリクエストヘッダーを生成してください。Claude Code はコマンドを実行し、その出力を接続ヘッダーにマージします。
+Kerberos、短命トークン、内部 SSO などの認証で接続時に生成されるヘッダーが必要な場合は、サーバーの `headersHelper` にコマンドを設定してください。Claude Code は接続時にそれを実行し、その出力を送信するヘッダーにマージします。この例ではスクリプトを使用します。
 
 ```json theme={null}
 {
@@ -1552,16 +1556,35 @@ Claude Code が API が受け入れるスキーマを生成できない場合、
 
 ## 無効な入力スキーマを持つツール
 
-Claude API はリクエスト内のすべてのツールの入力スキーマをチェックし、いずれかのスキーマが失敗すると、リクエスト全体を 400 エラーで拒否します。そのため、スキーマが不正な形式の MCP ツール 1 つがあると、それを含むすべてのリクエストが失敗します。Claude Code はサーバーのツールを読み込む際に API のチェックのうち 2 つを自身で実行し、それらのチェックに失敗するツールを除外するため、サーバーの他のツールは動作し続けます。
+> [!NOTE]
+>
+> ツールを位置で示す 400 エラーでセッションが失敗する場合は、[Tool input schema is invalid](https://code.claude.com/docs/ja/errors.md#tool-input-schema-is-invalid) の手順に従ってください。
+
+MCP サーバーのツールのいずれかが、API が適用する 2 つのルールのどちらかに違反する入力スキーマを持っている場合、Claude Code はそのツールを除外します。サーバーの他のツールは影響を受けません。Claude Code はサーバーのツールを読み込む際に両方のルールをチェックします。
 
 * トップレベルのプロパティ名は 1 ～ 64 文字の長さで、ASCII 文字と数字、`_`、`.`、`-` のみを使用する必要があります
 * スキーマは JSON Schema draft 2020-12 メタスキーマに対して有効である必要があります。Claude Code は `$schema` を宣言していないスキーマと draft 2020-12 を宣言しているスキーマにこのチェックを適用します。他の方言を宣言しているスキーマはこのチェックをスキップしますが、上記のプロパティ名チェックは引き続き適用されます
 
 Claude Code がツールを除外する場合、その理由をサーバーのログに記録し、除外したツールとその理由を Claude に伝えるため、ツールが見つからない理由を Claude に尋ねることができます。サーバーのスキーマを修正すると、Claude Code が次にサーバーのツールを読み込むときにツールが復帰します。
 
-Claude Code は Anthropic から取得するフィーチャーフラグを通じて除外をオンにします。[フラグ取得がオフになっているデプロイメント](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) またはフラグが到着したことのないマシン（エアギャップマシンなど）では、Claude Code はチェックを実行してサーバーのログにどのツールが拒否されるかを記録しますが、ツールのスキーマを API に送信します。API は [ツールの位置で名前を付けた 400 エラー](https://code.claude.com/docs/ja/errors.md#tool-input-schema-is-invalid) でそのスキーマを含むリクエストを拒否します。v2.1.216 より前では、デプロイメントはこれらのチェックを実行していませんでした。
+[フィーチャーフラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフになっている場合、またはエアギャップマシンのようにフラグが一度も到着していない場合、ルールに違反するツールは除外されません。
+
+* Claude はツールを変更されないまま受け取り、サーバーのログにはそのツールについて `input schema would be rejected by the Anthropic API` が記録されます
+* その後 API がスキーマを拒否した場合は、[API が入力スキーマを拒否するツール](#tools-whose-input-schema-the-api-refuses)を参照してください
+
+v2.1.216 より前では、どのデプロイでもこれらのチェックは実行されていませんでした。
 
 [ルートレベルのコンビネータ処理](#tool-input-schemas-with-a-root-level-combinator) は独立しており、フラグ取得がオフの場合またはフラグが到着したことのない場合、独自の動作を保持します。
+
+### API が入力スキーマを拒否するツール
+
+デバッグログの行に `the API refused this tool's input schema` が含まれている場合、その行はリクエスト内で API がスキーマを拒否したツールを示しています。Claude Code は、そのツールをパラメータなしで宣言してリクエストを再送信します。
+
+* **ツールを位置で示す 400 エラーでセッションが失敗する場合**: [Tool input schema is invalid](https://code.claude.com/docs/ja/errors.md#tool-input-schema-is-invalid) の手順に従ってください
+* **サーバーを使用している場合**: 何もする必要はありません。Claude は引き続きツールを呼び出せますが、そのパラメータは見えません
+* **サーバーを保守している場合**: サーバー上でツールの入力スキーマを修正してください。ログの行は `The API said:` と、API がスキーマを拒否した理由で終わります。Claude はパラメータを見ずにツールを呼び出すため、サーバーが受け取る引数を検証してください
+
+v2.1.300 より前では、拒否されたスキーマを含むすべてのターンが [ツールを位置で示す 400 エラー](https://code.claude.com/docs/ja/errors.md#tool-input-schema-is-invalid) で失敗していました。
 
 ## 名前が 128 文字を超えるツール
 
@@ -1709,7 +1732,11 @@ MCP サーバーを構築している場合、ツール検索が有効になっ�
 
 v2.1.296 より前は短い方の上限が 2,048 文字でした。また、v2.1.295 より前はこの上限がツール検索を通じて読み込まれるものも含め、すべてのツールの説明に適用されていました。
 
-Anthropic が `api.anthropic.com` でホストしている一部の MCP サーバーの説明と指示は、そのまま全文が Claude に渡されます。セッション内のその他の MCP サーバーの上限を変更するには、[`CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`](https://code.claude.com/docs/ja/env-vars#variables) に文字数を設定します。設定した数値は両方の上限を置き換えます。たとえば `8192` を設定すると、短い方の上限は引き上げられ、長い方の上限は引き下げられます。この変数には Claude Code v2.1.280 以降が必要です。
+#### 説明の長さの上限を変更する
+
+セッション内の MCP サーバーについて、4,096 文字と 16,384 文字の[デフォルトの上限](#for-mcp-server-authors)を変更するには、[`CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH`](https://code.claude.com/docs/ja/env-vars#variables) に文字数を設定します。Claude Code はその数値を両方の上限に使用します。たとえば `8192` を設定すると、サーバーの指示と事前に読み込まれるツールの説明に対する 4,096 文字の上限は引き上げられ、ツール検索を通じて読み込まれるツールの説明に対する 16,384 文字の上限は引き下げられます。この変数には Claude Code v2.1.280 以降が必要です。
+
+Anthropic が `api.anthropic.com` でホストしている一部の MCP サーバーの説明と指示は、そのまま全文が Claude に渡され、この変数を設定しても切り詰められません。
 
 #### ツールを事前に読み込むか遅延させるかをマークする
 

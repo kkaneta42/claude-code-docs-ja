@@ -29,7 +29,7 @@ claude.ai 側には以下が必要です。
 
 * `api.anthropic.com`、`claude.ai` および以下のインストールステップ用のダウンロードホストへのアウトバウンド HTTPS、および git ホストへのクローン用の Linux または macOS ホストまたはコンテナ。[ネットワーク要件テーブル](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#network-requirements)に完全なリストがあります。Windows はランナーホストとしてサポートされていません。代わりに Linux コンテナでランナーを実行してください。セッションは claude.ai のブラウザから開始されるため、開発者ワークステーションは影響を受けません。
 * テストセッション用のリポジトリ。公開リポジトリ、またはこのホストが認証情報を求められることなく HTTPS URL で既にクローンできるリポジトリを用意してください。ランナーはリポジトリの `https://` URL をクローンするため、SSH キーだけでは不十分です。代わりに SSH 経由でクローンするには、[プライベートネットワーク用に git URL を書き換える](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#rewrite-git-urls-for-private-networks)を参照してください。
-* NTP などで実時間に同期されたクロック。クロックが 5 分以上ずれていると認証が失敗します。[トラブルシューティング](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#troubleshooting)を参照してください。
+* NTP などで実時間に同期されたクロック。
 
 ### ランナーホスト上のソフトウェア
 

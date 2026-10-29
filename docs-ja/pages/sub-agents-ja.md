@@ -938,7 +938,7 @@ claude --agent my-plugin:security-reviewer
 
 Claude が待機している間も作業を続けるには、ターミナルで **Ctrl+B** を押すか、VS Code で [**Run in background**](https://code.claude.com/docs/ja/vs-code.md#move-a-running-command-or-subagent-to-the-background) をクリックします。
 
-フォークモードをオフにする代わりに [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars) 環境変数を `1` に設定した場合、Claude はすべてのサブエージェントを待機します。バックグラウンドコマンドもオフになり、**Ctrl+B** を押しても何もバックグラウンドに移動しません。
+フォークモードをオフにする代わりに [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars) 環境変数を `1` に設定した場合、Claude は続行する前にサブエージェントが終了するのを待ちます。バックグラウンドコマンドもオフになり、**Ctrl+B** を押しても何もバックグラウンドに移動しません。
 
 #### バックグラウンドサブエージェントのツール、権限、結果
 

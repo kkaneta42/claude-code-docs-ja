@@ -132,7 +132,7 @@ Claude Code は、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings
 | `tasks/` | タスクツールで書き込まれたタスクリスト。リストごとに 1 つのディレクトリ |
 | `shell-snapshots/` | 起動時にキャプチャされたエイリアス、関数、シェルオプション。[Bash ツール](https://code.claude.com/docs/ja/tools-reference.md#bash-tool-behavior)によって各コマンドに適用されます。クリーンな終了時に削除されます。スイープはクラッシュ後に残されたものをクリアします |
 | `backups/` | `~/.claude.json` の以前のバージョン。Claude Code がファイルを書き直すときにコピーされます。Claude Code は最新の 5 つと、解析できなかったバージョンのコピーを保持します |
-| `feedback-bundles/` | `/feedback` でサードパーティプロバイダーに書き込まれた、または Anthropic 認証情報が設定されていない場合に書き込まれた、編集済みトランスクリプトアーカイブ。Anthropic アカウントチームに送信するため |
+| `feedback-bundles/` | サードパーティプロバイダー上で、または Anthropic 認証情報が設定されていない場合に `/feedback` によって書き込まれた、編集済みトランスクリプトアーカイブ。Anthropic アカウントチームに送信するため |
 | `feedback/drafts/` | キューに入った [Claude が作成したフィードバック](https://code.claude.com/docs/ja/tools-reference.md#sendfeedback-tool-behavior)。`/feedback` でのレビューを待機中です。`cleanupPeriodDays` または 30 日のいずれか短い方の後にスイープされます。キューが 10 ドラフトの上限に達すると、Claude Code は最も古いドラフトを削除して空き容量を作ります |
 | `usage-data/` | `report.html` と [`/insights`](https://code.claude.com/docs/ja/costs#analyze-your-usage-patterns)で書き込まれたタイムスタンプ付きレポートコピー。それらを構築するために使用されるキャッシュされたセッションごとの分析データ |
 | `skills/.trash/`、`plugins/.trash/` | [スキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)と [プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)。claude.ai 同期で削除されたもの。例えば、claude.ai でオフにした後、または同期を停止した後。ファイルはここに残るため、スイープが削除するまで復元できます |

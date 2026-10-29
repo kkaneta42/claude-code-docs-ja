@@ -65,6 +65,7 @@ claude mcp list
 | `✘ Connection error` | 接続試行がエラーをスローしました。[トラブルシューティング](#troubleshooting)を参照してください |
 | `⏸ Pending approval (run `claude` to approve)` | まだ承認していないプロジェクトスコープのサーバー。[.mcp.json を直接編集する](#edit-mcp-json-directly)を参照してください |
 | `⊘ Disabled for this project (re-enable via /mcp)` | このプロジェクトのプロジェクトの `disabledMcpServers` リストによってこのプロジェクトに対してオフにされたサーバー。[サーバーを削除せずに無効にする](https://code.claude.com/docs/ja/mcp.md#disable-a-server-without-removing-it)を参照してください |
+| `✘ Blocked by enterprise managed policy` | 組織のいずれかのポリシーがこのサーバーをブロックしているため、Claude Code は接続しません。どのポリシーかを管理者に確認してください。[サーバーステータス](https://code.claude.com/docs/ja/mcp.md#server-status)を参照してください |
 
 Windows 10 のデフォルトコンソールなど、一部のレガシー Windows コンソールはこれらの Unicode グリフをサポートしておらず、`✔` と `✘` の代わりに `√` と `×` を表示します。
 

@@ -679,7 +679,7 @@ Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus
 ターミナルのプロンプトに入力した場合、この単語によってそのターンを `xhigh` の effort に引き上げることもできます。引き上げが可能な場合、この単語は虹色で表示されます。Claude Code v2.1.311 以降が必要です。新しいターンを開始するときに単語が虹色にならない場合は、次のいずれかを試してください。
 
 * 引用符、括弧、パス、コマンドなどの外側に、`/` で始まらないプロンプト内で入力し直す
-* `CLAUDE_CODE_EFFORT_LEVEL` が `xhigh` 未満に設定されている場合は設定を解除する、自分の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を `xhigh` 以上に引き上げる、または組織の管理者に[組織の制限](#organization-effort-limits)を引き上げるよう依頼する
+* `CLAUDE_CODE_EFFORT_LEVEL` が `xhigh` 未満に設定されている場合は設定を解除する。または、自分の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を `xhigh` 以上に引き上げるか、組織の管理者に[組織の制限](#organization-effort-limits)を引き上げるよう依頼する
 * セッション内で `/model` を実行し、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.1 のいずれかのモデルに切り替える。Amazon Bedrock 上など、この単語でターンを引き上げられない場合は、代わりに [effort レベルを設定](#set-the-effort-level)してください
 
 #### effort レベルを設定する
@@ -689,7 +689,7 @@ effort は次のいずれかの方法で変更できます。
 * **`/effort`**：引数なしで `/effort` を実行するとインタラクティブなスライダーが開き、`/effort` の後にレベル名を続けると直接設定でき、`/effort auto` を実行するとアクティブなモデルの保存済みレベルがクリアされます
 * **`/model` 内**：モデルを選択する際に、左右の矢印キーで effort スライダーを調整します
 * **`--effort` フラグ**：Claude Code の起動時にレベル名を渡して、1 つのセッションに設定します
-* **環境変数**：`CLAUDE_CODE_EFFORT_LEVEL` にレベル名または `auto` を設定します
+* **環境変数**：`CLAUDE_CODE_EFFORT_LEVEL` にレベル名を設定します。Claude Code が [effort レベルを送信しない](#send-no-effort-level)ようにするには、代わりに `auto` または `unset` を設定します
 * **設定**：[`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) でモデルごとのレベルを設定するか、レベルが設定されていないモデルのデフォルトとして [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) に `low`、`medium`、`high`、`xhigh` のいずれかを設定します。どちらのキーでも `max` はレベルとして受け付けられず、`ultracode` には専用の [`ultracode`](https://code.claude.com/docs/ja/settings-reference#ultracode) キーがあります
 * **接続されたデバイスから**：[Remote Control](https://code.claude.com/docs/ja/remote-control.md#what-connected-devices-see) セッションで、スマートフォンまたはブラウザの effort コントロールからレベルを選びます。レベルは現在のセッションにのみ適用されます。Claude Code v2.1.234 以降が必要です
 * **スキルとサブエージェントのフロントマター**：[スキル](https://code.claude.com/docs/ja/skills.md#frontmatter-reference)または[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields)の markdown ファイルで `effort` を設定すると、そのスキルまたはサブエージェントの実行時に effort レベルを上書きします
@@ -710,6 +710,23 @@ effort は次のいずれかの方法で変更できます。
 * **Claude がまだ作業している間**：`keep going` などのメッセージを入力して `Enter` を押すと、ターンを中断せずにキューに追加できます。Claude は現在のツール呼び出しが完了したとき、遅くともターンの終了時にそのメッセージを受け取り、それ以降は新しいレベルで作業します。
 
 v2.1.242 より前は、Claude Code がターンの終了まで `/effort` 自体をキューに入れることがあり、[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)上など、[機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)しないセッションでは常にそうなっていました。
+
+#### effort レベルを送信しない
+
+Claude Code が[サポートされているモデル](#adjust-effort-level)に effort レベルを送信しない場合、Claude Code のデフォルトではなく [API のデフォルト](https://platform.claude.com/docs/en/build-with-claude/effort)が適用されます。Claude Code が何も送信しないようにするには、`CLAUDE_CODE_EFFORT_LEVEL` を値 `auto` または値 `unset` で export しているシェルから `claude` を起動します。どちらの値も同じ動作になります。
+
+```bash theme={null}
+export CLAUDE_CODE_EFFORT_LEVEL=auto
+```
+
+effort レベルが送信されていない間、セッションヘッダーとフッターには effort レベルが表示されません。送信されていないことを確認するには、Claude Code のプロンプトで `/effort status` を実行します。
+
+* **`Effort level: auto`**：effort レベルは送信されていません。
+* **`Effort level: auto (currently <level>)`**：レベルがまだ送信されています。`max` 未満の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) 設定がアクティブなモデルに適用されている場合、Claude Code はそのモデルに対する独自のデフォルトを、その上限まで下げて送信します。この設定を削除するか、`max` に設定してください。
+
+> [!NOTE]
+>
+> v2.1.304 より前は、レベルが送信されていない場合でも、`/effort status` は `Effort level: auto (currently high)` を出力していました。
 
 #### アダプティブ推論と固定の思考予算
 

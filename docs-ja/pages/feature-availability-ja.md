@@ -90,7 +90,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
     <tr>
       <td>[fast mode](https://code.claude.com/docs/ja/fast-mode.md)</td>
       <td>✓（Team および Enterprise では [Owner による有効化](https://code.claude.com/docs/ja/fast-mode.md#enable-fast-mode-for-your-organization)が必要）</td>
-      <td>✓（プロビジョニング済みの組織）</td>
+      <td>✓（Opus 5 および 4.8 ではプロビジョニングが必要）</td>
       <td>✗</td>
       <td>✗</td>
       <td>✗</td>
@@ -285,7 +285,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)。
 
-[プロバイダーによって異なる CLI の機能](#cli-capabilities-that-vary-by-provider)はすべて利用できますが、[fast mode](https://code.claude.com/docs/ja/fast-mode.md) には[プロビジョニングされたアクセス](https://code.claude.com/docs/ja/fast-mode.md#enable-fast-mode-for-your-organization)が必要です。claude.ai の Team または Enterprise 組織で構成した[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)は、Console の API キーで認証するセッションには適用されません。それらのセッションにも適用する方法については、[プラットフォームの利用可能性](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)を参照してください。
+[プロバイダーによって異なる CLI の機能](#cli-capabilities-that-vary-by-provider)はすべて利用できますが、Claude Opus 5 または Claude Opus 4.8 で [fast mode](https://code.claude.com/docs/ja/fast-mode.md) を使用するには[プロビジョニングされたアクセス](https://code.claude.com/docs/ja/fast-mode.md#enable-fast-mode-for-your-organization)が必要です。claude.ai の Team または Enterprise 組織で構成した[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)は、Console の API キーで認証するセッションには適用されません。それらのセッションにも適用する方法については、[プラットフォームの利用可能性](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)を参照してください。
 
 **部分的なサポート：**
 

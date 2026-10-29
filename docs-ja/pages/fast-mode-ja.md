@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> 高速モードは[リサーチプレビュー](#research-preview)段階です。機能、価格設定、および利用可能性はフィードバックに基づいて変更される可能性があります。
+> Claude Opus 5.5 の fast mode は利用可能です。Claude Opus 5 および Claude Opus 4.8 の fast mode は[リサーチプレビュー](#research-preview)段階です。
 
 高速モードは Claude Opus の高速構成で、モデルを最大 2.5 倍高速化しますが、トークンあたりのコストは高くなります。迅速な反復やライブデバッグなどのインタラクティブな作業で速度が必要な場合は `/fast` でオンにし、コストがレイテンシーより重要な場合はオフにします。
 
@@ -20,7 +20,7 @@ Opus 4.7 は高速モードをサポートしていないため、それに切�
 
 * Claude Code CLI で `/fast` を使用して高速モードをオンにします。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)は、選択したモデルが高速モードをサポートしている場合、**高速モードを切り替え**コマンドを提供します。Claude Code はそのトグルを [`fastMode` 設定](#toggle-fast-mode)に保存します。
 * 高速モード価格は Opus 5.5 で入力/出力あたり $8/$40 MTok、Opus 5 および Opus 4.8 で入力/出力あたり $10/$50 MTok です。
-* サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーと Claude Console のすべてのユーザーが利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織はアクセスを最初にプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
+* サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーと Claude Console で利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織は Opus 5 または Opus 4.8 で使用するために、最初にアクセスをプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
 * サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーの場合、高速モードは使用量クレジットのみで利用可能であり、サブスクリプションレート制限に含まれていません。
 
 ## 高速モードの切り替え
@@ -119,7 +119,7 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 
 高速モードには以下のすべてが必要です：
 
-* **Anthropic API またはサブスクリプションのみ**：高速モードは Anthropic Console API および使用量クレジットを使用する Claude サブスクリプションプランで利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform では利用できません。Console 組織は、[高速モードアクセスをプロビジョニング](#enable-fast-mode-for-your-organization)する必要もあります。
+* **Anthropic API またはサブスクリプションのみ**：fast mode は Anthropic Console API および使用クレジットを使用する Claude サブスクリプションプランで利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform では利用できません。Console 組織が Opus 5 または Opus 4.8 で fast mode を使用するには、[fast mode アクセスをプロビジョニング](#enable-fast-mode-for-your-organization)する必要もあります。
 * **サブスクリプションプランで使用クレジットが有効**：Pro、Max、Team、または Enterprise プランでは、アカウントで[使用クレジット](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて課金できるようになります。有効になるまで、`/fast` は「Fast mode requires usage credits」と表示します。有効にする方法はプランによって異なります：
   * Pro および Max では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) の **Usage credits** セクションで有効にするか、`/usage-credits` を実行してそのページを開きます。
   * Team および Enterprise では、請求アクセス権を持つメンバーが [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で組織の使用クレジットを有効にし、アクセス権を持たないメンバーは `/usage-credits` を実行して組織の管理者にリクエストを送信します。
@@ -129,6 +129,8 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 > 高速モード使用量は、プランに残りの使用量がある場合でも、使用量クレジットに直接請求されます。
 
 * **有料 Console 組織**：Claude Console アカウントは使用量クレジットを使用せず、組織は API 使用量の残りと同じようにトークンごとに高速モードの料金を支払います。Console の無料 Evaluation プランでは、`/fast` は「Fast mode unavailable during evaluation. Please purchase credits.」と表示されます。これをクリアするには、[Console 請求設定](https://platform.claude.com/settings/billing)でクレジットを購入します。
+
+  Opus 5.5 での fast mode は、組織の[使用量ティア](https://platform.claude.com/docs/en/api/rate-limits)にも依存します。
 * **Team および Enterprise の所有者による有効化**：高速モードは Team および Enterprise 組織ではデフォルトで無効になっています。ユーザーがアクセスできるようにするには、所有者が明示的に[高速モードを有効にする](#enable-fast-mode-for-your-organization)必要があります。
 
 > [!NOTE]
@@ -144,10 +146,10 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 
 組織で高速モードを有効にする場所は、組織が使用する製品によって異なります：
 
-* **Console**（API カスタマー）：管理者が [Claude Code preferences](https://platform.claude.com/claude-code/preferences) で有効にします。高速モードは[リサーチプレビュー](#research-preview)にあるため、組織は高速モードリクエストが成功する前に高速モードアクセスをプロビジョニングする必要があります。アクセスを取得するには、アカウントマネージャーに連絡するか、[Claude API の高速モード](https://platform.claude.com/docs/en/build-with-claude/fast-mode)で説明されているようにウェイトリストに参加します。
-
-  プロビジョニングされたアクセスがない場合、API は各高速モードリクエストを 429 で拒否し、Claude Code は各拒否を[高速モードレート制限](#handle-rate-limits)として扱います。レート制限のクールダウンとは異なり、アクセスがプロビジョニングされるまで拒否は続きます。
+* **Console**（API 顧客）：管理者が [Claude Code preferences](https://platform.claude.com/claude-code/preferences) で有効にします
 * **Claude AI**（Team および Enterprise）：Owner が [**Organization settings > Claude Code**](https://claude.ai/admin-settings/claude-code) で有効にします
+
+Claude Opus 5 または Claude Opus 4.8 を使用する Console 組織は、[Claude API の fast mode](https://platform.claude.com/docs/en/build-with-claude/fast-mode) で説明されているように、プロビジョニングされたアクセスも必要です。そのアクセスがない場合、これらのモデルでの fast mode リクエストは [fast mode レート制限](#handle-rate-limits)に達し、アクセスがプロビジョニングされるまで標準速度にフォールバックします。
 
 高速モードを完全に無効にするもう 1 つのオプションは、`CLAUDE_CODE_DISABLE_FAST_MODE=1` を設定することです。[環境変数](https://code.claude.com/docs/ja/env-vars.md)を参照してください。
 
@@ -201,7 +203,7 @@ fast mode を復元するには、`api.anthropic.com` への直接エグレス�
 
 ## レート制限の処理
 
-高速モードは標準 Opus とは別のレート制限があります。サポートされているすべての Opus モデルは 1 つの高速モードレート制限プールを共有します：どのモデルでの使用も同じ制限から引き出されます。高速モードレート制限に達した場合：
+fast mode には標準の Opus とは別のレート制限があります。Console の組織の場合、そのレート制限については Claude Platform の[レート制限](https://platform.claude.com/docs/en/api/rate-limits)ページで説明されています。fast mode のレート制限に達した場合：
 
 1. 高速モードは自動的に標準速度にフォールバックします
 2. `↯` アイコンがグレーに変わってクールダウンを示します
@@ -217,7 +219,7 @@ fast mode を復元するには、`api.anthropic.com` への直接エグレス�
 
 ## リサーチプレビュー
 
-高速モードはリサーチプレビュー機能です。これは以下を意味します：
+Claude Opus 5 および Claude Opus 4.8 の fast mode はリサーチプレビュー機能です。これは以下を意味します：
 
 * 機能はフィードバックに基づいて変更される可能性があります
 * 利用可能性と価格設定は変更される可能性があります

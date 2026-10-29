@@ -57,7 +57,7 @@ Code タブを開いた状態で、プロジェクトを選択し、Claude に�
 
 [プロンプトボックスの下の行](https://code.claude.com/docs/ja/desktop.md#start-a-session)で、最初のコントロールである環境セレクタをクリックし、**Local** グループの一番上の項目を選択します。次に、環境セレクタの横にあるプロジェクトフォルダのコントロールをクリックし、**Open folder…** を選択して、プロジェクトのディレクトリを選択します。
 
-プロンプトボックスの下に環境セレクタが表示されない場合は、以前のレイアウトを使用しています。[使用しているレイアウトを確認する](https://code.claude.com/docs/ja/desktop.md#check-which-layout-you-have)を参照してください。
+新しいセッションでプロンプトボックスの下に環境が表示されない場合は、以前のレイアウトを使用しています。[使用しているレイアウトを確認する](https://code.claude.com/docs/ja/desktop.md#check-which-layout-you-have)を参照してください。
 
 > [!TIP]
 >

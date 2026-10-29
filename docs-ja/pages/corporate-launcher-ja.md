@@ -36,7 +36,7 @@ Windows では、変数は無視されます。ランチャーコントラクト
 以下のプロセスはランチャーを通じて起動しません。
 
 * ターミナルで自分で起動するセッション。これは呼び出し方法に関係なく実行されます。これらのセッションをカバーするには、`PATH` の前のディレクトリに `claude` という名前のスクリプトを配置し、ランチャーを実際のバイナリで実行します。管理されたシンボリックリンクを置き換えないでください。バックグラウンドサービスとそのセッションは `PATH` ルックアップなしで起動するため、2 つのランチャーはスタックしません。
-* `claude-cli://` ディープリンクの最初のプロセス。オペレーティングシステムのプロトコルハンドラーが直接起動します。そのセッションがバックグラウンドで起動するすべてのものはランチャーを通じて実行されます。このパスを完全に閉じるには、`disableDeepLinkRegistration` 設定で[ハンドラー登録を防止](https://code.claude.com/docs/ja/deep-links.md#registration-and-supported-platforms)してください。
+* `claude-cli://` ディープリンクから開かれたセッション。これはランチャーなしで新しいターミナルで起動します。新しいユーザーに対してディープリンクがセッションを開かないようにするには、そのユーザーが初めて Claude Code を実行する前に [`disableDeepLinkRegistration`](https://code.claude.com/docs/ja/settings-reference#disabledeeplinkregistration) を `"disable"` に設定してください。すでに[登録済みのハンドラー](https://code.claude.com/docs/ja/deep-links.md#registration-and-supported-platforms)があるユーザーの場合、この設定はハンドラーを削除しないため、ディープリンクは引き続きセッションを開きます。
 * `--worktree` と `--tmux` を組み合わせた再起動：ターミナルマルチプレクサーがそのペインを起動し、Claude Code のバイナリではありません。
 * [Claude in Chrome](https://code.claude.com/docs/ja/chrome.md) が登録するネイティブメッセージングホスト：ブラウザーが起動し、Claude Code のバイナリではありません。
 

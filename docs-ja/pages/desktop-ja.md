@@ -43,7 +43,7 @@ Code タブでは、各会話は **セッション** です：独自のチャッ
 最初のメッセージを送信する前に、プロンプトボックスの下の行で環境、プロジェクトフォルダ、権限モード、モデルを選択してください：
 
 * **環境**：行の最初のコントロールである環境セレクタを使用して、Claude が実行される場所を選択します。[環境設定](#environment-configuration)を参照してください。
-  * 新しいセッションでプロンプトボックスの下に環境セレクタがない場合は、[以前のレイアウトの手順](#check-which-layout-you-have)に従ってください。
+  * 新しいセッションでプロンプトボックスの下に環境が表示されない場合は、[以前のレイアウトの手順](#check-which-layout-you-have)に従ってください。
 * **プロジェクトフォルダ**：環境セレクタの隣にあるプロジェクトフォルダコントロールをクリックして、Claude が作業するフォルダを選択します。
   * **クラウドセッション**：フォルダの代わりに[リポジトリ](#run-long-running-tasks-in-the-cloud)を選択します
   * **[保存済みのローカルまたは SSH 環境](#create-a-saved-environment)**：環境がすでにフォルダを保持しているため、行にはプロジェクトフォルダコントロールが表示されません。フォルダを変更するには、[環境を編集](#use-edit-or-remove-a-saved-environment)します。
@@ -861,7 +861,7 @@ macOS または Linux で、`export` で設定した変数が Claude の実行�
 
 > [!NOTE]
 >
-> 環境セレクターがプロンプトボックスの上にある場合は、保存済みローカル環境のない[以前のレイアウト](#check-which-layout-you-have)を使用しています。代わりに[ローカル環境エディター](#use-the-local-environment-editor)を使用してください。
+> 新しいセッションでプロンプトボックスの下に環境が表示されない場合は、保存済みのローカル環境がない[以前のレイアウト](#check-which-layout-you-have)を使用しています。代わりに[ローカル環境エディター](#use-the-local-environment-editor)を使用してください。
 
 **1. ローカル環境のフォームを開く**
 
@@ -963,7 +963,7 @@ SSH セッションを使用すると、デスクトップアプリをインタ�
 >
 > [サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)で Desktop を使用する場合、SSH セッションには個別のセットアップが必要です。[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
 
-[**New environment** ダイアログ](#create-a-saved-environment)で SSH 接続を追加し、その接続でセッションを開始します。新しいセッションでプロンプトボックスの下に環境セレクターがない場合は、以前のレイアウトを使用しています。[使用しているレイアウトを確認する](#check-which-layout-you-have)を参照してください。
+[**New environment** ダイアログ](#create-a-saved-environment)で SSH 接続を追加してから、その接続でセッションを開始します。新しいセッションでプロンプトボックスの下に環境が表示されない場合は、以前のレイアウトを使用しています。[使用しているレイアウトを確認する](#check-which-layout-you-have)を参照してください。
 
 **1. New environment ダイアログを開く**
 
@@ -2122,13 +2122,13 @@ Desktop アプリは、`claude_desktop_config.json` から MCP サーバーを�
 
 ### 使用しているレイアウトを確認する
 
-新しいセッションのプロンプトボックスの下に[環境セレクター](#start-a-session)がない場合は、以前のレイアウトを使用しています：
+新しいセッションで[環境](#start-a-session)がプロンプトボックスの下ではなく上に表示される場合は、以前のレイアウトを使用しています：
 
 * **[v2.37337.0 より前の Desktop](#check-your-version)**：更新すると現在のレイアウトになります。macOS では **Claude > Check for Updates…**、Windows では **Help > Check for Updates…** を選択します。
 * **[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)でセッションをコンピューター上で実行している場合**：現在のレイアウトには Claude Desktop v3.1623.0 以降が必要なため、[バージョンを確認](#check-your-version)してください。更新するには、macOS では **Claude > Check for Updates…**、Windows では **Help > Check for Updates…** を選択します。組織が[自動更新をオフにしている](#device-management-policies)場合、**Check for Updates…** は非表示になるため、管理者に v3.1623.0 以降を依頼してください。
-* **サードパーティプロバイダーでセッションを組織のインフラストラクチャ上で実行している場合**：組織がセッションをユーザーのコンピューターではなく独自のインフラストラクチャ上で実行している場合、Desktop は以前のレイアウトのままとなり、更新してもレイアウトは変わりません。セッションがどこで実行されているかわからない場合は、管理者に確認してください。
+* **サードパーティプロバイダーでセッションを組織のインフラストラクチャ上で実行している場合**：現在のレイアウトには Claude Desktop v4.29.0 以降が必要なため、[バージョンを確認](#check-your-version)してください。それより古いバージョンを使用している場合は、管理者に v4.29.0 以降を依頼してください。セッションがどこで実行されているかわからない場合は、管理者に確認してください。
 
-以前のレイアウトでは、プロンプトボックスの上で環境とプロジェクトフォルダを選択し、その下の行で権限モードとモデルを選択します。以前のレイアウトには[セッション詳細パネル](#see-session-details)と[保存済みのローカル環境および SSH 環境](#create-a-saved-environment)がありません。
+以前のレイアウトでは、プロンプトボックスの上で環境と、必要に応じてプロジェクトフォルダまたはリポジトリを選択し、その下の行で権限モードとモデルを選択します。以前のレイアウトには[セッション詳細パネル](#see-session-details)と[保存済みのローカル環境および SSH 環境](#create-a-saved-environment)がありません。
 
 ### Code タブの 403 またはエラー認証エラー
 

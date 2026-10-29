@@ -50,56 +50,56 @@
 
 リサーチプレビュー中、カスタムチャネルは[承認許可リスト](https://code.claude.com/docs/ja/channels.md#supported-channels)にありません。ローカルでテストするには `--dangerously-load-development-channels` を使用してください。詳細については、[リサーチプレビュー中のテスト](#test-during-the-research-preview)を参照してください。
 
-## 例：webhook レシーバーを構築
+## 例：webhook レシーバーを構築する
 
-このウォークスルーでは、HTTP リクエストをリッスンして Claude Code セッションに転送する単一ファイルサーバーを構築します。終了時には、CI パイプライン、監視アラート、または `curl` コマンドなど、HTTP POST を送信できるものはすべて、Claude にイベントをプッシュできます。
+このウォークスルーでは、HTTP リクエストを待ち受けて Claude Code セッションに転送する単一ファイルのサーバーを構築します。最終的には、CI パイプライン、監視アラート、`curl` コマンドなど、HTTP POST を送信できるものであれば何でも Claude にイベントをプッシュできるようになります。
 
-この例では、組み込み HTTP サーバーと TypeScript サポートのために [Bun](https://bun.sh) をランタイムとして使用しています。代わりに [Node](https://nodejs.org) または [Deno](https://deno.com) を使用できます。唯一の要件は [MCP SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk) です。
+この例では、組み込みの HTTP サーバーと TypeScript サポートを備えた [Bun](https://bun.sh) をランタイムとして使用します。代わりに [Node](https://nodejs.org) や [Deno](https://deno.com) を使用することもできます。唯一の要件は [MCP SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk) です。
 
-**1. プロジェクトを作成**
+**1. プロジェクトを作成する**
 
-[権限リレー](#relay-permission-prompts) の例は `zod` を直接インポートするため、MCP SDK と一緒にインストールされます。新しいディレクトリを作成して両方をインストールします：
+[権限リレー](#relay-permission-prompts)の例では `zod` を直接インポートするため、MCP SDK と一緒にインストールします。新しいディレクトリを作成し、両方をインストールします。
 
 ```bash theme={null}
 mkdir webhook-channel && cd webhook-channel
 bun add @modelcontextprotocol/sdk zod
 ```
 
-**2. チャネルサーバーを記述**
+**2. チャネルサーバーを作成する**
 
-`webhook.ts` というファイルを作成します。これはチャネルサーバー全体です：stdio 経由で Claude Code に接続し、ポート 8788 で HTTP POST をリッスンします。リクエストが到着すると、本文をチャネルイベントとして Claude にプッシュします。
+`webhook.ts` という名前のファイルを作成します。これがチャネルサーバーのすべてです。stdio 経由で Claude Code に接続し、ポート 8788 で HTTP POST を待ち受けます。リクエストが届くと、その本文をチャネルイベントとして Claude にプッシュします。
 
 ```ts title="webhook.ts" theme={null}
 #!/usr/bin/env bun
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
-// MCP サーバーを作成してチャネルとして宣言
+// Create the MCP server and declare it as a channel
 const mcp = new Server(
   { name: 'webhook', version: '0.0.1' },
   {
-    // このキーがチャネルにする — Claude Code はそれのリスナーを登録
+    // this key is what makes it a channel — Claude Code registers a listener for it
     capabilities: { experimental: { 'claude/channel': {} } },
-    // Claude Code はサーバーが接続するときこれを Claude にコンテキストとして配信するため、これらのイベントの処理方法を知っている
+    // Claude Code delivers this to Claude as context when the server connects, so it knows how to handle these events
     instructions: 'Events from the webhook channel arrive as <channel source="webhook" ...>. They are one-way: read them and act, no reply expected.',
   },
 )
 
-// stdio 経由で Claude Code に接続（Claude Code はこのプロセスを生成）
+// Connect to Claude Code over stdio (Claude Code spawns this process)
 await mcp.connect(new StdioServerTransport())
 
-// すべての POST を Claude に転送する HTTP サーバーを開始
+// Start an HTTP server that forwards every POST to Claude
 Bun.serve({
-  port: 8788,  // 任意のオープンポートが機能
-  // localhost のみ：このマシンの外からは何も POST できない
+  port: 8788,  // any open port works
+  // localhost-only: nothing outside this machine can POST
   hostname: '127.0.0.1',
   async fetch(req) {
     const body = await req.text()
     await mcp.notification({
       method: 'notifications/claude/channel',
       params: {
-        content: body,  // <channel> タグの本文になる
-        // 各キーはタグ属性になる、例：<channel path="/" method="POST">
+        content: body,  // becomes the body of the <channel> tag
+        // each key becomes a tag attribute, e.g. <channel path="/" method="POST">
         meta: { path: new URL(req.url).pathname, method: req.method },
       },
     })
@@ -108,15 +108,15 @@ Bun.serve({
 })
 ```
 
-ファイルは順番に 3 つのことを実行します：
+このファイルは、サーバーの設定、stdio 経由での接続、HTTP リスナーの起動をこの順序で行います。
 
-* **サーバー設定**：`claude/channel` をその機能に含む MCP サーバーを作成します。これが Claude Code にこれがチャネルであることを伝えます。Claude Code はサーバーが接続するときに [`instructions`](#server-options) 文字列を Claude にコンテキストとして配信します：Claude に期待するイベント、返信するかどうか、返信する場合はどのように返信をルーティングするかを伝えます。
-* **Stdio 接続**：stdin/stdout 経由で Claude Code に接続します。これは任意の [MCP サーバー](https://modelcontextprotocol.io/docs/concepts/transports#standard-io) の標準です。
-* **HTTP リスナー**：ポート 8788 でローカル Web サーバーを開始します。すべての POST 本文は `mcp.notification()` 経由でチャネルイベントとして Claude に転送されます。`content` はイベント本文になり、各 `meta` エントリは `<channel>` タグの属性になります。リスナーは `mcp` インスタンスへのアクセスが必要なため、同じプロセスで実行されます。より大きなプロジェクトの場合は、別のモジュールに分割できます。
+* **サーバー設定**：capabilities に `claude/channel` を含めて MCP サーバーを作成します。これにより、Claude Code はこれがチャネルであると認識します。サーバーが接続すると、Claude Code は [`instructions`](#server-options) 文字列をコンテキストとして Claude に渡します。どのようなイベントが届くのか、返信すべきかどうか、返信する場合はどのようにルーティングするかを Claude に伝えてください。
+* **stdio 接続**：stdin/stdout 経由で Claude Code に接続します。これはあらゆる [MCP サーバー](https://modelcontextprotocol.io/docs/concepts/transports#standard-io)で標準的な方法です。
+* **HTTP リスナー**：ポート 8788 でローカル Web サーバーを起動します。すべての POST 本文は `mcp.notification()` を介してチャネルイベントとして Claude に転送されます。`content` がイベント本文になり、各 `meta` エントリは `<channel>` タグの属性になります。リスナーは `mcp` インスタンスにアクセスする必要があるため、同じプロセス内で実行されます。大規模なプロジェクトでは、別々のモジュールに分割することもできます。
 
-**3. Claude Code にサーバーを登録**
+**3. サーバーを Claude Code に登録する**
 
-Claude Code がそれを開始する方法を知るように、MCP 設定にサーバーを追加します。同じディレクトリのプロジェクトレベル `.mcp.json` の場合は、相対パスを使用します。`~/.claude.json` のユーザーレベル設定の場合は、サーバーが任意のプロジェクトから見つかるように完全な絶対パスを使用します：
+Claude Code がサーバーの起動方法を認識できるように、MCP 設定にサーバーを追加します。同じディレクトリ内のプロジェクトレベルの `.mcp.json` では、相対パスを使用します。`~/.claude.json` のユーザーレベルの設定では、どのプロジェクトからでもサーバーを見つけられるように完全な絶対パスを使用します。
 
 ```json title=".mcp.json" theme={null}
 {
@@ -126,33 +126,33 @@ Claude Code がそれを開始する方法を知るように、MCP 設定にサ�
 }
 ```
 
-Claude Code は起動時に MCP 設定を読み込み、各サーバーをサブプロセスとして生成します。
+Claude Code は起動時に MCP 設定を読み込み、各サーバーをサブプロセスとして起動します。
 
-**4. テスト**
+**4. テストする**
 
-リサーチプレビュー中、カスタムチャネルは許可リストにないため、開発フラグで Claude Code を開始します：
+リサーチプレビュー期間中、カスタムチャネルは許可リストに含まれていないため、開発用フラグを付けて Claude Code を起動します。
 
 ```bash theme={null}
 claude --dangerously-load-development-channels server:webhook
 ```
 
-Claude Code は最初に、読み込んでいる開発チャネルをリストする全画面警告ダイアログを表示します。**ローカル開発に使用しています** を選択して続行するか、**終了** を選択して終了します。
+Claude Code はまず、読み込もうとしている開発用チャネルを一覧表示する全画面の警告ダイアログを表示します。続行するには **I am using this for local development** を、終了するには **Exit** を選択します。
 
-このプロジェクトで初めてセッションを開始するとき、Claude Code は `.mcp.json` から新しいサーバーを使用する前に同意を求めます。ダイアログは「このプロジェクトで見つかった新しい MCP サーバー：webhook」と報告します。**このMCPサーバーを使用** を選択して続行します。
+このプロジェクトで初めてセッションを開始するときは、Claude Code は `.mcp.json` の新しいサーバーを使用する前に同意も求めます。ダイアログには「New MCP server found in this project: webhook」と表示されます。続行するには **Use this MCP server** を選択します。
 
-同意した後、Claude Code は `webhook.ts` をサブプロセスとして生成し、HTTP リスナーは設定したポート（この例では 8788）で自動的に開始されます。サーバーを自分で実行する必要はありません。
+同意すると、Claude Code は `webhook.ts` をサブプロセスとして起動し、設定したポート（この例では 8788）で HTTP リスナーが自動的に起動します。サーバーを自分で実行する必要はありません。
 
-スタートアップバナーの下の薄い通知がチャネルが登録されたことを確認します：`Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`。
+起動バナーの下に薄く表示される通知で、チャネルが登録されたことを確認できます：`Channels (experimental) messages from server:webhook inject directly in this session · restart without --dangerously-load-development-channels to stop`。
 
-'組織ポリシーによってブロックされています'が表示される場合は、組織管理者が最初に [チャネルを有効化](https://code.claude.com/docs/ja/channels.md#enterprise-controls) する必要があります。
+「blocked by org policy」と表示された場合は、まず組織の管理者が[チャネルを有効化](https://code.claude.com/docs/ja/channels.md#enterprise-controls)する必要があります。
 
-別のターミナルで、HTTP POST でメッセージを送信して webhook をシミュレートします。この例は、CI 失敗アラートをポート 8788（または設定したポート）に送信します：
+別のターミナルで、メッセージを含む HTTP POST をサーバーに送信して webhook をシミュレートします。この例では、CI の失敗アラートをポート 8788（または設定したポート）に送信します。
 
 ```bash theme={null}
 curl -X POST localhost:8788 -d "build failed on main: https://ci.example.com/run/1234"
 ```
 
-ペイロードは Claude のコンテキストに `<channel>` タグとして到着します：
+ペイロードは `<channel>` タグとして Claude のコンテキストに届きます。
 
 ```text theme={null}
 <channel source="webhook" path="/" method="POST">
@@ -160,14 +160,14 @@ build failed on main: https://ci.example.com/run/1234
 </channel>
 ```
 
-ターミナルはイベントを 1 行の概要として、`← webhook: build failed on main: https://ci.example.com/run/1234` としてレンダリングします。これは生のタグではなく、その後 Claude が応答を開始するのが見えます：ファイルを読み込み、コマンドを実行、またはメッセージが要求するもの。これは一方向チャネルなので、Claude はセッションで動作しますが、webhook を通じて何も返送しません。返信を追加するには、[返信ツールを公開](#expose-a-reply-tool) を参照してください。
+ターミナルでは、イベントは生のタグではなく、`← webhook: build failed on main: https://ci.example.com/run/1234` という 1 行の要約として表示されます。その後、Claude が応答を開始し、ファイルの読み取りやコマンドの実行など、メッセージが必要とする作業を行う様子が確認できます。これは一方向のチャネルなので、Claude はセッション内で動作しますが、webhook を通じて何かを送り返すことはありません。返信を追加するには、[返信ツールを公開する](#expose-a-reply-tool)を参照してください。
 
-イベントが到着しない場合、診断は `curl` が返したものに依存します：
+イベントが届かない場合、診断方法は `curl` が返した結果によって異なります。
 
-* **`curl` は成功するが Claude に何も到着しない**：セッションで `/mcp` を実行してサーバーのステータスを確認します。`failed` ステータスは通常、サーバーファイルの依存関係またはインポートエラーを意味します。stderr トレースを確認するには、`claude --debug --dangerously-load-development-channels server:webhook` で再開し、`~/.claude/debug/<session-id>.txt` のデバッグログを確認してください。
-* **`curl` が「接続が拒否されました」で失敗**：ポートはまだバインドされていないか、以前の実行からの古いプロセスがそれを保持しています。`lsof -i :<port>` は何がリッスンしているかを示します。セッションを再開する前に古いプロセスを `kill` してください。
+* **`curl` は成功したが Claude に何も届かない**：セッションで `/mcp` を実行してサーバーのステータスを確認します。`failed` ステータスは通常、サーバーファイル内の依存関係またはインポートのエラーを意味します。stderr のトレースを確認するには、`claude --debug --dangerously-load-development-channels server:webhook` で再起動し、`~/.claude/debug/<session-id>.txt` のデバッグログを確認します。
+* **`curl` が「connection refused」で失敗する**：ポートがまだバインドされていないか、以前の実行で残った古いプロセスがポートを占有しています。`lsof -i :<port>` で待ち受けているものを確認できます。セッションを再起動する前に、古いプロセスを `kill` してください。
 
-[fakechat サーバー](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat) は、Web UI、ファイル添付、および双方向チャットの返信ツールでこのパターンを拡張します。
+[fakechat サーバー](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/fakechat)は、このパターンを拡張し、Web UI、ファイル添付、双方向チャットのための返信ツールを追加しています。
 
 ## リサーチプレビュー中のテスト
 

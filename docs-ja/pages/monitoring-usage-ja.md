@@ -861,6 +861,7 @@ Claude への各 API リクエストについて記録されます。
 * `output_tokens`: 出力トークン数
 * `cache_read_tokens`: キャッシュから読み取られたトークン数
 * `cache_creation_tokens`: キャッシュ作成に使用されたトークン数
+* `cache_creation_5m_tokens`、`cache_creation_1h_tokens`: API レスポンスが報告する、5 分の[キャッシュ有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)でキャッシュに書き込まれたトークン数と、1 時間の有効期間で書き込まれたトークン数。API レスポンスがこれらを報告しない場合は、`cache_creation_tokens` が 0 より大きくても両方とも `0` になります。Claude Code v2.1.300 以降が必要です
 * `request_id`: API リクエスト ID。`"req_011..."` など。[イベント相関属性](#event-correlation-attributes)で説明しています。
 * `client_request_id`: `x-client-request-id` リクエストヘッダーとして送信される、クライアントが生成した UUID。含まれる条件については[イベント相関属性](#event-correlation-attributes)の表を参照してください
 * `speed`: `"fast"` または `"normal"`。fast mode がアクティブだったかどうかを示します

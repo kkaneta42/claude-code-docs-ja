@@ -397,7 +397,7 @@ Claude Code は親が提供した [`sandbox.credentials`](https://code.claude.co
 * **`deny` エントリ**：`path` または `name` とモードのみで転送されます。
 * **[`mode: mask`](https://code.claude.com/docs/ja/sandboxing#mask-credential-files)を持つファイルエントリ**：センチネルのみとして転送され、`injectHosts` が空のリストである全ファイルマスクとして。プロキシは親が提供したエントリの実際の値を任意のプラットフォームで置き換えることはありません。すべての構造化マスキングフィールドも削除されるため、親が提供した抽出パターンは別のソースが同じパスに設定するより厳密なマスクを置き換えることはできません。
 * **`mode: mask` を持つ `envVars` エントリ**：転送されません。`deny` は親チャネルが `envVars` エントリを通じて表現できる唯一の制限です。
-* **[`awsPairs` と `sigv4`](https://code.claude.com/docs/ja/sandboxing#re-sign-aws-requests)**：制限のみ転送されます。`sigv4` からは `deny` 値のみが保持され、親が `sigv4` ブロックをまったく定義する場合、すべての 3 つのリクエスト形式 `streaming`、`presigned`、および `sigv4a` を `deny` にピン留めします。`awsPairs` ペアは再署名できる形式では転送されません。従来の AWS 変数の 1 つに名前を付けるペアは、`AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、および `AWS_SESSION_TOKEN` の自動ペアリングを抑制したままにする不活性エントリに置き換えられます。
+* **[`awsPairs` と `sigv4`](https://code.claude.com/docs/ja/sandboxing#re-sign-aws-requests)**：制限のみ転送されます。`sigv4` からは `deny` 値のみが保持され、親が `sigv4` ブロックを何らかの形で定義する場合、すべての 3 つのリクエスト形式 `streaming`、`presigned`、および `sigv4a` を `deny` にピン留めします。`awsPairs` ペアは再署名できる形式では転送されません。従来の AWS 変数の 1 つに名前を付けるペアは、`AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、および `AWS_SESSION_TOKEN` の自動ペアリングを抑制したままにする不活性エントリに置き換えられます。
 
 #### ロックをデプロイする
 
@@ -446,7 +446,7 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
 
 5 つのロックすべてが設定されていても、以下の親が提供した設定はフィルターを通過します。
 
-* **`forceLoginOrgUUID`**：最優先の管理ソースが組織 UUID を設定しない場合、Claude Code は親が提供した値を尊重します。ゲートウェイサインインはこのキーをチェックしません。最優先の管理ソースの組織 UUID は親の値をブロックし、Claude Code が強制するものです。
+* **`forceLoginOrgUUID`**：Claude Code が適用する管理設定が組織 UUID を設定していない場合、Claude Code は親が提供した値を尊重します。ゲートウェイサインインはこのキーをチェックしません。Claude Code が適用する管理設定内の組織 UUID は親の値をブロックし、Claude Code が強制する組織 UUID になります。フリートで Anthropic 組織を固定している場合、`forceLoginOrgUUID` をどこに設定するかについては[ログインキーを提供する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#which-managed-source-supplies-login-keys)を参照してください。
 * **`allowedMcpServers`**：有効な管理リストがない場合、Claude Code は親が提供した許可リストを尊重します。`allowManagedMcpServersOnly` はそれをブロックしません。ロックは勝者となったリストを管理値として強制し、どの管理ソースもリストを提供しない場合は親が提供したリストも含まれるためです。最優先の管理ソースのリストは親のリストをブロックし、Claude Code が強制するリストになるため、ロックの隣のそこに `allowedMcpServers` を設定します。v2.1.223 より前では、任意の管理ソースのいずれかのキーの値は親の値をブロックしました。
 * **`availableModels`**：勝者の管理ソースが設定しない場合、Claude Code は親が提供したモデルリストを尊重します。フリートがモデルを制限する場合、勝者ソースに `availableModels` を設定します。
 * **`allowedProviders`**：勝者の管理ソースが設定しない場合、Claude Code は親が提供した API プロバイダー許可リストを尊重します。フリートが開発者の使用できる API プロバイダーを制限する場合、勝者ソースに `allowedProviders` を設定します。Claude Code v2.1.285 以降が必要です。
@@ -454,7 +454,7 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
 * **`blockedMarketplaces`**：親が提供したマーケットプレイスブロックリストは通過し、管理ソースが設定するブロックリストに追加されます。ブロックリストはさらに制限することのみができるためです。Claude Code v2.1.282 以降が必要です。
 * **`strictPluginOnlyCustomization`**：このキーはロックに関係なくフィルターを通過し、Claude Code が開発者独自のカスタマイズ（保護フックを含む）を無視するようにします。ロックはそれをブロックしません。
 
-デフォルトの最初の勝ちの設定の下では、管理値が親の値をブロックするのは、それが最優先の管理ソースにある場合のみです。ただし、[MCP サーバーロック](#lock-behavior-across-sources)がオンの間の `allowedMcpServers` は除きます。`managedSourcesBehavior` マージオプトインの下では、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)が代わりにどのソースの値が適用されるかを示します。
+`managedSourcesBehavior` を `"merge"` に設定している場合は、[キーの種類ごとにどのソースの値が適用されるか](https://code.claude.com/docs/ja/managed-settings.md#compose-every-managed-source)を確認してください。
 
 #### 親設定のフックキーとスキルキーがどのように有効になるか
 

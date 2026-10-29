@@ -219,6 +219,7 @@
 | `Cloud sessions use your claude.ai login`、認証情報を挙げるポリシー拒否メッセージの末尾に表示される | [コマンドラインエラー](#cloud-sessions-use-your-claude-ai-login) |
 | `Couldn't verify your organization's policy for cloud sessions` | [コマンドラインエラー](#couldnt-verify-your-organizations-policy-for-cloud-sessions) |
 | `Cloud sessions aren't available:` の後に組織のポリシーを読み込めなかった理由が続く | [コマンドラインエラー](#couldnt-verify-your-organizations-policy-for-cloud-sessions) |
+| `Cloud sessions aren't available with this Console sign-in. They need a claude.ai sign-in.` | [組織 UUID を取得できない](https://code.claude.com/docs/ja/claude-code-on-the-web.md#unable-to-get-organization-uuid) |
 | `Cloud sessions need a claude.ai sign-in` | [Unable to get organization UUID](https://code.claude.com/docs/ja/claude-code-on-the-web.md#unable-to-get-organization-uuid) |
 | `Nothing was stashed: "<path>" is now a folder in place of a tracked file or link` / `are now folders in place of tracked files or links` | [コマンドラインエラー](#nothing-was-stashed-because-a-folder-replaced-a-tracked-file) |
 | `Error: --json-schema is not a valid JSON Schema` | [コマンドラインエラー](#the-json-schema-value-is-not-a-valid-json-schema) |
@@ -325,6 +326,7 @@
 | `File is covered by a Read deny rule in your permission settings` | [ツールエラー](#file-is-covered-by-a-read-deny-rule) |
 | `cannot contain null bytes (\0)` | [ツールエラー](#path-cannot-contain-null-bytes) |
 | `Path contains null bytes` | [ツールエラー](#path-cannot-contain-null-bytes) |
+| `command contains the invisible character U+FEFF (byte order mark) or U+180E (Mongolian vowel separator), and was not run` | [ツールエラー](#command-contains-an-invisible-character) |
 | `File is too large to read as an image (the limit is 128MB)` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
 | `Cannot read this as an image: <path> is a pipe or a device` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
 | `subagent_type is required: the general-purpose agent is not available in this session` | [ツールエラー](#subagent-type-is-required) |
@@ -397,6 +399,7 @@
 | `Claude Code process exited with code N` | [ラッパーと IDE エラー](#claude-code-process-exited-with-code-n) |
 | `The connection to Claude Code ended before this message completed` | [ラッパーと IDE エラー](#the-connection-to-claude-code-ended-before-this-message-completed) |
 | `Could not locate the Claude CLI on PATH` | [ラッパーと IDE エラー](#could-not-locate-the-claude-cli-on-path) |
+| `The Claude Code program for this computer, the <build> build, could not be found` | [ラッパーと IDE のエラー](#the-claude-code-program-for-this-computer-could-not-be-found) |
 | `Restored the code, but skipped N files` | [Rewind の警告とエラー](#restored-the-code-but-skipped-files) |
 | `No files were restored: N files failed (backup missing, or the file could not be updated)` | [Rewind の警告とエラー](#no-files-were-restored) |
 | `Transcript writes are failing (...)` | [セッション保存の警告](#transcript-writes-are-failing) |
@@ -485,15 +488,15 @@ Claude Code は次の障害を再試行しません。
 
 v2.1.198 以降では、再試行中は通常のスピナーのヒントが表示されません。エラーの理由が表示された後、障害が 529 の過負荷である場合は、カウントダウンの下の行にサービスステータスを確認できる場所も表示されます。Anthropic API では `status.claude.com`、その他の構成ではメッセージに示されたプロバイダーまたはゲートウェイのホストです。
 
-リクエストがまだ保留中の間に、レスポンスストリームに 20 秒間データが届かない場合、再試行が開始される前にスピナーに `Waiting for API response · will retry in … · check your network` と表示されます。リクエストはまだ失敗していません。カウントダウンは、Claude Code が停止した接続を中断する時点までのものです。中断後に表示される内容は、応答がどこまで進んでいたかによって異なります。
+#### Waiting for API response
+
+`Waiting for API response · will retry in … · check your network` バナーは、Claude Code があるリクエストについて、データを受信しないまま少なくとも 20 秒間待機したことを意味します。リクエストはまだ失敗していません。カウントダウンは、Claude Code が停止した接続を中断する時点までのものです。中断が発生した場合の動作は次のとおりです。
 
 * Claude がテキストのブロックまたはツール呼び出しを完了する前、または思考を終えた後にそれらを開始する前の場合、Claude Code はリクエストを再試行するか、エラーでターンを終了します。どの停止を何回再試行するかについては、[自動再試行](#automatic-retries)を参照してください。
 * Claude がテキストのブロックまたはツール呼び出しを完了した後、または思考を終えた後にそれらを開始した後で、Claude が応答を終える前の場合、Claude Code は Claude が完了した内容を保持し、Claude が完了したツール呼び出しからターンを継続して、[The response above may be incomplete](#the-response-above-may-be-incomplete) を表示します。非対話型セッション、およびすべてのセッションにおけるサブエージェントの応答では、Claude Code は最初に Claude に応答を続けるよう促す場合があります。それがいつ行われるか、またその場合でも通知が表示されるのはいつかについては、そのエントリを参照してください。
 * Claude が応答を終えた後の場合、Claude Code はターンを通常どおり終了します。
 
-このバナーは、データの受信が再開されるか再試行が成功すると自動的に消えます。すべての試行でバナーが再表示される場合は、[ネットワークの問題](#unable-to-connect-to-api)として扱ってください。v2.1.185 より前は、バナーは 10 秒後に異なる文言で表示されていました。
-
-Claude が [advisor](https://code.claude.com/docs/ja/advisor.md) に相談している間は、長い advisor のレビューでは 20 秒を大きく超えて何も送信されないことがあるため、バナーは 20 秒ではなく、データのない状態が 90 秒続いた後に表示されます。v2.1.214 より前は、advisor の呼び出し中にも 20 秒のしきい値が適用されていたため、何も問題がない場合でも advisor のレビュー中にバナーが表示されていました。
+このバナーは、データの受信が再開されるか再試行が成功すると自動的に消えます。すべての試行でバナーが再表示される場合は、[ネットワークの問題](#unable-to-connect-to-api)として扱ってください。ゲートウェイ経由で接続している場合は、[ゲートウェイ経由で待機中のバナーが表示されたり消えたりする](#waiting-banner-behind-a-gateway)を参照してください。v2.1.185 より前は、バナーは 10 秒後に異なる文言で表示されていました。
 
 #### ゲートウェイ経由で待機中のバナーが表示されたり消えたりする
 
@@ -2495,7 +2498,7 @@ v2.1.216 より前では、どのデプロイでも除外チェックは実行�
 
 **対応方法：**
 
-* Claude Code バージョンが v2.1.216 より前の場合は、`claude update` を実行してください。
+* Claude Code のバージョンが v2.1.300 より前の場合は、シェルで [`claude update`](https://code.claude.com/docs/ja/setup#update-claude-code) を実行します。v2.1.300 より前は、Claude Code は[拒否されたツールのパラメーターを除いてリクエストを再試行する](https://code.claude.com/docs/ja/mcp.md#tools-whose-input-schema-the-api-refuses)ことをしなかったため、そのツールを含むすべてのリクエストでこのエラーが繰り返されていました。
 * 無効なスキーマを宣言する MCP サーバーを削除するか、[無効にしてください](https://code.claude.com/docs/ja/mcp.md#disable-a-server-without-removing-it)。エラーはツールを位置でのみ示します。v2.1.216 以降では、各サーバーのログで、入力スキーマが拒否されるツールを示す行を確認してください。どのログにもそれが示されていない場合は、サーバーを 1 つずつ無効にしてください。
 * サーバーを保守している場合は、ツールの `input_schema` を修正してください。スキーマは有効な JSON Schema である必要があり、トップレベルのプロパティ名は 1 ～ 64 文字で、ASCII 文字と数字、`_`、`.`、`-` のみを使用する必要があります。[無効な入力スキーマを持つツール](https://code.claude.com/docs/ja/mcp.md#tools-with-invalid-input-schemas)を参照してください。
 
@@ -3295,7 +3298,7 @@ Error: Workspace not trusted. Please run `claude` in /Users/you/project first to
 * **`Error: Workspace not trusted. <folder> is your home directory`**: ホームディレクトリに対する信頼は保存されないため、先にそこで `claude` を実行しても解決しません。代わりに、プロジェクトディレクトリで一度 `claude` を実行して信頼ダイアログを承認した後、そこから `claude ultrareview` を実行するか、`--trust-workspace` を追加します。
 * **`No answer in time.` に続いて `Error: Workspace not trusted`**: `Trust <folder>? [y/N]` の質問に 5 分間回答がありませんでした。`claude ultrareview` を再実行して回答してください。
 * **`Ultrareview did not start: <folder> is not trusted`**: `n` と答えるか Enter を押すなどして、`Trust <folder>? [y/N]` の質問で拒否しました。レビューを開始するには、`claude ultrareview` を再実行して `y` と答えます。
-* **``Ultrareview did not start: `--trust-workspace` takes no value``**: PR 番号や `false` など、フラグ以外のものが `--trust-workspace` の後に続いています。フォルダーを信頼しない場合は、フラグを省略します。この実行に限り信頼する場合は、PR 番号またはベースブランチをフラグの前に置きます: `claude ultrareview 1234 --trust-workspace`。
+* **``Ultrareview did not start: `--trust-workspace` takes no value``**：PR 番号や `false` など、フラグ以外のものが `--trust-workspace` の後に続いています。フォルダーを信頼しない場合は、フラグを省略します。この実行に限り信頼するには、PR 番号またはベースブランチをフラグの前に置きます：`claude ultrareview 1234 --trust-workspace`。
 
 v2.1.309 より前は、`claude ultrareview` は `--trust-workspace` を受け付けませんでした。
 
@@ -3587,9 +3590,8 @@ Claude Code は、[動的コンテキストを挿入する](https://code.claude.
 
 関連するメッセージは、コマンドが実行される前に発生します:
 
-* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止を引き起こすか、および `allowed-tools` でコマンドを事前承認する方法を説明しています
-* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: スキルのフロントマターが、bash のないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
-* `No shell command in <name> was run`: ファイルの `!` コマンドのいずれかに、タブや改行以外の生の制御文字が含まれているため、どのコマンドも実行されません。[文字を見つけて削除する方法](#no-shell-command-was-run)を参照してください
+* `Shell command permission check failed for pattern "..."`：コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法について説明しています
+* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``：スキルのフロントマターが、bash がないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
 
 **対処方法:**
 
@@ -3599,9 +3601,12 @@ Claude Code は、[動的コンテキストを挿入する](https://code.claude.
 
 ### スキルまたはコマンド内のシェルコマンドが実行されなかった
 
-スキルまたはカスタムコマンドのファイル内にある `` !`<command>` `` [動的コンテキストコマンド](https://code.claude.com/docs/ja/skills.md#inject-dynamic-context)のいずれかに、タブや改行以外の生の制御文字が含まれています。Claude Code は、ファイルのどのコマンドも実行する前に、呼び出し全体を拒否します。
+`No shell command in <name> was run` は、そのスキルまたはコマンドファイル内の `` !`<command>` `` [動的コンテキストコマンド](https://code.claude.com/docs/ja/skills.md#inject-dynamic-context)に、Bash ツールまたは PowerShell ツールが拒否する文字が含まれていることを意味します：
 
-メッセージには、コマンドを実行するはずだったシェルツール（Bash または PowerShell）が示され、最後に拒否されたコマンドが表示されます。該当する各文字は `�` に置き換えられるため、その位置を確認できます:
+* **どちらのツールでも**：タブまたは改行以外の生の制御文字
+* **PowerShell ツール**：さらに U+FEFF または U+180E
+
+メッセージの末尾には拒否されたコマンドが表示され、拒否された各文字は `�` として示されます。次は Bash ツールの例です：
 
 ```text theme={null}
 No shell command in /my-skill was run, because the Bash tool does not accept one of them: command contains control characters that would be hidden in the approval dialog. Unprintable characters are shown as � below: remove them from the skill or command file, or from the arguments or options substituted into it.
@@ -3610,7 +3615,7 @@ build.sh --target�dist
 
 **対処方法:**
 
-* メッセージの最後に引用されたコマンド内の各 `�` を見つけます。それが表す文字を、スキルまたはコマンドのファイルから、あるいはファイルに代入される引数やオプションから削除します。
+* メッセージの末尾に引用されたコマンド内の各 `�` を見つけます。それが表す文字を、[スキルまたはコマンドファイル](https://code.claude.com/docs/ja/skills.md#where-skills-live)から、またはファイルに代入される引数や[オプション](https://code.claude.com/docs/ja/plugins/manifest-reference.md#user-configuration)から削除します。
 
 ### Input must be provided when using `--print`
 
@@ -3739,7 +3744,7 @@ Could not find merge-base with main. Pass the base branch explicitly (e.g. `/cod
 
 * **ベースブランチを渡さなかった場合**：Claude Code はリポジトリのデフォルトブランチと比較しており、上記の例のようにベースを明示的に渡すよう提案します
 * **クローン内にすでに存在するベースブランチを渡した場合**：ヒントは ``Make sure <branch> exists locally or on origin (try `git fetch origin <branch>`)`` となります
-* **クローン内に存在しないベースブランチを渡した場合**：Claude Code は比較の前に origin からそのブランチをフェッチしています。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたすべてのベースブランチについて `git fetch --unshallow origin` を提案していましたが、完全なクローンではこのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗します。
+* **クローン内に存在しないベースブランチを指定した場合**：Claude Code は比較の前に origin からそのブランチをフェッチします。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたすべてのベースブランチに対して `git fetch --unshallow origin` が提案されていましたが、完全なクローンではこのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗します。
 
 **対処方法：**
 
@@ -4567,6 +4572,19 @@ Read file_path cannot contain null bytes (\0). Remove the null byte and try agai
 * ユーザー側で行う必要のある操作はありません。エラーはツールの結果として Claude に返され、メッセージ自体が Claude に null バイトを削除して再度試すよう指示します
 
 v2.1.281 より前は、Read、Write、Edit、または NotebookEdit パスの null バイトがターン全体を `Path contains null bytes` という名前のエラーで終了し、ツールは実行されませんでした。
+
+### Command contains an invisible character
+
+[PowerShell ツール](https://code.claude.com/docs/ja/tools-reference.md#powershell-tool) が、U+FEFF または U+180E を含むコマンドの実行を拒否しました。
+
+```text theme={null}
+Error: command contains the invisible character U+FEFF (byte order mark) or U+180E (Mongolian vowel separator), and was not run. Remove the character, keep the text that needs it in a file that the command reads, or write it as $([char]0xFEFF) or $([char]0x180E) inside a double-quoted string
+```
+
+**What to do:**
+
+* **Claude が書いたコマンドの場合**: 修正する必要はありません。メッセージが Claude にコマンドの書き直し方を伝えます。
+* **スキルまたはコマンドファイルの場合**: メッセージは `No shell command in <name> was run` の後に続きます。[文字の場所と削除方法](#no-shell-command-was-run) を参照してください。
 
 ### File is too large to read as an image
 
@@ -5430,6 +5448,22 @@ Failed to run Claude Code: Error: Could not locate the Claude CLI on PATH. Launc
 * VS Code の外で新しい PowerShell ウィンドウを開き、`where.exe claude` を実行してください。パスが出力されない場合、CLI は PATH にありません。[PATH を確認する](https://code.claude.com/docs/ja/troubleshoot-install.md#verify-your-path) に従ってインストールディレクトリを追加してください。パスが出力される場合、エントリは PowerShell プロファイルから、または VS Code がまだ取得していない PATH 変更から来ています。次の 2 つのステップがこれらのケースをカバーしています。
 * PATH エントリを PowerShell プロファイルではなく、ユーザーまたはシステム環境変数として設定してください。拡張機能はプロファイルを実行しないため、そこにのみ存在する PATH 編集は拡張機能に到達しません。
 * PATH を変更した後、VS Code を再起動してください。拡張機能は VS Code が起動時にキャプチャした PATH をチェックするため、PATH 変更は再起動後にのみ有効になります。
+
+### The Claude Code program for this computer could not be found
+
+[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md) は、内部にバンドルされている Claude Code のコピーを探しましたが、このコンピューター向けにビルドされたものが見つかりませんでした。メッセージには、このコンピューターに必要なビルドが示されます。
+
+```text theme={null}
+The Claude Code program for this computer, the Linux (linux-x64) build, could not be found.
+```
+
+**対応方法：**
+
+* 拡張機能が保持しているビルドがメッセージに示されている場合、別のプラットフォーム向けの拡張機能パッケージがインストールされています。メッセージに示されているビルド向けに作られたパッケージをインストールしてください
+* 拡張機能が保持しているビルドがメッセージに示されていない場合は、エディターの Extensions ビューから Claude Code 拡張機能を再インストールしてください
+* または、いずれの場合も、[`claudeCode.claudeProcessWrapper`](https://code.claude.com/docs/ja/vs-code#extension-settings) を別途インストールした `claude` バイナリに設定してください
+
+v2.1.290 より前では、これは `Unsupported platform: <platform>-<arch>. No compatible Claude Code binary found.` として表示されていました。
 
 ### Claude Code への接続がこのメッセージの完了前に終了しました
 

@@ -79,7 +79,7 @@ Mac では `Cmd+Shift+P`、Windows と Linux では `Ctrl+Shift+P` で VS Code �
 
 > [!NOTE]
 >
-> ブラウザサインインが完了しても、コールバックがコンテナに到達しない場合は、ブラウザに表示されているコードをコピーして、ターミナルの `Paste code here if prompted` プロンプトに貼り付けます。これは、エディタのポート転送が localhost コールバックをルーティングしない場合に発生する可能性があります。
+> Anthropic のサインインについて：ブラウザが開かない場合、またはサインイン後に `localhost` 接続エラーが表示される場合は、ターミナルの貼り付けプロンプトの上に表示されるログイン URL を使用してください。その URL をブラウザにコピーしてサインインし、ブラウザに表示されるコードをそのプロンプトに貼り付けます。貼り付けても何も起こらない場合は、[WSL2、SSH、またはコンテナで OAuth ログインが失敗する](https://code.claude.com/docs/ja/troubleshoot-install.md#oauth-login-fails-in-wsl2-ssh-or-containers)を参照してください。
 
 ## 再構築時に認証と設定を保持する
 

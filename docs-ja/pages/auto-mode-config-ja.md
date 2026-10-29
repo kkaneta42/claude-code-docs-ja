@@ -155,42 +155,42 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
 
 すべてを一度に入力する必要はありません。合理的なロールアウト: デフォルトから始めて、ソース管理組織と主要な内部サービスを追加します。これにより、独自のリポジトリへのプッシュなど、最も一般的な誤検知が解決されます。次に信頼できるドメインとクラウドバケットを追加します。ブロックが発生したら残りを入力します。
 
-## `/auto-mode-setup` で環境エントリを生成する
+## `/auto-mode-setup` で environment エントリを生成する
 
-`/auto-mode-setup` を実行すると、Claude Code がプロジェクトと最近のセッションから `autoMode.environment` エントリを作成し、時には[ルールエントリ](#override-the-block-and-allow-rules)も作成します。ドラフトを承認すると、Claude Code は `~/.claude/settings.json` に書き込みます。
+`/auto-mode-setup` を実行すると、Claude Code がプロジェクトとそのプロジェクトでの最近のセッションから `autoMode.environment` エントリの草案を作成し、場合によっては[ルールエントリ](#override-the-block-and-allow-rules)の草案も作成します。草案を承認すると、Claude Code はそれを `~/.claude/settings.json` に書き込みます。
 
 > [!NOTE]
 >
-> `/auto-mode-setup` は Pro、Max、Team、Enterprise プラン、および Claude Console API キーで利用できます。Pro、Max、または Team プランでは v2.1.228 以降が必要です。ネイティブ Windows では v2.1.233 以降が必要です。Enterprise プランまたは Claude Console API キーでは v2.1.283 以降が必要です。セッションにこのコマンドが見当たらない場合は、[`/auto-mode-setup` が "Unknown command" を返す](#auto-mode-setup-returns-unknown-command)を参照してください。
+> `/auto-mode-setup` は Pro、Max、Team、Enterprise プラン、および Claude Console の API キーで利用できます。Pro、Max、Team プランでは v2.1.228 以降（ネイティブ Windows では v2.1.233 以降）が必要です。Enterprise プランまたは Claude Console の API キーでは v2.1.283 以降が必要です。セッションでこのコマンドが見つからない場合は、[`/auto-mode-setup` が「Unknown command」を返す](#auto-mode-setup-returns-unknown-command)を参照してください。
 
-### `/auto-mode-setup` が読み込むもの
+### `/auto-mode-setup` が読み取る内容
 
-`~/.claude/settings.json` に既に `autoMode` エントリが含まれている場合、Claude Code はまず環境リストに追加するか置き換えるかを尋ね、どちらの場合でも作成したルールを保持します。その後、Claude Code はこのプロジェクトの使用方法を尋ね、スキャンの前に 2 つのオプションスキャンを提供します。スキャンでは、Claude Code は常にこれらのソースを読み込みます：
+`~/.claude/settings.json` にすでに `autoMode` エントリがある場合、Claude Code はまず environment リストに追加するか置き換えるかを尋ねます。どちらの場合も、ユーザーが書いたルールは保持されます。次に Claude Code はこのプロジェクトの使い方を尋ね、スキャンを始める前に 2 つの任意のスキャンを提示します。スキャンでは、Claude Code は常に次のソースを読み取ります。
 
-* このプロジェクトの `CLAUDE.md`、`README.md`、設定ファイル、および git リモート
-* `autoMode` および `permissions.allow` 設定
-* Claude がこのプロジェクトの最近のセッションで実行したコマンドのホスト、バケット、コマンド名（メッセージは含まない）
+* このプロジェクトの `CLAUDE.md`、`README.md`、設定ファイル、git リモート
+* `autoMode` および `permissions.allow` の設定
+* このプロジェクトでの最近のセッションで Claude が実行したコマンドに含まれるホスト、バケット、コマンド名（ユーザーのメッセージは読み取りません）
 
-2 つのオプションスキャンは各々1 つのソースを追加します：
+2 つの任意のスキャンは、それぞれ次のソースを 1 つずつ追加します。
 
-* シェル履歴内の各コマンドの最初の単語
-* ホームディレクトリ下のリポジトリのリモートホストと名前
+* シェル履歴にある各コマンドの最初の単語
+* ホームディレクトリ配下にあるリポジトリのリモートホストと名前
 
-### ドラフトを確認して保存する
+### 草案を確認して保存する
 
-Claude Code はバックグラウンドでスキャンを実行し、ドラフトを表示します。ドラフト全体を承認または破棄し、その後 `~/.claude/settings.json` を編集して個別のエントリを調整します。承認すると、Claude Code はドラフトを書き込み、既に持っている設定と調整します：
+Claude Code はバックグラウンドでスキャンを行い、その後草案を表示します。草案は全体として承認または破棄するため、個々のエントリを調整するには後で `~/.claude/settings.json` を編集してください。承認すると、Claude Code は草案を書き込み、既存の設定と整合させます。
 
-* Claude Code は `"$defaults"` なしで `environment` リストを書き込みます。ドラフトが変更されていない組み込みエントリを明示しているため
-* Claude Code は、ドラフトがエントリを追加する `allow`、`soft_deny`、および `hard_deny` リストのそれぞれに `"$defaults"` を含めます。ただし、既に `allow` リストを `"$defaults"` なしで作成している場合は除きます。そのため、置き換えていない[組み込みルール](#override-the-block-and-allow-rules)は有効なままです
-* 保存後、Claude Code は `~/.claude/settings.json` 内の `permissions.allow` ルールを削除することを提案します。オートモードが無視するもの（`Bash(*)` など）、または破壊的なコマンドを自動承認するもの
+* Claude Code は `environment` リストを `"$defaults"` なしで書き込みます。草案には、変更されなかった組み込みエントリが明記されているためです
+* Claude Code は、草案がエントリを追加する `allow`、`soft_deny`、`hard_deny` の各リストに `"$defaults"` を含めます（ただし、`"$defaults"` を含まない `allow` リストをすでに書いている場合を除きます）。これにより、置き換えていない[組み込みルール](#override-the-block-and-allow-rules)が引き続き有効になります
+* 保存後、Claude Code は `~/.claude/settings.json` 内の `permissions.allow` ルールのうち、`Bash(*)` のように auto モードが無視するもの、または破壊的なコマンドを自動承認するものを削除するよう提案します
 
-その後、`claude auto-mode config` を実行して[有効な結果を確認](#inspect-the-defaults-and-your-effective-config)します。
+その後、`claude auto-mode config` を実行して[実際に適用される結果を確認](#inspect-the-defaults-and-your-effective-config)してください。
 
 ### `/auto-mode-setup` をオフにする
 
-オートモードが複数のアクションをブロックし、まだ `autoMode.environment` エントリがない場合、Claude Code はターンの終わりに「オートモードに環境について教えますか？」というタイトルのダイアログを表示し、`/auto-mode-setup` を実行することを提案します。提案を停止してコマンドを保持するには、そのダイアログで **\[今後表示しない]** を選択します。
+auto モードが複数のアクションをブロックし、かつ `autoMode.environment` エントリがまだない場合、Claude Code はターンの終わりに「Teach auto mode about your environment?」というタイトルのダイアログを表示し、`/auto-mode-setup` を代わりに実行することを提案します。コマンドは残したまま提案だけを止めるには、そのダイアログで **Don't show again** を選択します。
 
-コマンドと提案の両方をオフにするには、この[`skillOverrides`](https://code.claude.com/docs/ja/skills#override-skill-visibility-from-settings) エントリを `~/.claude/settings.json` に追加します：
+コマンドと提案の両方をオフにするには、次の [`skillOverrides`](https://code.claude.com/docs/ja/skills#override-skill-visibility-from-settings) エントリを `~/.claude/settings.json` に追加します。
 
 ```json theme={null}
 {
@@ -200,17 +200,17 @@ Claude Code はバックグラウンドでスキャンを実行し、ドラフ�
 }
 ```
 
-`/auto-mode-setup` は[バンドルされたスキル](https://code.claude.com/docs/ja/skills.md#bundled-skills)ではなく組み込みコマンドなため、この `skillOverrides` エントリは引き続き適用されますが、[`disableBundledSkills`](https://code.claude.com/docs/ja/settings-reference#disablebundledskills) はオフにしません。
+`/auto-mode-setup` は[バンドルスキル](https://code.claude.com/docs/ja/skills.md#bundled-skills)ではなく組み込みコマンドであるため、この `skillOverrides` エントリは適用されますが、[`disableBundledSkills`](https://code.claude.com/docs/ja/settings-reference#disablebundledskills) ではオフになりません。
 
-### `/auto-mode-setup` が "Unknown command" を返す
+### `/auto-mode-setup` が「Unknown command」を返す
 
-Claude Code のプロンプトで `/auto-mode-setup` と入力したときに `Unknown command: /auto-mode-setup` と表示される場合は、以下の原因を確認してください：
+Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown command: /auto-mode-setup` と表示される場合は、次の原因を確認してください。
 
-* **インストールまたはアップグレード後の最初のセッション**：新しいセッションを開始してください。そこでもコマンドが見当たらない場合は、[以降のセッションもコマンドなしで開始されるセットアップ](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)を参照してください。
-* **古いバージョン**：シェルで `claude --version` を実行してください。バージョンが[プランの最小要件](#generate-environment-entries)を下回っている場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してください。
-* **テレメトリがオフ、サードパーティプロバイダー、または Claude apps ゲートウェイ**：v2.1.304 より前では、[フィーチャーフラグ取得がオフのセッション](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)ではこのコマンドを利用できません。セッションがこれに該当する場合は、[Claude Code を v2.1.304 以降に更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してください。
+* **インストールまたはアップグレード後の最初のセッション**：新しいセッションを開始してください。それでもコマンドが見つからない場合は、[以降のセッションでもコマンドなしで開始されるセットアップ](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)を参照してください。
+* **古いバージョン**：シェルで `claude --version` を実行します。バージョンが[プランの最小要件](#generate-environment-entries)を下回っている場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してください。
+* **テレメトリがオフ、サードパーティプロバイダー、または Claude アプリのゲートウェイ**：v2.1.304 より前では、[フィーチャーフラグの取得がオフになっているセッション](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)ではこのコマンドを利用できません。セッションがこれに該当する場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.304 以降にしてください。
 
-[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、代わりに `/auto-mode-setup isn't available in this environment.` と出力されます。ターミナルの対話型セッションで実行してください。
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、このコマンドは代わりに `/auto-mode-setup isn't available in this environment.` と表示します。ターミナルの対話型セッションで実行してください。
 
 ## ブロックルールと許可ルールをオーバーライドする
 

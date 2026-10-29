@@ -120,127 +120,137 @@ Claude Code は最初に `managed-settings.json` をマージし、次にディ�
 * **[`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces) と [`managedMcpServers`](https://code.claude.com/docs/ja/settings-reference#managedmcpservers)**: 同じ名前を持つ後のエントリが前のエントリ全体を置き換えます
 * **[`modelPicker`](https://code.claude.com/docs/ja/settings-reference#modelpicker)**: 後のラインナップが前のラインナップ全体を置き換えます
 
-## Claude Code が管理されたソースを組み合わせる方法
+## Claude Code が管理ソースを組み合わせる方法
 
-組織が同じマシンに複数の管理されたソースを配信する場合、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) キーは Claude Code が他のソースに対して何を行うかを決定します。
+組織が同じマシンに複数の管理ソースを配信する場合、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) キーによって、Claude Code がそれ以外のソースをどう扱うかが決まります。
 
-* **`"first-wins"`、デフォルト**: Claude Code は、少なくとも 1 つのポリシーキーを配信する最も高いランクのソースを使用し、[すべての管理者ソースから読み取られるキー](#keys-read-from-every-admin-source)内のキーを除いて、残りを無視します。Claude Code はスキップするソースについて警告を表示しません。`/status` は[使用したソースとスキップしたソースに名前を付けます](#read-the-source-in-/status)。
-* **`"merge"`**: Claude Code はポリシーキーを配信するすべての管理者ソースを適用し、キーの種類ごとに組み合わせます。ほとんどのキーでは高いランクのソースの値が適用され、リストは和集合、ロックは最も厳しい値を取ります。[すべての管理されたソースを構成する](#compose-every-managed-source)では、キーを設定する場所と各種類のキーがどのように組み合わされるかを説明しています。Claude Code v2.1.242 以降が必要です。
+* **`"first-wins"`（デフォルト）**：Claude Code は、少なくとも 1 つのポリシーキーを配信する最上位のソースを使用し、残りのソースはマージせずに無視します。ただし、[すべての管理ソースから読み取られるキー](#keys-read-from-every-admin-source)に挙げたキーは例外です。Claude Code はスキップしたソースについて警告を表示しません。`/status` は[使用したソースとスキップしたソースを示します](#read-the-source-in-/status)。
+* **`"merge"`**：Claude Code はポリシーキーを配信するすべての管理ソースを適用し、キーの種類ごとに組み合わせます。ほとんどのキーでは上位のソースの値が適用され、リストは和集合になり、ロックは最も厳しい値を取ります。このキーを設定する場所と、各種類のキーの組み合わせ方については、[すべての管理ソースを組み合わせる](#compose-every-managed-source)を参照してください。Claude Code v2.1.242 以降が必要です。
 
-両方の設定は同じ方法でソースをランク付けします。これらの用語はこのセクション全体で繰り返されます。
+どちらの設定でも、ソースの順位付けは同じです。このセクションでは次の用語が繰り返し登場します。
 
-* **ポリシーキー**: 2 つの制御キー（[`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) と [`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior)）以外のすべての設定キー。これらのキーのみを含む管理設定ファイルまたは MDM ポリシーはカウントされず、Claude Code は次のソースに移動します。
-* **管理者ソース**: 以下の最初の 3 つのソースの 1 つ。HKCU レジストリはユーザーが書き込み可能であり、1 つではありません。
+* **ポリシーキー**：2 つの制御キー、[`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) と [`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) 以外のすべての設定キーです。これらのキーしか含まない管理設定ファイルや MDM ポリシーはカウントされず、Claude Code は次のソースに進みます。
+* **管理ソース**：以下の最初の 3 つのソースのいずれかです。HKCU レジストリはユーザーが書き込み可能であり、管理ソースには含まれません。
 
-Claude Code は、最初に最優先度の順でソースをチェックします。
+Claude Code は、優先度の高い順に次の順序でソースを確認します。
 
-1. リモート設定。claude.ai から[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)として、または[Claude アプリゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)によって配信されます。Claude Code は、セッションが[適格な認証情報](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)で Anthropic の API に直接認証する場合、`/login` でゲートウェイにサインインする場合、または[そのセッションに設定を提供する](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#apply-code-settings-in-the-code-tab)ゲートウェイの背後で Claude Desktop の Code タブで実行される場合にのみ、このソースをフェッチします。他のプロバイダー、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指す場合、次のソースから開始します
-2. MDM または OS レベルのポリシー: macOS plist または HKLM レジストリキー
-3. 管理設定ファイル、`managed-settings.d/*.json` と `managed-settings.json` をマージしたもの
-4. Windows 上の HKCU レジストリ、および WSL 上で HKLM レジストリまたは Windows 管理設定ファイルが [`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) をオンにし、HKCU 値もそれを設定している場合の HKCU レジストリ。Claude Code は、[それより上に管理者ドキュメントが存在せず](#present-admin-documents)、[ホスト提供の親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供しない場合にのみこれを読み取ります
+1. リモート設定。claude.ai から[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)として、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)によって配信されます。Claude Code がこのソースを取得するのは、セッションが[対象となる認証情報](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)で Anthropic の API に直接認証する場合、`/login` でゲートウェイにサインインする場合、または[そのセッションに設定を提供する](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#apply-code-settings-in-the-code-tab)ゲートウェイの背後で Claude Desktop の Code タブで実行される場合のみです。他のプロバイダーの場合、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指している場合は、次のソースから開始します
+2. MDM または OS レベルのポリシー：macOS の plist または HKLM レジストリキー
+3. 管理設定ファイル。`managed-settings.d/*.json` と `managed-settings.json` がマージされたもの
+4. HKCU レジストリ。Windows の場合、および WSL では HKLM レジストリまたは Windows の管理設定ファイルが [`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) をオンにし、かつ HKCU の値でもそれが設定されている場合です。Claude Code がこれを読み取るのは、[それより上位に管理ドキュメントが存在せず](#present-admin-documents)、かつ[ホストが提供する親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供していない場合のみです
 
-このダイアグラムはランク付けを示し、どちらの設定でも Claude Code が最初の 3 つのソースから読み取るクロスソースキーの例を示しています。
+次の図は、この順位付けと、どちらの設定でも Claude Code が最初の 3 つのソースから読み取るソース横断キーの例を示しています。
 
-![リモート設定から上部を通じて MDM、管理設定ファイル、および下部の HKCU レジストリにランク付けされた 4 つの管理設定ソースを示すダイアグラム。デフォルトではポリシーキーを持つ最初のソースがポリシーを提供し、残りはスキップされます。managedSourcesBehavior を merge に設定すると、ポリシーキーを持つすべての管理者ソースが寄与し、キーの種類ごとに組み合わされ、HKCU レジストリは除外されます。サイドパネルは、サンドボックスロック、forceRemoteSettingsRefresh、および変数ごとの env マージなどのクロスソースキーが、HKCU レジストリを除外するすべての管理者ソースから読み取られることを示しています。](https://mintcdn.com/claude-code/zuWID2B-Rxm8DEC8/images/managed-source-precedence.svg?fit=max\&auto=format\&n=zuWID2B-Rxm8DEC8\&q=85\&s=53f6be49f06eff48e01422c8ae1bc2e6)
+![4 つの管理設定ソースを、最上位のリモート設定から MDM、管理設定ファイルを経て最下位の HKCU レジストリまで順位付けして示した図。デフォルトでは、ポリシーキーを持つ最初のソースがポリシーを提供し、残りはスキップされます。managedSourcesBehavior を merge に設定すると、ポリシーキーを持つすべての管理ソースがキーの種類ごとに組み合わされて反映され、HKCU レジストリは対象外のままです。サイドパネルには、サンドボックスのロック、forceRemoteSettingsRefresh、変数ごとの env マージなどのソース横断キーが、HKCU レジストリを除くすべての管理ソースから読み取られることが示されています。](https://mintcdn.com/claude-code/zuWID2B-Rxm8DEC8/images/managed-source-precedence.svg?fit=max\&auto=format\&n=zuWID2B-Rxm8DEC8\&q=85\&s=53f6be49f06eff48e01422c8ae1bc2e6)
 
-### 管理者ドキュメントが存在するとみなされる場合
+### 管理ドキュメントが存在するとみなされる場合
 
-[管理されたソースのランク付け](#how-claude-code-combines-managed-sources)において、Claude Code は、存在する管理者ドキュメントの下にあるユーザーが書き込み可能な HKCU レジストリを決して適用しません。ドキュメントは次の場合に存在するとみなされます。
+[管理ソースの順位付け](#how-claude-code-combines-managed-sources)において、Claude Code は、存在する管理ドキュメントの下位にあるユーザー書き込み可能な HKCU レジストリを適用することはありません。ドキュメントは次の場合に存在するとみなされます。
 
-* ポリシーキーを `null` 以外の値に設定している場合（Claude Code が読み取れない値であっても）
-* 存在するものの読み取れない HKLM 値、管理設定ファイル、または `managed-settings.d` ディレクトリである場合
+* いずれかのポリシーキーを `null` 以外の値に設定している場合。Claude Code が読み取れない値であっても該当します
+* 存在するものの読み取れない HKLM の値、管理設定ファイル、または `managed-settings.d` ディレクトリである場合
 
-WSL では、`/etc/claude-code` もユーザーが書き込み可能であり、[`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) エントリに、Windows のドキュメントがそれより上に位置する場合が示されています。
+WSL では `/etc/claude-code` もユーザーが書き込み可能です。Windows のドキュメントがそれより上位になる条件については、[`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) の項目を参照してください。
 
-### すべての管理者ソースから読み取られるキー
+### すべての管理ソースから読み取られるキー
 
-デフォルトの `"first-wins"` 設定では、Claude Code はほとんどのキーを[選択したソース](#how-claude-code-combines-managed-sources)からのみ読み取り、選択したソースがそのキーを設定しないままにしている場合でも、低いランクのソースの値を無視します。
+デフォルトの `"first-wins"` 設定では、Claude Code はほとんどのキーを[選択したソース](#how-claude-code-combines-managed-sources)からのみ読み取り、選択したソースでそのキーが未設定であっても、下位のソースにある値は無視します。
 
-いくつかのキーは異なる動作をします。Claude Code はそれらをすべての管理者ソースから読み取るため、選択したソースが設定しない場合でも、低いランクの MDM ポリシーまたは管理設定ファイルがそれらを設定できます。Claude Code はユーザーが書き込み可能な HKCU レジストリをそのスキャンから除外します。HKCU が唯一のソースであり、ホストが親設定を提供しない場合、HKCU は選択されたソースのように適用されます。
+いくつかのキーは異なる動作をします。Claude Code はこれらのキーをすべての管理ソースから読み取るため、選択したソースが設定していない場合でも、下位の MDM ポリシーや管理設定ファイルで設定できます。Claude Code はユーザー書き込み可能な HKCU レジストリをこの走査の対象外とします。HKCU が唯一のソースであり、ホストが親設定を提供していない場合は、HKCU は選択された他のソースと同様に適用されます。
 
-クロスソースキーには以下が含まれます。
+ソース横断キーには次のものがあります。
 
-* `sandbox.network.allowManagedDomainsOnly` と `sandbox.filesystem.allowManagedReadPathsOnly`: 任意の管理者ソースの `true` がロックをオンにします。ロックがオンの間、Claude Code はロックするアロウリスト（`sandbox.network.allowedDomains` と `WebFetch(domain:...)` アロー ルの組み合わせ、または `sandbox.filesystem.allowRead`）をすべての管理者ソースにまたがって和集合にします。ロックがない場合、Claude Code はアロウリストを他のキーのように扱うため、`"first-wins"` では選択されていない管理者ソースのアロウリストは無視されます。
+* `sandbox.network.allowManagedDomainsOnly` と `sandbox.filesystem.allowManagedReadPathsOnly`：いずれかの管理ソースで `true` が設定されていると、ロックがオンになります。ロックがオンの間、Claude Code はロック対象の許可リスト、つまり `sandbox.network.allowedDomains` と `WebFetch(domain:...)` 許可ルールの組み合わせ、または `sandbox.filesystem.allowRead` を、すべての管理ソースにわたって和集合にします。ロックがない場合、Claude Code は許可リストを他のキーと同様に扱うため、`"first-wins"` では選択されなかった管理ソースの許可リストは無視されます
 * `allowAllClaudeAiMcps`
-* `allowManagedMcpServersOnly`: 任意の管理者ソースの `true` が MCP アロウリストロックをオンにします。ロックがオンの間、管理された `allowedMcpServers` リストは、1 つを設定する最も高いランクの管理者ソースから取得されます。サーバー管理リストは、低いソースのリストと組み合わせるのではなく、置き換えます。
+* `allowManagedMcpServersOnly`：いずれかの管理ソースで `true` が設定されていると、MCP 許可リストのロックがオンになります。ロックがオンの間、管理された `allowedMcpServers` リストは、それを設定している最上位の管理ソースから取得されます。サーバー管理のリストは、下位のソースのリストと組み合わされるのではなく、それを置き換えます。
 
-  管理者ソースがリストを設定しない場合、[親設定](#let-an-embedding-host-add-policy)がリストを提供しない限り、デニーリストを通過するすべてのサーバーが読み込まれます。
+  どの管理ソースもリストを設定していない場合、[親設定](#let-an-embedding-host-add-policy)がリストを提供しない限り、拒否リストを通過するすべてのサーバーが読み込まれます。
 
-  ロックがない場合、Claude Code は適用する管理ソースから `allowedMcpServers` を読み取るため、`"first-wins"` では選択されていない管理者ソースのリストは無視されます。Claude Code v2.1.273 以降が必要です。
-* `deniedMcpServers` と [`disableClaudeAiConnectors`](https://code.claude.com/docs/ja/settings-reference#disableclaudeaiconnectors): 任意の管理者ソースのエントリまたは `true` が適用されます。Claude Code v2.1.273 以降が必要です。
-* サンドボックスバイナリパス `sandbox.bwrapPath` と `sandbox.socatPath`
-* サンドボックス `ripgrep` バイナリ、[`sandbox.ripgrep`](https://code.claude.com/docs/ja/settings-reference#sandbox-ripgrep)
+  ロックがない場合、Claude Code は適用する管理ソースから `allowedMcpServers` を読み取るため、`"first-wins"` では選択されなかった管理ソースのリストは無視されます。Claude Code v2.1.273 以降が必要です
+* `deniedMcpServers` と [`disableClaudeAiConnectors`](https://code.claude.com/docs/ja/settings-reference#disableclaudeaiconnectors)：いずれかの管理ソースにあるエントリまたは `true` が適用されます。Claude Code v2.1.273 以降が必要です
+* サンドボックスのバイナリパス `sandbox.bwrapPath` と `sandbox.socatPath`
+* サンドボックスの `ripgrep` バイナリ、[`sandbox.ripgrep`](https://code.claude.com/docs/ja/settings-reference#sandbox-ripgrep)
 * `sandbox.filesystem.disabled` と `sandbox.network.strictAllowlist`
-* [`useAutoModeDuringPlan`](https://code.claude.com/docs/ja/settings-reference#useautomodeduringplan)、[`syncClaudeAiSkills`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiskills)、および [`syncClaudeAiPlugins`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiplugins)。任意の管理者ソースの `false` が動作をオフにします。開発者のユーザーまたはローカル設定の `false` もそれをオフにします。各キーは拒否のみが可能です。
-* [`enableArtifact`](https://code.claude.com/docs/ja/settings-reference#enableartifact)。任意の管理者ソースの `false` が[Artifact ツール](https://code.claude.com/docs/ja/artifacts.md)をオフにします。開発者のユーザー、プロジェクト、またはローカル設定の `false` もそれをオフにし、ソースはそれをオンに戻しません。[どの下位レベルの値がまだカウントされるか](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を参照してください。Claude Code v2.1.242 以降が必要です。
-* [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel)。任意の管理者ソースの最も低いキャップが適用されます。開発者が自分の設定または `--settings` で低いキャップを設定する場合、Claude Code はそれを適用します。ソースはキャップを上げることはできません。Claude Code v2.1.267 以降が必要です。
-* `attribution` のコミットトレーラーオプトアウト、または非推奨の `includeCoAuthoredBy` から任意のティア
+* [`useAutoModeDuringPlan`](https://code.claude.com/docs/ja/settings-reference#useautomodeduringplan)、[`syncClaudeAiSkills`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiskills)、[`syncClaudeAiPlugins`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiplugins)。いずれかの管理ソースからの `false` でその動作がオフになります。開発者のユーザー設定またはローカル設定の `false` でもオフになります。各キーは拒否することしかできません
+* [`enableArtifact`](https://code.claude.com/docs/ja/settings-reference#enableartifact)。いずれかの管理ソースからの `false` で [Artifact ツール](https://code.claude.com/docs/ja/artifacts.md)がオフになります。開発者のユーザー設定、プロジェクト設定、またはローカル設定の `false` でもオフになり、どのソースからも再びオンにすることはできません。[下位レベルのどの値が引き続き有効か](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を参照してください。Claude Code v2.1.242 以降が必要です
+* [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel)。いずれかの管理ソースにある最も低い上限が適用されます。開発者が自身の設定または `--settings` でより低い上限を設定した場合は、Claude Code はそちらを適用します。どのソースも上限を引き上げることはできません。Claude Code v2.1.267 以降が必要です
+* 任意の階層からの、`attribution` または非推奨の `includeCoAuthoredBy` におけるコミットトレーラーのオプトアウト
 * [`forceRemoteSettingsRefresh`](https://code.claude.com/docs/ja/server-managed-settings)
-* `env`。管理者ソース全体で変数ごとにマージされます。各変数は、それを定義する最も高い優先度のソースから取得されるため、低いソースは高いソースが設定しないままにした変数を埋めます。いくつかの変数は独自のルールに従います。[管理されたソース全体のキーごとの例外](https://code.claude.com/docs/ja/server-managed-settings.md#per-key-exceptions-across-managed-sources)は各変数に名前を付けます。Claude Code v2.1.223 以降が必要です。v2.1.223 より前では、Claude Code は選択されたソースの全体 `env` ブロックのみを適用しました。
+* `env`。管理ソース全体で変数ごとにマージされます。各変数はそれを定義している最も優先度の高いソースから取得されるため、上位のソースが未設定のままにした変数を下位のソースが補います。いくつかの変数は独自のルールに従います。[管理ソース間でのキーごとの例外](https://code.claude.com/docs/ja/server-managed-settings.md#per-key-exceptions-across-managed-sources)でそれぞれを挙げています。Claude Code v2.1.223 以降が必要です。v2.1.223 より前は、Claude Code は選択したソースの `env` ブロック全体のみを適用していました
 
-[ゲートウェイログインキー](#choose-a-delivery-mechanism)は別のルールに従います。Claude Code はサーバー管理設定からそれらを読み取ることはないため、サーバー管理設定が選択されたソースである間、ポリシーキーを持つマシン上の最も高いランクの管理者ソースがそれらを提供します。それより下にランク付けされた管理者ソースの値、または HKCU レジストリの値は無視されます。
+[`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) には独自のルールがあります。その項目のスコープに関する注記で、マシンで設定されたリストがサーバー管理のリストとどのように組み合わされるかを説明しています。Claude Code v2.1.285 以降が必要です。
 
-[`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) には独自のルールがあります。そのエントリの Scope の注記で、マシン上で設定されたリストがサーバー管理のリストとどのように組み合わされるかを説明しています。Claude Code v2.1.285 以降が必要です。
+管理ソースが `allowManagedMcpServersOnly` または `allowedMcpServers` リストを設定しているものの、その値が有効になっていない場合、`/status` と `claude doctor` はそのソースとキーを表示します。
 
-管理者ソースが `allowManagedMcpServersOnly` または `allowedMcpServers` リストを設定し、その値が実行中のものではない場合、`/status` と `claude doctor` はそのソースとキーに名前を付けます。
+#### どの管理ソースがログインキーを提供するか
 
-### すべての管理されたソースを構成する
+MDM ポリシーまたは管理設定ファイルがあるマシンでは、[リモート設定](#how-claude-code-combines-managed-sources)でも設定されているキーであっても、Claude Code はログインキーをそのポリシーまたはファイルから取得します。claude.ai の管理コンソールからの設定はリモート設定であるため、[`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid) などのログインキーは MDM ポリシーまたはファイルで設定してください。
 
-組織が配信するすべての管理者ソースを Claude Code に適用させるには、デプロイする最も高いランクのソースで [`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) を `"merge"` に設定します。Claude Code はキーまたはポリシーキーを持つ最も高いランクのソースからのみキーを読み取るため、低いソースはそれ自体をそれより上のソースとのマージにオプトインすることはできず、サーバー管理設定を受け取らないマシンは MDM プロファイルにもキーが必要です。ユーザーが書き込み可能な HKCU レジストリは別のソースとマージされることはありません。Claude Code v2.1.242 以降が必要です。
+マシンに MDM ポリシーと管理設定ファイルの両方がある場合は、MDM ポリシーを使用してください。そのポリシーがいずれかの[ポリシーキー](#how-claude-code-combines-managed-sources)を設定している場合、Claude Code は、[`managedSourcesBehavior: "merge"` の下でも](#compose-every-managed-source)、ファイル内のログインキーを無視します。
 
-`"merge"` では、Claude Code は低いソースのリストエントリ（`permissions.allow` ルールやフック など）をポリシーに追加するため、最も高いランクより下にランク付けされたすべてのソースが管理者の制御下にある場合にのみオンにします。
+ログインキーは次のとおりです。
 
-この表は、`"merge"` の下で Claude Code が各種類のキーをどのように組み合わせるかを示しています。[`managedSourcesBehavior` エントリ](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior)は 3 つの行のすべてのキーに名前を付けます。制限アロウリスト、全体で取得される値、および最も高いランクのソースからのみ読み取られるキー。
+* `"claudeai"` または `"console"` に設定された `forceLoginOrgUUID` と `forceLoginMethod`：ポリシーまたはファイルでいずれかのキーが省略されている場合は、リモート設定の値が適用されます。すべてのクライアントが v2.1.299 以降を実行するまでは、claude.ai の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)でもこれらのキーを設定してください
+* [ゲートウェイのログインキー](#choose-a-delivery-mechanism)：Claude Code は、ゲートウェイへのサインインにリモート設定の値を使用しません
 
-| キーの種類 | Claude Code がそれを組み合わせる方法 | 例 |
+### すべての管理ソースを組み合わせる
+
+組織が配信するすべての管理ソースを Claude Code に適用させるには、デプロイする最上位のソースで [`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) を `"merge"` に設定します。Claude Code はこのキーを、このキーまたはポリシーキーのいずれかを含む最上位のソースからのみ読み取ります。そのため、下位のソースが自らオプトインして上位のソースとマージすることはできず、サーバー管理設定を一切受け取らないマシンでは MDM プロファイルにもこのキーが必要です。ユーザー書き込み可能な HKCU レジストリが他のソースとマージされることはありません。Claude Code v2.1.242 以降が必要です。
+
+`"merge"` では、Claude Code は `permissions.allow` ルールやフックなど、下位のソースのリストエントリをポリシーに追加します。そのため、最上位のソースより下位にあるすべてのソースが管理者の管理下にある場合にのみ、これをオンにしてください。
+
+次の表は、`"merge"` で Claude Code が各種類のキーをどのように組み合わせるかを示しています。[`managedSourcesBehavior` の項目](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior)では、制限用の許可リスト、値全体を取得するもの、最上位のソースからのみ読み取られるキーの 3 つの行について、すべてのキーを挙げています。
+
+| キーの種類 | Claude Code での組み合わせ方 | 例 |
 | :- | :- | :- |
-| リスト | すべてのソースからのエントリを組み合わせます | `permissions.allow`、`hooks`、`sandbox.network.allowedDomains`、`deniedMcpServers`、`deniedModels` |
-| ロック | 任意のソースが設定する最も厳しい値を適用します。より緩い値は最も高いランクのソースからのみ適用されます | `allowManagedHooksOnly`、`permissions.disableBypassPermissionsMode`、`crossSessionInbound`、`availableModelsMatch` |
-| 制限アロウリスト | それを設定する最も高いランクのソースから全体でリストを取得し、低いソースからエントリを追加しません | `availableModels`、`allowedMcpServers`、`strictKnownMarketplaces`、`allowedChannelPlugins`、および `fallbackModel` チェーン |
-| 全体で取得される値 | それを設定する最も高いランクのソースから全体で値を取得し、低いソースからエントリまたはフィールドを組み合わせません | `sandbox.credentials.awsPairs`、`sandbox.ripgrep` |
-| 提供される MCP サーバー | すべてのソースからサーバー名を組み合わせます。2 つのソースが同じ名前を設定する場合、最も高いランクのソースの全体エントリを適用します | `managedMcpServers` |
-| 最も高いランクのソースからのみ読み取られるキー | 最も高いランクのソースがそれを設定しないままにしている場合でも、すべての低いソースのキーを無視します | `apiKeyHelper` などの認証情報ヘルパー、`forceLoginOrgUUID` などのログインピン、`modelPicker`、`permissions.defaultMode` |
-| `env` | 管理者ソース全体で変数ごとにマージされます。どちらの設定でも、[すべての管理者ソースから読み取られるキー](#keys-read-from-every-admin-source)で説明されています | |
-| その他のすべてのキー | それを設定する最も高いランクのソースから値を取得します | `model`、`cleanupPeriodDays` |
+| リスト | すべてのソースのエントリを組み合わせます | `permissions.allow`、`hooks`、`sandbox.network.allowedDomains`、`deniedMcpServers`、`deniedModels` |
+| ロック | いずれかのソースが設定する最も厳しい値を適用します。より緩い値は最上位のソースからの場合のみ適用されます | `allowManagedHooksOnly`、`permissions.disableBypassPermissionsMode`、`crossSessionInbound`、`availableModelsMatch` |
+| 制限用の許可リスト | それを設定している最上位のソースからリスト全体を取得し、下位のソースのエントリは追加しません | `availableModels`、`allowedMcpServers`、`strictKnownMarketplaces`、`allowedChannelPlugins`、および `fallbackModel` チェーン |
+| 値全体を取得するもの | それを設定している最上位のソースから値全体を取得し、下位のソースのエントリやフィールドは組み合わせません | `sandbox.credentials.awsPairs`、`sandbox.ripgrep` |
+| 提供される MCP サーバー | すべてのソースのサーバー名を組み合わせます。2 つのソースが同じ名前を設定している場合は、上位のソースのエントリ全体を適用します | `managedMcpServers` |
+| 最上位のソースからのみ読み取られるキー | 最上位のソースでそのキーが未設定であっても、下位のすべてのソースにあるそのキーを無視します | `modelPicker`、`permissions.defaultMode`、および `apiKeyHelper` などの認証情報ヘルパー |
+| `env` | どちらの設定でも、[すべての管理ソースから読み取られるキー](#keys-read-from-every-admin-source)で説明しているとおり、管理ソース全体で変数ごとにマージします | |
+| ログインキー | どちらの設定でも、MDM ポリシーまたは管理設定ファイルのうち、[ポリシーキー](#how-claude-code-combines-managed-sources)を含む上位の方から、[リモート設定より優先して](#which-managed-source-supplies-login-keys)取得します | `forceLoginOrgUUID`、`forceLoginMethod`、および[ゲートウェイのログインキー](#choose-a-delivery-mechanism) |
+| その他すべてのキー | それを設定している最上位のソースから値を取得します | `model`、`cleanupPeriodDays` |
 
-マシンで組み合わされたソースを確認するには、[`/status` の `Setting sources` 行を読み取ります](#read-the-source-in-/status)。そのセクションは各ラベルが何を意味するかを説明しています。
+マシンでどのソースが組み合わされたかを確認するには、[`/status` の `Setting sources` 行を読みます](#read-the-source-in-/status)。そのセクションで各ラベルの意味を説明しています。
 
-### ヘルパープログラムでポリシーを計算する
+### ヘルパープログラムでポリシーを算出する
 
-[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) は MDM ポリシーまたは管理設定ファイルが名前を付ける実行可能ファイルであり、Claude Code はそれを実行して起動時に管理設定を計算します。選択されたソースが 1 つを構成し、ヘルパーが `managedSettings` オブジェクトを出力する場合、その出力は Claude Code が読み取る内容を変更します。
+[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) は、MDM ポリシーまたは管理設定ファイルで指定する実行ファイルで、Claude Code は起動時にこれを実行して管理設定を算出します。選択したソースがヘルパーを構成しており、そのヘルパーが `managedSettings` オブジェクトを出力すると、その出力によって Claude Code が読み取る内容が変わります。
 
-* **出力された `managedSettings` オブジェクトはセッションの唯一の管理設定です**。これは[それが他の方法で読み取るすべての管理者ソースからのキー](#keys-read-from-every-admin-source)を含みます。ただし、[`forceRemoteSettingsRefresh` は独自の起動ルールを持っています](https://code.claude.com/docs/ja/settings-reference#forceremotesettingsrefresh)。
+* **出力された `managedSettings` オブジェクトが、そのセッションの唯一の管理設定になります**。これは、[通常はすべての管理ソースから読み取るキー](#keys-read-from-every-admin-source)にも当てはまります。ただし、[独自の起動時ルールを持つ `forceRemoteSettingsRefresh`](https://code.claude.com/docs/ja/settings-reference#forceremotesettingsrefresh) は除きます
 
-ヘルパー実行が失敗する場合、および 1 つが失敗する場合に Claude Code が何を行うかについては、[ヘルパー失敗](https://code.claude.com/docs/ja/settings-reference.md#helper-failures)を参照してください。
+どのようなヘルパーの実行が失敗とみなされるか、また失敗した場合に Claude Code がどうするかについては、[ヘルパーの失敗](https://code.claude.com/docs/ja/settings-reference.md#helper-failures)を参照してください。
 
 ### 埋め込みホストにポリシーを追加させる
 
-別のアプリケーション（Claude Desktop、IDE 拡張機能、Agent SDK アプリなど）が Claude Code を起動する場合、そのホストは SDK `managedSettings` オプションを通じて独自の管理設定を渡すことができます。Claude Code はこれらを親設定と呼びます。
+Claude Desktop、IDE 拡張機能、Agent SDK アプリなど、別のアプリケーションが Claude Code を起動する場合、そのホストは SDK の `managedSettings` オプションを通じて独自の管理設定を渡すことができます。Claude Code ではこれを親設定と呼びます。
 
-デフォルトでは、Claude Code は管理者ソースが存在する場合、親設定を無視します。サーバー管理設定、MDM または OS レベルのポリシー、または管理設定ファイル。
+デフォルトでは、Claude Code は、サーバー管理設定、MDM または OS レベルのポリシー、管理設定ファイルのいずれかの管理ソースが存在する場合は常に親設定を無視します。
 
-Claude Code が親設定を管理者ソースと並行してマージするようにするには、最も高い優先度の管理ソースで [`parentSettingsBehavior`](https://code.claude.com/docs/ja/settings-reference#parentsettingsbehavior) を `"merge"` に設定します。Claude Code はそのソースからのみキーを読み取ります。
+Claude Code に管理ソースと併せて親設定をマージさせるには、最も優先度の高い管理ソースで [`parentSettingsBehavior`](https://code.claude.com/docs/ja/settings-reference#parentsettingsbehavior) を `"merge"` に設定します。Claude Code はこのキーをそのソースからのみ読み取ります。
 
-Claude Code はホストの値のうち、Claude が実行できることを制限するものだけを保持します。知っておくべき 1 つのギャップがあります。`allowManaged*Only` ロックも設定しない限り、ホストの権限アロー ルとサンドボックスアロウリストはまだ適用されます。[親設定を制限する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)でロックを参照してください。
+その場合、Claude Code はホストの値のうち、Claude ができることを制限する値のみを保持しますが、知っておくべき抜け穴が 1 つあります。`allowManaged*Only` ロックも設定しない限り、ホストの権限の許可ルールとサンドボックスの許可リストは引き続き適用されます。ロックについては[親設定を制限する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)を参照してください。
 
-[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) はこのキーに関係なく親マージをオフにすることができます。そのエントリは時期を示します。
+[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) は、このキーに関係なく親設定のマージをオフにすることができます。その条件については該当する項目を参照してください。
 
-Claude Code はまた、親が提供する値にこれらのチェックを適用します。
+Claude Code は、親が提供する値に対して、これとは別に次のチェックも適用します。
 
-* 任意の管理者ソースが `allowManagedPermissionRulesOnly` を設定する場合、Claude Code は[親が提供する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)権限アロー ルと `additionalDirectories` をそれらを読み取るときにドロップします。高い優先度のソースがキーを設定しないままにしている場合でも。キーの効果は、Claude Code が適用する管理設定、または親設定がマージするように選択したものから来ます。
-* Claude Code は適用する管理設定の `forceLoginOrgUUID` または `allowedMcpServers` 値を強制し、親が提供するものをブロックします。MCP アロウリストロックの外では、Claude Code が適用しない低い管理者ソースの値は適用されず、ブロックもされません。
+* いずれかの管理ソースが `allowManagedPermissionRulesOnly` を設定している場合、より優先度の高いソースでそのキーが未設定であっても、Claude Code は[親が提供する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)権限の許可ルールと `additionalDirectories` を読み取る時点で破棄します。このキーが自分自身の権限ルールに与える影響は、Claude Code が適用する管理設定、またはマージすることを選択した親設定によって決まります
+* Claude Code は、適用する管理設定にある `forceLoginOrgUUID` または `allowedMcpServers` の値を強制し、親が提供する値をブロックします。複数の管理ソースを配信する場合は、[どのソースが `forceLoginOrgUUID` を提供するか](#which-managed-source-supplies-login-keys)を参照してください。
 
-  Claude Code v2.1.273 以降では、`allowManagedMcpServersOnly` がオンの間、1 つを設定する最も高いランクの管理者ソースからの `allowedMcpServers` リストが適用され、親のものをブロックします。これは[クロスソースキー](#keys-read-from-every-admin-source)です。親のリストは、管理者ソースがリストを設定しない場合にのみ適用されます。[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) エントリは `"merge"` の下で各キーを提供するソースを示します。v2.1.223 より前では、任意の管理者ソースの値が親のものをブロックしました。
-* `availableModels` の場合、Claude Code は適用する管理設定の値を強制し、親が提供するリストをブロックします。
-* `strictKnownMarketplaces` の場合、Claude Code は同様に適用する管理設定のリストを強制し、親が提供するものをブロックします。親のリストは、適用された管理ソースがリストを設定しない場合にのみ適用されます。Claude Code v2.1.282 以降が必要です。
-* `allowedProviders` の場合、[選択された管理ソース](#which-managed-source-claude-code-uses)のリストが親が提供するリストをブロックし、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) の `"merge"` オプトインの下では、任意の管理者ソースのリストがブロックします。Claude Code v2.1.285 以降が必要です
-* 親が提供する `blockedMarketplaces` は、管理ソースが設定するブロックリストに加えて適用されます。Claude Code v2.1.282 以降が必要です。
+  Claude Code v2.1.273 以降では、`allowManagedMcpServersOnly` がオンの間、[ソース横断キー](#keys-read-from-every-admin-source)として、それを設定している最上位の管理ソースの `allowedMcpServers` リストが適用され、親のリストはブロックされます。親のリストが適用されるのは、どの管理ソースもリストを設定していない場合のみです。`"merge"` でどのソースが各キーを提供するかについては、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) の項目を参照してください。v2.1.223 より前は、いずれかの管理ソースにある値が親の値をブロックしていました
+* `availableModels` については、Claude Code は適用する管理設定にある値を強制し、親が提供するリストをブロックします
+* `strictKnownMarketplaces` についても同様に、Claude Code は適用する管理設定にあるリストを強制し、親が提供するリストをブロックします。親のリストが適用されるのは、適用されるどの管理ソースもリストを設定していない場合のみです。Claude Code v2.1.282 以降が必要です
+* `allowedProviders` については、[選択された管理ソース](#which-managed-source-claude-code-uses)にあるリストが親の提供するリストをブロックし、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) の `"merge"` オプトインでは、いずれかの管理ソースにあるリストがブロックします。Claude Code v2.1.285 以降が必要です
+* 親が提供する `blockedMarketplaces` は、管理ソースが設定するブロックリストに加えて適用されます。Claude Code v2.1.282 以降が必要です
 
-#### 管理されたルールのみが適用される場合に Cowork フォルダアクセスを保持する
+#### 管理ルールのみが適用される場合に Cowork のフォルダアクセスを維持する
 
-Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) はそのセッションを Claude Code で実行し、各セッションにそのワーキングフォルダ（ユーザーが接続するフォルダなど）へのアクセスを許可します。セッションを起動するときに提供するアロー ルを通じて。管理ポリシーが [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定する場合、Claude Code は管理ポリシーのアロー ルのみを保持します。ホストが親設定として、`--allowedTools` として、または設定ファイルで提供するアロー ルをドロップするため、これらのフォルダへの書き込みは事前承認を失います。編集前に確認を求める Cowork セッションでは、Cowork はプロンプトを表示できず、Claude は各書き込みを保護された場所またはそれより上のパスの外のパスに解決されるため、ブロックされたと報告します。
+Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) は、そのセッションを Claude Code 上で実行し、セッションの起動時に提供する許可ルールを通じて、ユーザーが接続したフォルダなどの作業フォルダへのアクセスを各セッションに付与します。管理ポリシーが [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定している場合、Claude Code は管理ポリシー内の許可ルールのみを保持します。ホストが親設定、`--allowedTools`、または設定ファイルで提供する許可ルールは破棄されるため、それらのフォルダへの書き込みは事前承認を失います。編集前に確認する Cowork セッションでは、Cowork はプロンプトを表示できず、Claude は各書き込みについて、パスが保護された場所、または接続されたフォルダの外にあるパスに解決されるためにブロックされたと報告します。
 
-書き込みを復元するには、Claude Code が[選択する](#precedence-within-the-managed-tier)マシンの管理ソースにこれらのフォルダのアロー ルを追加します。MDM 管理フリートでは、それは別の管理設定ファイルではなく MDM ポリシーです。この例はファイル形式を使用し、MDM ポリシーは同じキーを取ります。`allowManagedPermissionRulesOnly` を設定したままにし、各ユーザーのホームディレクトリの `CoworkProjects` フォルダの下での編集を許可します。パスをユーザーが接続するフォルダに置き換えます。
+書き込みを復元するには、それらのマシンで Claude Code が[選択する](#precedence-within-the-managed-tier)管理ソースに、それらのフォルダの許可ルールを追加します。MDM で管理されたフリートでは、別の管理設定ファイルではなく MDM ポリシーがそれに該当します。この例ではファイル形式を使用していますが、MDM ポリシーでも同じキーを使用できます。この例では `allowManagedPermissionRulesOnly` を設定したまま、各ユーザーのホームディレクトリにある `CoworkProjects` フォルダ配下の編集を許可しています。パスは、ユーザーが接続するフォルダに置き換えてください。
 
 ```json managed-settings.json theme={null}
 {
@@ -253,17 +263,17 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 }
 ```
 
-ポリシーをデプロイした後、Claude は新しい Cowork セッションでそのフォルダの下にファイルを保存できます。[読み取りと編集ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)はパス構文（絶対パスの `//` 形式を含む）をカバーしています。
+ポリシーをデプロイすると、新しい Cowork セッションで Claude はそのフォルダ配下にファイルを保存できるようになります。絶対パス用の `//` 形式を含むパス構文については、[Read および Edit ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)を参照してください。
 
-### 開発者が変更できるもの
+### 開発者が変更できること
 
-開発者の独自の設定ファイル、`--settings` 値、およびプロジェクトファイルは管理値をオーバーライドしません。[例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)は、より厳しい下位レベルの値がカウントされることのみを許可します。これらのケースはそのルールの外にあります。
+開発者自身の設定ファイル、`--settings` の値、プロジェクトファイルが管理された値を上書きすることはありません。[例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)は、より厳しい下位レベルの値を有効にするものに限られます。次のケースはこのルールの対象外です。
 
-* **セッションのモデル**: 管理された `model` はロックではなくデフォルトです。`--model` と `ANTHROPIC_MODEL` はそのセッションのモデルを選択できるため、[`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels) をデプロイして選択を制限します。
-* **セッションの自動圧縮ウィンドウ**: 管理された [`autoCompactWindow`](https://code.claude.com/docs/ja/settings-reference#autocompactwindow) もデフォルトです。`--autocompact` フラグと `CLAUDE_CODE_AUTO_COMPACT_WINDOW` 変数は、引き続きそのセッションの[自動圧縮ウィンドウ](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window)を設定できます。
-* **ローカル管理者権限**: マシンの管理者である開発者は、管理ソース自体を編集できます。これが MDM ツールがスケジュールでプロファイルまたはファイルを再デプロイできる理由であり、HKLM レジストリと macOS 管理設定ドメインが存在する理由です。
-* **サーバー管理キャッシュ**: サーバー管理設定は Anthropic のサーバーから取得され、ローカルキャッシュへの編集は[次の成功したフェッチまでのみ続きます](https://code.claude.com/docs/ja/server-managed-settings.md#security-considerations)。
-* **その他のツール**: 管理設定は Claude Code のみをバインドします。別のツールから API を呼び出す開発者はそれらの下にはありません。
+* **セッションのモデル**：管理された `model` はデフォルトであり、ロックではありません。`--model` と `ANTHROPIC_MODEL` で引き続きそのセッションのモデルを選択できるため、選択肢を制限するには [`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels) をデプロイしてください。
+* **セッションの自動圧縮ウィンドウ**：管理された [`autoCompactWindow`](https://code.claude.com/docs/ja/settings-reference#autocompactwindow) もデフォルトです。`--autocompact` フラグと `CLAUDE_CODE_AUTO_COMPACT_WINDOW` 変数で、引き続きそのセッションの[自動圧縮ウィンドウ](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window)を設定できます。
+* **ローカルの管理者権限**：マシンの管理者である開発者は管理ソース自体を編集できます。MDM ツールがプロファイルやファイルを定期的に再デプロイできるのも、HKLM レジストリや macOS の管理対象設定ドメインが存在するのもこのためです。
+* **サーバー管理設定のキャッシュ**：サーバー管理設定は Anthropic のサーバーから取得されるため、ローカルキャッシュへの編集は[次回の取得が成功するまでしか持続しません](https://code.claude.com/docs/ja/server-managed-settings.md#security-considerations)。
+* **その他のツール**：管理設定が適用されるのは Claude Code のみです。別のツールから API を呼び出す開発者は管理設定の対象外です。
 
 ## ポリシーが有効であることを確認する
 

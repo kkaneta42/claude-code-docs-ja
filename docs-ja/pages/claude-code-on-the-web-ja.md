@@ -228,7 +228,7 @@ Teleport がセッションのブランチをフェッチする際、フェッ�
 
 Teleport には claude.ai のサブスクリプション認証が必要です。該当するケースを確認してください。
 
-* **API キーで認証している**: 代わりに `/login` を実行して claude.ai アカウントでサインインしてください
+* **API キーまたは Console アカウントでサインインしている**: シェルで `claude auth login` を実行し、claude.ai でサインインしてください
 * **エラーにプロバイダー名が表示される**: クラウドセッションはサードパーティプロバイダー経由では利用できません。[エラー表](#errors-when-sending-to-a-cloud-session)を参照してください
 * **すでに claude.ai でサインインしている**: 組織がクラウドセッションを無効にしている可能性があります
 
@@ -437,10 +437,11 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 
 ### 組織 UUID を取得できない
 
-`claude --cloud` と `claude --teleport` には claude.ai アカウントでのサインインが必要です。API キーで認証している場合、または保存されたアカウント詳細が古い場合、次のいずれかが表示されます。
+`claude --cloud` と `claude --teleport` には claude.ai アカウントでのサインインが必要です。代わりに API キーまたは Console のサインインで認証している場合、あるいは保存されたアカウント詳細が古い場合、次のようなメッセージが表示されます。
 
 * `Unable to get organization UUID`
 * ``Cloud sessions need a claude.ai sign-in. Run `claude auth login` (or /login in a local session), then try again.``
+* ``Cloud sessions aren't available with this Console sign-in. They need a claude.ai sign-in. Run `claude auth login` (or /login in a local session), then try again.``
 * セッション ID なしで `claude --teleport` を実行した場合、セッションピッカーでの `Error loading Claude Code sessions`
 
 シェルで [`claude auth login`](https://code.claude.com/docs/ja/cli-reference#cli-commands) を実行して claude.ai アカウントでサインインし、コマンドを再試行してください。実行中のセッション内では、`/login` でも同じことができます。エラーにプロバイダー名が示されている場合は、[エラーテーブル](#errors-when-sending-to-a-cloud-session)を参照してください。クラウドセッションはサードパーティプロバイダーを通じては利用できません。

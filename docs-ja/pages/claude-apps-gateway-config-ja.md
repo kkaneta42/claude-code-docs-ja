@@ -419,7 +419,7 @@ upstreams:
 
 ```yaml theme={null}
 models:
-  - id: claude-opus-restricted          # a custom id, not a built-in model name
+  - id: restricted-claude-opus-4-8      # a custom id, not a built-in model name
     upstream_model:
       bedrock-isolated: us.anthropic.claude-opus-4-8   # the only upstream that serves it
 ```
@@ -629,7 +629,10 @@ AWS SigV4 でリクエストに署名する Amazon Bedrock または Claude Plat
 
 ゲートウェイは失敗したアップストリームの記録を保持しないため、アップストリームがダウンしている間、そこに到達するすべてのリクエストは引き続きそのアップストリームを試行し、失敗するのを待ってから次に進みます。
 
-Anthropic API アップストリームでは、[`timeouts.upstream_ttfb_ms`](#http-tuning) がダウンしたアップストリームでの待機時間の上限を定めます。この設定は他のプロバイダーには適用されず、それらのプロバイダーでは、ゲートウェイはアップストリームが応答を開始するまで最大 1 時間待機します。
+ゲートウェイがレスポンスの開始を待機する時間は次のとおりです。
+
+* **`provider: anthropic` アップストリーム**: [`timeouts.upstream_ttfb_ms`](#http-tuning)。デフォルトは 120 秒
+* **その他のプロバイダー**: 最大 1 時間。ストリーミングリクエストでこの待機時間を短縮するには、ゲートウェイ v2.1.295 以降で `timeouts.upstream_ttfb_ms` を設定します。非ストリーミングのモデルリクエストは、いずれの場合も最大 1 時間待機します
 
 `404` はアップストリームごとのモデルの提供状況を表すため、モデルを有効にしていないアップストリームが、そのモデルを提供する後続のアップストリームを妨げることはありません。要求されたモデルを解決できないアップストリームは、ネットワークのラウンドトリップなしでスキップされます。
 
@@ -873,9 +876,11 @@ managed:
   policies:
     - match: { groups: [restricted-projects] }
       cli:
-        availableModels: [claude-opus-restricted]
+        availableModels: [restricted-claude-opus-4-8]
         enforceAvailableModels: true
-        model: claude-opus-restricted
+        model: restricted-claude-opus-4-8
+        env:
+          ANTHROPIC_DEFAULT_OPUS_MODEL: restricted-claude-opus-4-8   # opus and Default resolve to the ID too
 ```
 
 #### ゲートウェイをブート時に停止させる matcher 値
@@ -1146,6 +1151,10 @@ v2.1.232 より前では、ゲートウェイは `chatTabEnabled` や `disableAu
 
 `blockReadsOutsideWorkingDirectories`、`disableBypassPermissionsMode`、`configRecheckIntervalMinutes`、`sshClientPath` には、ゲートウェイサーバー上の Claude Code v2.1.281 以降が必要です。`microsoftAuthBroker` の `required` 値と、Microsoft 365 `managedMcpServers` エントリの `continuousAccessEvaluation` フィールドも同様です。`required` 値より前の Claude Desktop リリースはそれを `disabled` として読み取るため、すべてのメンバーの Claude Desktop がサポートしてから `required` を設定してください。Claude Desktop の [管理設定リファレンス](https://claude.com/docs/third-party/claude-desktop/configuration) には、各キーを最初に読み取るリリースがリストされています。
 
+> [!NOTE]
+>
+> [`sshTransport`](https://claude.com/docs/third-party/claude-desktop/configuration#sshtransport) には、ゲートウェイサーバー上の Claude Code v2.1.293 以降が必要です。
+
 ポリシーの `desktop` ブロックで `orgPluginSettings` を設定した場合、ゲートウェイは Claude Desktop 1.15200.0 以降が読み取る配列形式で提供します。古いデスクトップは配列を無視し、プラグインツールポリシーを強制しないため、それに依存する前にメンバーを 1.15200.0 以降に更新してください。
 
 ##### ロールポリシーが基盤の `desktop` ブロックを継承する仕組み
@@ -1396,7 +1405,7 @@ Claude Code はシグナルを直接エクスポートする前にエンドポ�
 | `limits` | `max_request_bytes` | 32 MiB | インバウンドリクエストボディの最大サイズ。サイズを超えたリクエストはボディがバッファリングされる前に `413` を受け取ります。大きなファイルや画像のリクエストの場合は上げてください。 |
 | `limits` | `max_request_header_bytes` | 未設定 | リクエストのヘッダー全体に対するゲートウェイの 256 KiB の制限を引き下げます。制限を超えたリクエストは `431` を返し、256 KiB を超える値は効果がありません。サインイン後にデベロッパーが `431` を受け取る場合は、[サインイン後にリクエストヘッダーが大きすぎる](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#request-headers-too-large-after-sign-in) を参照してください。 |
 | `limits` | `max_url_length` | 未設定 | 設定されている場合、長すぎる URL は `414` を返します |
-| `timeouts` | `upstream_ttfb_ms` | 120000 | 上流のレスポンスヘッダーの最大待機時間（最初のバイトまでの時間）。その後、レスポンスボディは経過時間の上限なしでストリーミングされます。直接 Anthropic 上流パスに適用されます。他のすべてのプロバイダーでは、ゲートウェイはレスポンスが開始されるまで最大 1 時間待機します。 |
+| `timeouts` | `upstream_ttfb_ms` | 120000 | アップストリームのレスポンスヘッダーを待つ最大時間（最初のバイトまでの時間）。その後のレスポンス本文は経過時間の上限なしでストリーミングされます。キーが未設定の場合、デフォルトは `provider: anthropic` のアップストリームに適用され、その他のプロバイダーではゲートウェイはレスポンスの開始まで最大 1 時間待機します。この待機時間を短くするには、[複数のアップストリーム](#multiple-upstreams)を参照してください。 |
 | `rate_limits` | `device_authorization.max` / `.window_seconds` | 30 / 600 | 認証されていないデバイス認可エンドポイントの IP ごとのレート制限。共有出力 IP や NAT の背後にある大規模な組織の場合は上げてください。サイズの決め方は [大規模ロールアウト](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#large-rollouts) を参照してください。これらの制限はデバイスグラントのサインインフローにのみ適用され、`/v1/messages` の推論には適用されません。[ユーザーコードのブルートフォース耐性](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#user-code-brute-force-resistance) を参照してください。 |
 | `rate_limits` | `device_verify.max` / `.window_seconds` | 10 / 600 | `/device` での `user_code` 送信の IP ごとのレート制限。他のデベロッパーのコードの推測を防ぐものです。どこまで上げるかについては [大規模ロールアウト](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#large-rollouts) を参照してください。 |
 

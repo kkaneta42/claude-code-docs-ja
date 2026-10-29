@@ -48,7 +48,7 @@
 | `--post-session-hook-timeout-sec <n>` | `SELF_HOSTED_RUNNER_POST_SESSION_HOOK_TIMEOUT_MS` | `60` | ランナーのシャットダウンを含む、すべてのセッション終了時の [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)に割り当てる時間 |
 | `--proxy-authorization-command <command>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_COMMAND` | 未設定 | エグレスプロキシへの接続ごとにランナーが実行するシェルコマンド。前後の空白を除去した stdout を `Proxy-Authorization` ヘッダーの値として使用します。`HTTPS_PROXY` または `HTTP_PROXY` が必要で、`--proxy-authorization-file` と組み合わせることはできません。[エグレスプロキシに認証する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。Claude Code v2.1.238 以降が必要です。 |
 | `--proxy-authorization-file <path>` | `SELF_HOSTED_RUNNER_PROXY_AUTHORIZATION_FILE` | 未設定 | エグレスプロキシへの接続ごとにランナーが読み取るファイル。前後の空白を除去した内容を `Proxy-Authorization` ヘッダーの値として使用します。別のプロセスがその場でローテーションするトークンには、このフラグを使用してください。`--proxy-authorization-command` と同じ要件があり、それと組み合わせることはできません。[エグレスプロキシに認証する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#authenticate-to-an-egress-proxy)を参照してください。Claude Code v2.1.238 以降が必要です。 |
-| `--push-outcome-on-release` | `SELF_HOSTED_RUNNER_PUSH_OUTCOME_ON_RELEASE` | オフ | ドレインやアイドル解放など、ランナーが開始したセッション終了時に、ワークスペースを削除する前に追跡中の成果ブランチを `origin` にプッシュし、進行中のコミットが再起動後も失われないようにします。ベストエフォートで行われます。シャットダウンの時間枠に 30 秒が追加され、プッシュされたブランチから再開するには git 2.29 以降が必要です。有効にする前に、プッシュアクセスを `claude/*` の ref に制限してください。[再開されたセッションではプッシュされていない作業が失われる](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)を参照してください。`checkout` ライフサイクルフックでチェックアウトされたリポジトリはプッシュされません。それらについては、代わりに [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)からスナップショットを取得してください。 |
+| `--push-outcome-on-release` | `SELF_HOSTED_RUNNER_PUSH_OUTCOME_ON_RELEASE` | オフ | ドレインやアイドル解放など、ランナー主導でセッションが終了する際に、ワークスペースを削除する前に追跡中の成果ブランチを `origin` にプッシュし、進行中のコミットが再起動後も失われないようにします。ベストエフォートで行われます。シャットダウンの時間枠に 30 秒が追加され、プッシュされたブランチから再開するには git 2.29 以降が必要です。有効にする前に、プッシュアクセスを `claude/*` の ref に制限してください。[再開されたセッションではプッシュされていない作業が失われる](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)を参照してください。`checkout` ライフサイクルフックでチェックアウトされたリポジトリはプッシュされません。それらについては、代わりに [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)からスナップショットを取得してください。 |
 | `--release-idle-session-min <n>` | `SELF_HOSTED_RUNNER_SESSION_IDLE_MS` | `0` | ターンが終了するか、セッションがユーザーのアクションを待つ状態になった後、N 分間操作がなければセッションスロットを解放します。[アイドルとしてカウントされないセッションがある](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)ため、`--kill-session-after-min` と組み合わせてください。完了したバックグラウンドタスクは、最大 [`SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS`](#environment-variable-only-settings) の期間、セッションをビジー状態に保ちます。解放を遅らせるには、[`--hold-idle-file`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#keep-an-idle-session-while-its-processes-run) を設定してください。`0` で無効になります。 |
 | `--remove-session-state [bool]` | `SELF_HOSTED_RUNNER_REMOVE_SESSION_STATE` | オフ | このランナー上でセッションが終了したとき、結果にかかわらず、`<base-dir>/_sessions/` 配下のセッションごとのディレクトリを削除します。これらのディレクトリに何が保存され、残った場合に誰が読み取れるかについては、[事前ウォームアップされたチェックアウトを再利用する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout)で説明しています。削除はベストエフォートで行われます。クリーンアップが実行される前にランナーが強制終了されたり、ドレインの期限に達したりした場合、セッションごとのディレクトリはそのまま残ります。このフラグをオンにすると、失敗または中断されたセッションのデバッグログはディスクに保持されません。Claude Code v2.1.268 以降が必要です。 |
 | `--retire-at <epoch-seconds>` | `SELF_HOSTED_RUNNER_RETIRE_AT` | 未設定 | 既知の時刻にランナーを強制終了するインフラ向けに、秒単位の絶対 Unix タイムスタンプでランナーを退役させます。解放の手順とマージンの見積もり方については、[ランナーのライフサイクル](https://code.claude.com/docs/ja/self-hosted-environments#runner-lifecycle)で説明しています。2001 年より前または 5138 年より後の値は、フラグでは拒否され、環境変数では無視されます。 |
@@ -87,31 +87,32 @@
 
 ## オーケストレーター CLI フラグ
 
-`self-hosted-runner orchestrator` サブコマンド（[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) を生成）は、`--api-url`、`--environment-secret-file`、`--hooks-dir`、`--health-port`、`--log-level` をランナーと同じデフォルトで受け入れます。ランナーのフラグに 1 つある場合は同じ環境変数を使用します。ただし、`--hooks-dir` は必須で、`spawn-runner` フックを含む必要があります。また、独自のフラグも取ります。
+[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を起動する `self-hosted-runner orchestrator` サブコマンドは、`--api-url`、`--environment-secret-file`、`--hooks-dir`、`--health-port`、`--log-level` を受け付けます。これらのデフォルト値はランナーと同じで、ランナーのフラグに環境変数がある場合は同じ環境変数も使用できます。ただし、`--hooks-dir` は必須であり、`spawn-runner` フックを含んでいる必要があります。また、オーケストレーター独自のフラグも受け付けます。
 
 | フラグ | デフォルト | 説明 |
 | :- | :- | :- |
-| `--hook-concurrency <n>` | `4` | 並列で実行される最大 `spawn-runner` フック数。また、ポーリングごとにクレームされるスポーン要求の数もキャップします。オーケストレーターは、開始したすべてのフックが終了した後にのみ新しいスポーン要求を確認するため、1 つの遅いフックがそのオーケストレーターの次のフックを遅延させます。 |
-| `--hook-timeout <sec>` | `60` | この多くの秒後にフックのプロセスツリーを終了します。タイムアウトとその 5 秒のキルグレースは `--expected-spawn-seconds` より下にある必要があります。オーケストレーターはスタートアップでこれを強制します。 |
-| `--expected-spawn-seconds <sec>` | `120` | オーケストレーターがスポーン要求を受信してからランナーが登録されるまでの予想 p99 時間（プラットフォーム上でのキャパシティ待ちを含む）。サーバーは 10 ～ 3600 の範囲を強制します。すべてのポーリングでサーバー側リースとして送信されます。ランナーが経過前に登録されない場合、セッションは新しいオーダー ID で再提供されます。すべてのレプリカはこの値を共有する必要があります。 |
-| `--min-idle <n>` | `0` | スタンバイランナーを積極的に生成することで、少なくとも N 個のアイドルセッションスロットを無料で保ちます。`0` はプレウォーミングを無効にします。ランナーの `--exit-if-unused-min` とペアにして、余分なスタンバイランナーが自分自身を再利用するようにします。 |
-| `--debug-dir <path>` | 未設定 | 各スポーン要求のワークオーダーとフック stderr をディスクに書き込みます。デバッグのみ。本番環境では設定しないでください。 |
+| `--hook-concurrency <n>` | `4` | 並列実行される `spawn-runner` フックの最大数です。1 回のポーリングで取得する起動リクエストの数の上限にもなります。オーケストレーターは、開始したすべてのフックが終了してから新しい起動リクエストを確認するため、1 つのフックが遅いと、そのオーケストレーターの次のフックも遅れます。 |
+| `--hook-timeout <sec>` | `60` | この秒数が経過するとフックのプロセスツリーを終了します。タイムアウトに 5 秒の強制終了猶予を加えた値は `--expected-spawn-seconds` 未満である必要があり、オーケストレーターは起動時にこれを検証します。 |
+| `--expected-spawn-seconds <sec>` | `120` | オーケストレーターが起動リクエストを受け取ってからランナーが登録されるまでの想定 p99 時間です。プラットフォーム上でキャパシティを待つ時間も含みます。サーバーは 10 から 3600 の範囲を強制します。サーバー側のリースとしてポーリングのたびに送信され、この時間内にランナーが登録されない場合、セッションは新しいオーダー ID で再提供されます。すべてのレプリカで同じ値を使用する必要があります。 |
+| `--min-idle <n>` | `0` | スタンバイランナーを事前に起動することで、少なくとも N 個のアイドル状態のセッションスロットを空いた状態に保ちます。`0` にすると事前ウォームアップが無効になります。余剰のスタンバイランナーが自ら終了するよう、ランナーの `--exit-if-unused-min` と組み合わせて使用してください。 |
+| `--shutdown-drain-sec <n>` | `0` | `SIGTERM` を受け取ると、起動リクエストのポーリングを停止し、実行中の `spawn-runner` フックと未応答のポーリングが完了するまで最大でこの秒数待機してから、残っているものを停止します。`0` の場合は直ちに停止します。最大値は `3600` で、オーケストレーターは起動時にこれを検証します。値の選び方については、[`--shutdown-drain-sec` とオーケストレーターの停止タイムアウトのサイズ設定](https://code.claude.com/docs/ja/self-hosted-environments-configuration#size-shutdown-drain-sec-and-the-supervisors-stop-timeout-for-the-orchestrator)を参照してください。Claude Code v2.1.299 以降が必要です。 |
+| `--debug-dir <path>` | 未設定 | 各起動リクエストのワークオーダーとフックの stderr をディスクに書き込みます。デバッグ専用であり、本番環境では決して設定しないでください。 |
 
 ### SCM コネクタフラグ
 
-SCM コネクタは利用できないため、このセクションのフラグは未設定のままにしてください。`--scm-connector-host` を設定した場合、接続は開かず、オーケストレーターは再試行を続けます。ランナーはセッションキューとして開始されます。
+SCM コネクタは利用できないため、このセクションのフラグは設定しないでください。`--scm-connector-host` を設定しても接続は確立されず、オーケストレーターは接続の再試行を続けます。セッションがキューに入ると、ランナーは引き続き起動します。
 
-コネクタは、オーケストレーターから Anthropic のコントロールプレーンへのスタンディング WebSocket 接続です。リポジトリピッカーやブランチまたは ref リゾルバーなどのホスト済みプリセッションフローが、ネットワーク内からのみルーティング可能な GitHub Enterprise Server ホストに到達できるようにするために設計されています。GitHub Enterprise Server ページの [ネットワーク要件](https://code.claude.com/docs/ja/github-enterprise-server.md#network-requirements) を参照して、これらのフローが必要とするものを確認してください。
+コネクタは、オーケストレーターから Anthropic のコントロールプレーンへの常時接続の WebSocket 接続です。リポジトリピッカーやブランチまたは ref のリゾルバーなど、ホストされたセッション前のフローが、ネットワーク内部からのみルーティング可能な GitHub Enterprise Server ホストに到達できるように設計されています。これらのフローに必要なものについては、GitHub Enterprise Server のページの[ネットワーク要件](https://code.claude.com/docs/ja/github-enterprise-server.md#network-requirements)を参照してください。
 
 | フラグ | デフォルト | 説明 |
 | :- | :- | :- |
-| `--scm-connector-host <host[:port]>` | 未設定 | リクエストを転送する GitHub Enterprise Server ホスト名。ポートはデフォルトで `443` です。 |
-| `--scm-connector-id <n>` | `--scm-connector-host` で必須 | 組織の GitHub Enterprise Server 接続の数値 ID。 |
-| `--scm-connector-provider <slug>` | `ghe` | プロバイダーを識別するパスセグメント。`^[a-z0-9-]{1,32}$` と一致します。 |
-| `--scm-connector-ca-file <path>` | 未設定 | GitHub Enterprise Server ホストへの TLS 接続用の追加 CA バンドル（PEM 形式）。 |
-| `--scm-connector-host-rewrite <from>=<to_host:to_port>` | 未設定 | エンドツーエンドテスト専用：ホストヘッダーと TLS SNI を `--scm-connector-host` として保ちながら TCP 接続をリダイレクトします。 |
+| `--scm-connector-host <host[:port]>` | 未設定 | リクエストの転送先となる GitHub Enterprise Server のホスト名です。ポートのデフォルトは `443` です。 |
+| `--scm-connector-id <n>` | `--scm-connector-host` を指定する場合は必須 | 組織の GitHub Enterprise Server 接続の数値 ID です。 |
+| `--scm-connector-provider <slug>` | `ghe` | プロバイダーを識別するパスセグメントで、`^[a-z0-9-]{1,32}$` に一致する必要があります。 |
+| `--scm-connector-ca-file <path>` | 未設定 | GitHub Enterprise Server ホストへの TLS 接続用の追加 CA バンドル（PEM 形式）です。 |
+| `--scm-connector-host-rewrite <from>=<to_host:to_port>` | 未設定 | エンドツーエンドテスト専用です。Host ヘッダーと TLS SNI を `--scm-connector-host` のまま維持しつつ、TCP 接続をリダイレクトします。 |
 
-各接続試行時に、オーケストレーターは既存の環境シークレットを送信し、指数バックオフで自動的に再試行します。30 秒とジッターでキャップされます。
+接続を試行するたびに、オーケストレーターは既存の環境シークレットを送信し、指数バックオフ（上限は 30 秒にジッターを加えた値）で自動的に再試行します。
 
 ## 環境変数のみの設定
 

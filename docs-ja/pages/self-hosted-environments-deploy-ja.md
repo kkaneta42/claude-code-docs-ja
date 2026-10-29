@@ -583,7 +583,14 @@ secrets:
 
 ## シャットダウンタイミング
 
-`SIGTERM` の後、ランナーはオーケストレーターに強制終了される前に、セッションをクリーンにシャットダウンするための時間を必要とします。必要な時間は起動時にログに記録され、デフォルト設定では `This runner needs up to 80s` を含む行として出力されます。オーケストレーターの停止タイムアウトを少なくともその秒数に設定してください。Kubernetes では `terminationGracePeriodSeconds`、Docker Compose では `stop_grace_period`、またはプラットフォームの同等の設定です。Kubernetes のデフォルトは 30 秒であるため、この設定がないと、ランナーが終了する前にポッドが停止される可能性があります。
+> [!NOTE]
+>
+> これらのタイミングはランナーに適用されます。`claude self-hosted-runner orchestrator` プロセスには独自のタイミングがあります。[`--shutdown-drain-sec` とオーケストレーターの停止タイムアウトを設定する](https://code.claude.com/docs/ja/self-hosted-environments-configuration#size-shutdown-drain-sec-and-the-supervisors-stop-timeout-for-the-orchestrator)を参照してください。
+
+起動時に、各ランナーは `SIGTERM` の後にセッションをクリーンにシャットダウンするために必要となり得る時間をログに記録します。デフォルト設定では `This runner needs up to 80s` のように出力されます。停止タイムアウトとは、プロセススーパーバイザーが `SIGTERM` の後にランナーを強制終了するまで待機する時間です。少なくともログに記録された時間に設定してください：
+
+* **Kubernetes**：`terminationGracePeriodSeconds`。Kubernetes のデフォルトは 30 秒であるため、この設定がないと、ランナーが終了する前にポッドが停止される可能性があります。
+* **Docker Compose**：`stop_grace_period`
 
 `SIGTERM` を受け取ると、ランナーは新しいセッションの受け付けを停止します。次に、[`--defer-shutdown-max-min`](#defer-the-drain-past-the-first-signal) を設定して遅延させない限り、ドレインと呼ばれるグレースフルシャットダウンを開始します。ドレインは 3 つのステップで構成されます：
 
@@ -744,11 +751,12 @@ secrets:
 
 **2. ランナーを起動する**
 
-シェルから、`--hold-idle-file`、`--release-idle-session-min`、および [`--max-hold-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動します。`--max-hold-min` は保持の上限で、セッションがアイドル状態になった時点から数えます。指定しない場合、上限は 1 日です。`--release-idle-session-min` より大きい値を設定してください。そうしないと何も保持されません。この例では、アイドル状態のセッションを 30 分後に解放し、保持されたセッションをアイドル状態になってから最大 4 時間後に解放します。
+シェルから、`--hold-idle-file`、`--release-idle-session-min`、および [`--max-hold-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動します。`--max-hold-min` は保持の上限で、セッションがアイドル状態になった時点から数えます。指定しない場合、上限は 1 日です。`--release-idle-session-min` より大きい値を設定してください。そうしないと何も保持されません。`<writable-dir>` は[クイックスタート](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md#set-up-manually)の説明に従って置き換えてください。この例では、アイドル状態のセッションを 30 分後に解放し、保持されたセッションをアイドル状態になってから最大 4 時間後に解放します。
 
 ```bash theme={null}
 claude self-hosted-runner \
   --environment-secret-file /etc/claude/environment-secret \
+  --base-dir '<writable-dir>' \
   --release-idle-session-min 30 \
   --hold-idle-file /var/lib/claude-hold/hold-idle \
   --max-hold-min 240
@@ -816,6 +824,7 @@ Anthropic は、コネクタのツールをランナーからではなく、Anth
   * **コミットされていない変更は引き続き失われる**: Claude が応答を終えたときにコミットとプッシュを行うよう促すには、[セッションに作業のプッシュを促す](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#prompt-sessions-to-push-their-work)を参照してください。
 * **ランナーの喪失によって中断されたコマンドが再度実行されることがある**: セッションが別のランナーで再開されると、中断されたツール呼び出しが、その成否が不明であることを示す結果とともに Claude に表示されます。
 * **セッションの途中で追加したリポジトリのクローンが失敗することがある**: Claude は HTTPS 経由の `git clone` でリポジトリをクローンします。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用していないランナーでは、ホスト上にリポジトリを読み取れるものが何もない場合、クローンは git の認証エラーで失敗します。可能であれば、セッションの作成時に、セッションで必要なすべてのリポジトリを選択してください。
+  * **セッションが再開されるとき**: 追加したリポジトリに対しても [`checkout` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)が実行され、その際 [`CLAUDE_RUNNER_REPO_REF`](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout) は空になります。フックでこれを処理できるようにしてください。
 * **一部のコネクタがセルフホストセッションに表示されない**: claude.ai の設定でまだ接続していないコネクタはセルフホストセッションに表示されず、セッションから接続を求められることもありません。まず設定で接続してから、新しいセッションを開始してください。また、すでに実行中のセッションにコネクタを追加しても、そのツールは Claude で使用できるようになりません。新しく追加したコネクタを反映するには、新しいセッションを開始してください。
 * **誰かがセッションをアーカイブまたは削除した場合、またはセッションのメニューからランナーを解放した場合**: [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) によるプッシュは当てにしないでください。このような場合にコミットを保存するには、[`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)から `HEAD` を退避用ブランチにプッシュしてください。そこにある例をもとにする場合は、コミットされていない変更が何もないときでもプッシュするように変更してください。この例はスナップショットのコミットを作成した後にのみプッシュするためです。
 
@@ -833,17 +842,17 @@ claude self-hosted-runner doctor
 
 よくある問題:
 
-* **ランナーが環境に表示されない**: ホストが HTTPS 経由で `api.anthropic.com` に到達できること、環境シークレットが最新であること、ホストの時計と実時間との差が 5 分以内であることを確認してください。それより大きなずれがあると認証が失敗します。認証に失敗すると、ランナーは拒否理由とともに `[runner:fatal]` をログに記録します。
+* **ランナーが環境に表示されない**: ホストが HTTPS 経由で `api.anthropic.com` に到達できること、および環境シークレットが最新であることを確認してください。認証に失敗すると、ランナーは拒否理由とともに `[runner:fatal]` をログに記録します。
 * **ランナーが起動時に `cannot create or write to base directory` で終了する**: ランナーが `--base-dir`（デフォルトは `/workspace`）を作成できないか、書き込めません。[ランナー間でベースディレクトリと容量を同一に保つ](#keep-the-base-directory-and-capacity-identical-across-runners)で説明しているとおり、ディレクトリの所有権を修正するか、`--base-dir` を書き込み可能なパスに向けてください。代わりにランナーがベースディレクトリのチェックがタイムアウトしたという `[runner:fatal]` をログに記録する場合、そのディレクトリはハングした NFS または CSI マウント上にあります。権限ではなくマウントの健全性を確認してください。ランナーはこれら 2 つの起動時の失敗を `--log-file` を開く前に stderr に出力するため、ログファイルではなくターミナルまたはプラットフォームのコンテナログで探してください。v2.1.225 より前は、ランナーは起動時にベースディレクトリをチェックしておらず、この設定ミスがあると代わりにピックアップ後にセッションが失敗していました。
 * **ランナーが起動時に `RegisterRunner failed:` と TLS 証明書エラーで終了する**: エラーはたとえば `self signed certificate in certificate chain` となることがあります。TLS を検査するプロキシの背後にある場合のように、ランナーが受け取った証明書の背後にある認証局（CA）を信頼していません。ランナーの環境で [`NODE_EXTRA_CA_CERTS`](https://code.claude.com/docs/ja/network-config#custom-ca-certificates) に、プロキシのルート CA を含む PEM ファイルを設定してください。
 
   セッションはこれを継承するため、セッション用に再度設定する必要はありません。Git はこれを読み取りません。そのプロキシを経由したクローンには、[`GIT_SSL_CAINFO`](#trust-a-private-certificate-authority-with-anthropic-managed-git) も設定してください。
 * **開始スクリプトが `Resource temporarily unavailable` を含む書き込みエラーを出力して終了する**: スクリプトが、自身が起動する `claude self-hosted-runner` または [orchestrator](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) プロセスと stdout または stderr を共有しており、そのプロセスが共有のパイプまたはソケットをノンブロッキングモードに切り替えています。パイプがいっぱいになると、スクリプトからの書き込みは待機せずにこのオペレーティングシステムのエラーで失敗し、`set -e` の下ではスクリプトが終了します。
 
-  このエラーを止めるには、ランナーまたはオーケストレーターの出力を、スクリプトのユーザーが作成できるファイルに送ってください。それを起動するコマンドに、バックグラウンド化する `&` より前の位置で `>> "$HOME/claude-runner.log" 2>&1` を追加します:
+  このエラーを止めるには、ランナーまたはオーケストレーターの出力を、スクリプトのユーザーが作成できるファイルに送ってください。それを起動するコマンドに、バックグラウンド化する `&` より前の位置で `>> "$HOME/claude-runner.log" 2>&1` を追加し、[クイックスタート](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md#set-up-manually)の説明に従って `<writable-dir>` を置き換えます:
 
   ```bash theme={null}
-  claude self-hosted-runner --environment-secret-file /etc/claude/environment-secret >> "$HOME/claude-runner.log" 2>&1
+  claude self-hosted-runner --environment-secret-file /etc/claude/environment-secret --base-dir '<writable-dir>' >> "$HOME/claude-runner.log" 2>&1
   ```
 
   スクリプト自身の出力は引き続き以前と同じ場所に出力され、ランナーが stdout と stderr に書き込む内容（起動エラーを含む）はそのファイルに出力されます。[`--log-file`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) 単体ではなく、このシェルリダイレクトを使用してください。`--log-file` はログをファイルにミラーリングしますが、ランナーは stdout と stderr への書き込みを続けます。すでに `--log-file` を渡している場合は、それもそのまま残してください。リダイレクトはそのファイルが受け取る内容を変えないためです。
@@ -901,6 +910,8 @@ claude self-hosted-runner doctor
   v2.1.274 より前は、ランナーは失敗した取得の再試行を数回で停止し、次の予定された取得を待っていました。失敗したターンでは取得がトリガーされなかったため、次の予定された取得まですべてのターンが 401 で失敗していました。
 * **claude.ai/code でターンが `This model needs a newer version of Claude Code` で失敗する**: ランナーがセッションの開始に使用する Claude Code のバージョンが、セッションのモデルが必要とするバージョンより古いため、API が[リクエストを拒否します](https://code.claude.com/docs/ja/errors.md#claude-code-does-not-support-this-model)。[バージョンを固定する](#pin-the-version)で説明しているとおり、メッセージが求めるバージョン以降にランナーをアップグレードしてください。それまでは、セッション内で別のモデルを選択できます。
 * **ドレイン中に Pod が強制終了される**: `terminationGracePeriodSeconds` を、ランナーが起動時にログに記録する値以上に引き上げてください。[シャットダウンのタイミング](#shutdown-timing)を参照してください。
+* **ランナーが `was paused or too slow` で終わる `[runner:log]` 行をログに記録する**: ランナーは実行を続けており、再起動は不要です。行に示された stdout または stderr ストリームが再び読み取られるまで、ランナーはそのストリームの最新 256 KiB 分の行以外をすべて破棄しました。[`--log-file`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を渡していた場合は、破棄された行をそこで確認してください。
+* **ランナーが `Nobody can read this process's stdout anymore` をログに記録する**: ランナーの stdout を読み取っていたものがなくなったため、ランナーは残りの実行期間中そこへの書き込みを停止し、実行を続けます。stderr がまだ開いている間は、この行とランナーのその後のステータス行（`[runner:fatal]` 行を含む）は stderr に出力されるため、そちらで読んでください。
 
 ロギングが初期化されると、ランナーは `[runner:fatal]` 行を含むライフサイクルログを stdout に、デバッグ出力を stderr に、いずれも JSON ではなくプレーンテキストの行として書き込みます。上記のトラブルシューティング項目で説明したベースディレクトリの失敗は、その時点より前に stderr に出力されます。両方のストリームを `--log-file`（これにより `self-hosted-runner doctor` がそれらを tail できるようにもなります）またはプラットフォームのログ収集でキャプチャしてください。
 

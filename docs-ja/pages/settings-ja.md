@@ -205,117 +205,117 @@ JSON をタイプミスするか、Claude Code が受け入れない値にキー
 
 ## 設定の優先順位
 
-同じキーが複数の場所に表示される場合、Claude Code はそれを設定する最も高いレベルの値を使用します。以下のスタックはレベルを示しており、上が最も高い優先度です。より高いレベルのキーは、その下のどこにある同じキーよりも優先されます。
+同じキーが複数の場所に現れる場合、Claude Code はそのキーを設定している最も上位のレベルの値を使用します。以下のスタックはレベルを示しており、最上位が一番上にあります。上位レベルのキーは、それより下のどこにある同じキーも上書きします。
 
 Settings precedence, highest first: managed settings, command line, project local, shared project, user. A key set at a higher level overrides the same key set lower down.
 
-優先度が高い順に：
+優先順位の高い順に並べると、次のとおりです。
 
-1. **管理設定**：組織が `managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) によってデプロイする設定です。自分の設定ファイルや `--settings` のいずれも管理キーを上書きせず、`--model` などのフラグは組織が許可するモデルからのみ選択します。管理設定の [`model`](https://code.claude.com/docs/ja/settings-reference#model) は開始時のデフォルトであり、ロックではありません。ロックは [`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels) と [`deniedModels`](https://code.claude.com/docs/ja/settings-reference#deniedmodels) です。組織が複数の管理ソースを提供する場合、[管理層内の優先順位](https://code.claude.com/docs/ja/managed-settings.md#precedence-within-the-managed-tier) のルールが Claude Code が各ソースから読み込むものを指定します。
-2. **コマンドライン**：`claude` を開始するときに `--settings <file-or-json>` で渡す JSON で、そのセッションのみに適用されます。[1 つのセッションの設定を変更する](#change-a-setting-for-one-session) を参照してください。ここで設定したキーはプロジェクト設定ファイルおよびユーザー設定ファイルの同じキーを上書きし、省略したキーはそれらのファイルの値を保持します。`--model` などの他のフラグはセッションに対して 1 つの項目を設定するもので、このスタックには含まれません。どのフラグがキーを上書きするかは、[設定リファレンス](https://code.claude.com/docs/ja/settings-reference.md) のそのキーのエントリに記載されています。
-3. **プロジェクトローカル設定** （`.claude/settings.local.json`）：このプロジェクトの個人設定です。
-4. **共有プロジェクト設定** （`.claude/settings.json`）：チームがソース管理にチェックインする設定です。
-5. **ユーザー設定** （`~/.claude/settings.json`）：すべてのプロジェクトの個人設定です。
+1. **管理設定**: 組織が `managed-settings.json` ファイル、MDM ポリシー、または claude.ai コンソールからの[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)によって配布する設定です。自分の設定ファイルや `--settings` のどれも管理対象のキーを上書きすることはできず、`--model` などのフラグは組織が許可しているモデルの中からしか選択できません。管理設定の [`model`](https://code.claude.com/docs/ja/settings-reference#model) は初期のデフォルトであり、固定するものではありません。固定するのは [`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels) と [`deniedModels`](https://code.claude.com/docs/ja/settings-reference#deniedmodels) です。組織が複数の管理ソースを配布している場合、Claude Code がそれぞれから何を読み取るかは[管理ティア内の優先順位](https://code.claude.com/docs/ja/managed-settings.md#precedence-within-the-managed-tier)のルールで決まります。
+2. **コマンドライン**: `claude` の起動時に `--settings <file-or-json>` で渡す JSON で、そのセッションにのみ適用されます。[1 つのセッションだけ設定を変更する](#change-a-setting-for-one-session)を参照してください。ここで設定したキーはプロジェクトおよびユーザーの設定ファイルにある同じキーを上書きし、指定しなかったキーはそれらのファイルの値を維持します。`--model` などのその他のフラグは、セッションに対して 1 つの項目を設定するもので、このスタックには含まれません。どのフラグがキーを上書きするかは、[設定リファレンス](https://code.claude.com/docs/ja/settings-reference.md)の各キーの項目に記載されています。
+3. **プロジェクトのローカル設定**（`.claude/settings.local.json`）: このプロジェクトにおける個人用の設定です。
+4. **共有プロジェクト設定**（`.claude/settings.json`）: チームがソース管理にチェックインする設定です。
+5. **ユーザー設定**（`~/.claude/settings.json`）: すべてのプロジェクトに適用される個人用の設定です。
 
-環境変数はこのスタックのレベルではありません。動作がシェル変数と設定キーの両方を持つ場合、どちらが適用されるかはレベルではなくペアごとに決定されます。シェルでエクスポートされた `ANTHROPIC_MODEL` はどのファイルからの `model` キーよりも優先されますが、`ANTHROPIC_DEFAULT_MODEL` はファイルが `model` を設定していない場合にのみ適用されます。[環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md#precedence) はどのキーがペアを持ち、Claude Code がどちらを最初に読み込むかを示しています。設定ファイル内の `env` ブロックは通常のキーであり、上記のレベルに従います。
+環境変数はこのスタックのレベルではありません。ある動作にシェル変数と設定キーの両方がある場合、どちらが適用されるかはレベルではなくペアごとに決まります。シェルでエクスポートした `ANTHROPIC_MODEL` はどのファイルの `model` キーよりも優先して適用されますが、`ANTHROPIC_DEFAULT_MODEL` はどのファイルも `model` を設定していない場合にのみ適用されます。どのキーにペアがあり、Claude Code がどちらを先に読み取るかは、[環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md#precedence)に記載されています。設定ファイル内の `env` ブロックは通常のキーであり、上記のレベルに従います。
 
-いくつかのセキュリティに敏感なキーについて、Claude Code は下位レベルからのより厳密な値を管理値より優先します。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence) がそれらをリストしています。
+セキュリティに関わるいくつかのキーについては、Claude Code は管理設定の値よりも下位レベルのより厳格な値を尊重します。それらは[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence)に一覧があります。
 
-### リストは上書きではなくマージされます
+### リストは上書きではなくマージされる
 
-`permissions.allow` などの同じリストキーを複数のファイルで設定する場合、Claude Code はリストを結合し、1 つを選択しません。そのため、各ファイルは別のファイルのエントリを削除することなくエントリを追加できます。モデルリストまたはモデルごとのエントリを保持する 4 つのキーは独自のルールに従います：
+`permissions.allow` などの同じリストキーを複数のファイルで設定すると、Claude Code はどれか 1 つを選ぶのではなくリストを結合するため、各ファイルは他のファイルのエントリを削除することなくエントリを追加できます。モデルのリストまたはモデルごとのエントリを保持する 4 つのキーは、それぞれ独自のルールに従います。
 
-* [`fallbackModel`](https://code.claude.com/docs/ja/settings-reference#fallbackmodel) は位置が意味を持つ順序付きチェーンであるため、Claude Code は最も優先度の高いファイルからの全体の値を取得します。
-* [`modelPicker`](https://code.claude.com/docs/ja/settings-reference#modelpicker) は 1 つの順序付きリストの行とリプレースフラグを保持するため、Claude Code は 2 つのソースから行をマージしません。管理設定、`--settings`、およびユーザー設定の最も高いものから全体の値を取得し、プロジェクトおよびローカル設定のキーを無視します。Claude Code v2.1.242 以降が必要です。
-* [`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels)：Claude Code が適用する管理設定がこれを定義する場合、Claude Code はそのリストをそのまま適用し、ユーザー、プロジェクト、またはローカル設定で追加するエントリを無視します。ただし、Claude Code を埋め込むアプリが独自のモデルリストを提供する場合を除きます。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence) を参照してください。管理ソース全体でリストはマージされません。[Claude Code が管理ソースを結合する方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) はどのソースのリストが適用されるかを示しています。非管理スコープ全体で Claude Code は通常どおり配列をマージします。
-* [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings)：Claude Code はそれを [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) と一緒に一度に 1 つのモデルで解決します。`modelSettings` エントリはどのファイルの値がモデルに適用されるかを示しています。
+* [`fallbackModel`](https://code.claude.com/docs/ja/settings-reference#fallbackmodel) は位置に意味がある順序付きのチェーンであるため、Claude Code はそれを定義している最も優先順位の高いファイルから値全体を取得します。
+* [`modelPicker`](https://code.claude.com/docs/ja/settings-reference#modelpicker) は順序付きの行のリスト 1 つと置換フラグを保持するため、Claude Code は 2 つのソースの行をマージすることはありません。管理設定、`--settings`、ユーザー設定のうち、それを定義している最も上位のものから値全体を取得し、プロジェクト設定とローカル設定にあるこのキーは無視します。Claude Code v2.1.242 以降が必要です。
+* [`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels): Claude Code が適用する管理設定でこれが定義されている場合、Claude Code はそのリストをそのまま適用し、ユーザー設定、プロジェクト設定、ローカル設定で追加したエントリを無視します。ただし、Claude Code を組み込んだアプリが独自のモデルリストを提供している場合は除きます。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence)を参照してください。管理ソース間でもこのリストがマージされることはありません。どのソースのリストが適用されるかは、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に記載されています。管理対象外のスコープ間では、Claude Code は通常どおり配列をマージします。
+* [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings): Claude Code はこれを [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) と合わせて、モデルごとに解決します。どのファイルの値がモデルに適用されるかは、`modelSettings` の項目に記載されています。
 
 ### 優先順位の例
 
-Claude が動作している間、Claude Code はスピナーの下に 1 行のヒントを表示します。例えば「/config を使用してデフォルト権限モード（Plan Mode を含む）を変更します」。[`spinnerTipsEnabled`](https://code.claude.com/docs/ja/settings-reference#spinnertipsenabled) を `~/.claude/settings.json` で `false` に設定したいとします。以下の各シナリオはそれらをオンに戻す可能性があるもので、それについて何ができるかを示しています。
+Claude が作業している間、Claude Code はスピナーの下に「Use /config to change your default permission mode (including Plan Mode)」のような 1 行のヒントを表示します。このヒントをオフにしたいので、`~/.claude/settings.json` で [`spinnerTipsEnabled`](https://code.claude.com/docs/ja/settings-reference#spinnertipsenabled) を `false` に設定したとします。以下の各シナリオは、ヒントを再びオンにしてしまう可能性のある状況と、それに対してできることを示しています。
 
-#### チーム設定が個人設定を上書きします
+#### チームの設定が個人の設定を上書きする
 
-チームの `.claude/settings.json` がそれを `true` に設定しています。Claude Code はプロジェクト値を使用します。共有プロジェクトはユーザーより上にあるため、そのプロジェクトではヒントが表示され、他の場所では表示されません。
+チームの `.claude/settings.json` がこれを `true` に設定しています。共有プロジェクトはユーザーより上位にあるため Claude Code はプロジェクトの値を使用し、そのプロジェクトでのみヒントが表示され、他の場所では表示されません。
 
-値を取り戻すことができます。そのプロジェクトの `.claude/settings.local.json` に `"spinnerTipsEnabled": false` を追加します。プロジェクトローカルは共有プロジェクトより上にあるため、そこでのセッションはヒントを表示しなくなり、チームメイトのセッションは変わりません。
+自分の値を取り戻すことができます。そのプロジェクトの `.claude/settings.local.json` に `"spinnerTipsEnabled": false` を追加してください。プロジェクトのローカル設定は共有プロジェクトより上位にあるため、そこでの自分のセッションではヒントが表示されなくなり、チームメイトのセッションは変わりません。
 
-#### 組織設定がすべてを上書きします
+#### 組織の設定がすべてを上書きする
 
-組織の管理設定がそれを `true` に設定しています。ユーザー、プロジェクト、またはローカル設定に何を入れてもヒントをオフにすることはできませんし、`--settings` でもできません。管理は最上位レベルです。
+組織の管理設定がこれを `true` に設定しています。ユーザー設定、プロジェクト設定、ローカル設定に何を書いてもヒントはオフにならず、`--settings` でも同様です。管理設定は最上位のレベルです。
 
-値を取り戻すことはできません。`/status` を実行して、どの管理ソースが適用されるかを確認し、ポリシーを変更する必要があるかどうかを管理者に尋ねてください。
+自分の値を取り戻すことはできません。`/status` を実行してどの管理ソースが適用されているかを確認し、ポリシーを変更すべきかどうか管理者に相談してください。
 
-#### コマンドラインが 1 つのセッションのファイルを上書きします
+#### コマンドラインが 1 つのセッションに限りファイルを上書きする
 
-`claude --settings '{"spinnerTipsEnabled": true}'` でセッションを開始しました。コマンドラインは管理を除くすべてのファイルより上にあるため、そのセッションはファイルが `false` と言っていても、ヒントを表示します。
+`claude --settings '{"spinnerTipsEnabled": true}'` でセッションを開始しました。コマンドラインは管理設定を除くすべてのファイルより上位にあるため、ファイルでは `false` となっていても、そのセッションではヒントが表示されます。
 
-次のセッションで値を取り戻します。`--settings` は 1 つのセッション限りで、ファイルに書き込みません。
+次のセッションでは自分の値に戻ります。`--settings` は 1 つのセッションの間だけ有効で、どのファイルにも書き込みません。
 
-#### フラグまたは環境変数が同じものを設定します
+#### フラグまたは環境変数が同じ項目を設定する
 
-一部のキーには、設定値を上書きするコマンドラインフラグまたは環境変数があります。これはどのファイルが設定したかに関係なく機能します。`ANTHROPIC_MODEL` は [`model`](https://code.claude.com/docs/ja/settings-reference#model) 設定を上書きし、`--model` はセッション用に両方を上書きします。
+一部のキーには、どのファイルで設定されたかにかかわらず設定値を上書きするコマンドラインフラグまたは環境変数があります。`ANTHROPIC_MODEL` は [`model`](https://code.claude.com/docs/ja/settings-reference#model) 設定を上書きし、`--model` はセッションに対してその両方を上書きします。
 
-値を取り戻せるかどうかはキーによって異なります。変数をアンセットするか、フラグをドロップし、[設定リファレンス](https://code.claude.com/docs/ja/settings-reference.md) のキーのエントリと [環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md) の変数の行を確認して、Claude Code がどちらを使用するかを確認してください。
+自分の値を取り戻せるかどうかはキーによって異なります。変数を解除するかフラグを外したうえで、Claude Code がどちらを使用するかを[設定リファレンス](https://code.claude.com/docs/ja/settings-reference.md)のキーの項目と[環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md)の変数の行で確認してください。
 
-### 適用されない設定をトラブルシューティングします
+### 適用されない設定のトラブルシューティング
 
-キーを設定し、Claude Code がそのように動作しない場合は、`/status` で読み込まれたファイルを確認してから、以下で症状を見つけてください。[設定をデバッグする](https://code.claude.com/docs/ja/debug-your-config.md) はより広いチェックをカバーしており、クリーン設定テストを含みます。
+キーを設定したのに Claude Code がそのとおりに動作しない場合は、まず `/status` で読み込まれたファイルを確認し、以下から該当する症状を探してください。クリーンな設定でのテストを含む、より広範なチェックについては[設定のデバッグ](https://code.claude.com/docs/ja/debug-your-config.md)で説明しています。
 
-#### 設定した値が無視されます
+#### 設定した値が無視される
 
-別のものが同じキーを設定しているか、ファイルがその値を設定できないか、またはファイルが読み込まれませんでした：
+別の何かが同じキーを設定している、ファイルがその値を設定できない、またはファイルが読み込まれていない、のいずれかです。
 
-* **より高いレベルがそれを設定しています。** 別の設定ファイル、`--settings` フラグ、または管理ソースがキーを自分のものより上で設定しています。[スタック](#settings-precedence) はどちらかを示しています。フラグまたは環境変数もキーごとに決定されて、キーをそれ自体で上書きできます。[設定リファレンス](https://code.claude.com/docs/ja/settings-reference.md) のキーのエントリはどちらを Claude Code が使用するかを示し、[`env` エントリ](https://code.claude.com/docs/ja/settings-reference#env) は管理 `env` 値対シェルエクスポートをカバーしています。
-* **セキュリティキーは厳密な値を保持しています。** いくつかのキーについて Claude Code は任意のファイルからの制限値を優先するため、[`disableClaudeAiConnectors`](https://code.claude.com/docs/ja/settings-reference#disableclaudeaiconnectors) に対するプロジェクトの `true` は有効のままです。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence) を参照してください。
-* **ファイルはその値を設定できません。** [`permissions.defaultMode`](https://code.claude.com/docs/ja/settings-reference#permissions-defaultmode) の値 `auto` および `bypassPermissions` はプロジェクトまたはローカル設定から有効になりません。代わりにユーザーまたは管理設定で設定するか、1 つのセッション用に `--permission-mode` を渡してください。v2.1.257 より前では、`bypassPermissions` はどのファイルからでも有効になりました。
+* **上位のレベルが設定している。** 別の設定ファイル、`--settings` フラグ、または管理ソースが、自分の設定より上位でそのキーを設定しています。どれが該当するかは[スタック](#settings-precedence)で確認できます。フラグや環境変数もそれ単独でキーを上書きすることがあり、これはキーごとに決まります。Claude Code がどちらを使用するかは[設定リファレンス](https://code.claude.com/docs/ja/settings-reference.md)のキーの項目に記載されており、管理設定の `env` の値とシェルでのエクスポートの関係については [`env` の項目](https://code.claude.com/docs/ja/settings-reference#env)で説明しています。
+* **セキュリティ関連のキーが厳格な値を維持している。** いくつかのキーについては、Claude Code はどのファイルからの制限的な値も尊重するため、[`disableClaudeAiConnectors`](https://code.claude.com/docs/ja/settings-reference#disableclaudeaiconnectors) をプロジェクトで `true` にするとオンのままになります。[管理設定の優先順位の例外](#exceptions-to-managed-settings-precedence)を参照してください。
+* **ファイルがその値を設定できない。** [`permissions.defaultMode`](https://code.claude.com/docs/ja/settings-reference#permissions-defaultmode) の値 `auto` と `bypassPermissions` は、プロジェクト設定やローカル設定からは有効になりません。代わりにユーザー設定または管理設定で設定するか、1 つのセッションに限り `--permission-mode` を渡してください。v2.1.257 より前は、`bypassPermissions` はどのファイルからでも有効になっていました。
 
-  [`env`](https://code.claude.com/docs/ja/settings-reference#env) ブロック内のテレメトリエクスポート変数もプロジェクトまたはローカル設定からは有効になりません。いくつかのオフ値を除きます。[Claude Code が `env` で無視する変数](https://code.claude.com/docs/ja/settings-reference#variables-claude-code-ignores-in-env) は変数とそれらの値をリストしています。
-* **ファイルが壊れています。** 無効な JSON または拒否された値により、Claude Code はファイルまたはエントリをスキップします。[壊れた設定ファイルを修正する](#fix-a-broken-settings-file) を参照してください。
+  [`env`](https://code.claude.com/docs/ja/settings-reference#env) ブロック内のテレメトリエクスポート変数も、いくつかのオフの値を除き、プロジェクト設定やローカル設定からは有効になりません。該当する変数とそれらの値は、[Claude Code が `env` で無視する変数](https://code.claude.com/docs/ja/settings-reference#variables-claude-code-ignores-in-env)に一覧があります。
+* **ファイルが壊れている。** 無効な JSON や拒否された値があると、Claude Code はそのファイルまたはエントリをスキップします。[壊れた設定ファイルを修正する](#fix-a-broken-settings-file)を参照してください。
 
-#### Claude Code で行った変更が新しいセッションで失われます
+#### Claude Code 内で行った変更が新しいセッションで失われる
 
-Claude Code 内から新しいセッション用に選択を保存する場合（例えば `/model` でデフォルトモデルを設定する場合）、Claude Code はそれをユーザー設定ファイル `~/.claude/settings.json` に書き込みます。そのファイルに書き込むことができない場合（例えば別のツールが生成するか、読み取り専用コピーにリンクしている場合）、変更は現在のセッションに適用され、次のセッションでは失われます。ファイルを生成するツールでキーを設定するか、ファイルを書き込み可能なものに置き換えてください。
+`/model` によるデフォルトモデルのように、Claude Code 内から新しいセッション向けの選択を保存すると、Claude Code はそれをユーザー設定ファイル `~/.claude/settings.json` に書き込みます。別のツールがこのファイルを生成している、あるいは読み取り専用のコピーにリンクしているなどの理由でこのファイルに書き込めない場合、変更は現在のセッションに適用されますが、次のセッションでは失われます。ファイルを生成しているツールでキーを設定するか、書き込み可能なファイルに置き換えてください。
 
-ファイルに書き込むことができ、変更がまだ続かない場合は、変更が [1 つのセッション限り](#change-a-setting-for-one-session) であったか、[より高いレベルが同じキーを設定](#a-value-you-set-is-ignored) しているかを確認してください。`model` キーについては、[新しいセッションが選択したものとは異なるモデルで開始します](https://code.claude.com/docs/ja/model-config.md#a-new-session-starts-on-a-different-model-than-you-picked) がより多くの原因をリストしています。
+ファイルに書き込めるのに変更が保持されない場合は、その変更が [1 つのセッションのみを対象としていた](#change-a-setting-for-one-session)か、[上位のレベルが同じキーを設定している](#a-value-you-set-is-ignored)かを確認してください。`model` キーについては、[新しいセッションが選択したものとは異なるモデルで開始される](https://code.claude.com/docs/ja/model-config.md#a-new-session-starts-on-a-different-model-than-you-picked)に他の原因も挙げられています。
 
-#### 管理設定の変更が届いていません
+#### 管理設定の変更が反映されない
 
-管理ソースは [配信テーブル](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism) のスケジュールで実行中のセッションに到達するため、最初にセッションを再開してください。`/status` がその後、管理者が変更したものとは異なるソースを名前付けする場合、より優先度の高いソースが適用されます。[Claude Code が管理ソースを結合する方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) は順序を示しています。
+管理ソースは[配布方法の表](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism)に示されたスケジュールで実行中のセッションに反映されるため、まずセッションを再起動してください。その後 `/status` に管理者が変更したものとは別のソースが表示される場合は、より優先度の高いソースが適用されています。順序は [Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に記載されています。
 
-#### コミットされたキーがチームメイトに到達しません
+#### コミットしたキーがチームメイトに反映されない
 
-2 つのことが `.claude/settings.json` のキーがそれをクローンするすべての人に適用されるのを防ぎます：
+`.claude/settings.json` にあるキーが、クローンしたすべての人に適用されない原因は 2 つあります。
 
-* **Claude Code はリポジトリファイルのキーを無視します。** [設定インデックス](https://code.claude.com/docs/ja/settings-reference.md#settings-index) のスコープ列で `User, local, or managed`、`User or managed`、`User`、`Managed`、または `Global config` を探してください。これらのキーは共有ファイルから適用されません。ただし、リポジトリファイルがまだオフにできるいくつかを除きます。これらのエントリのそれぞれはスコープ行でそう言っています。`Global config` キーは `~/.claude.json` からのみ適用されます。
+* **Claude Code がリポジトリファイル内のそのキーを無視している。** [設定インデックス](https://code.claude.com/docs/ja/settings-reference.md#settings-index)の Scope 列で、`User, local, or managed`、`User or managed`、`User`、`Managed`、または `Global config` を探してください。これらのキーは共有ファイルからは決して適用されません。ただし、リポジトリファイルからでもオフにできるいくつかのキーは例外で、それらの項目の Scope 行にその旨が記載されています。`Global config` のキーは `~/.claude.json` からのみ適用されます。
 
-  `env` キー内では、テレメトリエクスポート変数も共有ファイルから適用されません。いくつかのオフ値を除きます。[Claude Code が `env` で無視する変数](https://code.claude.com/docs/ja/settings-reference#variables-claude-code-ignores-in-env) を参照してください。
-* **キーは信頼を待っています。** `permissions.allow` ルール、`permissions.additionalDirectories`、`extraKnownMarketplaces`、およびほとんどの [`env`](https://code.claude.com/docs/ja/settings-reference#env) 値は、各チームメイトが [フォルダを信頼](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust) した後にのみ適用されます。それまで、チームメイトにはプロンプトが表示され続け、ファイルが宣言するマーケットプレイスからプラグインを取得しません。`deny` および `ask` ルールはすぐに適用されます。
+  `env` キー内でも、テレメトリエクスポート変数は、いくつかのオフの値を除き、共有ファイルからは決して適用されません。[Claude Code が `env` で無視する変数](https://code.claude.com/docs/ja/settings-reference#variables-claude-code-ignores-in-env)を参照してください。
+* **キーが信頼を待っている。** `permissions.allow` ルール、`permissions.additionalDirectories`、`extraKnownMarketplaces`、およびほとんどの [`env`](https://code.claude.com/docs/ja/settings-reference#env) の値は、各チームメイトが[フォルダーを信頼](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)した後にのみ適用されます。それまでは、チームメイトには引き続きプロンプトが表示され、ファイルで宣言されたマーケットプレイスからプラグインを取得することもありません。`deny` ルールと `ask` ルールはすぐに適用されます。
 
-#### 権限ルールが予想と異なる方法で結合されます
+#### 権限ルールが想定と異なる方法で組み合わされる
 
-* **権限プロンプトで「はい、今後は聞かないでください」を選択しましたが、同じツールのプロンプトが表示されます。** その選択はローカルファイルに `allow` ルールを保存し、そこの `allow` ルールはプロジェクトまたは管理ファイルからの `ask` ルールより優先されません。[権限ルールがどのように結合されるか](https://code.claude.com/docs/ja/permissions.md#settings-precedence) は順序を説明しています。VS Code 拡張機能では、承認カードはプロジェクトの共有ファイルを含む宛先ファイルを選択できます。これはすべての人のルールを変更します。CLI では、Claude Code はローカルファイルにのみ書き込みます。
-* **組織の許可ルールは自分のルールと一緒に適用されます。** これは予想されています。Claude Code は [`permissions.allow`](https://code.claude.com/docs/ja/settings-reference#permissions-allow) をスコープ全体でマージします。ただし、組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定していない限り。
+* **権限プロンプトで「Yes, and don't ask again」を選んだのに、同じツールについて引き続きプロンプトが表示される。** その選択によって許可ルールがローカルファイルに保存されますが、そこにある `allow` ルールはプロジェクトファイルや管理ファイルからの `ask` ルールより優先されることはありません。順序については[権限ルールの組み合わせ方](https://code.claude.com/docs/ja/permissions.md#settings-precedence)で説明しています。VS Code 拡張機能では、承認カードで保存先のファイルを選択でき、プロジェクトの共有ファイルも選べますが、その場合はすべての人に対してルールが変わります。CLI では、Claude Code はローカルファイルにのみ書き込みます。
+* **組織の許可ルールが自分のルールと並んで引き続き適用される。** これは想定どおりの動作です。組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定していない限り、Claude Code は [`permissions.allow`](https://code.claude.com/docs/ja/settings-reference#permissions-allow) をスコープ間でマージします。
 
 ### 管理設定の優先順位の例外
 
-セッションを制限する値を持つ少数のキーについて、Claude Code は通常は管理設定を上書きできないスコープからの制限値を優先します。このテーブルでキーを見つけて、どの値を優先し、どこから優先するかを確認してください。
+値がセッションを制限するいくつかのキーについては、Claude Code は本来なら管理設定を上書きできないスコープからの制限的な値を尊重します。この表でキーを探し、どの値がどこから尊重されるかを確認してください。
 
-| キー | Claude Code が優先する値 | 注記 |
+| キー | Claude Code が尊重する値 | 備考 |
 | :- | :- | :- |
-| [`disableClaudeAiConnectors`](https://code.claude.com/docs/ja/settings-reference#disableclaudeaiconnectors) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます |
-| [`enableArtifact`](https://code.claude.com/docs/ja/settings-reference#enableartifact) | 任意のスコープからの `false`、および任意のスコープからの `disableArtifact: true` | 管理ソースが `true` を設定する場合でも優先されます。何も [Artifact ツール](https://code.claude.com/docs/ja/artifacts.md#disable-artifacts) をオンに戻しません。Claude Code v2.1.242 以降が必要です |
-| [`isolatePeerMachines`](https://code.claude.com/docs/ja/settings-reference#isolatepeermachines) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます |
-| [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) | 任意のスコープからの `true` | 管理ソースが `false` を設定する場合でも優先されます。Claude Code v2.1.257 以降が必要です |
-| [`autoMode.classifyAllShell`](https://code.claude.com/docs/ja/settings-reference#automode-classifyallshell) | `~/.claude/settings.json` または `--settings` からの `true` | 管理ソースが `false` を設定する場合でも優先されます |
-| [`remoteControlAtStartup`](https://code.claude.com/docs/ja/settings-reference#remotecontrolatstartup) | `.claude/settings.json` または `.claude/settings.local.json` からの `false` | 管理ソースが `true` を設定する場合でも優先されます。プロジェクトまたはローカル `true` は無視されます |
-| [`crossSessionInbound`](https://code.claude.com/docs/ja/settings-reference#crosssessioninbound) | `.claude/settings.json` または `.claude/settings.local.json` からのより厳密な値、`accept` \< `hold` \< `refuse` ラダーで | 管理、`--settings`、およびユーザー値より優先されます。より厳密でないプロジェクトまたはローカル値は無視されます |
-| [`useAutoModeDuringPlan`](https://code.claude.com/docs/ja/settings-reference#useautomodeduringplan) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます |
-| [`syncClaudeAiSkills`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiskills) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます |
-| [`syncClaudeAiPlugins`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiplugins) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 勝利した管理ソースが `true` を設定する場合でも優先されます。`.claude/settings.json` の `false` は無視されます |
-| [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) | `--settings` を含む任意のスコープからのより低いキャップ | Claude Code が適用する管理設定がより高いキャップを設定する場合でも優先されます。最も低いキャップが適用されます。Claude Code v2.1.267 以降が必要です |
+| [`disableClaudeAiConnectors`](https://code.claude.com/docs/ja/settings-reference#disableclaudeaiconnectors) | 任意のスコープからの `true` | 管理ソースが `false` を設定していても尊重されます |
+| [`enableArtifact`](https://code.claude.com/docs/ja/settings-reference#enableartifact) | 任意のスコープからの `false`、および任意のスコープからの `disableArtifact: true` | 管理ソースが `true` を設定していても尊重され、[Artifact ツール](https://code.claude.com/docs/ja/artifacts.md#disable-artifacts)を再びオンにする手段はありません。Claude Code v2.1.242 以降が必要です |
+| [`isolatePeerMachines`](https://code.claude.com/docs/ja/settings-reference#isolatepeermachines) | 任意のスコープからの `true` | 管理ソースが `false` を設定していても尊重されます |
+| [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) | 任意のスコープからの `true` | 管理ソースが `false` を設定していても尊重されます。Claude Code v2.1.257 以降が必要です |
+| [`autoMode.classifyAllShell`](https://code.claude.com/docs/ja/settings-reference#automode-classifyallshell) | `~/.claude/settings.json` または `--settings` からの `true` | 管理ソースが `false` を設定していても尊重されます |
+| [`remoteControlAtStartup`](https://code.claude.com/docs/ja/settings-reference#remotecontrolatstartup) | `.claude/settings.json` または `.claude/settings.local.json` からの `false` | 管理ソースが `true` を設定していても尊重されます。プロジェクトまたはローカルの `true` は無視されます |
+| [`crossSessionInbound`](https://code.claude.com/docs/ja/settings-reference#crosssessioninbound) | `.claude/settings.json` または `.claude/settings.local.json` からの、`accept` \< `hold` \< `refuse` の段階でより厳格な値 | 管理設定、`--settings`、ユーザーの値より優先して尊重されます。より厳格でないプロジェクトまたはローカルの値は無視されます |
+| [`useAutoModeDuringPlan`](https://code.claude.com/docs/ja/settings-reference#useautomodeduringplan) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 優先される管理ソースが `true` を設定していても尊重されます。`.claude/settings.json` 内の `false` は無視されます |
+| [`syncClaudeAiSkills`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiskills) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 優先される管理ソースが `true` を設定していても尊重されます。`.claude/settings.json` 内の `false` は無視されます |
+| [`syncClaudeAiPlugins`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiplugins) | 任意の管理ソース、`--settings`、`~/.claude/settings.json`、または `.claude/settings.local.json` からの `false` | 優先される管理ソースが `true` を設定していても尊重されます。`.claude/settings.json` 内の `false` は無視されます |
+| [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) | `--settings` を含む任意のスコープからの、より低い上限 | Claude Code が適用する管理設定がより高い上限を設定していても尊重され、最も低い上限が適用されます。Claude Code v2.1.267 以降が必要です |
 
-Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定するアプリも例外です。Claude Code はそのアプリのモデル設定をすべての管理ソースからの `model`、`fallbackModel`、`modelPicker`、および `modelOverrides` キーより優先し、管理 `env` ブロック内のモデル選択変数（`ANTHROPIC_MODEL` および `ANTHROPIC_DEFAULT_*_MODEL` ファミリーなど）より優先します。Claude Code は管理 [`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels) 許可リストを有効に保ちます。ただし、アプリが独自のものを提供する場合を除きます。
+Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定するアプリも例外です。Claude Code は、すべての管理ソースの `model`、`fallbackModel`、`modelPicker`、`modelOverrides` キー、および管理設定の `env` ブロック内の `ANTHROPIC_MODEL` や `ANTHROPIC_DEFAULT_*_MODEL` ファミリーなどのモデル選択変数よりも、そのアプリのモデル設定を優先します。アプリが独自の許可リストを提供しない限り、Claude Code は管理設定の [`availableModels`](https://code.claude.com/docs/ja/settings-reference#availablemodels) 許可リストを有効なまま維持します。
 
 ## クラウドセッションの設定
 

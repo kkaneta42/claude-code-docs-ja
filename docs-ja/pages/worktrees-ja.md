@@ -214,7 +214,7 @@ config/secrets.json
 
 ### worktree 名を再利用する
 
-既にディレクトリが存在する名前を `--worktree` に渡すと、新しい worktree を作成する代わりに、その既存の worktree が開きます。
+`--worktree` に渡した名前の worktree が既に存在する場合、Claude Code は新しい worktree を作成する代わりにその worktree を開きます。Claude Code が `belongs to a different repository` または `is a leftover worktree` を含むエラーで停止した場合は、[worktree ディレクトリが `belongs to a different repository` となる](#belongs-to-a-different-repository)を参照してください。
 
 デフォルトの `"fresh"` [ベース](#choose-the-base-branch)では、以下のすべてが当てはまる場合、再度開かれた worktree は古いチップで続行する代わりにリポジトリのデフォルトブランチにリセットされます。
 
@@ -352,6 +352,20 @@ Claude Code は、worktree を作成する際にリポジトリ独自のフィ�
 ### パーシャルクローンで worktree の作成が失敗する
 
 `This repository is a partial clone` を含むエラーは、worktree の開始コミットに必要なすべての git オブジェクトを Claude Code が取得できなかったことを意味します。メッセージ内の `try again` で終わる文に示された手順を実行してください。その後、その手順を実行したシェルから再試行します。`claude --worktree` を実行するか、そこで `claude` を起動して再度依頼してください。
+
+### `Can only use --worktree in a git repository`
+
+このエラーは、git チェックアウトではないディレクトリで `--worktree` を渡し、かつ [`WorktreeCreate` フック](#non-git-version-control)が有効になっていないことを意味します。
+
+* バージョン管理を使用していないフォルダーでは、そこで `git init` を実行し、最初のコミットを作成してから再試行してください。
+* 別のバージョン管理システムのチェックアウトでは、メッセージが提案するフックをセットアップしてください。
+* ディレクトリで直接作業するには、`--worktree` を付けずに Claude を起動してください。
+
+### worktree ディレクトリが `belongs to a different repository` と表示される
+
+エラー `belongs to a different repository` と `is a leftover worktree` はどちらも、渡した worktree 名に対応するディレクトリを git が別の場所に結び付けていることを意味します。これは、プロジェクトをコピーまたは移動した後に発生する可能性があります。
+
+別の worktree 名を渡してください。ディレクトリに残すべき作業がなく、プロジェクトをコピーも移動もしていない場合は、そのディレクトリを削除して同じ名前で再試行できます。コピーまたは移動の後では、この再試行が `is already checked out elsewhere in this repository` で失敗することがあるため、別の名前を使用してください。
 
 ### Claude Code が worktree の使用を拒否する
 

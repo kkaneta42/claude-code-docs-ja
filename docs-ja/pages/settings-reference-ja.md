@@ -1523,7 +1523,7 @@ Claude Code は `.` エントリをプロジェクト設定ではプロジェク
 
 ネットワークの隔離を維持したまま、ファイルシステムの隔離をスキップします。サンドボックス化されたコマンドはホストのファイルシステムへの無制限の読み取りおよび書き込みアクセスを得ますが、ネットワークの送信先は [`network.allowedDomains`](#sandbox-network-alloweddomains) に限定されたままです。コマンドが何を書き込むかではなく、どこに接続するかを制御するためにサンドボックスを使用する場合に使用します。
 
-* **Scope**: [`User or managed`](#scopes)。管理設定が `sandbox.filesystem` をまったく設定する場合、または `"mode": "deny"` を持つ `sandbox.credentials.files` エントリをリストする場合、管理設定のみがそれを設定できます。
+* **Scope**: [`User or managed`](#scopes)。管理設定が `sandbox.filesystem` を何らかの形で設定する場合、または `"mode": "deny"` を持つ `sandbox.credentials.files` エントリをリストする場合、管理設定のみがそれを設定できます。
 * **Type**: ブール値
   * `true`: Claude Code はファイルシステム分離をスキップし、ネットワーク分離を保持します
   * `false`: ファイルシステム分離は有効なままです
@@ -2424,12 +2424,12 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 
 アイドル時のコンテキスト圧縮は、次のすべての条件を満たす会話に対してデフォルトでオンになっています。
 
-* **セッション**: 対話型のターミナルセッションを使用している、または [Anthropic が選択したアカウント](#idle-compaction-in-vs-code-and-the-desktop-app)で VS Code 拡張機能のチャットパネルかデスクトップアプリの Code タブを使用している
+* **セッション**: 対話型のターミナルセッション、VS Code 拡張機能のチャットパネル、またはデスクトップアプリの Code タブ（セッションがローカルマシン上または SSH 経由で実行される場合）を使用している
 * **自動圧縮**: [`autoCompactEnabled`](#autocompactenabled) がオンになっている
 * **プロンプトキャッシュ**: 会話が [1 時間のプロンプトキャッシュ TTL](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets) を使用している
 * **機能フラグ**: Claude Code が [Anthropic から機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)できる
 * **サイズ**: 会話のコンテキストがトークンのしきい値に達している。しきい値はデフォルトの 200,000 から[変更](#change-the-idle-compaction-threshold)できます
-* **アイドル時間**: 最後のリクエストから約 54 分が経過しており、その時点でコンピューターがスリープしていない
+* **アイドル時間**: 最後のリクエストから約 1 時間が経過しており、その時点までコンピューターがスリープしていない
 
 アイドル時のコンテキスト圧縮をオフにするには、このキーを `false` に設定します。
 
@@ -2475,9 +2475,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 Compacted using a summary written while you were away · turn off with "idleCompaction": false in settings.json
 ```
 
-特に操作は必要ありません。アイドル時のコンテキスト圧縮をオフにするには、`~/.claude/settings.json` または別の[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-files-and-who-they-affect)で `idleCompaction` を `false` に設定します。
-
-VS Code 拡張機能のチャットパネルとデスクトップアプリの Code タブでは、アイドル時のコンテキスト圧縮は Anthropic が選択したアカウントで実行されます。Claude Code はユーザーの離席中に要約を作成し、次のメッセージが最後のリクエストから 1 時間以上経過して送信された場合にのみ、その要約を使って圧縮します。
+特に操作は必要ありません。アイドル時のコンテキスト圧縮をオフにするには、セッションが実行されるマシンまたは WSL ディストリビューション上の `~/.claude/settings.json`、または別の[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-files-and-who-they-affect)で `idleCompaction` を `false` に設定します。
 
 ### `plansDirectory`
 
@@ -5173,7 +5171,9 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 ### `forceLoginMethod`
 
-ユーザーがログインできるアカウントの種類を制限します。`"claudeai"` を設定して claude.ai アカウントのみを許可するか、`"console"` を設定して Claude Console アカウントのみを許可するか、`"gateway"` を設定してファーストパーティログインの代わりに [クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)にユーザーを送信します。管理者は管理設定で設定し、[`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせて開発者の claude.ai ログインを 1 つの組織内に保つことができます。任意の設定ファイルで `"claudeai"` または `"console"` に設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)の提供も停止します。
+ユーザーがログインできるアカウントの種類を制限します。`"claudeai"` を設定して claude.ai アカウントのみを許可するか、`"console"` を設定して Claude Console アカウントのみを許可するか、`"gateway"` を設定してファーストパーティログインの代わりに [クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)にユーザーを送信します。管理者は管理設定で設定し、[`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせて開発者の claude.ai ログインを 1 つの組織内に保つことができます。
+
+任意の設定ファイルで `"claudeai"` に設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)の提供も停止します。`"console"` のみの場合、ユーザーはログインに失敗した後も引き続きキーレスサインインに到達できます。Claude Code による提供を停止するには、[管理対象マシンでキーレスサインインの提供を停止する](https://code.claude.com/docs/ja/authentication.md#stop-offering-the-keyless-sign-in-on-managed-machines)を参照してください。このセクションには、`forceLoginOrgUUID` が他に何を変更するかも記載されています。
 
 * **スコープ**: [`Any file`](#scopes)。Claude Code は `"gateway"` を [`forceLoginGatewayUrl`](#forcelogingatewayurl) と同じソースからのみ受け入れ、それ以外の場所では未設定として扱います。
 * **タイプ**: 文字列、以下のいずれか：
@@ -5585,7 +5585,7 @@ Claude Code が[サーバー管理設定](https://code.claude.com/docs/ja/server
 | 制限許可リスト | リストを設定している最上位のソースからリスト全体を採用し、下位のソースのエントリは追加しません。最上位のソースが設定していない場合は、次の下位のソースから全体を採用します | [`availableModels`](#availablemodels)、[`allowedMcpServers`](#allowedmcpservers)、[`allowedProviders`](#allowedproviders)、[`strictKnownMarketplaces`](#strictknownmarketplaces)、[`allowedChannelPlugins`](#allowedchannelplugins)、[`fallbackModel`](#fallbackmodel) チェーン |
 | 値全体の採用 | 値を設定している最上位のソースから値全体を採用し、下位のソースのエントリやフィールドは組み合わせません。最上位のソースが設定していない場合は、次の下位のソースから全体を採用します | [`sandbox.credentials.awsPairs`](#sandbox-credentials-awspairs)、[`sandbox.ripgrep`](#sandbox-ripgrep) |
 | 提供される MCP サーバー | すべてのソースのサーバー名を組み合わせます。2 つのソースが同じ名前を設定している場合は、上位のソースのエントリ全体を適用します | [`managedMcpServers`](#managedmcpservers) |
-| 最も優先度の高いソースからのみ読み取り | ポリシーキーを含む最も優先度の高いソースからのみキーを読み取るため、最上位のソースが何も設定していない場合でも下位のソースの値は無視されます | [`apiKeyHelper`](#apikeyhelper)、[`awsAuthRefresh`](#awsauthrefresh)、[`awsCredentialExport`](#awscredentialexport)、[`gcpAuthRefresh`](#gcpauthrefresh)、[`otelHeadersHelper`](#otelheadershelper)、`proxyAuthHelper`、[`forceLoginOrgUUID`](#forceloginorguuid)、[`forceLoginMethod`](#forceloginmethod) の `"claudeai"` と `"console"` の値、[`parentSettingsBehavior`](#parentsettingsbehavior)、[`modelPicker`](#modelpicker)、[`policyHelper`](#policyhelper)、[`permissions.defaultMode`](#permissions-defaultmode) |
+| 最も優先度の高いソースからのみ読み取り | ポリシーキーを含む最も優先度の高いソースからのみキーを読み取るため、最上位のソースが何も設定していない場合でも下位のソースの値は無視されます | [`apiKeyHelper`](#apikeyhelper)、[`awsAuthRefresh`](#awsauthrefresh)、[`awsCredentialExport`](#awscredentialexport)、[`gcpAuthRefresh`](#gcpauthrefresh)、[`otelHeadersHelper`](#otelheadershelper)、`proxyAuthHelper`、[`parentSettingsBehavior`](#parentsettingsbehavior)、[`modelPicker`](#modelpicker)、[`policyHelper`](#policyhelper)、[`permissions.defaultMode`](#permissions-defaultmode) |
 | `env` | `"first-wins"` と `"merge"` のどちらでも、[管理ソース間で変数ごとにマージします](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source) | [`env`](#env) |
 | その他すべてのキー | 値を設定している最上位のソースから値を採用します | [`cleanupPeriodDays`](#cleanupperioddays)、[`model`](#model) |
 
@@ -5596,6 +5596,7 @@ Claude Code が[サーバー管理設定](https://code.claude.com/docs/ja/server
 * **[`policyHelper`](#policyhelper)**: Claude Code は、ポリシーキーを含む最上位のソースが MDM ポリシーまたは管理設定ファイルである場合にのみこれを尊重するため、サーバー管理設定のもとでは適用されません。
 * **[`modelOverrides`](#modeloverrides)**: `availableModels` と対になります。Claude Code は `modelOverrides` を設定している最上位のソースから採用しますが、上位のソースが `modelOverrides` なしで `availableModels` を設定している場合は例外です。その場合、すべてのソースの `modelOverrides` を無視します。
 * **[`forceLoginGatewayUrl`](#forcelogingatewayurl)、[`gatewayInternalNetworks`](#gatewayinternalnetworks)、[`forceLoginMethod`](#forceloginmethod) の `"gateway"` の値**: Claude Code はこれらをサーバー管理設定から読み取ることはないため、そこにある値は適用されず、MDM ポリシーや管理設定ファイルで設定された値を隠すこともありません。マシン上の管理ソースのうち、ポリシーキーを含む最上位のものだけがこれらを提供します。これはサーバー管理設定も存在するかどうかに関係ありません。
+* **[`forceLoginOrgUUID`](#forceloginorguuid) と [`forceLoginMethod`](#forceloginmethod) の `"claudeai"` と `"console"` の値**: どの値が適用されるかは、表ではなく[ログインキーを提供する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#which-managed-source-supplies-login-keys)で確認してください。
 * **[`allowedProviders`](#allowedproviders)**: 表のルールを適用した後も、そのエントリのスコープの注記にあるとおり、マシン自身のリストが結果を引き続き制限します。
 
 マシン上でどのソースが組み合わされたかを確認するには、`/status` を実行して [`Setting sources` 行を確認してください](https://code.claude.com/docs/ja/managed-settings#read-the-source-in-/status)。

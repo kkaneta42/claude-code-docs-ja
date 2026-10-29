@@ -221,6 +221,15 @@ claude.ai の他のサーフェスで、GHES マーケットプレイスに対�
 
 レビューや Anthropic がホストするクラウドセッションがタイムアウトする場合、Anthropic のインフラストラクチャから GHES インスタンスに到達できない可能性があります。ファイアウォールが Anthropic の[送信元 IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses)からのインバウンド接続を許可していることを確認してください。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)のセッションはネットワーク内部から GHES に到達するため、そうしたセッションでクローンできない場合は、代わりにランナー自体のネットワーク経路を確認してください。リポジトリピッカーやその他のホスト型のセッション開始前フローについては、[ネットワーク要件](#network-requirements)を参照してください。
 
+### 接続テストは成功するが 2 回目のテストが失敗する
+
+2 回目のテストは、Anthropic がホストするクラウドセッションと同じ方法で GHES インスタンスに接続します。表示されたメッセージを探し、ファイアウォールを確認すべきか再試行すべきかを確認してください。
+
+* **`Connection test passed, but a second test failed.`**：インスタンスがファイアウォールの内側にある場合は、Anthropic のすべての[送信元 IP アドレス](https://platform.claude.com/docs/en/api/ip-addresses#outbound-ip-addresses)を許可してください。ファイアウォールがその一部をブロックしていても、接続テストが成功することがあるためです。数分後に再試行することもできます。
+* **`Connection test passed, but a second test could not run.`**：数分後に再試行してください。
+
+再度テストするには、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control#github-enterprise) で接続の **More options** メニューを開き、**Test connection** を選択します。
+
 ### セッションの開始が `Unable to get organization UUID` で失敗する
 
 Claude Code が認証情報から claude.ai の組織を読み取れませんでした。GitHub Enterprise Server のサポートは Team プランと Enterprise プランに限定されているため、Team または Enterprise 組織のアカウントを使用して `/login` でサインインしてください。原因およびこの状態で表示されるその他のメッセージについては、[Unable to get organization UUID](https://code.claude.com/docs/ja/claude-code-on-the-web.md#unable-to-get-organization-uuid) を参照してください。

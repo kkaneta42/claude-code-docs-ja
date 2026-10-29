@@ -18,10 +18,10 @@
 
 各セッションがランナー自体では実行できないセットアップが必要な場合、ラッパースクリプトを使用します。セッション作成者にスコープされた短期認証情報のプロビジョニング、環境固有のシークレットのエクスポート、言語ツールチェーンの準備、または子プロセスの周囲のリソース制限の適用などです。ランナーはセッションごとに 1 回、Claude Code バイナリの代わりにラッパーを起動します。ラッパーを終了するには、`$CLAUDE_RUNNER_CLAUDE_BIN`（ランナー自体のバイナリ）に `exec` することで、シグナルと終了コードが正しく伝播します。
 
-ランナーを起動するときに `--exec-path` または `SELF_HOSTED_RUNNER_EXEC_PATH` をラッパーに指定します。
+ランナーを起動するときに `--exec-path` または `SELF_HOSTED_RUNNER_EXEC_PATH` をラッパーに指定し、[クイックスタート](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md#set-up-manually)の説明に従って `<writable-dir>` を置き換えます。
 
 ```bash theme={null}
-claude self-hosted-runner --environment-secret-file /etc/claude/environment-secret --exec-path /etc/claude/session-wrapper.sh
+claude self-hosted-runner --environment-secret-file /etc/claude/environment-secret --base-dir '<writable-dir>' --exec-path /etc/claude/session-wrapper.sh
 ```
 
 ランナーはラッパーの環境に以下を設定します。
@@ -456,6 +456,39 @@ trap 'rc=$?; [ "$rc" -eq 0 ] || [ -n "${PERMANENT:-}" ] || exit 1' EXIT
   これにより、オーケストレーターのログにそのメッセージが表示されます。フックが他のオブジェクトを作成する場合は、それぞれにオーダー ID に基づいた名前を付け、それぞれ個別のコマンドで作成し、同様に「既に存在する」という応答を成功として扱ってください。シークレットを保持するオブジェクトの場合は、コマンドの出力の代わりに固定のメッセージを出力してください。
 
 trap が機能することを確認するには、`trap` 行の直下に、`no-such-command` などの存在しないコマンドを呼び出す行を追加します。シェルからフックファイルを実行し、`echo $?` が `1` を出力することを確認してから、その行を削除します。
+
+### オーケストレーターを停止または再起動する
+
+実行中の `spawn-runner` フックを中断せずにオーケストレーターを停止または再起動するには、[`--shutdown-drain-sec`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) を指定して起動します。これにより、オーケストレーターは `SIGTERM` を受け取ると、実行中のフックに対して、設定した秒数まで完了するための猶予を与えます。値の選び方と、それに合わせたプロセススーパーバイザーの設定方法については、[`--shutdown-drain-sec` とオーケストレーターの停止タイムアウトのサイズ設定](#size-shutdown-drain-sec-and-the-supervisors-stop-timeout-for-the-orchestrator)を参照してください。
+
+次の起動コマンドでは 70 秒を許容します。
+
+```bash theme={null}
+claude self-hosted-runner orchestrator \
+  --environment-secret-file /etc/claude/environment-secret \
+  --hooks-dir /etc/claude/hooks \
+  --shutdown-drain-sec 70
+```
+
+オーケストレーターは、すでに送信済みのポーリングとすべてのフックが完了した時点で終了します。`--shutdown-drain-sec` の秒数が経過すると、まだ実行中のフックは `SIGTERM` を受け取り、オーケストレーターは終了します。2 回目の `SIGTERM` または任意の `SIGINT` を受け取った場合も、待機せずに同じ動作をします。`[runner:orchestrator] stop summary:` を含むログ行には、フックとスポーン要求の数が、それぞれの終了の仕方ごとに集計されます。
+
+`--shutdown-drain-sec` を指定しない場合、オーケストレーターは `SIGTERM` または `SIGINT` を受け取るとすぐに停止します。実行中の各フックは `SIGTERM` を受け取り、Anthropic には何も通知されません。その結果、ランナーが起動されなかったセッションは、Anthropic が[再要求する](#the-spawn-runner-hook)までキューに残る可能性があります。再要求は `--expected-spawn-seconds`（デフォルトは 120 秒）が経過した時点で行われます。
+
+> [!NOTE]
+>
+> `--shutdown-drain-sec` には Claude Code v2.1.299 以降が必要です。それより古いバージョンでは、起動時に `error: unknown flag --shutdown-drain-sec` で終了します。
+
+#### `--shutdown-drain-sec` とオーケストレーターの停止タイムアウトのサイズ設定
+
+デフォルト設定では、[`--shutdown-drain-sec 70`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) と 85 秒の停止タイムアウトを使用します。つまり、Kubernetes では `terminationGracePeriodSeconds: 85`、systemd では `TimeoutStopSec=85` です。`--hook-timeout` を変更した場合は、両方を調整してください。
+
+* **`--shutdown-drain-sec`**：`--hook-timeout` に 10 秒を加えた値以上。これにより、`SIGTERM` の直前に開始したフックも完了できます
+* **停止タイムアウト**：`--shutdown-drain-sec` に 15 秒を加えた値以上。オーケストレーターは起動時にこの値をログに記録します。`shutdown drain:` を含む行を探してください。
+
+プロセススーパーバイザーからは、オーケストレーターのプロセスのみに `SIGTERM` を 1 回だけ送信するようにしてください。2 回目の `SIGTERM` は `--shutdown-drain-sec` の待機を打ち切るためです。systemd のデフォルトの [`KillMode=control-group`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#what-reaches-a-running-post-session-hook) をそのままにすると、フックも `SIGTERM` を受け取り、フックがワークロードを送信する前に終了する可能性があります。`KillMode` を変更する前に、`spawn-runner` フックがランナーをどのように起動するかを確認してください。
+
+* **フックがワークロードをプラットフォームに送信して終了する場合**：オーケストレーターをユニットのメインプロセスとして実行し、`KillMode=mixed` を設定します。これにより、`SIGTERM` はそのプロセスのみに送信されます。
+* **フックがオーケストレーター自身のユニット内のプロセスとしてランナーを起動する場合**：`KillMode=mixed` では、それらのランナーに `SIGTERM` が送信されません。代わりに systemd が後で `SIGKILL` を送信するため、ランナーはセッションをドレインせず、`post-session` フックも実行せずに終了します。
 
 ## モデルリクエストを Bedrock または Agent Platform に送信する
 

@@ -17,7 +17,7 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ�
 
 ブラウザが自動的に開かない場合は、`c` を押してログイン URL をクリップボードにコピーし、ブラウザに貼り付けます。
 
-ブラウザがサインイン後にリダイレクトされずにログインコードを表示する場合は、`Paste code here if prompted` プロンプトでそれをターミナルに貼り付けます。これは、ブラウザが Claude Code のローカルコールバックサーバーに到達できない場合に発生します。これは WSL2、SSH セッション、およびコンテナで一般的です。
+ブラウザがサインイン後にリダイレクトされずにログインコードを表示する場合は、`Paste code here if prompted` プロンプトでそれをターミナルに貼り付けます。
 
 ログインが完了すると、ターミナルに `Login successful` と表示され、`Enter` キーを押して続行するよう求められます。
 
@@ -127,7 +127,8 @@ API キーを作成しなくても Console アカウントにサインインで�
 すべてのマシンで選択肢が得られるわけではありません。Claude Code は以下の場合、確認なしに API キーを作成します。
 
 * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などの [クラウドプロバイダーに対して実行](https://code.claude.com/docs/ja/third-party-integrations.md)するか、[AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md) に対して実行する
-* 任意の設定ファイルが [`forceLoginOrgUUID`](#restrict-login-to-your-organization) を設定するか、`forceLoginMethod` を `"claudeai"` または `"console"` に設定する
+* 任意の設定ファイルが [`forceLoginOrgUUID`](#restrict-login-to-your-organization) を設定するか、`forceLoginMethod` を `"claudeai"` に設定する
+* `forceLoginMethod` が `"console"` で、どの設定ファイルも `forceLoginOrgUUID` を設定していない場合（サインインに失敗した後にエラー画面から再試行するまで）
 * マシン上に管理設定ファイル、MDM プロファイル、キャッシュされたサーバー管理設定などの管理設定ソースが存在しますが、Claude Code が [それを読み取ることができず](https://code.claude.com/docs/ja/managed-settings.md#invalid-entries-in-managed-settings)、他の管理ソースがポリシーを提供していない
 
 キーなしでサインインする前に `ANTHROPIC_API_KEY` を設定解除してください。
@@ -139,6 +140,16 @@ API キーを作成しなくても Console アカウントにサインインで�
 * **元に戻す方法**: `/logout` を実行します。これにより、このサインインが書き込んだ認証情報が削除および取り消されます
 
 プロファイルに関するその他すべてのことがこのサインインに適用されます。これには、他の認証情報に対するランク付け、`/status` で取得される `Profile` 行、および claude.ai ログインが必要な機能が含まれます。[Anthropic プロファイルとフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)を参照してください。
+
+#### 管理対象マシンでキーレスサインインの提供を停止する
+
+Claude Code が [キーレスサインイン](#sign-in-without-an-api-key)を提供しないようにするには、デバイス管理ツールを使用して、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)の [`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid) を各開発者のマシンにデプロイします。値には [Console の組織 ID](https://platform.claude.com/settings/organization) を設定します。デプロイする前に、各開発者が [API キーを作成できるロール](#claude-console-authentication)を持っていることを確認してください。デプロイ後は、そのロールを持たない開発者は `/login` で Console にサインインできなくなります。
+
+`forceLoginMethod` を `"console"` に設定しただけの場合、開発者は失敗したサインインを再試行してキーレスのオプションを選択できます。`forceLoginOrgUUID` をデプロイすると、ログイン画面からそのオプションはなくなりますが、開発者は既に持っている、または [`ant auth login`](https://platform.claude.com/docs/en/cli-sdks-libraries/cli/authentication) で作成した [Anthropic プロファイル](#anthropic-profiles-and-federation-credentials)を引き続き使用できます。デプロイ後は、各マシンで以下の認証情報とログインに対処してください。
+
+* **キーレスサインイン**: 開発者を API キーに移行するには、いったんログアウトしてから Console に再度ログインしてもらいます。これによりキーが作成されます。キーレスサインインの場合は、シェルで `claude auth logout` を実行します。`ant auth login` のプロファイルの場合は、`ant auth logout` を実行します。プロファイルと API キーの両方がマシン上にあると Claude Code はセッションを拒否するため、先にログアウトしてもらいます。
+* **環境変数およびヘルパーの認証情報**: Claude Code は、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` で認証するセッションを、管理設定がそれらを提供している場合でも拒否します。これらの認証情報を削除してから、開発者に `/login` を実行して保存済みの API キーを作成してもらいます。
+* **claude.ai ログイン**: Claude Code は、リストにない組織への [ログインを拒否](#restrict-login-to-your-organization)します。これにはマシン上で既に使用中の組織も含まれます。その組織を維持するには、`forceLoginOrgUUID` 配列に追加します。
 
 ### クラウドプロバイダー認証
 
@@ -172,7 +183,7 @@ Claude Code v2.1.212 以降では、ここにリストされているすべて�
 * **`claude setup-token` および `/install-github-app`**: `forceLoginMethod` のみを強制するため、別の組織でトークンを生成できます
 * **[ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)サインイン**: `forceLoginMethod: "gateway"` によって選択され、それによって制限されず、Anthropic 組織に対して認証されないため、`forceLoginOrgUUID` は適用されません。ゲートウェイ ID プロバイダーを使用してアクセスを制限します
 
-デバイス管理ツールを通じてキーをデプロイします。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)は、既に組織に認証されているアカウントにのみ到達するため、開発者の最初のログインをリダイレクトできません。組織がサーバー管理設定も配布する場合、両方の場所にキーを設定します。管理設定ソースは [マージされず](https://code.claude.com/docs/ja/server-managed-settings.md#settings-precedence)、キャッシュされたサーバー管理設定はデバイス管理ファイルを置き換えます。ただし、いくつかの [キーごとの例外](https://code.claude.com/docs/ja/server-managed-settings.md#per-key-exceptions-across-managed-sources)を除いて。`forceLoginOrgUUID` と `forceLoginMethod` の `"claudeai"` および `"console"` 値はこれらの例外に含まれていないため、両方の場所に保持します。
+`forceLoginMethod` と `forceLoginOrgUUID` はデバイス管理ツールを通じてデプロイします。開発者が [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を受け取るのは組織への認証後に限られるため、これらの設定で最初のログインをリダイレクトすることはできません。claude.ai からサーバー管理設定も配布している場合は、すべてのクライアントが v2.1.299 以降を実行するようになるまで、そちらにも両方のキーを設定してください。その後キーを設定する場所と、どのソースの値が適用されるかについては、[ログインキーを提供する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#which-managed-source-supplies-login-keys)を参照してください。
 
 [ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)デプロイメントでは、`forceLoginMethod` と `forceLoginOrgUUID` を [ゲートウェイが提供する設定](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#managed)から除外したままにしてください。
 
