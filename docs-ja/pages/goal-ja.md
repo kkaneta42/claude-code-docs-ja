@@ -168,7 +168,7 @@ v2.1.239 より前では、この方法でバックオフするのはアイド�
 
 > [!WARNING]
 >
-> Claude Code は `/goal` 評価だけでなく、小型高速モデルを使用するあらゆる場所で `ANTHROPIC_DEFAULT_HAIKU_MODEL` を読み取ります。これを設定すると、Claude Code は [`haiku` エイリアス](https://code.claude.com/docs/ja/model-config#model-aliases) をそのモデルに解決し、会話要約などの [バックグラウンド機能](https://code.claude.com/docs/ja/costs.md#background-token-usage) をそれで実行します。
+> Claude Code は `/goal` 評価だけでなく、小型高速モデルを使用するあらゆる場所で `ANTHROPIC_DEFAULT_HAIKU_MODEL` を読み取ります。これを設定すると、Claude Code は [`haiku` エイリアス](https://code.claude.com/docs/ja/model-config#model-aliases) もそのモデルに解決し、セッションタイトルの生成やその他の一部のバックグラウンドタスクをそのモデルで実行します。
 
 評価者は、セッションが設定されているプロバイダーで実行されます。ツールを呼び出さないため、Claude が既に会話で表示したものだけを判定できます。
 

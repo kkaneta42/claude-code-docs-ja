@@ -92,7 +92,7 @@ Anthropic API では、[`availableModels`](#restrict-model-selection) または[
 
 プランやシート階層によっては、Fable の使用量がプランに含まれる上限から差し引かれるのではなく、[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)に課金される場合があります。その場合、`/model` ピッカーの Fable の行に「Requires usage credits」と表示されます。使用クレジットを管理するには、[サブスクリプションに使用クレジットを追加する](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)を参照してください。
 
-対話セッションでは、Fable のリクエストが使用クレジットに課金される前に、Claude Code が同意プロンプトを表示します。組織請求を利用している Enterprise プランのメンバーには、このプロンプトは表示されません。使用クレジットを使って Fable で続行するか、デフォルトモデルに切り替えることができます。プロンプトを閉じることもできます。
+対話セッションでは、Claude Code が Fable の使用クレジットに関する同意プロンプトを表示することがあります。組織請求を利用している Enterprise プランのメンバーには、このプロンプトは表示されません。使用クレジットを使って Fable で続行するか、デフォルトモデルに切り替えることができます。プロンプトを閉じることもできます。
 
 * `/model` で Fable モデルを選択した場合は、現在のモデルが維持されます。
 * セッションの途中では、Claude Code はデフォルトモデルでそのターンを続行します。
@@ -544,7 +544,7 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 * **ユーザー自身による変更**：effort レベルを選択したり、`/model` でモデルを選んだり、後でセッションを再開したりすると、警告されたリクエストのレベルは引き継がれなくなります。
 * **1 ターンだけに設定された effort**：警告されたターンを `ultrathink` で引き上げた場合や、スキルの `effort` フロントマターがそのレベルを設定した場合、そのレベルはそのターンに適用されます。以降のターンは、[effort の解決順序](#adjust-effort-level)がフォールバックモデルに与えるレベルで実行されます。
 
-セッション内で `/effort status` を実行すると有効なレベルを確認でき、`/effort` を実行すると変更できます。
+フォールバック後にセッションに設定されているレベルを確認するには、`/effort status` を実行します。変更するには、`/effort` を実行します。
 
 #### フォールバックのきっかけを確認する
 
@@ -607,9 +607,11 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 
 Claude Code は、次の順序でセッションの effort レベルを解決し、最初に該当したものを採用します。
 
-1. 明示的な選択：[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数、`--effort` を付けた起動、またはセッション内での `/effort`（[非対話の `/effort` は効果の範囲が狭くなります](#non-interactive-effort)）
-2. 設定：モデルに対して保存したレベルまたは [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) キー。これらの間および設定ファイル間の優先順位は [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) に記載されています
-3. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります
+1. [`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数
+2. `/effort`、`/model` ピッカー、[`applyFlagSettings()`](https://code.claude.com/docs/ja/agent-sdk/typescript#applyflagsettings) などでセッション内で選んだレベル
+3. `--effort` を付けた起動
+4. 設定：モデルに対して保存したレベルまたは [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) キー。これらの間および設定ファイル間の優先順位は [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) に記載されています
+5. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります
 
 自動モデルフォールバックの後に適用されるレベルについては、[フォールバック後の effort レベル](#effort-level-after-a-fallback)を参照してください。
 
@@ -687,20 +689,20 @@ Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus
 effort は次のいずれかの方法で変更できます。
 
 * **`/effort`**：引数なしで `/effort` を実行するとインタラクティブなスライダーが開き、`/effort` の後にレベル名を続けると直接設定でき、`/effort auto` を実行するとアクティブなモデルの保存済みレベルがクリアされます
-* **`/model` 内**：モデルを選択する際に、左右の矢印キーで effort スライダーを調整します
+* **`/model` 内**：モデルを選択する際に、左右の矢印キーで effort スライダーを調整します。新しいレベルは、遅くとも次のメッセージから適用されます。それまでは、新しいモデルであっても Claude が以前のレベルで作業を続けることがあります。`CLAUDE_CODE_EFFORT_LEVEL` など、[選択したレベルより優先されるソース](#adjust-effort-level)が適用されている間は、Claude は代わりにそのソースのレベルで作業します。
 * **`--effort` フラグ**：Claude Code の起動時にレベル名を渡して、1 つのセッションに設定します
 * **環境変数**：`CLAUDE_CODE_EFFORT_LEVEL` にレベル名を設定します。Claude Code が [effort レベルを送信しない](#send-no-effort-level)ようにするには、代わりに `auto` または `unset` を設定します
 * **設定**：[`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) でモデルごとのレベルを設定するか、レベルが設定されていないモデルのデフォルトとして [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) に `low`、`medium`、`high`、`xhigh` のいずれかを設定します。どちらのキーでも `max` はレベルとして受け付けられず、`ultracode` には専用の [`ultracode`](https://code.claude.com/docs/ja/settings-reference#ultracode) キーがあります
 * **接続されたデバイスから**：[Remote Control](https://code.claude.com/docs/ja/remote-control.md#what-connected-devices-see) セッションで、スマートフォンまたはブラウザの effort コントロールからレベルを選びます。レベルは現在のセッションにのみ適用されます。Claude Code v2.1.234 以降が必要です
 * **スキルとサブエージェントのフロントマター**：[スキル](https://code.claude.com/docs/ja/skills.md#frontmatter-reference)または[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields)の markdown ファイルで `effort` を設定すると、そのスキルまたはサブエージェントの実行時に effort レベルを上書きします
 
-フロントマターの effort は、そのスキルまたはサブエージェントがアクティブなときに適用され、セッションのレベルは上書きしますが、環境変数は上書きしません。[`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) または[組織の effort 上限](#organization-effort-limits)は、スキルやサブエージェントが実行されるレベルを引き続き制限します。
+スキルの `effort` は、そのスキルが実行されたターンの終了まで適用されます。`context: fork` の場合は、フォークされたサブエージェントの実行中に適用されます。サブエージェントの `effort` は、[呼び出し時に上書きされない](https://code.claude.com/docs/ja/sub-agents.md#choose-an-effort-level)限り、サブエージェントの実行中に適用されます。いずれかが適用されている間、スキルまたはサブエージェントは、起動時に指定したレベル、保存したレベル、選択したレベルにかかわらず、そのレベルで実行されます。`CLAUDE_CODE_EFFORT_LEVEL` が設定されている場合は、代わりにそのレベルが適用されます。
 
-[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `effortLevel` を設定した場合、Claude Code は[effort の解決順序](#adjust-effort-level)の設定のステップでそれを適用し、ユーザーは引き続き `/effort` や `--effort` でレベルを変更できます。ユーザーを特定のレベル以下に制限するには、[`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を設定します。
+[`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) または[組織の effort 上限](#organization-effort-limits)は、スキルやサブエージェントが実行されるレベルを引き続き制限します。[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `effortLevel` を設定した場合、Claude Code は[effort の解決順序](#adjust-effort-level)の設定のステップでそれを適用し、ユーザーは引き続き `/effort` や `--effort` でレベルを変更できます。ユーザーを特定のレベル以下に制限するには、[`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を設定します。
 
 #### 設定した effort レベルを確認する
 
-サポートされているモデルが選択されている場合、effort スライダーは `/model` に表示されます。セッションヘッダーに表示されるレベル（たとえば「with low effort」）は effort 設定に基づくもので、Claude が[まだ以前のレベルで作業している](#when-a-new-effort-level-starts)場合でも同様です。フッターにも、起動時と変更時に effort レベルが短時間表示されます。
+サポートされているモデルが選択されている場合、effort スライダーは `/model` に表示されます。セッションヘッダーに表示されるレベル（たとえば「with low effort」）は effort 設定に基づくもので、Claude が[まだ以前のレベルで作業している](#when-a-new-effort-level-starts)場合でも同様です。起動時と変更時には、フッターにもセッションに設定されたレベルが短時間表示されます。
 
 #### 新しい effort レベルが適用されるタイミング
 

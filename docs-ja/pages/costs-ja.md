@@ -377,12 +377,7 @@ fi
 
 ## バックグラウンドトークン使用量
 
-Claude Code はアイドル状態でも、バックグラウンド機能にトークンを使用します。
-
-* **会話要約**: `claude --resume` 機能の前の会話を要約するバックグラウンドジョブ
-* **コマンド処理**: `/usage` などの一部のコマンドは、ステータスを確認するためにリクエストを生成する場合があります
-
-これらのバックグラウンドプロセスは、アクティブなインタラクションがなくても、少量のトークン（通常はセッションあたり \$0.04 未満）を消費します。
+セッション要約とアイドル時のコンテキスト圧縮は、アイドル状態の間もトークンを使用する場合があります。それぞれが実行されるタイミングとオフにする方法については、[セッション要約](https://code.claude.com/docs/ja/interactive-mode.md#session-recap)と[アイドル時のコンテキスト圧縮](https://code.claude.com/docs/ja/settings-reference.md#idlecompaction)を参照してください。
 
 プロンプト提案がオンの場合、Claude Code は Claude が応答した後、セッションが使用しているモデルに短いリクエストを送信して、[次のプロンプトを提案](https://code.claude.com/docs/ja/interactive-mode.md#prompt-suggestions)します。そのリクエストは会話のプロンプトキャッシュを再利用するため、ほぼキャッシュ読み取りと少数の出力トークンです。Claude Code は[アカウントが使用量制限に近い、または達している場合、提案をスキップ](https://code.claude.com/docs/ja/interactive-mode.md#when-claude-code-skips-suggestions)します。これらのリクエストを停止するには、[プロンプト提案をオフにしてください](https://code.claude.com/docs/ja/interactive-mode.md#turn-prompt-suggestions-off)。
 

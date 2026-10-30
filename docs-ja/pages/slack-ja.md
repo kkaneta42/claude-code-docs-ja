@@ -200,7 +200,7 @@ Claude Tag は Team プランと Enterprise プランで利用できます。ワ
 
 ### Claude Tag チャンネルからのセッションが開始に失敗する
 
-このエントリは [Claude Tag](https://claude.com/docs/claude-tag/overview) を使用しているワークスペースに適用されます。Claude Tag では、Claude はメンバーのアカウントではなく、組織の共有 ID としてチャンネルで機能します。[claude.ai/code](https://claude.ai/code) でチャンネルのクラウド環境を作成した場合、それは個人アカウントに属しており、Claude は個人環境でチャンネルセッションを開始できません。Claude Code はセッションを直ちに失敗させ、再試行しても役に立ちません。
+このエントリは [Claude Tag](https://claude.com/docs/claude-tag/overview) を使用しているワークスペースに適用されます。[claude.ai/code](https://claude.ai/code) でチャンネルのクラウド環境を作成した場合、それは個人アカウントに属しており、Claude は個人環境でチャンネルセッションを開始できません。Claude Code はセッションを直ちに失敗させ、再試行しても役に立ちません。
 
 Owner であり、環境が自分のものである場合は、環境セレクターから[組織と共有](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments)してください。それ以外の場合は、Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページから組織共有環境として再作成します。
 

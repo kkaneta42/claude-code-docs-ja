@@ -26,7 +26,7 @@ HIPAA 設定は Claude Enterprise プランの組織設定で、保護対象医�
 
 | 時期 | 行うこと |
 | :- | :- |
-| 設定が適用される前 | [コンピューターを準備する](#prepare-computers-before-the-hipaa-configuration-is-applied)：開発者の接続方法を確認し、アプリを更新し、ネットワークアクセスを許可し、管理設定をデプロイします |
+| 設定が適用される前 | [コンピューターを準備する](#prepare-computers-before-the-hipaa-configuration-is-applied)：開発者の接続方法を確認し、アプリを更新し、ネットワークアクセスを許可し、管理設定をデプロイし、Claude Desktop へのサインインを制限します |
 | 適用された後 | Owner が再びオンにするまで Code タブはオフになります。[コンピューター上で設定を確認する](#confirm-the-configuration-on-a-computer) |
 | 継続的に | [ローカルセッションデータを管理する](#manage-local-session-data) |
 
@@ -160,6 +160,10 @@ HIPAA 設定は `cleanupPeriodDays` を制限しないため、開発者は自�
 * **v2.1.285 より古いバージョン**：これらのバージョンは `allowedProviders` を無視するため、クラウドプロバイダーやゲートウェイ上で起動できてしまいます。v2.1.163 から v2.1.284 までのバージョンで起動を拒否させるには、[サンプルのキー](#deploy-managed-settings)と同じ管理設定に、`"2.1.285"` を設定した [`requiredMinimumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredminimumversion) を追加できます。v2.1.163 より前のバージョンは `allowedProviders` だけでなく `requiredMinimumVersion` も無視するため、[それらのコンピューターを更新してください](#update-claude-code-and-claude-desktop)。
 
 HIPAA 設定なしで実行されるセッションが BAA の対象となるかどうかについては、[HIPAA 対応 Enterprise プランで Claude Code（ローカルモード）と Cowork（ローカルモード）を使用する](https://support.claude.com/en/articles/17318731)を参照してください。
+
+### Claude Desktop のサインインを制限する
+
+開発者が Claude Desktop の Code タブを使用する場合は、[サインインを組織に制限する](https://code.claude.com/docs/ja/desktop.md#restrict-sign-in-to-your-organization)の説明に従って、Claude Desktop のポリシーにも `forceLoginOrgUUID` を設定してください。管理設定で `forceLoginMethod` と `forceLoginOrgUUID` をデプロイしても、Claude Desktop のサインイン画面は変わりません。
 
 ## コンピューター上で設定を確認する
 

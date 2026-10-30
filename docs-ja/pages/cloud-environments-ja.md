@@ -25,7 +25,7 @@
 
 > [!NOTE]
 >
-> [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションは Web とモバイルインターフェイスを自分のマシン上のセッションに接続します。これはクラウド環境ではなく、自分のマシンのネットワークとファイルを使用します。Claude Tag チャネルセッションは [共有環境](#organization-shared-environments) または [セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments) のいずれかの組織レベルの環境のみを使用します。
+> [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションは Web とモバイルインターフェイスを自分のマシン上のセッションに接続します。これはクラウド環境ではなく、自分のマシンのネットワークとファイルを使用します。Claude Tag チャネルが使用する環境を選択するには、[Claude Tag チャネルが使用する環境を設定する](#set-the-environment-a-claude-tag-channel-uses) を参照してください。
 
 ## Default 環境
 

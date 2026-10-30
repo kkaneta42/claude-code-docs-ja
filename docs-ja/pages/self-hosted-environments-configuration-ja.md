@@ -42,6 +42,7 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 | `CLAUDE_CODE_REMOTE_MCP_CONFIG` | Anthropic のコントロールプレーンがこのセッション用に配信した MCP サーバー定義を保持する、`CLAUDE_CONFIG_DIR` 内のファイルへのパス。ラッパーが子の環境を再構築する場合は、この変数を引き継いでください。この変数がないと、コントロールプレーンが配信するサーバーを更新したときに、ラッパーが [`--mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で追加した stdio、HTTP、SSE サーバーのうち更新に含まれないものを子がシャットダウンします。Claude Code v2.1.299 以降が必要です。 |
 | `ANTHROPIC_BASE_URL` | こどもが使用する API ベース URL。コントロールプレーンによってセッションごとに配信され、通常は `https://api.anthropic.com` です。上書きしないでください。セッションの推論認証情報は Anthropic が発行した OAuth トークンであり、他のプロバイダーはこれを受け入れません。 |
 | `CLAUDE_CODE_OAUTH_TOKEN` | 子がモデル推論に使用する短期 OAuth アクセストークン。約 30 分の有効期限があります。ランナーは有効期限前に再発行し、子の stdin を介して更新を配信するため、[stdin を接続したままにしない](#keep-stdin-and-file-descriptor-3-attached) ラッパーは初期値のみを見ます。組織の IP 許可リストに依存してこのトークンの使用を制限しないでください。リークした場合に約 30 分間使用可能なままのベアラー認証情報として扱い、ログに記録したり、ディスクに書き込んだり、セッションコンテナの外に転送したりしないでください。 |
+| `CLAUDE_RUNNER_ALIVE_EVERY_MS` | [子の初期化前にターンが開始した](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#session-startup-timeout)場合に、子が生存を報告する間隔（ミリ秒）をランナーが設定します。ラッパーが子の環境を再構築する場合は、この変数を引き継いでください。引き継がないと、ランナーがそのターン中にセッションを解放し、`no child output for <n> — releasing` をログに記録する可能性があります。ランナーと子の両方で v2.1.309 以降が必要です。 |
 
 ラッパーはこどもの管理環境の残りの部分も継承します。これには、サーバーが提供する環境変数が含まれます。`exec` はすべてを自動的に伝播します。ラッパーが別の方法でこどもをスポーンする場合、完全な環境を転送します。
 
@@ -307,7 +308,7 @@ claude self-hosted-runner orchestrator \
 | `CLAUDE_RUNNER_ATTEMPT` | ログ記録に使用するセッションごとのカウンター。再試行回数でもリクエスト数でもありません。事前ウォーミング要求では `0` ですが、セッションに対する要求でも `0` になる場合があります。 |
 | `CLAUDE_RUNNER_ORDER_SERVER_TIME` | ポーリング応答の HTTP `Date` ヘッダーからのサーバー時刻。フックがワークオーダー JWT の `exp` を検証する場合、ローカルクロックの代わりにこの値と比較して、スキューを許容してください。ゲートウェイがヘッダーを省略した場合は空です。 |
 | `CLAUDE_RUNNER_POOL_ID` | 新しいランナーが参加する環境の ID。`ccpool_...` 形式です。 |
-| `CLAUDE_RUNNER_ACCOUNT_ID` | セッションをエンキューしたアカウントのタグ付き ID。アカウントごとのルーティング、クォータ、またはチャージバックに使用し、重複排除キーとしては使用しないでください。利用できない場合は空で、Claude Tag チャネルセッションでは常に空です。どのアカウントもこれらのセッションをエンキューしません。 |
+| `CLAUDE_RUNNER_ACCOUNT_ID` | セッションをエンキューしたアカウントのタグ付き ID。アカウントごとのルーティング、クォータ、またはチャージバックに使用し、重複排除キーとしては使用しないでください。利用できない場合は空です。 |
 | `CLAUDE_RUNNER_ACCOUNT_EMAIL` | セッションをエンキューしたアカウントのメール。利用できない場合は空です。メールを個人識別情報として扱い、ログに記録しないでください。 |
 | `CLAUDE_RUNNER_PRIMARY_REPO_URL` | セッションの最初の git ソースの URL。そのリポジトリが事前ウォーミングされたランナーへのルーティング用です。セッションに git ソースがない場合は空です。 |
 | `CLAUDE_RUNNER_PRIMARY_REPO_REVISION` | セッションの最初の git ソースのリビジョン。ブランチ、SHA、タグ、または完全な参照名です。指定されていない場合は空です。 |
@@ -381,7 +382,7 @@ name="runner-${CLAUDE_RUNNER_ORDER_ID}"
 
 | フラグ（値の例） | 渡す対象 | 動作 |
 | :- | :- | :- |
-| `--release-idle-session-min 30` | フックが起動するすべてのランナー | ランナーは指定した分数アイドル状態が続くとセッションを解放し、その後 0 で終了します。セッションはユーザーが次のメッセージを送信すると再開されますが、[プッシュされていなかった作業は失われます](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)。セッションが実行したままにしたプロセスについては、[セッションを保持](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#keep-an-idle-session-while-its-processes-run)してください。 |
+| `--release-idle-session-min 30` | フックが起動するすべてのランナー | ランナーは指定した分数アイドル状態が続くとセッションを解放し、その後 0 で終了します。セッションはユーザーが次のメッセージを送信すると再開されますが、[プッシュされていなかった作業は失われます](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#resumed-sessions-lose-unpushed-work)。セッションが実行したままにしたプロセスについては、[セッションを保持](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#keep-an-idle-session-while-its-processes-run)してください。 |
 | `--kill-session-after-min 480` | フックが起動するすべてのランナー | 各セッションをその分数に制限します。[アイドルとしてカウントされないセッション](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#some-sessions-don’t-count-as-idle)に対するバックストップとして機能するため、想定される最長のセッションより大きい値を設定してください。 |
 | `--exit-if-unused-min 60` | スタンバイランナー（事前ウォーミング要求に対してフックが起動するもの） | セッションを一度も受け取らないスタンバイは、その分数が経過すると終了します。[`--min-idle`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) を設定している場合、スタンバイが余剰でない限り代わりのランナーが起動されるため、ブート時間を十分に上回る値を使用してください。 |
 
@@ -766,7 +767,7 @@ Stop フックは Claude に促すだけです。コミットとプッシュを�
 
 * **git ID**：ランナーイメージで `user.name` と `user.email` を設定するか、[`--configure-git`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#let-the-runner-configure-git) を付けてランナーを起動します
 * **プッシュ用の認証情報**：[Anthropic 管理の git](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用するか、[イメージに git 設定を含める](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#ship-git-config-in-your-image)の説明に従って認証情報を提供します
-* **再開されたセッションの場合**：環境内のすべてのランナーで [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定します。これにより、再開されたセッションは、Claude がセッションのブランチにプッシュしたコミットから開始されます。このフラグの制限については、[再開されたセッションはプッシュされていない作業を失う](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#additional-limitations)を参照してください。
+* **再開されたセッションの場合**：環境内のすべてのランナーで [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定します。これにより、再開されたセッションは、Claude がセッションのブランチにプッシュしたコミットから開始されます。このフラグの制限については、[再開されたセッションはプッシュされていない作業を失う](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#resumed-sessions-lose-unpushed-work)を参照してください。
 
 Stop フックが促すのは 1 ターンにつき最大 1 回です。コミットまたはプッシュが失敗しても、ターンは終了します。セッション内で git のエラーを探し、それが示す問題を修正してください。
 

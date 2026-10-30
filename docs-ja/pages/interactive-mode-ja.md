@@ -395,7 +395,7 @@ Claude が作業中に、メッセージを入力して `Enter` キーを押す�
 
 Claude Code は、キューに入れる代わりに、送信直後に実行するコマンドがあります。その中には `/model`、`/effort`、`/fast` があります。これら 3 つはそれぞれ設定を変更します。モデル、effort レベル、または fast mode です。Claude Code が新しい設定を Claude が既に作業しているターンに適用するか、次のターンからのみ適用するかは、コマンドによって異なります。
 
-* [`/model`](https://code.claude.com/docs/ja/model-config#setting-your-model)：Claude Code が[キャッシュ警告](https://code.claude.com/docs/ja/prompt-caching.md#switching-models)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストに変更を適用します。
+* [`/model`](https://code.claude.com/docs/ja/model-config#setting-your-model)：Claude Code が[キャッシュ警告](https://code.claude.com/docs/ja/prompt-caching.md#switching-models)を表示する場合は、確認後、Claude Code はそのターン内で次に行うリクエストから新しいモデルを使用します。
 * `/effort`：次に送信するメッセージが新しいレベルで実行されます。[Claude が既に作業しているターンで新しいレベルを開始する](https://code.claude.com/docs/ja/model-config.md#when-a-new-effort-level-starts)には、Claude がツール呼び出しを実行している間にメッセージをキューに入れます。
 * [`/fast`](https://code.claude.com/docs/ja/fast-mode#toggle-fast-mode)：Claude Code はターンが開始されたときにアクティブだった fast mode 設定を保持するため、速度の変更は次のターンから適用されます。現在のモデルが fast mode をサポートしていない場合、それをオンにすると[モデルも切り替わり](https://code.claude.com/docs/ja/prompt-caching.md#turning-on-fast-mode)、Claude Code はそのターン内で次に行うリクエストから新しいモデルを使用します。
 
@@ -761,7 +761,7 @@ Continuing automatically at 3:45pm · Esc to cancel
 
 * **プロンプトを送信する**：Claude Code は待機する代わりにプロンプトを送信します。そのプロンプトも制限に達した場合、プロンプトは会話に残り、Claude Code は再び待機を開始します。
 * **Claude Code を終了する**：セッションを再開しても待機は再開されません。
-* **会話の所有者が変わる**：`/login` でアカウントを切り替えたり、会話をクリアまたはリワインドしたり、`/resume` で別のセッションを再開したり、`/teleport` で取得したり、`/tui` で再起動したり、セッションを Claude Desktop、バックグラウンドセッション、またはクラウドに渡したりします。
+* **会話の所有者が変わる**：`/login` でアカウントを切り替えたり、会話をクリアまたはリワインドしたり、`/resume` で別のセッションを再開したり、`/teleport` で取得したり、`/tui` または [`/restart`](https://code.claude.com/docs/ja/commands#all-commands) で再起動したり、セッションを Claude Desktop、バックグラウンドセッション、またはクラウドに渡したりします。
 * **設定がオフになるか、リセットが 24 時間を超える**：これは Claude Code が自動的に開始した待機のみを終了します。`/rate-limit-options` から選択した待機はカウントダウンを続けます。
 * **続行がブロックされる**：続行プロンプトをブロックする[`UserPromptSubmit` フック](https://code.claude.com/docs/ja/hooks#userpromptsubmit)、またはモデルに到達する前の失敗により、待機が終了します。Claude Code は続行が実行されなかったことを通知します。プロンプトを送信して続行してください。
 

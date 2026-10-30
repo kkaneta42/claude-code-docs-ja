@@ -995,7 +995,7 @@ claude() {
 
 ### WSL での npm インストールエラー
 
-これらの問題は、WSL 内で `npm install -g` を使用して Claude Code をインストールした場合に適用されます。[ネイティブインストーラー](https://code.claude.com/docs/ja/setup.md)を使用した場合は、このセクションをスキップしてください。
+これらの問題は、WSL 内で `npm install -g` を使用して Claude Code をインストールした場合に適用されます。[ネイティブインストーラー](https://code.claude.com/docs/ja/setup.md)を使用した場合は、このセクションをスキップしてください。npm 12 の場合は、[npm 12 のインストールを修正する](#fix-an-npm-12-install)の説明に従ってインストールしてください。
 
 **OS またはプラットフォーム検出の問題。** npm がインストール中にプラットフォームの不一致を報告する場合、WSL は Windows `npm` を選択している可能性があります。最初に `npm config set os linux` を実行してから、`npm install -g @anthropic-ai/claude-code --force` でインストールしてください。`sudo` を使用しないでください。
 
@@ -1037,7 +1037,7 @@ curl -fsSL https://claude.ai/install.sh | bash
 
 ### npm インストール後にネイティブバイナリが見つからない
 
-`@anthropic-ai/claude-code` npm パッケージは、`@anthropic-ai/claude-code-darwin-arm64` などのプラットフォーム固有のオプション依存関係としてネイティブバイナリをダウンロードします。npm はパッケージの postinstall スクリプトを実行し、そのバイナリを `claude` コマンドとしてその場所にコピーします。実行されるまで、`claude` はプレースホルダースクリプトです。ダウンロードまたは postinstall ステップのいずれかがスキップされた場合、プレースホルダーはその場所に残り、macOS と Linux で `claude` を実行すると次のように出力されます。
+`@anthropic-ai/claude-code` npm パッケージは、`@anthropic-ai/claude-code-darwin-arm64` などのプラットフォーム固有のオプション依存関係としてネイティブバイナリをダウンロードします。`@anthropic-ai/claude-code` パッケージの postinstall ステップが実行され、プレースホルダーをそのバイナリに置き換えるまで、`claude` はプレースホルダースクリプトです。ダウンロードまたは postinstall ステップのいずれかがスキップされた場合、プレースホルダーはその場所に残り、macOS と Linux で `claude` を実行すると次のように出力されます。
 
 ```text theme={null}
 Error: claude native binary not installed.
@@ -1056,10 +1056,42 @@ Windows では、`bin/claude.exe` はその同じシェルスクリプトプレ�
 
 次の原因を確認してください。
 
+* **npm 12 はデフォルトで postinstall ステップをスキップする。** npm 12 で Claude Code をインストールまたは更新すると、npm はこのステップを実行しないままインストールを完了します。[npm 12 のインストールを修正する](#fix-an-npm-12-install)を参照してください。
 * **オプション依存関係が無効になっている。** npm インストールコマンドから `--omit=optional` を削除し、pnpm から `--no-optional` を削除し、yarn から `--ignore-optional` を削除し、`.npmrc` が `optional=false` を設定していないことを確認してください。次に再インストールしてください。ネイティブバイナリはオプション依存関係としてのみ配信されるため、スキップされた場合は JavaScript フォールバックがなく、`install.cjs` を再度実行してもダウンロードされなかったバイナリを配置できません。
 * **インストールスクリプトが無効になっている。** `--ignore-scripts` と一部の pnpm 設定は postinstall ステップをスキップしますが、プラットフォームパッケージはダウンロードします。メッセージが示唆するように `node node_modules/@anthropic-ai/claude-code/install.cjs` を実行するか、フラグなしで再インストールしてください。postinstall が環境でまったく実行できない場合、`node node_modules/@anthropic-ai/claude-code/cli-wrapper.cjs` はダウンロードされたパッケージを見つけて起動します。ただし、起動のたびに追加の Node プロセスが必要になります。ラッパーが代わりに `Could not find native binary package` を出力する場合、プラットフォームパッケージはダウンロードされなかったため、最初に上記のオプション依存関係の原因を修正してください。
 * **サポートされていないプラットフォーム。** プリビルトバイナリは `darwin-arm64`、`darwin-x64`、`linux-x64`、`linux-arm64`、`linux-x64-musl`、`linux-arm64-musl`、`win32-x64`、`win32-arm64` に対して公開されています。Claude Code は他のプラットフォーム用のバイナリを出荷しません。[システム要件](https://code.claude.com/docs/ja/setup.md#system-requirements)を参照してください。FreeBSD では、インストーラーはプラットフォームをサポートされていないと報告します。v2.1.205 より前では、FreeBSD を Linux として扱い、実行できないバイナリをダウンロードしました。
 * **企業 npm ミラーがプラットフォームパッケージを欠落している。** レジストリがメタパッケージに加えて 8 つすべての `@anthropic-ai/claude-code-*` プラットフォームパッケージをミラーしていることを確認してください。
+
+#### npm 12 のインストールを修正する
+
+npm でのインストールまたは更新後に `claude` が `Error: claude native binary not installed.` を出力する場合、または Windows でシェルがそれを実行できない場合は、`npm --version` を実行してください。バージョンが `12` で始まる場合、npm の設定で許可していない限り、npm はバイナリを配置する Claude Code の postinstall ステップをスキップしています。その他のバージョンの場合は、[その他の原因](#native-binary-not-found-after-npm-install)を確認してください。
+
+npm 12 のインストールを修正するには、ネイティブインストーラーに切り替えるか、このステップを許可します。
+
+* **ネイティブインストーラーに切り替える**：[ネイティブインストーラーでインストール](https://code.claude.com/docs/ja/setup.md#install-claude-code)してから、[npm パッケージをアンインストール](https://code.claude.com/docs/ja/setup.md#uninstall-with-npm)します。以降の更新では npm を使用しないため、このエラーは再発しません。
+* **npm を使い続ける**：グローバル npm インストールの場合は、ユーザーの npm 設定の `allow-scripts` に Claude Code を追加します。これにより npm は、以降のすべてのインストールと更新、および `package.json` で `allowScripts` を設定していないプロジェクトインストールで、Claude Code のインストールスクリプトを実行します。
+
+  `~/.claude/local` へのローカルインストールには、ネイティブインストーラーを使用してください。`package.json` のスクリプトが `npm install` を呼び出し、それを pnpm 9、pnpm 10、Yarn 1、またはこの設定をスクリプトに渡すその他のツールで実行する場合も、ネイティブインストーラーを使用してください。npm 12.1 以降では、この設定が保存されると、これらのインストールが `EALLOWSCRIPTS` で失敗することがあります。
+
+  1. `npm --version` が 12.0.x を出力した場合は、`npm install -g npm@latest` などで npm を 12.1 以降に更新してください。12.0.x では、この設定が保存されると、`npx` ツールや `npm run` スクリプトが開始するプロジェクトインストールが `EALLOWSCRIPTS` で失敗することがあります。
+
+  2. 次のコマンドは値全体を置き換えるため、`npm config get allow-scripts` を実行し、一覧表示されたパッケージを控えておいてください。`"allow-scripts=@anthropic-ai/claude-code,<package>"` のように、それらのパッケージを引用符内に含めて設定を保存します。
+
+     ```bash theme={null}
+     npm config set "allow-scripts=@anthropic-ai/claude-code" --location=user
+     ```
+
+  3. 再インストールします。
+
+     ```bash theme={null}
+     npm install -g @anthropic-ai/claude-code
+     ```
+
+     このコマンドまたは手順 1 が `EACCES` で失敗する場合は、`sudo` を付けて再実行するのではなく、ネイティブインストーラーに切り替えてください。Claude Code は自身を更新する際に `sudo` なしで npm を実行するため、自動更新も同じように失敗します。
+
+  4. `claude --version` がバージョン番号を出力しない場合は、[その他の原因](#native-binary-not-found-after-npm-install)を確認してください。
+
+  元に戻すには、`@anthropic-ai/claude-code` を除いたリストを再設定するか、`npm config delete allow-scripts --location=user` でリスト全体を削除してください。npm 12 では、次回の更新後にエラーが再発します。
 
 ### npm `ENOTEMPTY` エラー（更新または再インストール中）
 
@@ -1094,7 +1126,7 @@ rm -rf "$(npm root -g)/@anthropic-ai/.claude-code-"*
 Remove-Item -Recurse -Force "$(npm root -g)/@anthropic-ai/claude-code", "$(npm root -g)/@anthropic-ai/.claude-code-*"
 ```
 
-次に再インストールしてください。
+次に再インストールしてください。npm 12 の場合は、[npm 12 のインストールを修正する](#fix-an-npm-12-install)に従ってください。それ以外の場合は、次を実行してください。
 
 ```bash theme={null}
 npm install -g @anthropic-ai/claude-code

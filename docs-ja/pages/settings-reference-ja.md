@@ -4846,7 +4846,7 @@ Claude Code は非対話モードでは要約を表示しません。
 
 ### `disableDeepLinkRegistration`
 
-Claude Code が `claude-cli://` プロトコルハンドラーをオペレーティングシステムに登録することを停止します。通常、対話セッションの最初のプロンプトを送信した後に登録されます。[Deep links](https://code.claude.com/docs/ja/deep-links.md) により、外部ツールは事前入力されたプロンプトで Claude Code セッションを開くことができます。プロトコルハンドラー登録が制限されているか、別途管理されている環境でこれを設定します。
+Claude Code が `claude-cli://` プロトコルハンドラーをオペレーティングシステムに登録することを停止します。[Deep links](https://code.claude.com/docs/ja/deep-links.md) により、外部ツールは事前入力されたプロンプトで Claude Code セッションを開くことができます。プロトコルハンドラー登録が制限されているか、別途管理されている環境でこれを設定します。
 
 * **Scope**: [`Any file`](#scopes)
 * **Type**: 文字列 `"disable"`
@@ -5801,7 +5801,7 @@ Claude Code は `settings.json` でこのキーを無視します。
 
 [Chrome 統合](https://code.claude.com/docs/ja/chrome.md)をオンにして、毎回 `--chrome` を渡さずにすべてのインタラクティブ CLI セッションを開始します。[`claude remote-control`](https://code.claude.com/docs/ja/remote-control) を実行する場合、[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)スレッドの 1 つに対して開始するセッションもこのキーに従います。ただし、`bypassPermissions` モードの場合は除きます。Claude Code v2.1.287 以降では、このキーは [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome)のセッションにも適用されます。詳しくは [Chrome をデフォルトで有効にする](https://code.claude.com/docs/ja/chrome.md#enable-chrome-by-default)を参照してください。
 
-`/chrome` を実行して **Enabled by default** を選択すると、このキーが設定されます。`/config` に **Claude in Chrome enabled by default** として表示されます。
+`/chrome` を実行して **Enabled by default** を選択すると、このキーが設定されます。[「Claude in Chrome extension detected」ダイアログ](https://code.claude.com/docs/ja/chrome.md#answer-the-startup-dialog)に応答した場合も同様です。`/config` に **Claude in Chrome enabled by default** として表示されます。
 
 * **スコープ**: [`グローバル設定`](#scopes)
 * **タイプ**: ブール値

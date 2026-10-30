@@ -1930,6 +1930,24 @@ IT チームは、macOS の MDM、Windows のグループポリシー、また�
 * **Windows**：`SOFTWARE\Policies\Claude`のレジストリを通じて設定します
 * **Linux**：`/etc/claude-desktop/managed-settings.json`にある root 所有のファイルを通じて設定します。このファイルはポリシーキーを JSON オブジェクトとして保持します。root 以外のユーザーがファイルまたはそのフォルダに書き込める場合、Desktop はそのファイルを拒否します。これは Claude Code の[管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md)とは別のファイルです。
 
+#### 組織へのサインインを制限する
+
+Claude Desktop にサインインできる claude.ai 組織を制限するには、Claude Desktop ポリシーで`forceLoginOrgUUID`を設定します。
+
+このキーには Claude Desktop v1.2581.0 以降が必要です。
+
+Linux では、このキーのみを設定するポリシーファイルは次のようになります：
+
+```json /etc/claude-desktop/managed-settings.json theme={null}
+{
+  "forceLoginOrgUUID": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+}
+```
+
+プレースホルダーを、[claude.ai 管理設定](https://claude.ai/admin-settings/organization)に表示される claude.ai 組織 ID に置き換えてください。これは Claude Code の[`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid)設定が受け取るものと同じ ID です。このキーを設定する macOS および Windows のサンプルについては、HIPAA 対応組織向け Cowork ガイドの[Deploy the Claude Desktop policy](https://claude.com/docs/cowork/hipaa-setup#deploy-the-claude-desktop-policy)を参照してください。
+
+Claude Code の[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で`forceLoginMethod`と`forceLoginOrgUUID`を設定しても、Claude Desktop のサインイン画面は変わりません。
+
 ### ネットワークアクセス要件
 
 Desktop はアプリケーションコードとユーザーコンテンツを Anthropic CDN ホストから読み込みます。

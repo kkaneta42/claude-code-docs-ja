@@ -63,6 +63,7 @@
 
 | ホスト | ポート | 必須の場合 |
 | :- | :- | :- |
+| `api.github.com` | 443 | `--use-anthropic-git-proxy` の有無にかかわらず、ランナーイメージに [GitHub CLI](#github-api-access-with-the-github-cli) が含まれており、セッションに `GH_TOKEN` などの github.com 認証情報を渡す場合 |
 | `downloads.claude.ai` | 443 | インストール時に、ネイティブインストーラーでホストに Claude Code をインストールまたは更新する場合。`install.sh` スクリプト自体は `claude.ai` から提供されます。セッション実行時には、セッションが公式 Anthropic マーケットプレイスからプラグインをインストールする場合のみです。 |
 | `storage.googleapis.com` | 443 | セッション実行時に、`/plugin` に表示されるプラグインインストール数とメタデータの場合。 |
 | `code.claude.com` および `claude.com` | 443 | 組み込みの claude-code-guide エージェントによるドキュメント検索と、セッション中の事前承認された WebFetch リクエストの場合。これらのホストをブロックするとドキュメント検索のみに影響します。 |
@@ -167,7 +168,7 @@ ID がない場合、`git commit` は `Please tell me who you are` で失敗し�
 
 * ランナーは `GIT_TERMINAL_PROMPT=0` を設定するため、git はユーザー名またはパスワードを要求しません。
 * ランナーは `BatchMode=yes` で SSH を実行します。`GIT_SSH_COMMAND` を設定した場合は追加されます。SSH はパスフレーズまたはホスト確認を要求しません。
-* ランナーは `GCM_INTERACTIVE=never` を設定するため、Git Credential Manager はサインインダイアログを開きません。
+* ランナーは `GCM_INTERACTIVE=never` を設定するため、Git Credential Manager はサインインダイアログを開きません。v2.1.229 より前は、リポジトリの準備が Git Credential Manager のプロンプトで停止することがありました。
 * ランナーは `core.askPass` をクリアするため、askpass ヘルパーを使用する場合は、`GIT_ASKPASS` 環境変数を通じて設定してください。
 
 git ホストが認証情報を拒否するか、認証情報を設定しなかった場合、ランナーは数回再試行してから失敗します。リポジトリがセッションがプッシュする結果のリポジトリである場合、ランナーはリポジトリ準備に失敗します。セッションが読み取り専用のリポジトリの場合、[トラブルシューティング](#troubleshooting)はランナーがスキップする場合をカバーしています。ランナーはこれらの設定をセッション環境に渡しません。
@@ -287,7 +288,11 @@ gh api repos/{owner}/{repo}/pulls -f title='Fix' -f head='my-branch' -f base='ma
 * **`jq`**：`--jq` を使用したい場合は、イメージに `jq` をインストールしてください
 * **[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars)**：セッション環境でこれが設定されている場合、Claude Code は組み込みの `gh` を提供せず、セッションには `gh` がありません
 
-イメージに GitHub CLI が含まれている場合、セッションはそれを使用します。
+#### GitHub CLI で GitHub API にアクセスする
+
+セッションで使用するために GitHub CLI をランナーイメージに含める場合は、[ラッパースクリプト](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#provision-credentials-scoped-to-the-session-creator)で、セッションの作成者用に短期的で最小スコープの `GH_TOKEN` をセッションごとにミントしてください。Claude Code の起動時の `PATH` に `gh` がある場合、セッションはその `gh` を使用し、[組み込みの `gh`](#github-api-access-without-the-github-cli) は提供されません。トークンを使用すると、その `gh` はトークンが付与するアクセス権で、Anthropic 管理の git を経由せずに GitHub に到達するため、[`api.github.com`](#network-requirements) を許可してください。
+
+Anthropic 管理の git を使用する場合は、イメージに GitHub CLI を含めず、代わりに組み込みの `gh` を使用してください。
 
 #### Anthropic 管理の git でプライベート認証局を信頼する
 
@@ -342,6 +347,25 @@ Claude が Claude Tag チャンネルのセッションに github.com のリポ�
 * `--git-ssh-rewrite <host>`：SSH のみを受け入れる git ホストの場合、または SSH キーしか持たないランナーホストの場合。例えば、github.com のリポジトリを SSH でクローンするには、ランナーのコマンドに `--git-ssh-rewrite github.com` を追加します。するとランナーは `https://github.com/owner/repo` を `git@github.com:owner/repo` に書き直します。SSH は[プロンプトなしで接続](#git-must-work-without-a-prompt)できる必要があります。
 
 ホスト書き直しが最初に実行されるため、両方が必要な場合は `--git-ssh-rewrite` に内部ホスト名をリストします。チェックアウトを完全に制御するには、[`checkout` ライフサイクルフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)を使用してください。
+
+### GitHub 以外のリポジトリでセッションを開始する
+
+GitHub 以外の git ホストにあるリポジトリでセッションを実行するには、そのリポジトリのチェックアウト内で、ターミナルからセッションを開始します。まず、ランナーの git 認証情報、ネットワークと git プロキシ、リポジトリのアドレス、ブランチを確認してください：
+
+* **Git 認証情報とネットワーク**：ランナーがクローンするアドレスである `https://<host>/<owner>/<name>` に対して、[プロンプトなしで動作する](#git-must-work-without-a-prompt)[認証情報を提供](#ship-git-config-in-your-image)し、[ネットワーク要件](#network-requirements)に記載されているとおり、ランナーが git ホストに到達できるようにしてください。SSH のみを受け入れる git ホストについては、[`--git-ssh-rewrite`](#rewrite-git-urls-for-private-networks) を参照してください。
+* **Git プロキシ**：環境のランナーが Anthropic git プロキシを使用している場合は、[オフにしてください](#turn-the-anthropic-git-proxy-off)。
+* **リポジトリのアドレス**：チェックアウトの `origin` リモートを確認してください。ホストは `git.example.com` のようなドメイン名である必要があり、パスは `<owner>/<name>` の形式である必要があります。`group/subgroup/name` のようなネストされたパスは条件を満たしません。
+* **ブランチ**：ランナーは現在のブランチをクローンするため、そのブランチを git ホストにプッシュしてください。
+
+チェックアウト内で、[CI から認証する](https://code.claude.com/docs/ja/self-hosted-environments-testing.md#authenticate-from-ci)の説明に従って claude.ai にサインインした状態で、[`--environment`](https://code.claude.com/docs/ja/self-hosted-environments-testing#run-the-test-loop) と環境の `ccpool_...` ID を指定して `claude -p` を実行します：
+
+```bash theme={null}
+claude -p "Fix the login bug" --environment ccpool_abc123 --output-format json
+```
+
+セッションが作成されると、コマンドは `{"ok":true` で始まる 1 行の JSON を出力します。`origin` リモートが条件に合わない場合、コマンドは `requires a git source, but no GitHub remote was detected` で失敗します。
+
+セッションが[プッシュ](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#prompt-sessions-to-push-their-work)したブランチは、git ホスト上でレビューしてマージしてください。
 
 ## ランナーイメージをビルドする
 
@@ -617,7 +641,7 @@ secrets:
 
 ### 再起動の前に実行中のターンを終了させる
 
-ローリング再起動の前に実行中のターンを終了させるには、`--drain-wait-sec` を設定し、停止タイムアウトを少なくともその待機時間に 80 秒を加えた値に引き上げてください。デフォルトの待機時間 `0` では、再起動によってまだ実行中のターンが中断され、セッションは[プッシュされていない作業](#additional-limitations)を失った状態で別のランナーで再開されます。
+ローリング再起動の前に実行中のターンを終了させるには、`--drain-wait-sec` を設定し、停止タイムアウトを少なくともその待機時間に 80 秒を加えた値に引き上げてください。デフォルトの待機時間 `0` では、再起動によってまだ実行中のターンが中断され、セッションは[プッシュされていない作業](#resumed-sessions-lose-unpushed-work)を失った状態で別のランナーで再開されます。
 
 * **`--drain-wait-sec`**：終了させたいターンとバックグラウンドタスクにかかる時間と同程度に設定します。これは最大値です：それらが先に終了した場合、待機は早めに終わります。
 * **停止タイムアウト**：Kubernetes では `terminationGracePeriodSeconds`、Docker Compose では `stop_grace_period` です。例えば `--drain-wait-sec 120` の場合、[Kubernetes](#kubernetes) または [Docker Compose](#docker-compose) のレシピの `90` を `200` に置き換えます。
@@ -735,7 +759,7 @@ secrets:
 
 アイドル状態のセッションを解放するには、すべてのランナーを [`--release-idle-session-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) とその時間（分単位）を指定して起動します（例: `--release-idle-session-min 30`）。ランナーは、スケジュールタスクと人のどちらが開始したかにかかわらず、その時間アイドル状態が続いたセッションを解放します。ただし、[残したプロセスのためにセッションを保持する](#keep-an-idle-session-while-its-processes-run)場合は除きます。
 
-* **プッシュされていない作業**: 解放されたセッションは次のメッセージで再開されますが、プッシュしていなかった作業は失われます。コミットを保持するには、[再開されたセッションはプッシュされていない作業を失う](#additional-limitations)を参照してください。
+* **プッシュされていない作業**: 解放されたセッションは次のメッセージで再開されますが、プッシュしていなかった作業は失われます。コミットを保持するには、[再開されたセッションはプッシュされていない作業を失う](#resumed-sessions-lose-unpushed-work)を参照してください。
 * **ランナーの終了**: 最後のセッションを解放したランナーは[通常の終了](#when-the-runner-exits)を開始します。[デプロイを強化する](#harden-your-deployment)で説明しているように、スーパーバイザーが新しいファイルシステム上でランナーを再起動するようにしてください。
 * **アイドル状態にならないセッション**: [一部のセッションはアイドル状態としてカウントされない](#some-sessions-don’t-count-as-idle)ため、[`--kill-session-after-min`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) も設定します
 
@@ -811,22 +835,32 @@ Anthropic は、コネクタのツールをランナーからではなく、Anth
 * ターンがまだ実行中の場合、ランナーはターンが完了するか、セッションが次にユーザーを待つ状態になるまで待ってから、セッションを解放します。
 * 猶予期間が終了した時点でセッションがまだランナー上にある場合、ランナーはセッションを終了し、実行中のターンの作業は失われます。実行中のツール呼び出しの内部から要求された承認をターンが待っている場合は、セッションが猶予期間を超えて残る一例です。
 
-解放されたセッションは新しいクローンから再開されるため、いずれの場合もプッシュしていなかった作業は失われます。[再開されたセッションではプッシュしていない作業が失われる](#additional-limitations)を参照してください。v2.1.260 より前では、ランナーは実行中のターンの完了を最大で猶予期間だけ待った後、上限に達したすべてのセッションを終了していました。
+解放されたセッションは新しいクローンから再開されるため、いずれの場合もプッシュしていなかった作業は失われます。[再開されたセッションではプッシュしていない作業が失われる](#resumed-sessions-lose-unpushed-work)を参照してください。v2.1.260 より前では、ランナーは実行中のターンの完了を最大で猶予期間だけ待った後、上限に達したすべてのセッションを終了していました。
 
 このフラグは、想定される最長のセッションよりも長い値に設定してください。たとえば 8 時間の場合は `--kill-session-after-min 480` とします。アイドル状態になった会話からスロットを解放するには、代わりに `--release-idle-session-min` を使用してください。
 
+### 再開されたセッションではプッシュしていない作業が失われる
+
+新しいランナーで再開されたセッションでは、プッシュしていなかった作業が失われます。そのランナーがリポジトリを開始ブランチから再度クローンするためです。
+
+コミット済みの作業を保持するには、環境内のすべてのランナーで [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定してください。このフラグを設定したランナーは、解放する前にセッションの成果ブランチのプッシュをベストエフォートで行い、再開されたセッションはそれらのコミットから開始されます。このフラグのないランナーは、セッションを開始ブランチから再開します。プッシュにはランナーホスト自身の git 認証情報が使用されます。これは [Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用するランナーでも同様です。
+
+> [!WARNING]
+>
+> このフラグを設定する前に、ソースリモート上の `claude/*` ref にプッシュできるユーザーを制限してください。再開時、ランナーは以前にプッシュされたブランチを、誰がプッシュしたかを検証せずにフェッチします。
+
+フラグを設定していても、次の作業は別の方法で保存してください。
+
+* **コミットされていない変更**: これらは引き続き失われます。[セッションに作業のプッシュを促す](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#prompt-sessions-to-push-their-work)を参照してください。
+* **[`checkout` ライフサイクルフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)でチェックアウトされたリポジトリ**: これらはプッシュされません。[`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)からスナップショットを取得してください。
+* **誰かがアーカイブまたは削除したセッション、またはセッションのメニューからランナーが解放されたセッションのコミット**: フラグによるプッシュは当てにしないでください。これらを保存するには、[`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)から `HEAD` を退避用ブランチにプッシュしてください。そこにある例はスナップショットのコミットを作成した後にのみプッシュするため、コミットされていない変更が何もないときでもプッシュするようにしてください。
+
 ### その他の制限事項
 
-* **再開されたセッションではプッシュしていない作業が失われる**: 新しいランナーはリポジトリを開始ブランチから再度クローンするため、セッションがプッシュしていなかった作業は失われます。
-  * **コミット済みの作業を保持するには**: 環境内のすべてのランナーで [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を設定してください。このフラグのないランナーは、セッションを開始ブランチから再開するためです。このフラグを設定したランナーは、解放する前にセッションの成果ブランチのプッシュをベストエフォートで行い、再開されたセッションはそれらのコミットから開始されます。プッシュにはランナーホスト自身の git 認証情報が使用されます。これは [Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用するランナーでも同様です。
-  * **`checkout` フックを使用する場合**: [`checkout` ライフサイクルフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)でチェックアウトされたリポジトリはプッシュされません。代わりに [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)からそれらのスナップショットを取得してください。
-  * **フラグを有効にする前に**: ソースリモート上の `claude/*` ref にプッシュできるユーザーを制限してください。再開時、ランナーは以前にプッシュされたブランチを、誰がプッシュしたかを検証せずにフェッチします。
-  * **コミットされていない変更は引き続き失われる**: Claude が応答を終えたときにコミットとプッシュを行うよう促すには、[セッションに作業のプッシュを促す](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#prompt-sessions-to-push-their-work)を参照してください。
 * **ランナーの喪失によって中断されたコマンドが再度実行されることがある**: セッションが別のランナーで再開されると、中断されたツール呼び出しが、その成否が不明であることを示す結果とともに Claude に表示されます。
 * **セッションの途中で追加したリポジトリのクローンが失敗することがある**: Claude は HTTPS 経由の `git clone` でリポジトリをクローンします。[`--use-anthropic-git-proxy`](#use-the-anthropic-git-proxy) を使用していないランナーでは、ホスト上にリポジトリを読み取れるものが何もない場合、クローンは git の認証エラーで失敗します。可能であれば、セッションの作成時に、セッションで必要なすべてのリポジトリを選択してください。
   * **セッションが再開されるとき**: 追加したリポジトリに対しても [`checkout` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)が実行され、その際 [`CLAUDE_RUNNER_REPO_REF`](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout) は空になります。フックでこれを処理できるようにしてください。
 * **一部のコネクタがセルフホストセッションに表示されない**: claude.ai の設定でまだ接続していないコネクタはセルフホストセッションに表示されず、セッションから接続を求められることもありません。まず設定で接続してから、新しいセッションを開始してください。また、すでに実行中のセッションにコネクタを追加しても、そのツールは Claude で使用できるようになりません。新しく追加したコネクタを反映するには、新しいセッションを開始してください。
-* **誰かがセッションをアーカイブまたは削除した場合、またはセッションのメニューからランナーを解放した場合**: [`--push-outcome-on-release`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) によるプッシュは当てにしないでください。このような場合にコミットを保存するには、[`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)から `HEAD` を退避用ブランチにプッシュしてください。そこにある例をもとにする場合は、コミットされていない変更が何もないときでもプッシュするように変更してください。この例はスナップショットのコミットを作成した後にのみプッシュするためです。
 
 ### 問題を報告する
 

@@ -64,6 +64,7 @@ Code Review の月間支出上限を設定するには、[claude.ai/admin-settin
 | PRs reviewed | 選択した期間にレビューされたプルリクエストの日ごとの件数 |
 | Code Review cost | 今月これまでの Code Review の支出 |
 | Feedback | 開発者が問題に対処したために自動的に解決されたレビューコメントの件数 |
+| Code Review findings | 選択した期間に Claude が投稿したレビューにおける、[重大度レベル別の検出結果](https://code.claude.com/docs/ja/code-review-pull-requests.md#severity-levels)の日ごとの件数 |
 | Repository breakdown | リポジトリごとのレビューされた PR、解決されたコメント、レビュー実行の件数と、推定コストおよび PR ごとのビュー |
 
 Code Review cost カードには、当月が選択されている場合にのみ金額が表示されます。分析のコスト数値は請求書と異なる場合があります。Repository breakdown のコストは割引やクレジットを適用する前の定価で推定されており、Claude がプルリクエストに投稿したレビューのみが対象です。請求書と一致する正確な支出については、Anthropic の請求書を参照してください。

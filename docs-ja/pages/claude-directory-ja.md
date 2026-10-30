@@ -8,7 +8,7 @@
 
 Claude Code は、プロジェクトディレクトリとホームディレクトリの `~/.claude` から、指示、設定、skills、subagents、メモリを読み込みます。プロジェクトファイルを git にコミットしてチームと共有します。`~/.claude` 内のファイルは、すべてのプロジェクトに適用される個人設定です。
 
-Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます。[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) を設定した場合、このページのすべての `~/.claude` パスはそのディレクトリの下に存在します。
+Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます。[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) を設定した場合、このページのすべての `~/.claude` パスはそのディレクトリの下に存在します。同じことが `.claude.json` にも当てはまります。このファイルは、設定しない場合は `~/.claude.json` に配置されます。
 
 ほとんどのユーザーは `CLAUDE.md` と `settings.json` のみを編集します。リポジトリに他のコーディングエージェント用の `AGENTS.md` が既にある場合、Claude Code は `CLAUDE.md` の代わりに[それを読み込むことができます](https://code.claude.com/docs/ja/memory.md#agents-md)。ディレクトリの残りはオプションです。必要に応じてスキル、ルール、またはサブエージェントを追加してください。
 
@@ -76,7 +76,7 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます�
 | [`agents/*.md`](#ce-agents) | プロジェクトおよびグローバル | ✓ | 独自のプロンプトとツールを持つ subagent 定義 | [Subagents](https://code.claude.com/docs/ja/sub-agents.md) |
 | [`workflows/*.js`](#ce-workflows) | プロジェクトおよびグローバル | ✓ | Claude によって書かれた動的ワークフロースクリプト、`/workflows` から保存。各ファイルは `/<name>` コマンドになります | [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md) |
 | [`agent-memory/<name>/`](#ce-agent-memory) | プロジェクトおよびグローバル | ✓ | subagents の永続メモリ | [永続メモリ](https://code.claude.com/docs/ja/sub-agents.md#enable-persistent-memory) |
-| [`~/.claude.json`](#ce-claude-json) | グローバルのみ | | アプリ状態、アカウント詳細、UI トグル、個人 MCP サーバー | [グローバル設定](https://code.claude.com/docs/ja/settings-reference.md#global-config-settings) |
+| [`~/.claude.json`](#ce-claude-json) | グローバルのみ | | アプリ状態、アカウント詳細、UI トグル、個人 MCP サーバー。存在しない場合、Claude Code はセッションの開始時や `claude auth status` などのサブコマンドの実行時に作成しますが、`--version` や `--help` では作成しません。 | [グローバル設定](https://code.claude.com/docs/ja/settings-reference.md#global-config-settings) |
 | [`projects/<project>/memory/`](#ce-global-projects) | グローバルのみ | | Auto memory：Claude のセッション間のメモ | [Auto memory](https://code.claude.com/docs/ja/memory.md#auto-memory) |
 | [`keybindings.json`](#ce-keybindings) | グローバルのみ | | カスタムキーボードショートカット | [キーバインディング](https://code.claude.com/docs/ja/keybindings.md) |
 | [`themes/*.json`](#ce-themes) | グローバルのみ | | カスタムカラーテーマ | [カスタムテーマ](https://code.claude.com/docs/ja/terminal-config.md#create-a-custom-theme) |

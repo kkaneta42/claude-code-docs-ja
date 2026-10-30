@@ -556,7 +556,7 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 クラウドセッションのテレメトリを設定する際は、これらの制約を念頭に置いてください。
 
 * **セッションがコレクターに到達できるようにする**: Claude Code はセッションのネットワークを通じてエクスポートを送信するため、`OTEL_EXPORTER_OTLP_ENDPOINT` のホストに到達できるかどうかは、環境の [ネットワークアクセスレベル](https://code.claude.com/docs/ja/cloud-environments.md#access-levels) によって異なります。セッションが選択したレベルでコレクターのドメインに到達できない場合は、[ドメインを環境のアローリストに追加してください](https://code.claude.com/docs/ja/cloud-environments.md#allow-specific-domains)。サーバー管理設定はドメインを環境のネットワークアローリストに追加しないためです。
-* **Claude Tag チャネルは組織レベルの環境を使用します**: チャネルセッションはメンバーの個人環境ではなく組織レベルの環境で実行されるため、[共有環境](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) でアローリストと環境変数の変更を行い、組織のデフォルトとして設定するか、チャネルにピン留めしてください。
+* **Claude Tag チャネル**: 組織のデフォルトとして設定されている、またはチャネルにピン留めされている [共有環境](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) で、許可リストと環境変数の変更を行ってください。
 * **Cowork は個別に設定されます**: [サーフェスカバレッジテーブル](https://code.claude.com/docs/ja/model-config.md#surface-coverage) に示されているように、Cowork セッションはサーバー管理設定を受け取らないため、サーバー管理 `env` ブロックはそれらのテレメトリを設定しません。
 
 ### クラウドセッションにテレメトリを属性付けする
@@ -1467,10 +1467,11 @@ Claude Code が保持期間を安全に判断できない場合、スイープ�
 * `result`: スイープが実行された場合は `"complete"`、Claude Code が一時停止した場合は `"skipped"`
 * `period_days`: マージされた設定の `cleanupPeriodDays` の値（日数）、またはどのソースも設定していない場合は `30`。スキップされたイベントでは、Claude Code が読み取れた設定ソースから計算された、スイープが使用するはずだった値
 * `used_default`: 読み取り可能な設定ソースが `cleanupPeriodDays` を設定していない場合は `"true"`、それ以外の場合は `"false"`。完了イベントでは、`"true"` は 30 日のデフォルトが適用されたことを意味します
-* `skip_reason`: Claude Code がスイープを一時停止した理由。`result` が `"skipped"` の場合にのみ存在します:
+* `skip_reason`: Claude Code がクリーンアップを一時停止した理由。`result` が `"skipped"` の場合にのみ含まれます:
   * `"user_source_disabled"`: [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) フラグや SDK の [`settingSources`](https://code.claude.com/docs/ja/agent-sdk/typescript#options) オプションなどによってユーザー設定が除外されており、有効なソースのいずれも `cleanupPeriodDays` を提供していない
-  * `"settings_unknowable"`: 設定ファイルを読み取りまたは解析できなかったため、Claude Code が確認できない値に `cleanupPeriodDays` または `desktopSessionCleanupPeriodDays` が設定されている可能性がある
-  * `"settings_invalid_key_set"`: 設定に検証エラーがあり、かつ `cleanupPeriodDays` または `desktopSessionCleanupPeriodDays` が明示的に設定されているため、デフォルトにフォールバックするとその設定に反してファイルを削除または保持してしまう可能性がある
+  * `"settings_unknowable"`: 設定ファイルを読み取りまたは解析できなかったため、`cleanupPeriodDays` または `desktopSessionCleanupPeriodDays` が Claude Code から見えない値に設定されている可能性がある
+  * `"settings_invalid_key_set"`: 設定に検証エラーがあり、かつ `cleanupPeriodDays` または `desktopSessionCleanupPeriodDays` が明示的に設定されているため、デフォルトにフォールバックすると、その設定に反してファイルを削除または保持してしまう可能性がある
+  * `"remote_settings_unknowable"`: サードパーティのデプロイ上の Claude Desktop の Code タブのセッションが[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を要求したが、使用可能なレスポンスを受け取れなかったため、`cleanupPeriodDays` が Claude Code から見えない値に設定されている可能性がある
 * `transcripts_deleted`: スイープが削除したセッショントランスクリプト（最上位の `~/.claude/projects/*/*.jsonl` ファイル）の数
 * `transcripts_exempted_desktop`: 保持期間を過ぎているものの、[Claude Desktop と Cowork のルール](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)に基づいてスイープが保持したトランスクリプトの数。これらは `files_past_cutoff` にはカウントされません。Claude Code v2.1.248 以降が必要です
 * `session_files_deleted`: セッションファイルのスイープが削除したアーティファクトの数。トランスクリプトに加え、サイドカー、録画、ツール結果などのセッションごとの付随ファイルが含まれます

@@ -188,7 +188,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 | `context_window.current_usage` | 最後の API 呼び出しからのトークン数。[コンテキストウィンドウのフィールド](#context-window-fields)で説明しています |
 | `exceeds_200k_tokens` | 直近の API レスポンスからの合計トークン数（入力、キャッシュ、出力トークンの合計）が 200k を超えているかどうか。これは実際のコンテキストウィンドウサイズに関係なく固定されたしきい値です。 |
 | `fast_mode` | セッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) が有効かどうか |
-| `effort.level` | 現在の推論エフォート（`low`、`medium`、`high`、`xhigh`、または `max`）。セッション途中の `/effort` による変更を含め、セッションの現在の値を反映します。現在のモデルが effort パラメータをサポートしていない場合は存在しません |
+| `effort.level` | セッションに設定された推論 effort レベル（`low`、`medium`、`high`、`xhigh`、または `max`）。スキル、サブエージェント、または `ultrathink` が設定したレベルではありません。モデルがサポートしていないレベルを設定した場合は、代わりに Claude Code が実行したレベルが表示されます。変更したレベルは、それが[開始](https://code.claude.com/docs/ja/model-config.md#when-a-new-effort-level-starts)される前でもここに表示されます。`CLAUDE_CODE_EFFORT_LEVEL` でレベルを指定している場合は、そのレベルが表示されます。現在のモデルが effort パラメータをサポートしていない場合は存在しません |
 | `thinking.enabled` | セッションで拡張思考が有効かどうか |
 | `rate_limits.five_hour.used_percentage`, `rate_limits.seven_day.used_percentage` | 5 時間または 7 日間のレート制限の消費率（0 から 100） |
 | `rate_limits.five_hour.resets_at`, `rate_limits.seven_day.resets_at` | 5 時間または 7 日間のレート制限ウィンドウがリセットされる時刻（Unix エポック秒） |

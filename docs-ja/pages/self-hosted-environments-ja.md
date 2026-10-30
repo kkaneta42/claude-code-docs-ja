@@ -40,7 +40,10 @@
 * **ゼロデータ保持と HIPAA**: [ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md)が有効になっている組織、または [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md)が適用されている組織では利用できません。
 * **モデル推論**: ランナーを [Amazon Bedrock または Google Cloud の Agent Platform にモデルリクエストを送信する](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#send-model-requests-to-bedrock-or-agent-platform)ように構成しない限り、セッションは Anthropic API を使用します。いずれの場合も、セッションのコンテンツは Anthropic に送信されます。このように構成されたランナーでは、claude.ai の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)と組織ポリシーはセッションに適用されません。
 * **サーフェス**: [claude.ai/code](https://claude.ai/code)、モバイルおよびデスクトップアプリ、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)、およびターミナルから開始されたセッション（[`claude --cloud`](https://code.claude.com/docs/ja/claude-code-on-the-web#from-terminal-to-cloud)または[`--environment`ディスパッチ](https://code.claude.com/docs/ja/self-hosted-environments-testing#run-the-test-loop)を使用）は、自己ホスト環境で実行できます。[Claude Tag](https://claude.com/docs/claude-tag/overview)セッションもそれらで実行できますが、Claude はまだそれらのセッションで[アクセスバンドル](https://claude.com/docs/claude-tag/concepts/glossary#access-bundle)を使用できません。[Claude Security](https://code.claude.com/docs/ja/claude-security.md)および[Code Review](https://code.claude.com/docs/ja/code-review.md)セッションはまだそれらにルーティングされません。これら 2 つのサーフェスのサポートは別途提供されます。
-* **リポジトリ**: セッションは GitHub からリポジトリをチェックアウトします。[GitHub 認証オプション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#github-authentication-options)を参照してください。GitHub Enterprise Server ホストについては、その[ネットワーク要件](https://code.claude.com/docs/ja/github-enterprise-server.md#network-requirements)を参照してください。
+* **リポジトリ**: セッションは GitHub または GitHub Enterprise Server からリポジトリをチェックアウトします。`--environment` ディスパッチで開始されたセッションでは、他の git ホストも使用できます。
+  * **GitHub**: [GitHub 認証オプション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#github-authentication-options)を参照してください。
+  * **GitHub Enterprise Server**: その[ネットワーク要件](https://code.claude.com/docs/ja/github-enterprise-server.md#network-requirements)を参照してください。
+  * **その他の git ホスト**: [`--environment` でセッションを開始するための要件](https://code.claude.com/docs/ja/self-hosted-environments-deploy#start-a-session-on-a-repository-outside-github)を参照してください。
 * **請求**: 自己ホスト環境のセッションは、Anthropic ホスト環境のセッションと同じ方法で組織の Claude Code 使用量を消費します。
 
 ## 自己ホスティングを選ぶ理由
@@ -113,7 +116,7 @@ kill の時点を過ぎても続くターンは失われます。マージンの
 
 * **コントロールプレーン**：ランナーは `api.anthropic.com` をポーリングして作業を取得し、セットアップの進行状況や失敗のイベントを送信します。これらはすべてアウトバウンドの HTTPS です。ポーリングはランナーのハートビートも兼ねます。
 * **Git**：ランナーは、デプロイによって提供される認証情報で認証し、HTTPS または SSH 経由で git ホストからクローンおよびプッシュを行います。セッションごとに発行される認証情報を含むオプションについては、[git の設定](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git)を参照してください。[Anthropic git プロキシ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy)を使用する場合、github.com 上のリポジトリに対する git トラフィックは代わりに `api.anthropic.com` を経由します。
-* **セッションの子プロセス**：子 Claude Code プロセスは `api.anthropic.com` へのセッションのイベントストリームを保持し、モデル推論とセッション中に実行される git コマンドのために独自のアウトバウンド呼び出しを行います。[Anthropic が管理する git](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用するセッションでは、子プロセスは github.com 向けの `git` および `gh` のトラフィックを、自身が `api.anthropic.com` に対して開く WebSocket 接続経由で送信します。
+* **セッションの子プロセス**：子 Claude Code プロセスは、`api.anthropic.com` へのセッションのイベントストリームを保持し、モデル推論とセッション中に実行される Git コマンドのために独自のアウトバウンド呼び出しを行います。[Anthropic 管理の Git](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用するセッションでは、子プロセスは `api.anthropic.com` への WebSocket 接続を開き、`git` と `gh` からの github.com トラフィックを伝送します。
 * **SCM コネクタ**：オプションのオーケストレーター [SCM コネクタ](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#scm-connector-flags)は利用できないため、そのトンネルは開かれません。このトンネルは `api.anthropic.com` への WebSocket 接続です。
 
 エグレスの完全な一覧については[ネットワーク要件](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#network-requirements)を参照してください。[上の図](#how-self-hosted-environments-work)は、オプションの SCM コネクタと Anthropic が管理する git 接続を除く、これらの経路を示しています。

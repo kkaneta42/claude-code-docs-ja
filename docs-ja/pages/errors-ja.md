@@ -277,6 +277,8 @@
 | `Windows reported an error (EBADF) when Claude Code read this session's transcript file` | [コマンドラインエラー](#windows-reported-an-error-ebadf) |
 | `Cannot switch renderers in this session` | [コマンドラインエラー](#cannot-switch-renderers-in-this-session) |
 | `Cannot switch renderers while work is running in the background` | [コマンドラインエラー](#cannot-switch-renderers-in-this-session) |
+| `Can't restart while work is running in the background — wait for it to finish (or stop it via /tasks), then try again.` | [コマンドラインエラー](#cant-restart-while-work-is-running-or-remote-control-is-connected) |
+| `Can't restart while Remote Control is connected. To use the installed version, exit and start Claude Code again, then run /resume.` | [コマンドラインエラー](#cant-restart-while-work-is-running-or-remote-control-is-connected) |
 | `Claude Code couldn't restart` | [コマンドラインエラー](#claude-code-couldnt-restart) |
 | `Couldn't open Claude Desktop` | [コマンドラインエラー](#couldnt-open-claude-desktop) |
 | `Failed to open Claude Desktop. Please try opening it manually.` | [コマンドラインエラー](#couldnt-open-claude-desktop) |
@@ -858,7 +860,7 @@ v2.1.268 より前では、メッセージは `run /usage-credits to turn them o
 
 ### The prompt to confirm went unanswered
 
-アカウントが [Fable 使用クレジット同意](https://code.claude.com/docs/ja/model-config.md#fable-and-usage-credits) を必要とする場合、Claude Code は Fable リクエストが使用クレジットに課金する前に確認するよう求めます。同意プロンプトが誰も答えないまま閉じられた場合、Claude Code はターンを次のいずれかのメッセージで終了します。
+[Fable 使用クレジット同意プロンプト](https://code.claude.com/docs/ja/model-config.md#fable-and-usage-credits) が誰も答えないまま閉じられた場合、Claude Code はターンを次のいずれかのメッセージで終了します。
 
 ```text theme={null}
 Fable limit reached · continuing on Fable 5.1 uses usage credits, and the prompt to confirm went unanswered — nothing was sent · answer it where this session is running, or /model to change
@@ -3298,7 +3300,7 @@ Error: Workspace not trusted. Please run `claude` in /Users/you/project first to
 * **`Error: Workspace not trusted. <folder> is your home directory`**: ホームディレクトリに対する信頼は保存されないため、先にそこで `claude` を実行しても解決しません。代わりに、プロジェクトディレクトリで一度 `claude` を実行して信頼ダイアログを承認した後、そこから `claude ultrareview` を実行するか、`--trust-workspace` を追加します。
 * **`No answer in time.` に続いて `Error: Workspace not trusted`**: `Trust <folder>? [y/N]` の質問に 5 分間回答がありませんでした。`claude ultrareview` を再実行して回答してください。
 * **`Ultrareview did not start: <folder> is not trusted`**: `n` と答えるか Enter を押すなどして、`Trust <folder>? [y/N]` の質問で拒否しました。レビューを開始するには、`claude ultrareview` を再実行して `y` と答えます。
-* **``Ultrareview did not start: `--trust-workspace` takes no value``**：PR 番号や `false` など、フラグ以外のものが `--trust-workspace` の後に続いています。フォルダーを信頼しない場合は、フラグを省略します。この実行に限り信頼するには、PR 番号またはベースブランチをフラグの前に置きます：`claude ultrareview 1234 --trust-workspace`。
+* **``Ultrareview did not start: `--trust-workspace` takes no value``**: PR 番号や `false` など、フラグ以外のものが `--trust-workspace` の後に続いています。フォルダを信頼しない場合は、フラグを省略します。この実行に限り信頼するには、PR 番号またはベースブランチをフラグの前に置きます：`claude ultrareview 1234 --trust-workspace`。
 
 v2.1.309 より前は、`claude ultrareview` は `--trust-workspace` を受け付けませんでした。
 
@@ -3590,8 +3592,8 @@ Claude Code は、[動的コンテキストを挿入する](https://code.claude.
 
 関連するメッセージは、コマンドが実行される前に発生します:
 
-* `Shell command permission check failed for pattern "..."`：コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法について説明しています
-* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``：スキルのフロントマターが、bash がないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
+* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法を説明しています
+* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: スキルのフロントマターが、bash のないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
 
 **対処方法:**
 
@@ -3744,7 +3746,7 @@ Could not find merge-base with main. Pass the base branch explicitly (e.g. `/cod
 
 * **ベースブランチを渡さなかった場合**：Claude Code はリポジトリのデフォルトブランチと比較しており、上記の例のようにベースを明示的に渡すよう提案します
 * **クローン内にすでに存在するベースブランチを渡した場合**：ヒントは ``Make sure <branch> exists locally or on origin (try `git fetch origin <branch>`)`` となります
-* **クローン内に存在しないベースブランチを指定した場合**：Claude Code は比較の前に origin からそのブランチをフェッチします。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたすべてのベースブランチに対して `git fetch --unshallow origin` が提案されていましたが、完全なクローンではこのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗します。
+* **クローンに存在しないベースブランチを渡した場合**：Claude Code は比較の前にそのブランチを origin からフェッチしています。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたすべてのベースブランチに対して `git fetch --unshallow origin` が提案されており、完全なクローンではこのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗していました。
 
 **対処方法：**
 
@@ -3973,6 +3975,10 @@ Cannot switch renderers in this session — it has restrictions a restart can't 
 **対処方法：**
 
 * それらの制限なしで開始したセッションで `/tui fullscreen` を実行するか、元に戻すには `/tui default` を実行します。Claude Code はそこで [`tui` 設定](https://code.claude.com/docs/ja/settings-reference#tui)を保存します
+
+### Can't restart while work is running or Remote Control is connected
+
+Claude Code は再起動せず、セッションはそのまま実行を続けています。メッセージに示された修正方法に従ってください。
 
 ### Claude Code couldn't restart
 

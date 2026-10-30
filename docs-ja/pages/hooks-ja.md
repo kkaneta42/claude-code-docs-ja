@@ -735,7 +735,7 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 | `cwd` | フックが呼び出されるときの現在の作業ディレクトリ |
 | `scratchpad_dir` | セッションの[スクラッチパッド ディレクトリ](https://code.claude.com/docs/ja/claude-directory.md#session-scratchpad-directory)へのパス。Claude はここに一時的な作業ファイルを保持します。セッションにスクラッチパッドがない場合、または一時ディレクトリが利用できない場合は存在しません。Claude Code v2.1.257 以降が必要です |
 | `permission_mode` | 現在の[権限モード](https://code.claude.com/docs/ja/permissions.md#permission-modes): `"default"`、`"plan"`、`"acceptEdits"`、`"auto"`、`"dontAsk"`、または `"bypassPermissions"`。**Manual** というラベルが付いたモードは `"default"` として到着し、`"manual"` として到着することはないため、`"default"` と一致するスクリプトは引き続き機能します。すべてのイベントがこのフィールドを受け取るわけではありません。各[フック イベント](#hook-events)セクションの JSON 例を確認してください |
-| `effort` | フックの実行時に有効な [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を保持する `level` フィールドを持つオブジェクト: `"low"`、`"medium"`、`"high"`、`"xhigh"`、または `"max"`。アクティブなモデルがサポートしていないレベルを設定した場合、`level` は Claude Code が代わりに実行したレベルを報告します。そのレベルの選び方については [effort レベルを調整](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を参照してください。オブジェクトは[ステータスライン](https://code.claude.com/docs/ja/statusline.md#available-data)の `effort` フィールドと一致します。現在のモデルが effort パラメータをサポートしている場合、`PreToolUse`、`PostToolUse`、`Stop`、`SubagentStop` などのツール使用コンテキスト内で発火するイベントに存在します。レベルは、フック コマンドと Bash ツールでも `$CLAUDE_EFFORT` 環境変数として利用可能です。 |
+| `effort` | フックの実行時の [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)設定（スキル、サブエージェント、または `ultrathink` のレベルを含む）を `level` とするオブジェクト: `"low"`、`"medium"`、`"high"`、`"xhigh"`、または `"max"`。effort をサポートするモデルで、`PreToolUse`、`PostToolUse`、`Stop`、`SubagentStop`、およびツール使用コンテキストを持つその他のイベントに存在します。設定したレベルをモデルがサポートしていない場合、`level` は実際に実行されたレベルになります。変更したレベルは、[適用が開始される](https://code.claude.com/docs/ja/model-config.md#when-a-new-effort-level-starts)前にここに表示されることがあります。`$CLAUDE_EFFORT` も同じレベルを保持します。 |
 | `hook_event_name` | 発火したイベントの名前 |
 
 `agent_id` と `agent_type` は、サブエージェント、[インプロセスのチームメイト](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)、`--agent` で選択したエージェントなど、フックがどのエージェント内で発火したかをスクリプトに伝えます。
@@ -1898,6 +1898,7 @@ Web を検索します。
 | `query` | string | `"react hooks best practices"` | 検索クエリ |
 | `allowed_domains` | array | `["docs.example.com"]` | 任意：これらのドメインの結果のみを含めます |
 | `blocked_domains` | array | `["spam.example.com"]` | 任意：これらのドメインの結果を除外します |
+| `mode` | string | `"extended"` | オプション：検索の種類。`"standard"` は軽量な検索を、`"extended"` は完全な検索を要求します。`mode` を送信しないセッションもあり、指定のない呼び出しは完全な検索を実行します。Claude Code v2.1.282 以降が必要です |
 
 ##### Agent
 
@@ -1968,8 +1969,6 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](https://cod
 
 フックが `"ask"` を返すと、ユーザーに表示される権限プロンプトには、フックの出所を示すラベルが含まれます。任意の設定ファイルまたはエージェントのフロントマターからのフックでは `[settings]`、プラグインのフックでは `[plugin:<name>]`、スキルのフロントマターからのフックでは `[skill]` です。これにより、どの設定ソースが確認を求めているかをユーザーが把握できます。
 
-フックの `"ask"` は、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でも権限プロンプトを強制します。分類器は引き続きツール呼び出しを拒否できますが、呼び出しを黙って承認することはできません。
-
 ```json theme={null}
 {
   "hookSpecificOutput": {
@@ -1987,6 +1986,15 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](https://cod
 > [!NOTE]
 >
 > PreToolUse は以前はトップレベルの `decision` と `reason` フィールドを使用していましたが、このイベントではこれらは非推奨です。代わりに `hookSpecificOutput.permissionDecision` と `hookSpecificOutput.permissionDecisionReason` を使用してください。非推奨の値 `"approve"` と `"block"` は、それぞれ `"allow"` と `"deny"` に対応します。PostToolUse や Stop などの他のイベントは、引き続きトップレベルの `decision` と `reason` を現在の形式として使用します。
+
+#### auto モードでの PreToolUse の `ask` 決定
+
+[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、PreToolUse フックの `"ask"` は通常ツール呼び出しを権限プロンプトに送り、[分類器](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)はその判断を行いません。一部の呼び出しは異なる経路をたどります。
+
+* **Claude Code 自身のチェックでも警告される呼び出し**：これには、[保護されたパス](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)への書き込みや、[サンドボックスの外で実行する](https://code.claude.com/docs/ja/sandboxing.md#the-unsandboxed-retry-escape-hatch)ことを求めるコマンドが含まれます。分類器は、プロンプトが表示される前にこれらの呼び出しを拒否できます。分類器が承認した場合でも、呼び出しは通常プロンプトに送られます。
+* **`SubagentHandback` の呼び出し**：このツールはサブエージェントのレポートを配信します。これに対してプロンプトは表示されず、分類器が異議を唱えても呼び出しは実行されます。
+
+`SubagentHandback` の呼び出しを停止するには、`"deny"` を返します。すると Claude Code はサブエージェントに対し、レポートが配信されなかったのでツールを再度呼び出すよう、最大 3 回まで伝えます。フックが拒否し続けると、サブエージェントはこのツールを通じてレポートを配信しないまま終了し、それを待っている会話にはその旨の注記が届きます。
 
 #### ユーザーの操作を必要とするツール
 

@@ -72,7 +72,13 @@ Ghostty、Kitty、およびその他のターミナルについては、ター�
 
 Claude がタスクを完了するか権限プロンプトで一時停止し、ターミナルから離れているように見える場合、通知イベントが発火します。[各通知タイプが発火するタイミング](https://code.claude.com/docs/ja/hooks.md#notification)を参照して、正確なタイミングを確認してください。これをターミナルベルまたはデスクトップ通知として表示することで、長いタスクが実行されている間に他の作業に切り替えることができます。
 
-デフォルトでは Claude Code は Ghostty、Kitty、および iTerm2 でのみデスクトップ通知を送信します。他のターミナルでは、[`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel)を`"terminal_bell"`に設定してターミナルベルを鳴らすか、カスタム音またはコマンド用に[通知フック](#play-a-sound-with-a-notification-hook)を設定してください。次の設定エントリはターミナルベルをオンにします：
+デフォルトでは、Claude Code は一部のターミナルではデスクトップ通知を送信し、それ以外のターミナルではベル文字を送信するか、何も送信しません：
+
+* **Ghostty、Kitty、および iTerm2**：デスクトップ通知を送信します。iTerm2 では、アラート設定をオンにした後にのみ表示されます。
+* **Apple Terminal**：音は鳴りません。Claude Code が最前面の Terminal ウィンドウのプロファイルで「Audible bell」がオフになっていることを検出した場合は無音のベル文字を送信し、それ以外の場合は何も送信しません。このベル文字は、そのプロファイルの「Visual bell」または Dock のバウンスオプションがオンになっている場合、ウィンドウのフラッシュとして、または Terminal がバックグラウンドにあるときは Dock アイコンのバウンスとして表示されます。
+* **その他のターミナル**：何も送信しません。
+
+ターミナルやプロファイルに関係なく Claude Code にベル文字を送信させるには、[`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) を `"terminal_bell"` に設定します。Apple Terminal では、音を聞くために **Settings > Profiles > Advanced** で **Audible bell** もオンにしてください。次の設定エントリでチャネルを設定します：
 
 ```json ~/.claude/settings.json theme={null}
 {

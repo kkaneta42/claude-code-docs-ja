@@ -94,7 +94,7 @@ Fable モデル、Opus 5.5、Sonnet 5.5、および Opus 5 の [自動モデル�
 
 ほとんどのモデルでは、セッション中に [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level) を変更すると、次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。キャッシュがまだ温かい間、Claude Code は最初に変更を確認するよう求めます。
 
-API キーまたは Claude サブスクリプションを使用する Opus 5.5、Sonnet 5.5、Haiku 5.5、および Fable 5.1 では、effort を変更してもキャッシュが保持され、Claude Code は確認なしに新しいレベルを適用します。これは Amazon Bedrock、Google Cloud の Agent Platform、または [Claude アプリゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway) には適用されません。また、[`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](https://code.claude.com/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities) を設定した場合、または組織が HIPAA 構成を持つ場合にも適用されません。
+API キーまたは Claude サブスクリプションを使用する Opus 5.5、Sonnet 5.5、Haiku 5.5、および Fable 5.1 では、effort を変更してもキャッシュが保持されます。Claude Code は確認なしに [新しいレベルを適用](https://code.claude.com/docs/ja/model-config.md#when-a-new-effort-level-starts) します。Amazon Bedrock、Google Cloud の Agent Platform、または [Claude アプリゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway) を使用する場合、あるいは [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](https://code.claude.com/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities) を設定した場合や組織が HIPAA 構成を持つ場合は、ほとんどのモデルと同じように動作します。
 
 v2.1.260 より前では、API キーまたは Claude サブスクリプションを使用する Fable 5.1 の effort を変更すると、キャッシュも無効化されていました。
 
