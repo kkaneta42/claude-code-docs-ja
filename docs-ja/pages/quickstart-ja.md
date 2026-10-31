@@ -14,7 +14,7 @@
 
 * ターミナルまたはコマンドプロンプトが開いている
 * 作業するコードプロジェクトがある
-* [Claude サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_prereq)（Pro、Max、Team、または Enterprise）、[Claude Console](https://platform.claude.com/) アカウント、または[サポートされているクラウドプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)経由のアクセスがある
+* [Claude サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_prereq)（Pro、Max、Ultra、Team、または Enterprise）、[Claude Console](https://platform.claude.com/) アカウント、または[サポートされているクラウドプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)経由のアクセスがある
 
 > [!NOTE]
 >
@@ -27,61 +27,61 @@
 
 Claude Code をインストールするには、ターミナルを開いてシステムのコマンドを実行してください。ターミナルを使用したことがない場合は、[ターミナルガイド](https://code.claude.com/docs/ja/terminal-guide)でターミナルを開いてコマンドを貼り付ける方法を確認できます。
 
-**ネイティブインストール（推奨）**
-
-**macOS、Linux、WSL：**
-
-```bash theme={null}
-curl -fsSL https://claude.ai/install.sh | bash
-```
-
-Windows では、PowerShell を使用している場合はシェルプロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
-
-**Windows PowerShell：**
-
-```powershell theme={null}
-irm https://claude.ai/install.ps1 | iex
-```
-
-**Windows CMD：**
-
-```batch theme={null}
-curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
-```
-
-インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](https://code.claude.com/docs/ja/troubleshoot-install.md#command-not-found-claude-after-installation)を参照してください。
-
-`The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
-
-インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
-
-[Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
-
-> [!NOTE]
+> [tab] ネイティブインストール（推奨）
 >
-> ネイティブインストールは、最新バージョンに保つために自動的にバックグラウンドで更新されます。
-
-**Homebrew**
-
-```bash theme={null}
-brew install --cask claude-code
-```
-
-Homebrew は 2 つの cask を提供しています。`claude-code` は安定リリースチャネルを追跡しており、通常は約 1 週間遅れており、大きな回帰を伴うリリースをスキップします。`claude-code@latest` は最新チャネルを追跡し、新しいバージョンが出荷されるとすぐに受け取ります。
-
-> [!NOTE]
+> **macOS、Linux、WSL：**
 >
-> Homebrew インストールは自動更新されません。インストールした cask に応じて、`brew upgrade claude-code` または `brew upgrade claude-code@latest` を実行して、最新の機能とセキュリティ修正を取得してください。
-
-**WinGet**
-
-```powershell theme={null}
-winget install Anthropic.ClaudeCode
-```
-
-> [!NOTE]
+> ```bash theme={null}
+> curl -fsSL https://claude.ai/install.sh | bash
+> ```
 >
-> WinGet インストールは自動更新されません。最新の機能とセキュリティ修正を取得するために、定期的に `winget upgrade Anthropic.ClaudeCode` を実行してください。
+> Windows では、PowerShell を使用している場合はシェルプロンプトに `PS C:\` と表示され、CMD を使用している場合は `PS` なしで `C:\` と表示されます。
+>
+> **Windows PowerShell：**
+>
+> ```powershell theme={null}
+> irm https://claude.ai/install.ps1 | iex
+> ```
+>
+> **Windows CMD：**
+>
+> ```batch theme={null}
+> curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+> ```
+>
+> インストールコマンドは、Claude Code のダウンロード中に進行状況を表示しません。インストーラーが完了したら、新しいターミナルウィンドウを開いて `claude --version` を実行してください。インストールが正常に完了すると、バージョン番号が表示されます。シェルが `claude` が見つからない、または認識されていないと表示される場合は、インストールディレクトリがまだ PATH に含まれていません。[PATH を修正する](https://code.claude.com/docs/ja/troubleshoot-install.md#command-not-found-claude-after-installation)を参照してください。
+>
+> `The token '&&' is not a valid statement separator` というエラーが表示される場合は、CMD ではなく PowerShell を使用しています。`'irm' is not recognized as an internal or external command` というエラーが表示される場合は、PowerShell ではなく CMD を使用しています。
+>
+> インストールコマンドが `syntax error near unexpected token '<'`、`403`、またはその他のエラーで失敗する場合は、[インストールのトラブルシューティング](https://code.claude.com/docs/ja/troubleshoot-install.md#find-your-error)を参照して、エラーを修正方法に照合し、代替インストール方法を確認してください。
+>
+> [Git for Windows](https://git-scm.com/downloads/win) は、Claude Code が Bash ツールを使用できるようにネイティブ Windows で推奨されます。Git for Windows がインストールされていない場合、Claude Code はシェルツールとして PowerShell を代わりに使用します。WSL セットアップは Git for Windows を必要としません。
+>
+> > [!NOTE]
+> >
+> > ネイティブインストールは、最新バージョンに保つために自動的にバックグラウンドで更新されます。
+
+> [tab] Homebrew
+>
+> ```bash theme={null}
+> brew install --cask claude-code
+> ```
+>
+> Homebrew は 2 つの cask を提供しています。`claude-code` は安定リリースチャネルを追跡しており、通常は約 1 週間遅れており、大きな回帰を伴うリリースをスキップします。`claude-code@latest` は最新チャネルを追跡し、新しいバージョンが出荷されるとすぐに受け取ります。
+>
+> > [!NOTE]
+> >
+> > Homebrew インストールは自動更新されません。インストールした cask に応じて、`brew upgrade claude-code` または `brew upgrade claude-code@latest` を実行して、最新の機能とセキュリティ修正を取得してください。
+
+> [tab] WinGet
+>
+> ```powershell theme={null}
+> winget install Anthropic.ClaudeCode
+> ```
+>
+> > [!NOTE]
+> >
+> > WinGet インストールは自動更新されません。最新の機能とセキュリティ修正を取得するために、定期的に `winget upgrade Anthropic.ClaudeCode` を実行してください。
 
 また、Debian、Fedora、RHEL、Alpine で [apt、dnf、または apk](https://code.claude.com/docs/ja/setup.md#install-with-linux-package-managers) を使用してインストールすることもできます。
 
@@ -108,7 +108,7 @@ claude
 
 次のいずれかのアカウントタイプでログインできます。
 
-* [Claude Pro、Max、Team、または Enterprise](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_login)（推奨）
+* [Claude Pro、Max、Ultra、Team、または Enterprise](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=quickstart_login)（推奨）
 * [Claude Console](https://platform.claude.com/)（前払いクレジットによる API アクセス）。初回ログイン時に、コストを一元的に追跡するための「Claude Code」ワークスペースが Console に自動的に作成されます。
 * [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](https://code.claude.com/docs/ja/third-party-integrations.md)（エンタープライズ向けクラウドプロバイダー）
 * 組織で運用している場合は、セルフホストの [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)：管理者がゲートウェイ URL を事前に設定しており、`/login` を実行すると **Cloud gateway** 画面が直接開くので、企業の SSO でサインインします
@@ -267,13 +267,13 @@ review my changes and suggest improvements
 
 詳細については、[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)と[一般的なワークフロー](https://code.claude.com/docs/ja/common-workflows.md)を参照してください。
 
-> **リクエストを具体的にする**
+> [accordion] リクエストを具体的にする
 >
 > 代わりに：'バグを修正してください'
 >
 > 試してください：'ユーザーが間違った認証情報を入力した後に空白の画面が表示されるログインバグを修正してください'
 
-> **段階的な指示を使用する**
+> [accordion] 段階的な指示を使用する
 >
 > 複雑なタスクをステップに分割します：
 >
@@ -283,7 +283,7 @@ review my changes and suggest improvements
 > 3. ユーザーが自分の情報を表示および編集できるウェブページを構築する
 > ```
 
-> **Claude に最初に探索させる**
+> [accordion] Claude に最初に探索させる
 >
 > 変更を加える前に、Claude にコードを理解させます：
 >
@@ -295,7 +295,7 @@ review my changes and suggest improvements
 > 英国の顧客によって最も頻繁に返品される製品を表示するダッシュボードを構築する
 > ```
 
-> **ショートカットで時間を節約する**
+> [accordion] ショートカットで時間を節約する
 >
 > * `/` を入力してすべてのコマンドとスキルを表示する
 > * Tab キーでコマンド補完を使用する

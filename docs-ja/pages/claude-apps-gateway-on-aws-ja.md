@@ -325,146 +325,146 @@ docker push "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/claude-gateway:<v
 
 **7. デプロイ**
 
-**ECS Fargate**
+> [tab] ECS Fargate
+>
+> クラスターと、ゲートウェイの stderr 用のロググループを作成します。stderr には監査イベントと運用ログの両方が含まれます。保持期間は別の呼び出しで設定し、設定しない場合、CloudWatch はログを永久に保持します。90 日を監査保持ポリシーに合わせて調整してください。
+>
+> ```bash theme={null}
+> aws ecs create-cluster --cluster-name claude-gateway
+> aws logs create-log-group --log-group-name /ecs/claude-gateway
+> aws logs put-retention-policy --log-group-name /ecs/claude-gateway \
+>   --retention-in-days 90
+> ```
+>
+> タスク定義を書き込みます。タスクロールは Bedrock 権限を持ち、実行ロールはシークレットを注入します。Secrets Manager ステップからのシークレット ARN を使用します。
+>
+> ```json claude-gateway-task.json theme={null}
+> {
+>   "family": "claude-gateway",
+>   "networkMode": "awsvpc",
+>   "requiresCompatibilities": ["FARGATE"],
+>   "cpu": "1024",
+>   "memory": "2048",
+>   "runtimePlatform": { "cpuArchitecture": "X86_64", "operatingSystemFamily": "LINUX" },
+>   "executionRoleArn": "arn:aws:iam::<account-id>:role/claude-gateway-execution",
+>   "taskRoleArn": "arn:aws:iam::<account-id>:role/claude-gateway-task",
+>   "containerDefinitions": [
+>     {
+>       "name": "gateway",
+>       "image": "<account-id>.dkr.ecr.<region>.amazonaws.com/claude-gateway:<version>",
+>       "portMappings": [{ "containerPort": 8080 }],
+>       "secrets": [
+>         { "name": "GATEWAY_JWT_SECRET",   "valueFrom": "<gateway-jwt-secret ARN>" },
+>         { "name": "OIDC_CLIENT_SECRET",   "valueFrom": "<gateway-oidc-client-secret ARN>" },
+>         { "name": "GATEWAY_POSTGRES_URL", "valueFrom": "<gateway-postgres-url ARN>" }
+>       ],
+>       "logConfiguration": {
+>         "logDriver": "awslogs",
+>         "options": {
+>           "awslogs-group": "/ecs/claude-gateway",
+>           "awslogs-region": "<region>",
+>           "awslogs-stream-prefix": "gateway"
+>         }
+>       }
+>     }
+>   ]
+> }
+> ```
+>
+> それを登録します。
+>
+> ```bash theme={null}
+> aws ecs register-task-definition --cli-input-json file://claude-gateway-task.json
+> ```
+>
+> ゲートウェイをヘルスチェックするターゲットグループを持つ内部 ALB を前に配置します。`--ip-address-type ipv4` は重要です。内部デュアルスタック ALB はパブリック範囲の AAAA レコードを公開し、`/login` プライベートネットワークチェックはそれらを拒否します。
+>
+> ```bash theme={null}
+> ALB_ARN="$(aws elbv2 create-load-balancer --name claude-gateway \
+>   --scheme internal --type application --ip-address-type ipv4 \
+>   --subnets $PRIVATE_SUBNETS --security-groups "$ALB_SG" \
+>   --query 'LoadBalancers[0].LoadBalancerArn' --output text)"
+>
+> TG_ARN="$(aws elbv2 create-target-group --name claude-gateway \
+>   --protocol HTTP --port 8080 --vpc-id "$VPC_ID" --target-type ip \
+>   --health-check-path /readyz \
+>   --query 'TargetGroups[0].TargetGroupArn' --output text)"
+> ```
+>
+> HTTPS リスナーを追加します。`--ssl-policy` は最新の TLS フロアをピンします。これを省略すると、レガシー `ELBSecurityPolicy-2016-08` デフォルトにフォールバックします。これは TLS 1.0/1.1 をまだ受け入れます。
+>
+> ALB はデフォルトで 60 秒間データがない接続を閉じます。ゲートウェイのキープアライブピングはストリームをそのデフォルト内に保つため、タイムアウトを上げるとピングの間隔に対するマージンが増えます。ドロップされたストリームに関する[トラブルシューティング](#troubleshooting)の行で、そのメカニズムと古いゲートウェイについて説明しています。以下のコマンドはリスナーを追加し、タイムアウトを上げます。
+>
+> ```bash theme={null}
+> aws elbv2 create-listener --load-balancer-arn "$ALB_ARN" \
+>   --protocol HTTPS --port 443 \
+>   --ssl-policy ELBSecurityPolicy-TLS13-1-2-2021-06 \
+>   --certificates CertificateArn=<your-acm-certificate-arn> \
+>   --default-actions Type=forward,TargetGroupArn="$TG_ARN"
+>
+> aws elbv2 modify-load-balancer-attributes --load-balancer-arn "$ALB_ARN" \
+>   --attributes Key=idle_timeout.timeout_seconds,Value=3600
+> ```
+>
+> サービスを作成します。デプロイサーキットブレーカーは、不正なイメージやブート不可能な設定によってタスクが失敗し続けるデプロイを、失敗するタスクを永遠に再起動する代わりに、最後の安定した状態にロールバックします。
+>
+> ```bash theme={null}
+> aws ecs create-service --cluster claude-gateway --service-name claude-gateway \
+>   --task-definition claude-gateway --desired-count 1 --launch-type FARGATE \
+>   --deployment-configuration "deploymentCircuitBreaker={enable=true,rollback=true}" \
+>   --health-check-grace-period-seconds 60 \
+>   --network-configuration "awsvpcConfiguration={subnets=[$(echo $PRIVATE_SUBNETS | tr ' ' ',')],securityGroups=[$GW_SG],assignPublicIp=DISABLED}" \
+>   --load-balancers "targetGroupArn=$TG_ARN,containerName=gateway,containerPort=8080"
+> ```
+>
+> 60 秒のグレースピリオドは、ECS がデプロイに対して失敗のカウントを始める前に、コールドタスクがイメージをプルし、ストアに接続し、最初のヘルスチェックに応答する時間を与えます。
+>
+> ターゲットグループの `GET /readyz` のヘルスチェックはストアが到達可能であることを検証するため、Postgres に到達できないタスクはローテーションに入りません。RDS フェイルオーバーなどの短いデータベース停止中もタスクがチェックを通過し続けるようにするには、[停止動作](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#outage-behavior)の説明に従って `store.readiness_grace_seconds` を設定します。同セクションでは `/healthz` 代替案についても説明しています。
+>
+> タスクはパブリック IP なしのプライベートサブネットで実行されるため、すべてのエグレス（Bedrock、IdP、Secrets Manager、ECR、CloudWatch Logs へ）は NAT ゲートウェイを通過します。Bedrock トラフィックをパブリックパスから外すには、[Bedrock アップストリームリファレンス](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#amazon-bedrock)に示されているように、`bedrock-runtime` インターフェース VPC エンドポイントを作成し、アップストリームの `base_url` をそれに向けます。IdP にはインターネットエグレスが引き続き必要です。
+>
+> 開発者にプライベートに解決可能なホスト名を与えることで完了します。Route 53 プライベートホストゾーンで、ゲートウェイの内部 DNS 名を ALB にエイリアスし、`listen.public_url` をそのホスト名に設定します。ALB 自体の `*.elb.amazonaws.com` 名は内部 ALB のプライベートアドレスに解決されますが、ACM 証明書を搭載できないため、独自の名前を使用します。
+>
+> 最初のサインイン前に OAuth クライアントの認可リダイレクト URI を `<public_url>/oauth/callback` に更新します。`public_url` を変更した後、新しいタグでイメージを再ビルドしてプッシュし、新しいタスク定義リビジョンを登録し、再デプロイします。ECS では、設定はイメージの埋め込み `gateway.yaml` に存在し、ゲートウェイはその設定からのみパブリックオリジンを構築し、`X-Forwarded-Host` と `X-Forwarded-Proto` を無視します。`X-Forwarded-For` は、`listen.trusted_proxies` が設定されている場合にのみクライアント IP に対して尊重されます。
 
-クラスターと、ゲートウェイの stderr 用のロググループを作成します。stderr には監査イベントと運用ログの両方が含まれます。保持期間は別の呼び出しで設定し、設定しない場合、CloudWatch はログを永久に保持します。90 日を監査保持ポリシーに合わせて調整してください。
-
-```bash theme={null}
-aws ecs create-cluster --cluster-name claude-gateway
-aws logs create-log-group --log-group-name /ecs/claude-gateway
-aws logs put-retention-policy --log-group-name /ecs/claude-gateway \
-  --retention-in-days 90
-```
-
-タスク定義を書き込みます。タスクロールは Bedrock 権限を持ち、実行ロールはシークレットを注入します。Secrets Manager ステップからのシークレット ARN を使用します。
-
-```json claude-gateway-task.json theme={null}
-{
-  "family": "claude-gateway",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "1024",
-  "memory": "2048",
-  "runtimePlatform": { "cpuArchitecture": "X86_64", "operatingSystemFamily": "LINUX" },
-  "executionRoleArn": "arn:aws:iam::<account-id>:role/claude-gateway-execution",
-  "taskRoleArn": "arn:aws:iam::<account-id>:role/claude-gateway-task",
-  "containerDefinitions": [
-    {
-      "name": "gateway",
-      "image": "<account-id>.dkr.ecr.<region>.amazonaws.com/claude-gateway:<version>",
-      "portMappings": [{ "containerPort": 8080 }],
-      "secrets": [
-        { "name": "GATEWAY_JWT_SECRET",   "valueFrom": "<gateway-jwt-secret ARN>" },
-        { "name": "OIDC_CLIENT_SECRET",   "valueFrom": "<gateway-oidc-client-secret ARN>" },
-        { "name": "GATEWAY_POSTGRES_URL", "valueFrom": "<gateway-postgres-url ARN>" }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/claude-gateway",
-          "awslogs-region": "<region>",
-          "awslogs-stream-prefix": "gateway"
-        }
-      }
-    }
-  ]
-}
-```
-
-それを登録します。
-
-```bash theme={null}
-aws ecs register-task-definition --cli-input-json file://claude-gateway-task.json
-```
-
-ゲートウェイをヘルスチェックするターゲットグループを持つ内部 ALB を前に配置します。`--ip-address-type ipv4` は重要です。内部デュアルスタック ALB はパブリック範囲の AAAA レコードを公開し、`/login` プライベートネットワークチェックはそれらを拒否します。
-
-```bash theme={null}
-ALB_ARN="$(aws elbv2 create-load-balancer --name claude-gateway \
-  --scheme internal --type application --ip-address-type ipv4 \
-  --subnets $PRIVATE_SUBNETS --security-groups "$ALB_SG" \
-  --query 'LoadBalancers[0].LoadBalancerArn' --output text)"
-
-TG_ARN="$(aws elbv2 create-target-group --name claude-gateway \
-  --protocol HTTP --port 8080 --vpc-id "$VPC_ID" --target-type ip \
-  --health-check-path /readyz \
-  --query 'TargetGroups[0].TargetGroupArn' --output text)"
-```
-
-HTTPS リスナーを追加します。`--ssl-policy` は最新の TLS フロアをピンします。これを省略すると、レガシー `ELBSecurityPolicy-2016-08` デフォルトにフォールバックします。これは TLS 1.0/1.1 をまだ受け入れます。
-
-ALB はデフォルトで 60 秒間データがない接続を閉じます。ゲートウェイのキープアライブピングはストリームをそのデフォルト内に保つため、タイムアウトを上げるとピングの間隔に対するマージンが増えます。ドロップされたストリームに関する[トラブルシューティング](#troubleshooting)の行で、そのメカニズムと古いゲートウェイについて説明しています。以下のコマンドはリスナーを追加し、タイムアウトを上げます。
-
-```bash theme={null}
-aws elbv2 create-listener --load-balancer-arn "$ALB_ARN" \
-  --protocol HTTPS --port 443 \
-  --ssl-policy ELBSecurityPolicy-TLS13-1-2-2021-06 \
-  --certificates CertificateArn=<your-acm-certificate-arn> \
-  --default-actions Type=forward,TargetGroupArn="$TG_ARN"
-
-aws elbv2 modify-load-balancer-attributes --load-balancer-arn "$ALB_ARN" \
-  --attributes Key=idle_timeout.timeout_seconds,Value=3600
-```
-
-サービスを作成します。デプロイサーキットブレーカーは、不正なイメージやブート不可能な設定によってタスクが失敗し続けるデプロイを、失敗するタスクを永遠に再起動する代わりに、最後の安定した状態にロールバックします。
-
-```bash theme={null}
-aws ecs create-service --cluster claude-gateway --service-name claude-gateway \
-  --task-definition claude-gateway --desired-count 1 --launch-type FARGATE \
-  --deployment-configuration "deploymentCircuitBreaker={enable=true,rollback=true}" \
-  --health-check-grace-period-seconds 60 \
-  --network-configuration "awsvpcConfiguration={subnets=[$(echo $PRIVATE_SUBNETS | tr ' ' ',')],securityGroups=[$GW_SG],assignPublicIp=DISABLED}" \
-  --load-balancers "targetGroupArn=$TG_ARN,containerName=gateway,containerPort=8080"
-```
-
-60 秒のグレースピリオドは、ECS がデプロイに対して失敗のカウントを始める前に、コールドタスクがイメージをプルし、ストアに接続し、最初のヘルスチェックに応答する時間を与えます。
-
-ターゲットグループの `GET /readyz` のヘルスチェックはストアが到達可能であることを検証するため、Postgres に到達できないタスクはローテーションに入りません。RDS フェイルオーバーなどの短いデータベース停止中もタスクがチェックを通過し続けるようにするには、[停止動作](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#outage-behavior)の説明に従って `store.readiness_grace_seconds` を設定します。同セクションでは `/healthz` 代替案についても説明しています。
-
-タスクはパブリック IP なしのプライベートサブネットで実行されるため、すべてのエグレス（Bedrock、IdP、Secrets Manager、ECR、CloudWatch Logs へ）は NAT ゲートウェイを通過します。Bedrock トラフィックをパブリックパスから外すには、[Bedrock アップストリームリファレンス](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#amazon-bedrock)に示されているように、`bedrock-runtime` インターフェース VPC エンドポイントを作成し、アップストリームの `base_url` をそれに向けます。IdP にはインターネットエグレスが引き続き必要です。
-
-開発者にプライベートに解決可能なホスト名を与えることで完了します。Route 53 プライベートホストゾーンで、ゲートウェイの内部 DNS 名を ALB にエイリアスし、`listen.public_url` をそのホスト名に設定します。ALB 自体の `*.elb.amazonaws.com` 名は内部 ALB のプライベートアドレスに解決されますが、ACM 証明書を搭載できないため、独自の名前を使用します。
-
-最初のサインイン前に OAuth クライアントの認可リダイレクト URI を `<public_url>/oauth/callback` に更新します。`public_url` を変更した後、新しいタグでイメージを再ビルドしてプッシュし、新しいタスク定義リビジョンを登録し、再デプロイします。ECS では、設定はイメージの埋め込み `gateway.yaml` に存在し、ゲートウェイはその設定からのみパブリックオリジンを構築し、`X-Forwarded-Host` と `X-Forwarded-Proto` を無視します。`X-Forwarded-For` は、`listen.trusted_proxies` が設定されている場合にのみクライアント IP に対して尊重されます。
-
-**EKS**
-
-このトラックには、ローカルにインストールされた `kubectl` と `eksctl` が必要です。また、IAM OIDC プロバイダーと AWS Load Balancer Controller がインストールされた既存の EKS クラスターが必要です。ポッドが RDS プライベートエンドポイントに到達できるよう、クラスターは `$VPC_ID` 上にある必要があり、`claude-gateway-db` セキュリティグループは `$GW_SG` の代わりにクラスターのポッドまたはノードのセキュリティグループを許可する必要があります。
-
-EKS では、ゲートウェイは ECS ロールではなく IRSA を通じて Bedrock 認証情報を取得します。IAM ステップからの `ecs-tasks.amazonaws.com` トラストポリシーはここには適用されません。IRSA には、クラスターの OIDC プロバイダーにフェデレートし、`system:serviceaccount:claude-gateway:gateway` にスコープされたトラストポリシーを持つロールが必要です。`eksctl create iamserviceaccount` は、そのロールの作成、ポリシーのアタッチ、Kubernetes サービスアカウントへのロール ARN のアノテーション付与を 1 つのステップで行います。eksctl がアタッチできるよう、IAM ステップの 2 つのポリシードキュメントをマネージドポリシーに変換します。
-
-```bash theme={null}
-BEDROCK_POLICY_ARN="$(aws iam create-policy --policy-name claude-gateway-bedrock-invoke \
-  --policy-document file://bedrock-invoke.json --query Policy.Arn --output text)"
-SECRETS_POLICY_ARN="$(aws iam create-policy --policy-name claude-gateway-secrets-read \
-  --policy-document file://secrets-read.json --query Policy.Arn --output text)"
-
-kubectl create namespace claude-gateway
-eksctl create iamserviceaccount --cluster <your-cluster> --region "$AWS_REGION" \
-  --namespace claude-gateway --name gateway --role-name claude-gateway \
-  --attach-policy-arn "$BEDROCK_POLICY_ARN" \
-  --attach-policy-arn "$SECRETS_POLICY_ARN" \
-  --approve
-```
-
-シークレットポリシーは、Secrets Store CSI ドライバーの AWS プロバイダーがマウントするポッドのサービスアカウントを使用して行うように、ポッド自体が Secrets Manager を読み取る場合にのみ必要です。別の方法で Kubernetes Secrets を作成する場合は削除してください。プロバイダーにはポリシーの両方のアクションが必要です。ローテーションされたシークレットを調整するときに `DescribeSecret` を呼び出すため、`GetSecretValue` のみの付与では最初のデプロイ時にはマウントできますが、ローテーションが反映されなくなります。
-
-[Kubernetes デプロイ](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#kubernetes)で説明されているように、ゲートウェイを標準の Deployment、Service、および Ingress としてデプロイします。設定内容は以下のとおりです。
-
-* `serviceAccountName: gateway`
-* ConfigMap からマウントされた `gateway.yaml` と `/secrets` にマウントされたシークレット
-* `GET /readyz` を指すレディネスプローブ
-
-フロントエンドの場合、AWS Load Balancer Controller によって管理される Ingress が内部 ALB をプロビジョニングします。以下のアノテーションを付けます。
-
-* `alb.ingress.kubernetes.io/scheme: internal` と `alb.ingress.kubernetes.io/target-type: ip`
-* `alb.ingress.kubernetes.io/ip-address-type: ipv4`。`/login` の[プライベートネットワークチェック](https://code.claude.com/docs/ja/claude-apps-gateway#prerequisites)で拒否されるパブリック範囲の AAAA レコードが公開されないようにするためです
-* `alb.ingress.kubernetes.io/inbound-cidrs: <your-corporate-cidr>`。コントローラー管理のフロントエンドセキュリティグループが `0.0.0.0/0` デフォルトの代わりに企業ネットワークのみを許可するようにします
-* ACM 証明書を指定した `alb.ingress.kubernetes.io/certificate-arn`
-* `alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06`。リスナーが TLS 1.0 と 1.1 を受け入れるレガシーデフォルトポリシーにフォールバックしないようにするためです
-* `alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=3600`。ゲートウェイのストリーミングキープアライブに対するマージンです。[トラブルシューティング](#troubleshooting)を参照してください
-
-IRSA では、AWS SDK は投影されたサービスアカウントトークンを読み取り、AWS STS と交換するため、ポッドは EC2 インスタンスメタデータサービスを必要としません。エグレス NetworkPolicy でゲートウェイポッドの `169.254.169.254` をブロックしても構いません。以下の[トラブルシューティング](#troubleshooting)のノードホップリミット問題は、IRSA を使用せずノードインスタンスロールに依存するクラスターにのみ適用されます。
+> [tab] EKS
+>
+> このトラックには、ローカルにインストールされた `kubectl` と `eksctl` が必要です。また、IAM OIDC プロバイダーと AWS Load Balancer Controller がインストールされた既存の EKS クラスターが必要です。ポッドが RDS プライベートエンドポイントに到達できるよう、クラスターは `$VPC_ID` 上にある必要があり、`claude-gateway-db` セキュリティグループは `$GW_SG` の代わりにクラスターのポッドまたはノードのセキュリティグループを許可する必要があります。
+>
+> EKS では、ゲートウェイは ECS ロールではなく IRSA を通じて Bedrock 認証情報を取得します。IAM ステップからの `ecs-tasks.amazonaws.com` トラストポリシーはここには適用されません。IRSA には、クラスターの OIDC プロバイダーにフェデレートし、`system:serviceaccount:claude-gateway:gateway` にスコープされたトラストポリシーを持つロールが必要です。`eksctl create iamserviceaccount` は、そのロールの作成、ポリシーのアタッチ、Kubernetes サービスアカウントへのロール ARN のアノテーション付与を 1 つのステップで行います。eksctl がアタッチできるよう、IAM ステップの 2 つのポリシードキュメントをマネージドポリシーに変換します。
+>
+> ```bash theme={null}
+> BEDROCK_POLICY_ARN="$(aws iam create-policy --policy-name claude-gateway-bedrock-invoke \
+>   --policy-document file://bedrock-invoke.json --query Policy.Arn --output text)"
+> SECRETS_POLICY_ARN="$(aws iam create-policy --policy-name claude-gateway-secrets-read \
+>   --policy-document file://secrets-read.json --query Policy.Arn --output text)"
+>
+> kubectl create namespace claude-gateway
+> eksctl create iamserviceaccount --cluster <your-cluster> --region "$AWS_REGION" \
+>   --namespace claude-gateway --name gateway --role-name claude-gateway \
+>   --attach-policy-arn "$BEDROCK_POLICY_ARN" \
+>   --attach-policy-arn "$SECRETS_POLICY_ARN" \
+>   --approve
+> ```
+>
+> シークレットポリシーは、Secrets Store CSI ドライバーの AWS プロバイダーがマウントするポッドのサービスアカウントを使用して行うように、ポッド自体が Secrets Manager を読み取る場合にのみ必要です。別の方法で Kubernetes Secrets を作成する場合は削除してください。プロバイダーにはポリシーの両方のアクションが必要です。ローテーションされたシークレットを調整するときに `DescribeSecret` を呼び出すため、`GetSecretValue` のみの付与では最初のデプロイ時にはマウントできますが、ローテーションが反映されなくなります。
+>
+> [Kubernetes デプロイ](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#kubernetes)で説明されているように、ゲートウェイを標準の Deployment、Service、および Ingress としてデプロイします。設定内容は以下のとおりです。
+>
+> * `serviceAccountName: gateway`
+> * ConfigMap からマウントされた `gateway.yaml` と `/secrets` にマウントされたシークレット
+> * `GET /readyz` を指すレディネスプローブ
+>
+> フロントエンドの場合、AWS Load Balancer Controller によって管理される Ingress が内部 ALB をプロビジョニングします。以下のアノテーションを付けます。
+>
+> * `alb.ingress.kubernetes.io/scheme: internal` と `alb.ingress.kubernetes.io/target-type: ip`
+> * `alb.ingress.kubernetes.io/ip-address-type: ipv4`。`/login` の[プライベートネットワークチェック](https://code.claude.com/docs/ja/claude-apps-gateway#prerequisites)で拒否されるパブリック範囲の AAAA レコードが公開されないようにするためです
+> * `alb.ingress.kubernetes.io/inbound-cidrs: <your-corporate-cidr>`。コントローラー管理のフロントエンドセキュリティグループが `0.0.0.0/0` デフォルトの代わりに企業ネットワークのみを許可するようにします
+> * ACM 証明書を指定した `alb.ingress.kubernetes.io/certificate-arn`
+> * `alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06`。リスナーが TLS 1.0 と 1.1 を受け入れるレガシーデフォルトポリシーにフォールバックしないようにするためです
+> * `alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=3600`。ゲートウェイのストリーミングキープアライブに対するマージンです。[トラブルシューティング](#troubleshooting)を参照してください
+>
+> IRSA では、AWS SDK は投影されたサービスアカウントトークンを読み取り、AWS STS と交換するため、ポッドは EC2 インスタンスメタデータサービスを必要としません。エグレス NetworkPolicy でゲートウェイポッドの `169.254.169.254` をブロックしても構いません。以下の[トラブルシューティング](#troubleshooting)のノードホップリミット問題は、IRSA を使用せずノードインスタンスロールに依存するクラスターにのみ適用されます。
 
 **8. ゲートウェイ URL を開発者マシンにプッシュする**
 

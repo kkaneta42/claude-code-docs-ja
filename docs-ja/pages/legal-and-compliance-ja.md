@@ -13,7 +13,7 @@
 Claude Code の使用は、以下の対象となります。
 
 * [商用条件](https://www.anthropic.com/legal/commercial-terms) - Team、Enterprise、および Claude API ユーザー向け
-* [コンシューマー利用規約](https://www.anthropic.com/legal/consumer-terms) - Free、Pro、および Max ユーザー向け
+* [コンシューマー利用規約](https://www.anthropic.com/legal/consumer-terms) - Free、Pro、Max、および Ultra ユーザー向け
 
 ### 商用契約
 
@@ -45,14 +45,14 @@ HIPAA 設定では、クラウドセッション、Remote Control、Claude モ�
 
 ### 許可される使用
 
-Claude Code の使用は、[Anthropic 使用ポリシー](https://www.anthropic.com/legal/aup)の対象となります。Pro および Max プランの広告表示される使用制限は、Claude Code および Agent SDK の通常の個人使用を想定しています。
+Claude Code の使用は、[Anthropic 使用ポリシー](https://www.anthropic.com/legal/aup)の対象となります。Pro、Max、および Ultra プランの広告表示される使用制限は、Claude Code および Agent SDK の通常の個人使用を想定しています。
 
 ### 認証と認証情報の使用
 
 Claude Code は、OAuth トークンまたは API キーを使用して Anthropic のサーバーで認証します。これらの認証方法は異なる目的に対応しています。
 
-* **OAuth 認証**は、Claude Free、Pro、Max、Team、および Enterprise サブスクリプションプランの購入者専用に設計されており、Claude Code および他のネイティブ Anthropic アプリケーションの通常の使用をサポートするために設計されています。ログインの手順については、[Claude アカウントへのログイン](https://support.claude.com/en/articles/13189465-logging-in-to-your-claude-account)を参照してください。Claude Code が OAuth 認証を実行する方法については、[認証](https://code.claude.com/docs/ja/authentication.md)を参照してください。
-* **開発者**が Claude の機能と相互作用する製品またはサービスを構築している場合（[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md)を使用している場合を含む）、[Claude Console](https://platform.claude.com/)またはサポートされているクラウドプロバイダーを通じて API キー認証を使用する必要があります。Anthropic は、サードパーティの開発者が Claude.ai ログインを自社アプリケーションに提供したり、ユーザーに代わって Free、Pro、または Max プランの認証情報を通じてリクエストをルーティングしたりすることを許可していません。さらに、開発者は Claude.ai の認証情報またはセッショントークンを収集、保存、または仲介することはできません。Claude アカウントへのサインインは、Anthropic 独自のフローを通じて完了する必要があります。
+* **OAuth 認証**は、Claude Free、Pro、Max、Ultra、Team、および Enterprise サブスクリプションプランの購入者専用に設計されており、Claude Code および他のネイティブ Anthropic アプリケーションの通常の使用をサポートするために設計されています。ログインの手順については、[Claude アカウントへのログイン](https://support.claude.com/en/articles/13189465-logging-in-to-your-claude-account)を参照してください。Claude Code が OAuth 認証を実行する方法については、[認証](https://code.claude.com/docs/ja/authentication.md)を参照してください。
+* **開発者**が Claude の機能と相互作用する製品またはサービスを構築している場合（[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md)を使用している場合を含む）、[Claude Console](https://platform.claude.com/)またはサポートされているクラウドプロバイダーを通じて API キー認証を使用する必要があります。Anthropic は、サードパーティの開発者が Claude.ai ログインを自社アプリケーションに提供したり、ユーザーに代わって Free、Pro、Max、または Ultra プランの認証情報を通じてリクエストをルーティングしたりすることを許可していません。さらに、開発者は Claude.ai の認証情報またはセッショントークンを収集、保存、または仲介することはできません。Claude アカウントへのサインインは、Anthropic 独自のフローを通じて完了する必要があります。
 
 これは、顧客が自身の API キーまたはサードパーティ推論プロバイダーの認証情報をどのように提供および管理するかを制限するものではありません。たとえば、開発環境、シークレットマネージャー、または機械イメージで API キーを設定して、顧客の認可されたユーザーが使用できるようにすることは許可されています。ただし、その結果の使用が、Anthropic（または該当するプロバイダー）との契約に基づいてキー所有者に請求され、上記で説明されているように再販売または仲介されていない場合に限ります。また、プラットフォームが上記の「顧客は自社製品で Claude Code を提供できますか？」で説明されているように Claude Code をホストしている場合を含め、エンドユーザーが自身の Claude サブスクリプションで未修正の Claude Code バイナリにサインインすることも妨げません。
 

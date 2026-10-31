@@ -286,7 +286,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 
 サーバーが接続しない場合は、セッション内の `/mcp` またはシェルから `claude mcp list` でそのステータスを確認し、以下の症状と照合してください。`/mcp` パネルでは、セッションを離れずに再接続または認証することもできます。
 
-> **/mcp は「No MCP servers configured」を表示します**
+> [accordion] /mcp は「No MCP servers configured」を表示します
 >
 > Claude Code は現在のディレクトリのサーバーを見つけませんでした。最も一般的な原因：
 >
@@ -294,7 +294,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 > * 設定ファイルを間違ったパスで編集しました。正しいファイルは `~/.claude.json` と `<project>/.mcp.json` です。Claude Code は `~/.claude/.mcp.json`、`~/.claude/config/mcp.json`、`~/.claude/mcp.json`、`%APPDATA%\Claude\mcp.json` などのパスを読み込みません。ユーザースコープのサーバーの場合は、`claude mcp add --scope user` を実行します。これは `~/.claude.json` の `mcpServers` キーに書き込みます。プロジェクトスコープのサーバーの場合は、プロジェクトルートの `.mcp.json` を編集します。
 > * `.mcp.json` に不正な形式のエントリを書き込みました。Claude Code はそのエントリをスキップして他のエントリを読み込みます。シェルから `claude mcp list` を実行し、解析警告を探します。これは問題のあるフィールドに名前を付けます。
 
-> **ステータスは「Failed to connect」または「Connection error」を表示します**
+> [accordion] ステータスは「Failed to connect」または「Connection error」を表示します
 >
 > 両方のステータスはサーバーが開始しなかったか、URL が応答しなかったことを意味します。また、`headers.Authorization` で設定したトークンを拒否する HTTP サーバーにも表示される可能性があります。トークンが必要だが設定していないサーバーは、代わりに `! Needs authentication` を表示します。これは [サインインが必要なサーバーに接続する](#connect-a-server-that-requires-sign-in)で説明されています。
 >
@@ -334,7 +334,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 >   `claude mcp get <name>` を実行し、そこに表示されるコマンドが実行したばかりのコマンドと一致することを確認します。表示されるコマンドが入力したものと異なる場合、サーバーコマンドの前に `--` セパレーターを省略した可能性があります。サーバーを削除し、`--` を配置して再度追加します。`.mcp.json` を手で書いた場合は、その構文と場所を確認します。v2.1.285 より前は、`claude mcp get` は `type` フィールドなしで保存された stdio エントリ（手書きの `.mcp.json` エントリなど）に対して `Command` 行を出力しませんでした。これらのバージョンでは、代わりに `claude mcp list` を実行します。これはどちらの方法でもコマンドラインを出力します。
 > * コマンドエラー：メッセージは Node.js やブラウザなど、不足しているものに名前を付けます。
 
-> **接続がスタートアップでタイムアウトしました**
+> [accordion] 接続がスタートアップでタイムアウトしました
 >
 > サーバーはデフォルトの 30 秒スタートアップタイムアウトより長くかかりました。stdio サーバーの最初の実行は、`npx` がパッケージをダウンロードしている間に遅くなる可能性があります。[`MCP_TIMEOUT`](https://code.claude.com/docs/ja/env-vars)環境変数でミリ秒単位で制限を増やします。
 >
@@ -350,7 +350,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 >
 > v2.1.299 より前は、稼働中の HTTP サーバーへの一部の接続が、`MCP_TIMEOUT` に関係なくスタートアップ時にタイムアウトしていました。これらのバージョンを使用していて、制限を引き上げた後も稼働中の HTTP サーバーがタイムアウトする場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してください。
 
-> **サーバーは既に存在します**
+> [accordion] サーバーは既に存在します
 >
 > 同じスコープで同じ名前のサーバーを既に追加しています。既存のエントリを削除するか、別の名前を選択します。
 >
@@ -360,7 +360,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 >
 > 名前が複数のスコープに存在する場合、`remove` は「`exists in multiple scopes`」を報告します。削除するコピーを選択するために `--scope` を渡します。例えば `claude mcp remove claude-code-docs --scope local`。
 
-> **サーバーは接続しますが、ツールが表示されません**
+> [accordion] サーバーは接続しますが、ツールが表示されません
 >
 > セッション内で `/mcp` を実行し、サーバーを選択してそのツールリストを確認します。リストが空の場合、サーバーは開始しましたが、ツールを登録しませんでした。これは通常、API キーなどの必要な環境変数が不足していることを意味します。
 >
@@ -368,7 +368,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 >
 > v2.1.302 より前は、[プロトコルリビジョン 2026-07-28](https://code.claude.com/docs/ja/mcp.md#mcp-client-runtimes) を使用するサーバーがレスポンスから `resultType`、`ttlMs`、または `cacheScope` を省略した場合、`/mcp` はそのサーバーのステータスとして `tools fetch failed` を表示していました。これらのバージョンを使用していて、サーバーがそのステータスを表示する場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してください。
 
-> **.mcp.json への変更が有効になりません**
+> [accordion] .mcp.json への変更が有効になりません
 >
 > Claude Code はセッション開始時に `.mcp.json` を読み込みます。ファイルを編集した後、セッションを終了して再開します。
 >
@@ -380,7 +380,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 > claude mcp reset-project-choices
 > ```
 
-> **OAuth サインインが失敗するか、ブラウザが開きません**
+> [accordion] OAuth サインインが失敗するか、ブラウザが開きません
 >
 > `/mcp` を実行し、サーバーを選択して、再度「`Authenticate`」を選択します。ブラウザが自動的に開かない場合は、ターミナルに表示される URL をコピーして手動で開きます。固定コールバックポートと事前設定された認証情報については、[リモート MCP サーバーで認証する](https://code.claude.com/docs/ja/mcp.md#authenticate-with-remote-mcp-servers)を参照してください。
 

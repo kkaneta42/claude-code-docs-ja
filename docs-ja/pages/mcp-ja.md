@@ -1039,44 +1039,44 @@ v2.1.229 では、Claude Code は代わりに `http://127.0.0.1:PORT/callback` �
 
 以下のタブは両方のコマンドをカバーしています。`claude mcp add` はクライアント ID とコールバックポートをフラグとして受け取り、`claude mcp add-json` は `oauth` オブジェクトで受け取ります。リダイレクト URI を登録した場合は、コールバックポートをその URI のポートに設定してください。
 
-**claude mcp add**
+> [tab] claude mcp add
+>
+> `--client-id` を使用してアプリのクライアント ID を渡します。`--client-secret` フラグはマスクされた入力でシークレットの入力を求めます。
+>
+> ```bash theme={null}
+> claude mcp add --transport http \
+>   --client-id your-client-id --client-secret --callback-port 8080 \
+>   my-server https://mcp.example.com/mcp
+> ```
 
-`--client-id` を使用してアプリのクライアント ID を渡します。`--client-secret` フラグはマスクされた入力でシークレットの入力を求めます。
+> [tab] claude mcp add-json
+>
+> JSON 設定に `oauth` オブジェクトを含め、`--client-secret` を別のフラグとして渡します。
+>
+> ```bash theme={null}
+> claude mcp add-json my-server \
+>   '{"type":"http","url":"https://mcp.example.com/mcp","oauth":{"clientId":"your-client-id","callbackPort":8080}}' \
+>   --client-secret
+> ```
 
-```bash theme={null}
-claude mcp add --transport http \
-  --client-id your-client-id --client-secret --callback-port 8080 \
-  my-server https://mcp.example.com/mcp
-```
+> [tab] claude mcp add-json（コールバックポートのみ）
+>
+> コールバックポートのみを固定し、Claude Code がクライアントを自動的に登録できるようにするには、`callbackPort` を単独で設定してください。
+>
+> ```bash theme={null}
+> claude mcp add-json my-server \
+>   '{"type":"http","url":"https://mcp.example.com/mcp","oauth":{"callbackPort":8080}}'
+> ```
 
-**claude mcp add-json**
-
-JSON 設定に `oauth` オブジェクトを含め、`--client-secret` を別のフラグとして渡します。
-
-```bash theme={null}
-claude mcp add-json my-server \
-  '{"type":"http","url":"https://mcp.example.com/mcp","oauth":{"clientId":"your-client-id","callbackPort":8080}}' \
-  --client-secret
-```
-
-**claude mcp add-json（コールバックポートのみ）**
-
-コールバックポートのみを固定し、Claude Code がクライアントを自動的に登録できるようにするには、`callbackPort` を単独で設定してください。
-
-```bash theme={null}
-claude mcp add-json my-server \
-  '{"type":"http","url":"https://mcp.example.com/mcp","oauth":{"callbackPort":8080}}'
-```
-
-**CI / 環境変数**
-
-環境変数を通じてシークレットを設定して、対話型プロンプトをスキップします。
-
-```bash theme={null}
-MCP_CLIENT_SECRET=your-secret claude mcp add --transport http \
-  --client-id your-client-id --client-secret --callback-port 8080 \
-  my-server https://mcp.example.com/mcp
-```
+> [tab] CI / 環境変数
+>
+> 環境変数を通じてシークレットを設定して、対話型プロンプトをスキップします。
+>
+> ```bash theme={null}
+> MCP_CLIENT_SECRET=your-secret claude mcp add --transport http \
+>   --client-id your-client-id --client-secret --callback-port 8080 \
+>   my-server https://mcp.example.com/mcp
+> ```
 
 **3. Claude Code で認証する**
 

@@ -158,59 +158,59 @@ Claude はバグを特定し、修正を実装し、ブランチを更新する�
 
 エンタープライズ環境では、Claude Code をクラウドインフラストラクチャ全体で実行でき、同じ開発者体験を得られます。
 
-**Amazon Bedrock**
+> [tab] Amazon Bedrock
+>
+> ### 前提条件
+>
+> Amazon Bedrock で Claude Code をセットアップする前に、以下が必要です。
+>
+> 1. 目的の Claude モデルへの Amazon Bedrock アクセス権を持つ AWS アカウント
+> 2. AWS IAM で OIDC アイデンティティプロバイダーとして設定された GitLab
+> 3. Amazon Bedrock 権限を持つ IAM ロールと、GitLab プロジェクト/refs に制限されたトラストポリシー
+> 4. ロール引き受けのための GitLab CI/CD 変数：
+>    * `AWS_ROLE_TO_ASSUME`（ロール ARN）
+>    * `AWS_REGION`（Amazon Bedrock リージョン）
+>
+> ### セットアップ手順
+>
+> GitLab CI ジョブが OIDC 経由で IAM ロールを引き受けることを許可するよう AWS を設定します（静的キーは不要）。
+>
+> **必須セットアップ：**
+>
+> 1. Amazon Bedrock を有効にし、目的の Claude モデルへのアクセスをリクエストします
+> 2. まだ存在しない場合は、GitLab 用の IAM OIDC プロバイダーを作成します
+> 3. GitLab OIDC プロバイダーによって信頼され、プロジェクトと保護された refs に制限された IAM ロールを作成します
+> 4. Amazon Bedrock invoke API に対する最小権限パーミッションをアタッチします
+>
+> [Amazon Bedrock ジョブの例](#configuration-examples)を使用して、実行時にジョブの OIDC トークンを一時的な AWS 認証情報と交換します。
 
-### 前提条件
-
-Amazon Bedrock で Claude Code をセットアップする前に、以下が必要です。
-
-1. 目的の Claude モデルへの Amazon Bedrock アクセス権を持つ AWS アカウント
-2. AWS IAM で OIDC アイデンティティプロバイダーとして設定された GitLab
-3. Amazon Bedrock 権限を持つ IAM ロールと、GitLab プロジェクト/refs に制限されたトラストポリシー
-4. ロール引き受けのための GitLab CI/CD 変数：
-   * `AWS_ROLE_TO_ASSUME`（ロール ARN）
-   * `AWS_REGION`（Amazon Bedrock リージョン）
-
-### セットアップ手順
-
-GitLab CI ジョブが OIDC 経由で IAM ロールを引き受けることを許可するよう AWS を設定します（静的キーは不要）。
-
-**必須セットアップ：**
-
-1. Amazon Bedrock を有効にし、目的の Claude モデルへのアクセスをリクエストします
-2. まだ存在しない場合は、GitLab 用の IAM OIDC プロバイダーを作成します
-3. GitLab OIDC プロバイダーによって信頼され、プロジェクトと保護された refs に制限された IAM ロールを作成します
-4. Amazon Bedrock invoke API に対する最小権限パーミッションをアタッチします
-
-[Amazon Bedrock ジョブの例](#configuration-examples)を使用して、実行時にジョブの OIDC トークンを一時的な AWS 認証情報と交換します。
-
-**Google Cloud's Agent Platform**
-
-### 前提条件
-
-Google Cloud's Agent Platform で Claude Code をセットアップする前に、以下が必要です。
-
-1. 以下を備えた Google Cloud プロジェクト：
-   * Google Cloud's Agent Platform API が有効化されている
-   * GitLab OIDC を信頼するよう設定された Workload Identity Federation
-2. 必要な Google Cloud's Agent Platform ロールのみを持つ専用サービスアカウント
-3. GitLab CI/CD 変数：
-   * `GCP_WORKLOAD_IDENTITY_PROVIDER`（`//iam.googleapis.com/` プレフィックスなしのプロバイダーリソース名。例：`projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider`）
-   * `GCP_SERVICE_ACCOUNT`（サービスアカウントメール）
-   * `GCP_PROJECT_ID`（Google Cloud プロジェクト ID）
-
-### セットアップ手順
-
-Workload Identity Federation 経由で GitLab CI ジョブがサービスアカウントを偽装することを許可するよう Google Cloud を設定します。
-
-**必須セットアップ：**
-
-1. IAM Credentials API、STS API、および Google Cloud's Agent Platform API を有効にします
-2. GitLab OIDC 用の Workload Identity Pool とプロバイダーを作成します
-3. Google Cloud's Agent Platform ロールを持つ専用サービスアカウントを作成します
-4. WIF プリンシパルにサービスアカウントを偽装するパーミッションを付与します
-
-[Agent Platform ジョブの例](#configuration-examples)を使用して、キーを保存することなく認証します。
+> [tab] Google Cloud's Agent Platform
+>
+> ### 前提条件
+>
+> Google Cloud's Agent Platform で Claude Code をセットアップする前に、以下が必要です。
+>
+> 1. 以下を備えた Google Cloud プロジェクト：
+>    * Google Cloud's Agent Platform API が有効化されている
+>    * GitLab OIDC を信頼するよう設定された Workload Identity Federation
+> 2. 必要な Google Cloud's Agent Platform ロールのみを持つ専用サービスアカウント
+> 3. GitLab CI/CD 変数：
+>    * `GCP_WORKLOAD_IDENTITY_PROVIDER`（`//iam.googleapis.com/` プレフィックスなしのプロバイダーリソース名。例：`projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider`）
+>    * `GCP_SERVICE_ACCOUNT`（サービスアカウントメール）
+>    * `GCP_PROJECT_ID`（Google Cloud プロジェクト ID）
+>
+> ### セットアップ手順
+>
+> Workload Identity Federation 経由で GitLab CI ジョブがサービスアカウントを偽装することを許可するよう Google Cloud を設定します。
+>
+> **必須セットアップ：**
+>
+> 1. IAM Credentials API、STS API、および Google Cloud's Agent Platform API を有効にします
+> 2. GitLab OIDC 用の Workload Identity Pool とプロバイダーを作成します
+> 3. Google Cloud's Agent Platform ロールを持つ専用サービスアカウントを作成します
+> 4. WIF プリンシパルにサービスアカウントを偽装するパーミッションを付与します
+>
+> [Agent Platform ジョブの例](#configuration-examples)を使用して、キーを保存することなく認証します。
 
 ## 設定例
 

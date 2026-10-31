@@ -14,7 +14,11 @@
 
 自己ホスト環境では、これらの同じセッションがネットワーク内で実行されます。それ以外の開発者体験は、[利用可能性と制限事項](#availability-and-limitations)の違いとデプロイページの[既知の問題](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#known-issues-and-limitations)を除いて同じです。
 
-チームがクラウドセッションを使用していない場合、ここで設定することはありません。ターミナルまたは IDE のセッションは常に開発者自身のマシンで実行されます。Claude Code を常時稼働しているマシンで実行し、他のデバイスから駆動したい場合は、[リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)を使用してください。これは Pro および Max プランでも利用可能です。セットアップの準備ができたら、[クイックスタート](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md)に直接進んでください。セキュリティ体制を最初に確認したい場合は、[本番環境へのデプロイ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md)から始めてください。このページの残りの部分では、自己ホスティングの仕組みと、それを選択する時期について説明します。
+* チームがクラウドセッションを使用していない場合、ここで設定することはありません。ターミナルまたは IDE のセッションは常に開発者自身のマシンで実行されます
+* Claude Code を常時稼働している自分のマシンで実行し、他のデバイスから駆動したい場合は、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) を使用してください。これは Pro、Max、Ultra プランでも利用可能です
+* セットアップの準備ができたら、[クイックスタート](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md)に直接進んでください。セキュリティ体制を最初に確認したい場合は、[本番環境へのデプロイ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md)から始めてください
+
+自己ホスティングの仕組みと、それを選択すべき場合については、[自己ホスト環境の仕組み](#how-self-hosted-environments-work)と[自己ホストする理由](#why-self-host)を参照してください。
 
 ## セルフホスト環境の仕組み
 

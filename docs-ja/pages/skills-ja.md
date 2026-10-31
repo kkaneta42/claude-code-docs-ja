@@ -42,7 +42,7 @@ Claude Code プロンプトで `/doctor` を実行すると、問題を診断し
 * **拡張機能**: コンテキストコストと比較した未使用のスキル、MCP サーバー、プラグイン、および低速な[フック](https://code.claude.com/docs/ja/hooks.md)
 * **`CLAUDE.md` ファイル**: チェックイン済みのものと重複するローカルの `CLAUDE.md` ファイル、チェックイン済みの [Claude がコードベースから導出できる `CLAUDE.md` の内容](https://code.claude.com/docs/ja/memory#my-claude-md-is-too-large)、および残りの常時読み込まれるガイダンス。Claude は、このガイダンスをオンデマンドで読み込まれるスキルやネストされた `CLAUDE.md` ファイルに移行することを提案します
 * **権限**: [auto モード](https://code.claude.com/docs/ja/permissions.md#permission-modes)をデフォルトの権限モードにすることと、頻繁に拒否している読み取り専用コマンドを[事前承認](https://code.claude.com/docs/ja/permissions.md)することの提案
-* **使用量**: Pro、Max、Team、または Enterprise プランの場合、プランの使用量を減らすために [`/usage` が推奨する変更](https://code.claude.com/docs/ja/costs#plan-usage-breakdown)（過去 7 日間で測定）。Claude は自身で行える変更を提案し、残りはユーザーが実行するコマンドなどのアドバイスとして報告します。使用量のチェックには Claude Code v2.1.305 以降が必要です。また、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間、`/doctor` はこのチェックを省略します。
+* **使用量**: Pro、Max、Ultra、Team、または Enterprise プランの場合、プランの使用量を減らすために [`/usage` が推奨する変更](https://code.claude.com/docs/ja/costs#plan-usage-breakdown)（過去 7 日間で測定）。Claude は自身で行える変更を提案し、残りはユーザーが実行するコマンドなどのアドバイスとして報告します。使用量のチェックには Claude Code v2.1.305 以降が必要です。また、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間、`/doctor` はこのチェックを省略します。
 
 セッションを開始せずに読み取り専用のインストール診断を行うには、代わりにターミナルで `claude doctor` を実行します。
 

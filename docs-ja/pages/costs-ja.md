@@ -6,7 +6,7 @@
 
 > トークン使用量を追跡し、チームの支出制限を設定し、コンテキスト管理、モデル選択、拡張思考設定、前処理フックを使用して Claude Code のコストを削減します。
 
-Claude Code は API トークン消費によって課金されます。サブスクリプションプラン価格（Pro、Max、Team、Enterprise）については、[claude.com/pricing](https://claude.com/pricing) を参照してください。開発者あたりのコストは、モデル選択、コードベースサイズ、複数インスタンスの実行や自動化などの使用パターンに基づいて大きく異なります。
+Claude Code は API トークン消費によって課金されます。サブスクリプションプラン価格（Pro、Max、Ultra、Team、Enterprise）については、[claude.com/pricing](https://claude.com/pricing) を参照してください。開発者あたりのコストは、モデル選択、コードベースサイズ、複数インスタンスの実行や自動化などの使用パターンに基づいて大きく異なります。
 
 エンタープライズへの導入全体では、平均コストは開発者 1 人あたり 1 稼働日約 13 ドル、開発者 1 人あたり月額 150～250 ドルで、90% のユーザーの 1 稼働日あたりのコストは 30 ドル以下です。自分のチームの支出を見積もるには、小規模なパイロットグループから始めて、以下の追跡ツールを使用してベースラインを確立してから、より広範な導入を行ってください。
 
@@ -18,7 +18,7 @@ Claude Code は API トークン消費によって課金されます。サブス
 
 > [!NOTE]
 >
-> `/usage` のセッションブロックは API トークン使用量を表示し、API ユーザーを対象としています。Claude Max および Pro サブスクライバーはサブスクリプションに使用量が含まれているため、セッションコスト数値は請求目的では関連がありません。サブスクライバーは同じ画面でプラン使用量バー、アクティビティ統計、および使用量の内訳を表示します。
+> `/usage` のセッションブロックは API トークン使用量を表示し、API ユーザーを対象としています。Claude Pro、Max、および Ultra サブスクライバーはサブスクリプションに使用量が含まれているため、セッションコスト数値は請求目的では関連がありません。サブスクライバーは同じ画面でプラン使用量バー、アクティビティ統計、および使用量の内訳を表示します。
 
 `/usage` の上部のセッションブロックは、現在のセッションの詳細なトークン使用統計を表示します。Claude Code はトークン数からドル数値をローカルで計算します。ただし、[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効な場合は除きます。管理者は組織の管理設定でテーブルを設定し、数値が契約レートを使用するようにします。テーブルが有効な場合、`Total cost` 行には `at your organization's configured rates` という注記が付きます。この数値は推定値であるため、権限のある請求については [Claude Console](https://platform.claude.com/usage) の使用量ページを参照してください。
 
@@ -55,7 +55,7 @@ Prompt cache (main):   14 requests · 91% of input tokens from cache · 2 misses
 
 #### プラン使用量の内訳
 
-Pro、Max、Team、または Enterprise プランでは、`/usage` はプラン制限に対してカウントされるものの内訳も、推奨事項とともに表示します。
+Pro、Max、Ultra、Team、または Enterprise プランでは、`/usage` はプラン制限に対してカウントされるものの内訳も、推奨事項とともに表示します。
 
 * **属性**: スキル、サブエージェント、プラグイン、および個別の MCP サーバーに属性付けされた最近の使用量。それぞれが合計のパーセンテージとして表示されます。
   MCP サーバーのシェアは、そのツール結果の 1 つを消費したリクエストのみをカウントします。v2.1.222 より前では、MCP サーバーへの 1 回の呼び出しの後、Claude Code はその後のすべてのリクエストをそのサーバーに属性付けし、そのシェアを過大評価していました。
@@ -93,10 +93,10 @@ Pro、Max、Team、または Enterprise プランでは、`/usage` はプラン�
 
 `/usage` は [使用量クレジット](#add-usage-credits-to-your-subscription) がオンの間、使用量クレジット行も表示します。行に表示される内容はプランによって異なります。
 
-* **Pro および Max**: 月間支出制限を設定している場合、その月間支出制限に対して測定された現在の月の支出。制限を設定していない場合、行は `Unlimited` を表示し、支出数値は表示されません。
+* **Pro、Max、および Ultra**: 月間支出制限を設定している場合、その月間支出制限に対して測定された現在の月の支出。制限を設定していない場合、行は `Unlimited` を表示し、支出数値は表示されません。
 * **Team および Enterprise**: 組織が設定した [制限](#claude-for-teams-and-enterprise) が適用される場合、現在の月の自分の支出。組織全体をカバーする制限は行に表示されません。自分の制限がない場合、行は制限なしで支出を表示します。使用量クレジットがオフの場合、`/usage` は使用量クレジット行を表示しません。
 
-支出制限がある場合、使用量クレジットがオンになるとすぐに行が表示され、最初に使用量クレジットを支出するまで 0% を表示します。v2.1.236 より前では、`/usage` は Pro および Max プランでのみ行を表示し、支出制限のある行は何かを支出するまで非表示のままでした。
+支出制限がある場合、使用クレジットがオンになるとすぐに行が表示され、最初に使用クレジットを支出するまで 0% を表示します。v2.1.236 より前では、`/usage` は Pro、Max、および Ultra プランでのみ行を表示し、支出制限のある行は何かを支出するまで非表示のままでした。
 
 #### 使用量リクエストが失敗した場合
 
@@ -132,7 +132,7 @@ Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に�
 
 | ロール | `/usage-credits` の動作 |
 | :- | :- |
-| Pro または Max サブスクライバー | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用量クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
+| Pro、Max、または Ultra サブスクライバー | ブラウザで [**Settings > Usage**](https://claude.ai/settings/usage) を claude.ai で開きます。**Usage credits** セクションで、使用クレジットをオンまたはオフにし、クレジット残高、今月の支出、および月間支出制限を確認できます |
 | 請求アクセス権を持つ Team または Enterprise メンバー | 組織の使用量設定である [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) をブラウザで開きます |
 | 請求アクセス権を持たない Team または Enterprise メンバー | 確認を求めてから、組織の管理者にリクエストを送信します。v2.1.211 より前では、Claude Code は確認ステップなしでリクエストを送信していました |
 
@@ -146,7 +146,7 @@ Pro および Max プランでは、支出制限に達しても使用量クレ�
 
 Claude Code にアクセスする方法によって、利用可能なコントロールが異なります。Claude for Teams または Enterprise プラン、Claude Console、またはクラウドプロバイダーです。Teams および Enterprise プランでは、使用量は各メンバーのシート割り当てから引き出されます。Console およびクラウドプロバイダーでは、使用量はトークンごとに組織に請求されます。組織がサインイン方法を混在させている場合、各開発者は認証した方法に従ってメーター化されます。
 
-次の表は、各セットアップを、支出を確認する場所、支出をキャップする場所、およびユーザーごとの数値を取得する方法にマップしています。個別の Pro または Max プランでは、管理する組織がないため、[fast mode](https://code.claude.com/docs/ja/fast-mode.md#see-where-fast-mode-spend-appears) を含む [サブスクリプションに使用クレジットを追加](#add-usage-credits-to-your-subscription) の下で、独自の使用クレジット支出を追跡してください。
+次の表は、各セットアップを、支出を確認する場所、支出をキャップする場所、およびユーザーごとの数値を取得する方法にマップしています。個別の Pro、Max、または Ultra プランでは、管理する組織がないため、[fast mode](https://code.claude.com/docs/ja/fast-mode.md#see-where-fast-mode-spend-appears) を含む [サブスクリプションに使用クレジットを追加](#add-usage-credits-to-your-subscription) の下で、独自の使用クレジット支出を追跡してください。
 
 | セットアップ | 支出を確認 | 支出をキャップ | ユーザーごとのレポート |
 | :- | :- | :- | :- |
@@ -296,47 +296,47 @@ MCP ツール定義は [デフォルトで遅延](https://code.claude.com/docs/j
 
 たとえば、この PreToolUse フックはテスト出力をフィルタリングして失敗のみを表示します。
 
-**settings.json**
+> [tab] settings.json
+>
+> これを [settings.json](https://code.claude.com/docs/ja/settings.md#where-settings-live) に追加して、すべての Bash コマンドの前にフックを実行します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PreToolUse": [
+>       {
+>         "matcher": "Bash",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "~/.claude/hooks/filter-test-output.sh"
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
 
-これを [settings.json](https://code.claude.com/docs/ja/settings.md#where-settings-live) に追加して、すべての Bash コマンドの前にフックを実行します。
-
-```json theme={null}
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/filter-test-output.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**filter-test-output.sh**
-
-フックはこのスクリプトを呼び出します。`mkdir -p ~/.claude/hooks` でフォルダを作成し、以下のスクリプトを `~/.claude/hooks/filter-test-output.sh` として保存し、`chmod +x ~/.claude/hooks/filter-test-output.sh` で実行可能にします。コマンドがテストランナーであるかどうかをチェックし、失敗のみを表示するように変更します。
-
-```bash theme={null}
-#!/bin/bash
-input=$(cat)
-cmd=$(echo "$input" | jq -r '.tool_input.command')
-
-# If running tests, filter to show only failures
-pattern='^(npm test|pytest|go test)( [^;&|<>`$#\\[:cntrl:]]*)?$'
-if [[ "$cmd" =~ $pattern ]]; then
-  filtered_cmd="$cmd 2>&1 | grep -A 5 -E '(FAIL|ERROR|error:)' | head -100"
-  echo "$input" | jq --arg filtered "$filtered_cmd" \
-    '{hookSpecificOutput: {hookEventName: "PreToolUse", updatedInput: (.tool_input + {command: $filtered})}}'
-else
-  echo "{}"
-fi
-```
+> [tab] filter-test-output.sh
+>
+> フックはこのスクリプトを呼び出します。`mkdir -p ~/.claude/hooks` でフォルダを作成し、以下のスクリプトを `~/.claude/hooks/filter-test-output.sh` として保存し、`chmod +x ~/.claude/hooks/filter-test-output.sh` で実行可能にします。コマンドがテストランナーであるかどうかをチェックし、失敗のみを表示するように変更します。
+>
+> ```bash theme={null}
+> #!/bin/bash
+> input=$(cat)
+> cmd=$(echo "$input" | jq -r '.tool_input.command')
+>
+> # If running tests, filter to show only failures
+> pattern='^(npm test|pytest|go test)( [^;&|<>`$#\\[:cntrl:]]*)?$'
+> if [[ "$cmd" =~ $pattern ]]; then
+>   filtered_cmd="$cmd 2>&1 | grep -A 5 -E '(FAIL|ERROR|error:)' | head -100"
+>   echo "$input" | jq --arg filtered "$filtered_cmd" \
+>     '{hookSpecificOutput: {hookEventName: "PreToolUse", updatedInput: (.tool_input + {command: $filtered})}}'
+> else
+>   echo "{}"
+> fi
+> ```
 
 セットアップを確認するには、`/hooks` を実行して、フックが PreToolUse の下に表示されることを確認します。`claude --debug-file ./claude-debug.txt` で Claude Code を起動し、Claude に `npm test` を実行するよう依頼することもできます。フックがコマンドを書き直すと、そのログファイルには `command` と他の Bash 入力フィールドをリストする `modified tool input keys` 行が含まれます。
 
@@ -394,7 +394,7 @@ fi
 * **エージェントチームメイト**: アクティブな[チームメイト](#agent-team-token-costs)ごとに、終了するまでトークンを消費し続けます。
 * **コンパクション**: `/compact`は要約するコンテキストを読み込むため、[大規模なコンテキストをコンパクトにする](https://code.claude.com/docs/ja/prompt-caching.md#compacting-the-conversation)こと自体が大規模なリクエストです。継続性ではなく新しいスタートが必要な場合、`/clear`はコストがかかりません。
 
-Pro、Max、Team、または Enterprise プランでは、[`/usage` の内訳](#plan-usage-breakdown)は、長いコンテキストやキャッシュミスなど、最近の使用量の 10% 以上を占める動作について変更を推奨します。
+Pro、Max、Ultra、Team、または Enterprise プランで何を変更すべきかを確認するには、Claude Code のプロンプトで [`/usage`](#plan-usage-breakdown) を実行してください。その内訳は、最近の使用量の 10% 以上を占める動作について変更を推奨します。これらの動作には、長いコンテキストやキャッシュミスが含まれます。
 
 ## Claude Code の動作の変更を理解する
 
@@ -402,7 +402,7 @@ Claude Code は定期的に更新を受け取り、機能の動作方法（コ�
 
 アカウント固有の請求に関する質問については、製品内メッセンジャーを通じて Anthropic サポートにお問い合わせください。
 
-* **サブスクリプションプラン**（Pro、Max、Team、Enterprise）：[claude.ai](https://claude.ai) にサインインし、左下のイニシャルをクリックして、**Get help** を選択してください
+* **サブスクリプションプラン**（Pro、Max、Ultra、Team、Enterprise）：[claude.ai](https://claude.ai) にサインインし、左下のイニシャルをクリックして、**Get help** を選択してください
 * **Console（API）請求**：[platform.claude.com](https://platform.claude.com) にサインインし、イニシャルをクリックして、**Get help** を選択してください
 
 各プランで人間のエージェントに連絡できるユーザーを含む完全なフローについては、[How to get support](https://support.claude.com/en/articles/9015913-how-to-get-support) を参照してください。

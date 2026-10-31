@@ -14,12 +14,12 @@ Claude Code は、どこでも同じ基盤となるエンジンを実行しま�
 
 | プラットフォーム | 最適な用途 | 提供される機能 |
 | :- | :- | :- |
-| [CLI](https://code.claude.com/docs/ja/quickstart.md) | ターミナルワークフロー、スクリプティング、リモートサーバー | 完全な機能セット、[Agent SDK](https://code.claude.com/docs/ja/headless.md)、[コンピューター使用](https://code.claude.com/docs/ja/computer-use.md)（macOS の Pro および Max）、サードパーティプロバイダー |
-| [Desktop](https://code.claude.com/docs/ja/desktop.md) | ビジュアルレビュー、並列セッション、管理されたセットアップ | Diff ビューアー、アプリプレビュー、Pro および Max での[コンピューター使用](https://code.claude.com/docs/ja/desktop.md#let-claude-use-your-computer)および[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) |
+| [CLI](https://code.claude.com/docs/ja/quickstart.md) | ターミナルワークフロー、スクリプティング、リモートサーバー | 完全な機能セット、[Agent SDK](https://code.claude.com/docs/ja/headless.md)、[コンピューター使用](https://code.claude.com/docs/ja/computer-use.md)（macOS の Pro、Max、Ultra）、サードパーティプロバイダー |
+| [Desktop](https://code.claude.com/docs/ja/desktop.md) | ビジュアルレビュー、並列セッション、管理されたセットアップ | Diff ビューアー、アプリプレビュー、Pro、Max、Ultra での[コンピューター使用](https://code.claude.com/docs/ja/desktop.md#let-claude-use-your-computer)および[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) |
 | [VS Code](https://code.claude.com/docs/ja/vs-code.md) | ターミナルに切り替えずに VS Code 内で作業 | インラインの Diff、統合ターミナル、ファイルコンテキスト |
 | [JetBrains](https://code.claude.com/docs/ja/jetbrains.md) | IntelliJ、PyCharm、WebStorm、またはその他の JetBrains IDE 内で作業 | Diff ビューアー、選択共有、ターミナルセッション |
 | [Web](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | あまり操作が必要ない長時間実行タスク、またはオフラインの場合も続行すべき作業 | クラウド、Anthropic 管理（デフォルト）、切断後も続行 |
-| [Mobile](https://code.claude.com/docs/ja/mobile.md) | コンピューターから離れている間にタスクを開始および監視 | iOS および Android 用 Claude アプリからのクラウドセッション、ローカルセッション用の[Remote Control](https://code.claude.com/docs/ja/remote-control.md)、Pro および Max での Desktop への[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) |
+| [Mobile](https://code.claude.com/docs/ja/mobile.md) | コンピューターから離れている間にタスクを開始および監視 | iOS および Android 用 Claude アプリからのクラウドセッション、ローカルセッション用の[Remote Control](https://code.claude.com/docs/ja/remote-control.md)、Pro、Max、Ultra での Desktop への[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) |
 
 CLI はターミナルネイティブな作業に最も完全なサーフェスです。スクリプティングと Agent SDK は CLI のみです。サードパーティプロバイダーは[VS Code](https://code.claude.com/docs/ja/vs-code.md#use-third-party-providers)でも[JetBrains](https://code.claude.com/docs/ja/feature-availability.md#features-available-on-every-provider)でも機能します。JetBrains は IDE のターミナルで CLI を実行します。Enterprise [Desktop](https://code.claude.com/docs/ja/desktop.md) デプロイメントは Google Cloud の Agent Platform をサポートしており、Desktop は[ゲートウェイプロバイダー](https://code.claude.com/docs/ja/llm-gateway-connect.md#desktop-app)をサポートしています。Amazon Bedrock または Microsoft Foundry の場合は、CLI または IDE 拡張機能を使用するか、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview)を使用してください。これは、それらのプロバイダーで Code タブを実行します。Desktop と IDE 拡張機能は、CLI のみの機能の一部をビジュアルレビューとより緊密なエディター統合と引き換えにします。Web はクラウドで実行されるため、切断後もタスクが続行されます。モバイルは、これらの同じクラウドセッションへのシンクライアント、または Remote Control 経由のローカルセッションへのシンクライアントであり、Dispatch で Desktop にタスクを送信できます。
 
@@ -35,7 +35,7 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス�
 | [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) | CI パイプラインで Claude を実行 | 自動 PR レビュー、Issue トリアージ、スケジュール済みメンテナンス |
 | [GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) | GitLab の GitHub Actions と同じ | GitLab での CI 駆動自動化 |
 | [Code Review](https://code.claude.com/docs/ja/code-review.md) | すべての PR を自動的にレビュー | 人間によるレビュー前にバグをキャッチ |
-| [Slack](https://code.claude.com/docs/ja/slack.md) | チャンネルでの `@Claude` メンションに自分のアカウントで応答 | Pro および Max プランで、チームチャットからバグレポートをプルリクエストに変換 |
+| [Slack](https://code.claude.com/docs/ja/slack.md) | チャンネルでの `@Claude` メンションに自分のアカウントで応答 | Pro、Max、および Ultra プランで、チームチャットからバグレポートをプルリクエストに変換 |
 | [Claude Tag](https://claude.com/docs/claude-tag) | 管理者が設定したアクセス権限を持つ組織の共有 ID として `@Claude` を実行 | Team および Enterprise プランでの共有チームアクセス（ユーザーごとの Slack セッションの代わり） |
 
 ここにリストされていない統合については、[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)と[コネクター](https://code.claude.com/docs/ja/desktop.md#connect-external-tools)により、ほぼすべてのものを接続できます。Linear、Notion、Google Drive、または独自の内部 API など。
@@ -49,7 +49,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 | [Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) | Claude モバイルアプリからタスクをメッセージで送信 | あなたのマシン（Desktop） | [モバイルアプリを Desktop とペアリング](https://support.claude.com/en/articles/13947068) | 外出中の作業委譲、最小限のセットアップ |
 | [Remote Control](https://code.claude.com/docs/ja/remote-control.md) | [claude.ai/code](https://claude.ai/code) または Claude モバイルアプリから実行中のセッションを操作 | あなたのマシン（CLI、Desktop、または VS Code） | [`claude remote-control` または `/remote-control`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) を実行 | 別のデバイスから進行中の作業を操舵 |
 | [Channels](https://code.claude.com/docs/ja/channels.md) | Telegram や Discord などのチャットアプリ、またはあなた自身のサーバーからイベントをプッシュ | あなたのマシン（CLI） | [チャネルプラグインをインストール](https://code.claude.com/docs/ja/channels.md#quickstart)するか、[独自に構築](https://code.claude.com/docs/ja/channels-reference.md) | CI 失敗やチャットメッセージなどの外部イベントに対応 |
-| [Slack](https://code.claude.com/docs/ja/slack.md) | チームチャンネルで `@Claude` をメンション | Anthropic クラウド | [ウェブ上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を有効にした状態で [Slack アプリをインストール](https://code.claude.com/docs/ja/slack.md#setting-up-claude-code-in-slack)、Pro および Max プラン | チームチャットからの PR とレビュー |
+| [Slack](https://code.claude.com/docs/ja/slack.md) | チームチャンネルで `@Claude` をメンション | Anthropic クラウド | [ウェブ上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を有効にした状態で [Slack アプリをインストール](https://code.claude.com/docs/ja/slack.md#setting-up-claude-code-in-slack)、Pro、Max、および Ultra プラン | チームチャットからの PR とレビュー |
 | [Self-hosted environments](https://code.claude.com/docs/ja/self-hosted-environments) | [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を開始し、組織の環境を選択 | あなたの組織のインフラストラクチャ | [ランナーをデプロイ](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md)、Team および Enterprise プラン | ネットワーク内で実行する必要があるクラウドセッション |
 | [Scheduled tasks](https://code.claude.com/docs/ja/scheduled-tasks.md) | スケジュールを設定 | [CLI](https://code.claude.com/docs/ja/scheduled-tasks.md)、[Desktop](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md)、または[クラウド](https://code.claude.com/docs/ja/routines.md) | 頻度を選択 | 日次レビューなどの定期的な自動化 |
 
@@ -74,7 +74,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 * [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)：CI パイプラインで Claude を実行
 * [GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md)：GitLab の場合も同じ
 * [Code Review](https://code.claude.com/docs/ja/code-review.md)：すべてのプルリクエストで自動レビュー
-* [Slack](https://code.claude.com/docs/ja/slack.md)：Pro および Max プランで、チームチャットからタスクを送信して PR を受け取る
+* [Slack](https://code.claude.com/docs/ja/slack.md)：Pro、Max、Ultra プランで、チームチャットからタスクを送信して PR を受け取る
 * [Claude Tag](https://claude.com/docs/claude-tag)：Team および Enterprise プランで組織の共有 ID として `@Claude` を実行
 
 ### リモートアクセス

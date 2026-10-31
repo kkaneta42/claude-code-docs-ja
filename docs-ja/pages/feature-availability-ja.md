@@ -14,7 +14,7 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 
 認証方法によって、Claude Code が利用できる機能が決まります。利用中のプロバイダーで使えない機能の一覧は、[プロバイダー別の概要](#summary-by-provider)のタブを参照してください。表の中で該当する列を見つけるには、次を参考にしてください。
 
-* **Claude サブスクリプション**：Pro、Max、Team、または Enterprise プランの claude.ai アカウントでサインインしている場合
+* **Claude サブスクリプション**：Pro、Max、Ultra、Team、または Enterprise プランの claude.ai アカウントでサインインしている場合
 * **Anthropic Console**：Anthropic API キーで認証しているか、[API キーなしで Console アカウントにサインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)している場合
 * **Amazon Bedrock**：Amazon Bedrock のモデルカタログから Claude モデルを使用し、`CLAUDE_CODE_USE_BEDROCK` を設定している場合。[Mantle エンドポイント](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)（`CLAUDE_CODE_USE_MANTLE`）もこの列に含まれます
 * **Claude Platform on AWS**：AWS Marketplace を通じて Claude を購入しているものの Anthropic API を呼び出しており、`CLAUDE_CODE_USE_ANTHROPIC_AWS` を設定している場合
@@ -46,15 +46,15 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 次の機能には claude.ai アカウントでのサインインが必要で、Anthropic Console の API キーやサードパーティプロバイダーからは利用できません。
 
 * [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)とモバイル版 Claude Code
-* [Slack での Claude Code](https://code.claude.com/docs/ja/slack.md)：Pro および Max プラン
+* [Slack での Claude Code](https://code.claude.com/docs/ja/slack.md)：Pro、Max、Ultra プラン
 * [Claude Code Desktop](https://code.claude.com/docs/ja/desktop.md)
 * [クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（`/schedule`）
 * [Ultrareview](https://code.claude.com/docs/ja/ultrareview.md)
 * [Code Review](https://code.claude.com/docs/ja/code-review.md)：Team および Enterprise プラン
 * [Remote Control](https://code.claude.com/docs/ja/remote-control.md)
 * [Chrome 拡張機能](https://code.claude.com/docs/ja/chrome.md)
-* [コンピューター操作](https://code.claude.com/docs/ja/computer-use.md)：Pro および Max プラン
-* [アーティファクト](https://code.claude.com/docs/ja/artifacts.md)：Pro、Max、Team、Enterprise プラン
+* [コンピューター操作](https://code.claude.com/docs/ja/computer-use.md)：Pro、Max、Ultra プラン
+* [アーティファクト](https://code.claude.com/docs/ja/artifacts.md)：Pro、Max、Ultra、Team、Enterprise プラン
 * [音声入力](https://code.claude.com/docs/ja/voice-dictation.md)
 
 Desktop は部分的な例外です。[ゲートウェイのルーティングはアプリ内で、または管理者が設定できます](https://code.claude.com/docs/ja/llm-gateway-connect.md#desktop-app)。[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) でも、Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry、またはセルフホストの LLM ゲートウェイ上で Code タブを実行できます。また、Anthropic Console の API キーを使用して [Claude API](https://claude.com/docs/third-party/claude-desktop/claude-api) 上で Code タブを実行することもできます。これらの機能のプラン別の利用可能性については、[サブスクリプションプラン別の利用可能性](#availability-by-subscription-plan)を参照してください。
@@ -229,67 +229,67 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 各タブには、そのプロバイダーで利用できない機能や部分的にサポートされている機能と、代替手段がある場合はその代替手段を記載しています。記載されていないものは、上記の[プロバイダー固有の違い](#features-available-on-every-provider)を除き、Claude サブスクリプションと同じように動作します。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry、Claude Platform on AWS では、Anthropic へのエラーレポートとテレメトリはデフォルトでオフになっています。それでも Anthropic に送信される通信と、オプトアウトの方法については、[API プロバイダー別のデフォルトの動作](https://code.claude.com/docs/ja/data-usage.md#default-behaviors-by-api-provider)を参照してください。
 
-**Amazon Bedrock**
+> [tab] Amazon Bedrock
+>
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+>
+> **部分的なサポート：**
+>
+> * [Desktop](https://code.claude.com/docs/ja/desktop.md)：[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由のみ
+> * [auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
+> * [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
+> * [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)：AWS との契約に従います
+>
+> \*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) または [GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用します。Web 上の情報を調べるには、特定の URL を指定して [WebFetch ツール](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior)を使用します。
 
-\*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> [tab] Claude Platform on AWS
+>
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+>
+> **Amazon Bedrock では利用できないが、こちらでは利用可能：**[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)。
+>
+> **部分的なサポート：**
+>
+> * [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
+>
+> \*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用します。
 
-**部分的なサポート：**
+> [tab] Google Cloud's Agent Platform
+>
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+>
+> **部分的なサポート：**
+>
+> * [Desktop](https://code.claude.com/docs/ja/desktop.md)：[管理設定](https://claude.com/docs/third-party/claude-desktop/configuration)または [Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由
+> * [Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)：Opus 4、Sonnet 4、Haiku 4.5 以降のモデル
+> * [auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
+> * [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
+> * [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)：Google Cloud との契約に従います
+>
+> \*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) または [GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用します。
 
-* [Desktop](https://code.claude.com/docs/ja/desktop.md)：[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由のみ
-* [auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
-* [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
-* [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)：AWS との契約に従います
+> [tab] Microsoft Foundry
+>
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+>
+> **部分的なサポート：**
+>
+> * [Desktop](https://code.claude.com/docs/ja/desktop.md)：[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由のみ
+> * [auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
+> * [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
+> * [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)：Azure との契約に従います
+>
+> \*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) を使用します。
 
-\*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) または [GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用します。Web 上の情報を調べるには、特定の URL を指定して [WebFetch ツール](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior)を使用します。
-
-**Claude Platform on AWS**
-
-\*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
-
-**Amazon Bedrock では利用できないが、こちらでは利用可能：**[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)。
-
-**部分的なサポート：**
-
-* [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
-
-\*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用します。
-
-**Google Cloud's Agent Platform**
-
-\*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
-
-**部分的なサポート：**
-
-* [Desktop](https://code.claude.com/docs/ja/desktop.md)：[管理設定](https://claude.com/docs/third-party/claude-desktop/configuration)または [Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由
-* [Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)：Opus 4、Sonnet 4、Haiku 4.5 以降のモデル
-* [auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
-* [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
-* [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)：Google Cloud との契約に従います
-
-\*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) または [GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用します。
-
-**Microsoft Foundry**
-
-\*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
-
-**部分的なサポート：**
-
-* [Desktop](https://code.claude.com/docs/ja/desktop.md)：[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由のみ
-* [auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
-* [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
-* [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)：Azure との契約に従います
-
-\*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) を使用します。
-
-**Anthropic Console**
-
-\*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)。
-
-[プロバイダーによって異なる CLI の機能](#cli-capabilities-that-vary-by-provider)はすべて利用できますが、Claude Opus 5 または Claude Opus 4.8 で [fast mode](https://code.claude.com/docs/ja/fast-mode.md) を使用するには[プロビジョニングされたアクセス](https://code.claude.com/docs/ja/fast-mode.md#enable-fast-mode-for-your-organization)が必要です。claude.ai の Team または Enterprise 組織で構成した[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)は、Console の API キーで認証するセッションには適用されません。それらのセッションにも適用する方法については、[プラットフォームの利用可能性](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)を参照してください。
-
-**部分的なサポート：**
-
-* [Desktop](https://code.claude.com/docs/ja/desktop.md)：[Claude API を使用した Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/claude-api) 経由
+> [tab] Anthropic Console
+>
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)。
+>
+> [プロバイダーによって異なる CLI の機能](#cli-capabilities-that-vary-by-provider)はすべて利用できますが、Claude Opus 5 または Claude Opus 4.8 で [fast mode](https://code.claude.com/docs/ja/fast-mode.md) を使用するには[プロビジョニングされたアクセス](https://code.claude.com/docs/ja/fast-mode.md#enable-fast-mode-for-your-organization)が必要です。claude.ai の Team または Enterprise 組織で構成した[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)は、Console の API キーで認証するセッションには適用されません。それらのセッションにも適用する方法については、[プラットフォームの利用可能性](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)を参照してください。
+>
+> **部分的なサポート：**
+>
+> * [Desktop](https://code.claude.com/docs/ja/desktop.md)：[Claude API を使用した Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/claude-api) 経由
 
 ## サブスクリプションプラン別の利用可能性
 
@@ -297,29 +297,35 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または
 
 [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md)が適用されている Enterprise 組織では、この表の一部の機能が無効になります。
 
-| 機能 | Pro | Max | Team | Enterprise |
-| :- | :- | :- | :- | :- |
-| [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | ✓ | ✓ | ✓ | ✓ <sup>[6](#fn6)</sup> |
-| [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) | ✓ | ✓ | ✓ | ✓ |
-| [Remote Control](https://code.claude.com/docs/ja/remote-control.md) | ✓ | ✓ | Admin-enabled | Admin-enabled |
-| [Channels](https://code.claude.com/docs/ja/channels.md) | ✓ | ✓ | Admin-enabled | Admin-enabled |
-| [Computer use](https://code.claude.com/docs/ja/computer-use.md) | ✓ | ✓ | ✗ | ✗ |
-| Dispatch（[Desktop](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)） | ✓ | ✓ | ✗ | ✗ |
-| [Code Review](https://code.claude.com/docs/ja/code-review.md) | ✗ | ✗ | ✓ | ✓ |
-| [Artifacts](https://code.claude.com/docs/ja/artifacts.md) | ✓ | ✓ | ✓ | ✓ |
-| [アナリティクスダッシュボードと貢献メトリクス](https://code.claude.com/docs/ja/analytics.md) | ✗ | ✗ | ✓ | ✓ |
-| [Enterprise Analytics API](https://code.claude.com/docs/ja/analytics.md#access-data-programmatically) | ✗ | ✗ | ✗ | ✓ |
-| [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) | ✗ | ✗ | ✓ | ✓ |
-| [SSO](https://support.claude.com/en/articles/9266767-what-is-the-team-plan) | ✗ | ✗ | ✓ | ✓ |
-| SCIM | ✗ | ✗ | ✗ | ✓ |
-| [Compliance API](https://platform.claude.com/docs/en/api/compliance) | ✗ | ✗ | ✗ | ✓ |
-| [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md) | ✗ | ✗ | ✗ | ✓ <sup>[7](#fn7)</sup> |
+| 機能 | Pro | Max | Ultra | Team | Enterprise |
+| :- | :- | :- | :- | :- | :- |
+| [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | ✓ | ✓ | ✓ | ✓ | ✓ <sup>[6](#fn6)</sup> |
+| [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [Remote Control](https://code.claude.com/docs/ja/remote-control.md) | ✓ | ✓ | ✓ | Admin-enabled | Admin-enabled |
+| [Channels](https://code.claude.com/docs/ja/channels.md) | ✓ | ✓ | ✓ | Admin-enabled | Admin-enabled |
+| [Computer use](https://code.claude.com/docs/ja/computer-use.md) | ✓ | ✓ | ✓ | ✗ | ✗ |
+| Dispatch（[Desktop](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)） | ✓ | ✓ | ✓ | ✗ | ✗ |
+| [Code Review](https://code.claude.com/docs/ja/code-review.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| [Artifacts](https://code.claude.com/docs/ja/artifacts.md) | ✓ | ✓ | ✓ | ✓ | ✓ |
+| [アナリティクスダッシュボードと貢献メトリクス](https://code.claude.com/docs/ja/analytics.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| [Enterprise Analytics API](https://code.claude.com/docs/ja/analytics.md#access-data-programmatically) | ✗ | ✗ | ✗ | ✗ | ✓ |
+| [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| [SSO](https://support.claude.com/en/articles/9266767-what-is-the-team-plan) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| SCIM | ✗ | ✗ | ✗ | ✗ | ✓ |
+| [Compliance API](https://platform.claude.com/docs/en/api/compliance) | ✗ | ✗ | ✗ | ✗ | ✓ |
+| [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md) | ✗ | ✗ | ✗ | ✗ | ✓ <sup>[7](#fn7)</sup> |
 
 <sup>6</sup> Enterprise では、プレミアムシートまたは Chat + Claude Code シートが必要です。[クラウド上で Claude Code を使用する](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を参照してください。\
 
 <sup>7</sup> 標準 Enterprise プランに含まれていません。適格なアカウントについては Anthropic による個別の有効化が必要です。[Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)を参照してください。
 
 価格設定と完全なプラン比較については、[Team プラン](https://support.claude.com/en/articles/9266767-what-is-the-team-plan)と [Enterprise プラン](https://support.claude.com/en/articles/9797531-what-is-the-enterprise-plan)を参照してください。
+
+### Ultra プラン
+
+Ultra は Max 20x プランの新しい名称であり、Max は Max 5x の新しい名称です。現在のプランを確認するには、claude.ai でサブスクリプションを確認してください。
+
+Claude Code では、Max と Ultra の機能は同じであり、[利用可能性の表](#availability-by-subscription-plan)の Max 列と Ultra 列に記載されています。使用制限と価格については、[Claude の価格ページ](https://claude.com/pricing)を参照してください。
 
 ## モデルの利用可能性
 

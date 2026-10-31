@@ -68,115 +68,115 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 
 イベント、matcher、ハンドラーがどのように組み合わさるかを理解するために、破壊的なシェル コマンドをブロックする次の `PreToolUse` フックを考えてみましょう。
 
-**macOS/Linux**
+> [tab] macOS/Linux
+>
+> `matcher` は Bash ツール呼び出しに絞り込み、`if` 条件は `rm *` にマッチする Bash サブコマンドにさらに絞り込むため、`block-rm.sh` は両方のフィルターがマッチするときのみ生成されます。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PreToolUse": [
+>       {
+>         "matcher": "Bash",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "if": "Bash(rm *)",
+>             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh",
+>             "args": []
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> スクリプトは stdin から JSON 入力を読み取り、コマンドを抽出し、`rm -rf` が含まれている場合は `permissionDecision` として `"deny"` を返します。Claude Code が実行できるように、プロジェクト内の `.claude/hooks/block-rm.sh` に保存し、`chmod +x .claude/hooks/block-rm.sh` で実行可能にしてください。
+>
+> ```bash theme={null}
+> #!/bin/bash
+> # .claude/hooks/block-rm.sh
+> COMMAND=$(jq -r '.tool_input.command')
+>
+> if echo "$COMMAND" | grep -q 'rm -rf'; then
+>   jq -n '{
+>     hookSpecificOutput: {
+>       hookEventName: "PreToolUse",
+>       permissionDecision: "deny",
+>       permissionDecisionReason: "Destructive command blocked by hook"
+>     }
+>   }'
+> else
+>   exit 0  # no decision; normal permission flow applies
+> fi
+> ```
+>
+> このスクリプトは、JSON 入力を解析するこのページの他の Bash の例と同様に `jq` を使用します。試す前に `jq` をインストールし、`PATH` 上にあることを確認してください。
 
-`matcher` は Bash ツール呼び出しに絞り込み、`if` 条件は `rm *` にマッチする Bash サブコマンドにさらに絞り込むため、`block-rm.sh` は両方のフィルターがマッチするときのみ生成されます。
-
-```json theme={null}
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(rm *)",
-            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh",
-            "args": []
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-スクリプトは stdin から JSON 入力を読み取り、コマンドを抽出し、`rm -rf` が含まれている場合は `permissionDecision` として `"deny"` を返します。Claude Code が実行できるように、プロジェクト内の `.claude/hooks/block-rm.sh` に保存し、`chmod +x .claude/hooks/block-rm.sh` で実行可能にしてください。
-
-```bash theme={null}
-#!/bin/bash
-# .claude/hooks/block-rm.sh
-COMMAND=$(jq -r '.tool_input.command')
-
-if echo "$COMMAND" | grep -q 'rm -rf'; then
-  jq -n '{
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: "deny",
-      permissionDecisionReason: "Destructive command blocked by hook"
-    }
-  }'
-else
-  exit 0  # no decision; normal permission flow applies
-fi
-```
-
-このスクリプトは、JSON 入力を解析するこのページの他の Bash の例と同様に `jq` を使用します。試す前に `jq` をインストールし、`PATH` 上にあることを確認してください。
-
-**Windows (PowerShell)**
-
-matcher `Bash|PowerShell` は、Bash に加えて [PowerShell ツール](#powershell)も対象にします。1 つの `if` ルールは 1 つのツールの呼び出しにしかマッチしないため、ツールごとに個別のハンドラーを用意します。1 つ目は `rm *` にマッチする Bash サブコマンドに、2 つ目は `Remove-Item *` にマッチする PowerShell コマンドに絞り込みます。どちらも `powershell.exe` を通じて同じスクリプトを実行します。
-
-```json theme={null}
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash|PowerShell",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(rm *)",
-            "command": "powershell.exe",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.ps1"
-            ]
-          },
-          {
-            "type": "command",
-            "if": "PowerShell(Remove-Item *)",
-            "command": "powershell.exe",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.ps1"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-`-NoProfile` フラグは PowerShell プロファイルの読み込みをスキップしてフックをすばやく起動させ、`-ExecutionPolicy Bypass` は PowerShell がローカルのスクリプト ファイルを実行できるようにします。
-
-スクリプトは stdin から JSON 入力を読み取り、コマンドを抽出し、`rm -rf` または `-Recurse` が後に続く `Remove-Item` が含まれている場合は `permissionDecision` として `"deny"` を返します。プロジェクト内の `.claude/hooks/block-rm.ps1` に保存してください。
-
-```powershell theme={null}
-# .claude/hooks/block-rm.ps1
-$callInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
-$command = $callInput.tool_input.command
-
-if ($command -match 'rm -rf|Remove-Item.*-Recurse') {
-  @{
-    hookSpecificOutput = @{
-      hookEventName = "PreToolUse"
-      permissionDecision = "deny"
-      permissionDecisionReason = "Destructive command blocked by hook"
-    }
-  } | ConvertTo-Json
-} else {
-  exit 0  # no decision; normal permission flow applies
-}
-```
+> [tab] Windows (PowerShell)
+>
+> matcher `Bash|PowerShell` は、Bash に加えて [PowerShell ツール](#powershell)も対象にします。1 つの `if` ルールは 1 つのツールの呼び出しにしかマッチしないため、ツールごとに個別のハンドラーを用意します。1 つ目は `rm *` にマッチする Bash サブコマンドに、2 つ目は `Remove-Item *` にマッチする PowerShell コマンドに絞り込みます。どちらも `powershell.exe` を通じて同じスクリプトを実行します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PreToolUse": [
+>       {
+>         "matcher": "Bash|PowerShell",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "if": "Bash(rm *)",
+>             "command": "powershell.exe",
+>             "args": [
+>               "-NoProfile",
+>               "-ExecutionPolicy",
+>               "Bypass",
+>               "-File",
+>               "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.ps1"
+>             ]
+>           },
+>           {
+>             "type": "command",
+>             "if": "PowerShell(Remove-Item *)",
+>             "command": "powershell.exe",
+>             "args": [
+>               "-NoProfile",
+>               "-ExecutionPolicy",
+>               "Bypass",
+>               "-File",
+>               "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.ps1"
+>             ]
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> `-NoProfile` フラグは PowerShell プロファイルの読み込みをスキップしてフックをすばやく起動させ、`-ExecutionPolicy Bypass` は PowerShell がローカルのスクリプト ファイルを実行できるようにします。
+>
+> スクリプトは stdin から JSON 入力を読み取り、コマンドを抽出し、`rm -rf` または `-Recurse` が後に続く `Remove-Item` が含まれている場合は `permissionDecision` として `"deny"` を返します。プロジェクト内の `.claude/hooks/block-rm.ps1` に保存してください。
+>
+> ```powershell theme={null}
+> # .claude/hooks/block-rm.ps1
+> $callInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
+> $command = $callInput.tool_input.command
+>
+> if ($command -match 'rm -rf|Remove-Item.*-Recurse') {
+>   @{
+>     hookSpecificOutput = @{
+>       hookEventName = "PreToolUse"
+>       permissionDecision = "deny"
+>       permissionDecisionReason = "Destructive command blocked by hook"
+>     }
+>   } | ConvertTo-Json
+> } else {
+>   exit 0  # no decision; normal permission flow applies
+> }
+> ```
 
 ここで、macOS/Linux の設定に対して Claude Code が `Bash "rm -rf /tmp/build"` を実行することにしたとします。以下が起こります。
 
@@ -601,57 +601,57 @@ Claude Code は、[終了コード 0 の解析ルール](#exit-code-0)に従い�
 
 パス プレースホルダーを参照するフックには [exec フォーム](#exec-form-and-shell-form)を優先してください。シェル フォームでは、各プレースホルダーをダブル クォートで囲みます。
 
-**プロジェクト スクリプト**
+> [tab] プロジェクト スクリプト
+>
+> この例は `${CLAUDE_PROJECT_DIR}` を使用して、`Write` または `Edit` ツール呼び出しの後、プロジェクトの `.claude/hooks/` ディレクトリからスタイル チェッカーを実行します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PostToolUse": [
+>       {
+>         "matcher": "Write|Edit",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/check-style.sh",
+>             "args": []
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
 
-この例は `${CLAUDE_PROJECT_DIR}` を使用して、`Write` または `Edit` ツール呼び出しの後、プロジェクトの `.claude/hooks/` ディレクトリからスタイル チェッカーを実行します。
-
-```json theme={null}
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/check-style.sh",
-            "args": []
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**プラグイン スクリプト**
-
-`hooks/hooks.json` でプラグイン フックを定義し、オプションのトップレベル `description` フィールドを使用します。プラグインが有効な場合、そのフックはユーザーおよびプロジェクト フックとマージされます。
-
-この例は、プラグインにバンドルされたフォーマット スクリプトを実行します。
-
-```json theme={null}
-{
-  "description": "Automatic code formatting",
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/format.sh",
-            "args": [],
-            "timeout": 30
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-プラグイン フックの作成の詳細については、[プラグイン コンポーネント リファレンス](https://code.claude.com/docs/ja/plugins/components.md#hooks)を参照してください。
+> [tab] プラグイン スクリプト
+>
+> `hooks/hooks.json` でプラグイン フックを定義し、オプションのトップレベル `description` フィールドを使用します。プラグインが有効な場合、そのフックはユーザーおよびプロジェクト フックとマージされます。
+>
+> この例は、プラグインにバンドルされたフォーマット スクリプトを実行します。
+>
+> ```json theme={null}
+> {
+>   "description": "Automatic code formatting",
+>   "hooks": {
+>     "PostToolUse": [
+>       {
+>         "matcher": "Write|Edit",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/format.sh",
+>             "args": [],
+>             "timeout": 30
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> プラグイン フックの作成の詳細については、[プラグイン コンポーネント リファレンス](https://code.claude.com/docs/ja/plugins/components.md#hooks)を参照してください。
 
 ### スキルとエージェントのフック
 
@@ -1180,48 +1180,48 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 
 各パターンの実行例を以下に示します。
 
-**トップレベル決定**
+> [tab] トップレベル決定
+>
+> `decision` の唯一の値は `"block"` です。アクションを進行させるには、JSON から `decision` を省略するか、JSON なしで終了 0 で終了します。
+>
+> ```json theme={null}
+> {
+>   "decision": "block",
+>   "reason": "Test suite must pass before proceeding"
+> }
+> ```
 
-`decision` の唯一の値は `"block"` です。アクションを進行させるには、JSON から `decision` を省略するか、JSON なしで終了 0 で終了します。
+> [tab] PreToolUse
+>
+> より豊かな制御のために `hookSpecificOutput` を使用します。許可、拒否、またはユーザーへのエスカレーション。ツール入力を実行前に変更したり、Claude 用に追加コンテキストを注入することもできます。オプションの完全なセットについては、[PreToolUse 決定制御](#pretooluse-decision-control)を参照してください。
+>
+> ```json theme={null}
+> {
+>   "hookSpecificOutput": {
+>     "hookEventName": "PreToolUse",
+>     "permissionDecision": "deny",
+>     "permissionDecisionReason": "Database writes are not allowed"
+>   }
+> }
+> ```
 
-```json theme={null}
-{
-  "decision": "block",
-  "reason": "Test suite must pass before proceeding"
-}
-```
-
-**PreToolUse**
-
-より豊かな制御のために `hookSpecificOutput` を使用します。許可、拒否、またはユーザーへのエスカレーション。ツール入力を実行前に変更したり、Claude 用に追加コンテキストを注入することもできます。オプションの完全なセットについては、[PreToolUse 決定制御](#pretooluse-decision-control)を参照してください。
-
-```json theme={null}
-{
-  "hookSpecificOutput": {
-    "hookEventName": "PreToolUse",
-    "permissionDecision": "deny",
-    "permissionDecisionReason": "Database writes are not allowed"
-  }
-}
-```
-
-**PermissionRequest**
-
-`hookSpecificOutput` を使用して、ユーザーに代わって権限リクエストを許可または拒否します。許可する場合、ツールの入力を変更したり、権限ルールを適用して、ユーザーが再度プロンプトされないようにすることもできます。オプションの完全なセットについては、[PermissionRequest 決定制御](#permissionrequest-decision-control)を参照してください。
-
-```json theme={null}
-{
-  "hookSpecificOutput": {
-    "hookEventName": "PermissionRequest",
-    "decision": {
-      "behavior": "allow",
-      "updatedInput": {
-        "command": "npm run lint"
-      }
-    }
-  }
-}
-```
+> [tab] PermissionRequest
+>
+> `hookSpecificOutput` を使用して、ユーザーに代わって権限リクエストを許可または拒否します。許可する場合、ツールの入力を変更したり、権限ルールを適用して、ユーザーが再度プロンプトされないようにすることもできます。オプションの完全なセットについては、[PermissionRequest 決定制御](#permissionrequest-decision-control)を参照してください。
+>
+> ```json theme={null}
+> {
+>   "hookSpecificOutput": {
+>     "hookEventName": "PermissionRequest",
+>     "decision": {
+>       "behavior": "allow",
+>       "updatedInput": {
+>         "command": "npm run lint"
+>       }
+>     }
+>   }
+> }
+> ```
 
 Bash コマンド検証、プロンプト フィルタリング、自動承認スクリプトを含む拡張例については、ガイドの[自動化できること](https://code.claude.com/docs/ja/hooks-guide.md#what-you-can-automate)と [Bash コマンド バリデーター リファレンス実装](https://github.com/anthropics/claude-code/blob/main/examples/hooks/bash_command_validator_example.py)を参照してください。
 
@@ -1656,77 +1656,77 @@ MessageDisplay フックには決定制御がありません。メッセージ�
 
 この例では、プレーンテキストで表示するために Claude の応答から markdown の書式を除去します。スクリプトは stdin から各バッチを読み取り、`delta` から太字マーカーとインラインコードのバッククォートを削除して、結果を `displayContent` として返します。
 
-**macOS/Linux**
+> [tab] macOS/Linux
+>
+> 設定ファイルでこのイベントのコマンドフックを登録します：
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "MessageDisplay": [
+>       {
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/plain-display.sh",
+>             "args": []
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> このスクリプトをプロジェクトの `.claude/hooks/plain-display.sh` に保存し、`chmod +x` で実行可能にします：
+>
+> ```bash theme={null}
+> #!/bin/bash
+> jq '{hookSpecificOutput: {hookEventName: "MessageDisplay", displayContent: (.delta | gsub("\\*\\*"; "") | gsub("`"; ""))}}'
+> ```
 
-設定ファイルでこのイベントのコマンドフックを登録します：
-
-```json theme={null}
-{
-  "hooks": {
-    "MessageDisplay": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/plain-display.sh",
-            "args": []
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-このスクリプトをプロジェクトの `.claude/hooks/plain-display.sh` に保存し、`chmod +x` で実行可能にします：
-
-```bash theme={null}
-#!/bin/bash
-jq '{hookSpecificOutput: {hookEventName: "MessageDisplay", displayContent: (.delta | gsub("\\*\\*"; "") | gsub("`"; ""))}}'
-```
-
-**Windows (PowerShell)**
-
-PowerShell を通じてスクリプトを実行するコマンドフックを登録します：
-
-```json theme={null}
-{
-  "hooks": {
-    "MessageDisplay": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/plain-display.ps1"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-`-NoProfile` フラグは PowerShell プロファイルの読み込みをスキップしてフックを高速に起動させ、`-ExecutionPolicy Bypass` は PowerShell がローカルのスクリプトファイルを実行できるようにします。
-
-このスクリプトをプロジェクトの `.claude/hooks/plain-display.ps1` に保存します：
-
-```powershell theme={null}
-$batch = [Console]::In.ReadToEnd() | ConvertFrom-Json
-$text = $batch.delta -replace '\*\*', '' -replace '`', ''
-@{
-  hookSpecificOutput = @{
-    hookEventName = "MessageDisplay"
-    displayContent = $text
-  }
-} | ConvertTo-Json
-```
+> [tab] Windows (PowerShell)
+>
+> PowerShell を通じてスクリプトを実行するコマンドフックを登録します：
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "MessageDisplay": [
+>       {
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "powershell.exe",
+>             "args": [
+>               "-NoProfile",
+>               "-ExecutionPolicy",
+>               "Bypass",
+>               "-File",
+>               "${CLAUDE_PROJECT_DIR}/.claude/hooks/plain-display.ps1"
+>             ]
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> `-NoProfile` フラグは PowerShell プロファイルの読み込みをスキップしてフックを高速に起動させ、`-ExecutionPolicy Bypass` は PowerShell がローカルのスクリプトファイルを実行できるようにします。
+>
+> このスクリプトをプロジェクトの `.claude/hooks/plain-display.ps1` に保存します：
+>
+> ```powershell theme={null}
+> $batch = [Console]::In.ReadToEnd() | ConvertFrom-Json
+> $text = $batch.delta -replace '\*\*', '' -replace '`', ''
+> @{
+>   hookSpecificOutput = @{
+>     hookEventName = "MessageDisplay"
+>     displayContent = $text
+>   }
+> } | ConvertTo-Json
+> ```
 
 markdown を含まないバッチはそのまま通過します。スクリプトが失敗した場合（たとえば `jq` がない場合）、Claude Code は元のテキストを表示し、失敗はセッション内ではなく[デバッグ出力](#debug-hooks)でのみ通知されます。
 
@@ -3357,67 +3357,67 @@ Claude Code は、`[1m]` サフィックスを無視して、セッションの�
 
 matcher は、完全な名前、`claude-opus-4-6|claude-opus-5` のような `|` 区切りのリスト、または `.*opus.*` のような正規表現で記述します。次の例では完全な名前の matcher を使用し、さらにフックの入力の `to_model` も確認しています。これにより、終了コード 2 で終了して Opus 4.6 への切り替えを拒否し、それ以外の切り替え先は通過させます。
 
-**macOS/Linux**
+> [tab] macOS/Linux
+>
+> このコマンドは `jq` で `to_model` を確認します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PreModelSwitch": [
+>       {
+>         "matcher": "claude-opus-4-6",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "jq -e '.to_model | test(\"opus-4-6\")' > /dev/null && { echo 'Opus 4.6 is retired for this project. Use a newer model.' >&2; exit 2; }; exit 0"
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
 
-このコマンドは `jq` で `to_model` を確認します。
-
-```json theme={null}
-{
-  "hooks": {
-    "PreModelSwitch": [
-      {
-        "matcher": "claude-opus-4-6",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -e '.to_model | test(\"opus-4-6\")' > /dev/null && { echo 'Opus 4.6 is retired for this project. Use a newer model.' >&2; exit 2; }; exit 0"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**Windows (PowerShell)**
-
-PowerShell でスクリプトを実行するコマンドフックを登録します。
-
-```json theme={null}
-{
-  "hooks": {
-    "PreModelSwitch": [
-      {
-        "matcher": "claude-opus-4-6",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-opus-46.ps1"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-このスクリプトをプロジェクト内の `.claude/hooks/block-opus-46.ps1` に保存します。
-
-```powershell theme={null}
-$hookInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
-if ($hookInput.to_model -match 'opus-4-6') {
-  [Console]::Error.WriteLine('Opus 4.6 is retired for this project. Use a newer model.')
-  exit 2
-}
-exit 0
-```
+> [tab] Windows (PowerShell)
+>
+> PowerShell でスクリプトを実行するコマンドフックを登録します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PreModelSwitch": [
+>       {
+>         "matcher": "claude-opus-4-6",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "powershell.exe",
+>             "args": [
+>               "-NoProfile",
+>               "-ExecutionPolicy",
+>               "Bypass",
+>               "-File",
+>               "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-opus-46.ps1"
+>             ]
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> このスクリプトをプロジェクト内の `.claude/hooks/block-opus-46.ps1` に保存します。
+>
+> ```powershell theme={null}
+> $hookInput = [Console]::In.ReadToEnd() | ConvertFrom-Json
+> if ($hookInput.to_model -match 'opus-4-6') {
+>   [Console]::Error.WriteLine('Opus 4.6 is retired for this project. Use a newer model.')
+>   exit 2
+> }
+> exit 0
+> ```
 
 フックが動作することを確認するには、別のモデルで実行中のセッションから `/model claude-opus-4-6` を実行します。Claude Code は現在のモデルを維持し、PreModelSwitch フックが切り替えをブロックしたことを、指定したメッセージを理由として報告します。
 
@@ -3705,86 +3705,86 @@ Claude Code は、v2.1.105 から v2.1.284 で修正されるまで、`Elicitati
 
 この例では、繰り返し尋ねられる 1 つの質問にユーザーの代わりに回答します。`issue-tracker` という名前の MCP サーバーがフォームでプロジェクトキーを尋ね、フックが `DOCS` を入力します。スクリプトは、`project_key` がフォームの唯一のフィールドである場合に受け入れます。それ以外のリクエストでは何も出力しないため、ダイアログが表示されます。
 
-**macOS/Linux**
+> [tab] macOS/Linux
+>
+> 設定ファイルで、サーバー名を matcher としてこのイベントのコマンドフックを登録します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "Elicitation": [
+>       {
+>         "matcher": "issue-tracker",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/answer-project-key.sh",
+>             "args": []
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> このスクリプトをプロジェクト内の `.claude/hooks/answer-project-key.sh` に保存し、`chmod +x` で実行可能にします。
+>
+> ```bash theme={null}
+> #!/bin/bash
+> input=$(cat)
+> fields=$(jq -c '.requested_schema.properties // {} | keys' <<<"$input")
+>
+> if [ "$fields" = '["project_key"]' ]; then
+>   jq -n '{hookSpecificOutput: {hookEventName: "Elicitation", action: "accept", content: {project_key: "DOCS"}}}'
+> fi
+> ```
 
-設定ファイルで、サーバー名を matcher としてこのイベントのコマンドフックを登録します。
-
-```json theme={null}
-{
-  "hooks": {
-    "Elicitation": [
-      {
-        "matcher": "issue-tracker",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/answer-project-key.sh",
-            "args": []
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-このスクリプトをプロジェクト内の `.claude/hooks/answer-project-key.sh` に保存し、`chmod +x` で実行可能にします。
-
-```bash theme={null}
-#!/bin/bash
-input=$(cat)
-fields=$(jq -c '.requested_schema.properties // {} | keys' <<<"$input")
-
-if [ "$fields" = '["project_key"]' ]; then
-  jq -n '{hookSpecificOutput: {hookEventName: "Elicitation", action: "accept", content: {project_key: "DOCS"}}}'
-fi
-```
-
-**Windows (PowerShell)**
-
-サーバー名を matcher として、PowerShell でスクリプトを実行するコマンドフックを登録します。
-
-```json theme={null}
-{
-  "hooks": {
-    "Elicitation": [
-      {
-        "matcher": "issue-tracker",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe",
-            "args": [
-              "-NoProfile",
-              "-ExecutionPolicy",
-              "Bypass",
-              "-File",
-              "${CLAUDE_PROJECT_DIR}/.claude/hooks/answer-project-key.ps1"
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-このスクリプトをプロジェクト内の `.claude/hooks/answer-project-key.ps1` に保存します。
-
-```powershell theme={null}
-$request = [Console]::In.ReadToEnd() | ConvertFrom-Json
-$fields = @($request.requested_schema.properties.PSObject.Properties.Name)
-
-if ($fields.Count -eq 1 -and $fields[0] -eq 'project_key') {
-  @{
-    hookSpecificOutput = @{
-      hookEventName = "Elicitation"
-      action = "accept"
-      content = @{ project_key = "DOCS" }
-    }
-  } | ConvertTo-Json -Depth 3
-}
-```
+> [tab] Windows (PowerShell)
+>
+> サーバー名を matcher として、PowerShell でスクリプトを実行するコマンドフックを登録します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "Elicitation": [
+>       {
+>         "matcher": "issue-tracker",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "powershell.exe",
+>             "args": [
+>               "-NoProfile",
+>               "-ExecutionPolicy",
+>               "Bypass",
+>               "-File",
+>               "${CLAUDE_PROJECT_DIR}/.claude/hooks/answer-project-key.ps1"
+>             ]
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
+>
+> このスクリプトをプロジェクト内の `.claude/hooks/answer-project-key.ps1` に保存します。
+>
+> ```powershell theme={null}
+> $request = [Console]::In.ReadToEnd() | ConvertFrom-Json
+> $fields = @($request.requested_schema.properties.PSObject.Properties.Name)
+>
+> if ($fields.Count -eq 1 -and $fields[0] -eq 'project_key') {
+>   @{
+>     hookSpecificOutput = @{
+>       hookEventName = "Elicitation"
+>       action = "accept"
+>       content = @{ project_key = "DOCS" }
+>     }
+>   } | ConvertTo-Json -Depth 3
+> }
+> ```
 
 フックが動作することを確認するには、`claude --debug` で Claude Code を起動し、サーバーがプロジェクトキーを尋ねるようなタスクを Claude に与えます。ダイアログは表示されず、[デバッグログ](#debug-hooks)に `Elicitation resolved by hook: {"action":"accept","content":{"project_key":"DOCS"}}` で終わる行が記録されます。
 

@@ -41,7 +41,7 @@ JetBrains マーケットプレイスから [Claude Code プラグイン](https:
 
 `claude` が IDE が見つけられない場所にインストールされている場合は、プラグインの [Claude コマンド設定](#general-settings) でフルパスを設定してください。
 
-Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) するよう求められます。
+Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Ultra、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) するよう求められます。
 
 ## 使用方法
 

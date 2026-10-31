@@ -53,7 +53,7 @@ agentic システムのリスクを軽減するために：
 * ユーザーセッションデータへのアクセス制限
 * データトレーニング設定に対するユーザーコントロール。コンシューマーユーザーは [プライバシー設定](https://claude.ai/settings/privacy) をいつでも変更できます。
 
-詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) をご確認ください。
+詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max、Ultra ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) をご確認ください。
 
 ### 追加のセーフガード
 

@@ -403,7 +403,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows で
 
 以下のアコーディオンでは、他の許可リストと拒否リストの組み合わせに対してサーバーがどのように評価されるかを説明します。
 
-> **URL のみの許可リスト**
+> [accordion] URL のみの許可リスト
 >
 > ```json theme={null}
 > {
@@ -421,7 +421,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows で
 > | `https://external.example.com/mcp` の HTTP サーバー | ブロック：どの URL パターンにも一致しない |
 > | 任意のコマンドを使用する stdio サーバー | ブロック：照合する名前またはコマンドのエントリがない |
 
-> **コマンドのみの許可リスト**
+> [accordion] コマンドのみの許可リスト
 >
 > ```json theme={null}
 > {
@@ -437,7 +437,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows で
 > | `["node", "server.js"]` を使用する stdio サーバー | ブロック：コマンドに一致しない |
 > | `my-api` という名前の HTTP サーバー | ブロック：照合する名前のエントリがない |
 
-> **名前とコマンドが混在する許可リスト**
+> [accordion] 名前とコマンドが混在する許可リスト
 >
 > ```json theme={null}
 > {
@@ -456,7 +456,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows で
 > | `github` という名前の HTTP サーバー | 許可：名前に一致 |
 > | `other-api` という名前の HTTP サーバー | ブロック：名前が一致しない |
 
-> **名前のみの許可リスト**
+> [accordion] 名前のみの許可リスト
 >
 > ```json theme={null}
 > {
@@ -474,7 +474,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows で
 > | `github` という名前の HTTP サーバー | 許可：名前に一致 |
 > | `other` という名前の任意のサーバー | ブロック：名前が一致しない |
 
-> **拒否リストによる上書きを伴う許可リスト**
+> [accordion] 拒否リストによる上書きを伴う許可リスト
 >
 > ```json theme={null}
 > {

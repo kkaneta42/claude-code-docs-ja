@@ -203,85 +203,85 @@ upstreams:
 
 **7. デプロイ**
 
-**Cloud Run**
-
-以下のコマンドは内部ロード バランサーの背後で本番環境用にデプロイします。
-
-```bash theme={null}
-gcloud run deploy claude-gateway \
-  --image="${REGION}-docker.pkg.dev/${PROJECT_ID}/claude-gateway/gateway:<version>" \
-  --region="$REGION" \
-  --service-account="claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com" \
-  --min-instances=1 \
-  --max-instances=8 \
-  --timeout=3600 \
-  --ingress=internal \
-  --network="$VPC" --subnet=cc-gateway-subnet --vpc-egress=private-ranges-only \
-  --set-secrets=/etc/claude/gateway.yaml=gateway-config:latest,GATEWAY_JWT_SECRET=gateway-jwt-secret:latest,OIDC_CLIENT_SECRET=gateway-oidc-client-secret:latest,GATEWAY_POSTGRES_URL=gateway-postgres-url:latest \
-  --no-invoker-iam-check
-```
-
-`--network`、`--subnet`、`--vpc-egress=private-ranges-only` 経由の直接 VPC エグレスにより、サービスは Cloud SQL プライベート IP に直接到達できます。Google Cloud の Agent Platform エンドポイントと `accounts.google.com` へのパブリック エグレスは VPC を通さずにインターネットに直接移動するため、Cloud NAT は不要です。
-
-> [!NOTE]
+> [tab] Cloud Run
 >
-> 各インスタンスは最大 [`store.max_connections`](https://code.claude.com/docs/ja/claude-apps-gateway-config#store) 個の Postgres 接続を保持し、デフォルトは 5 です。[接続プールのサイズを決める](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#size-the-connection-pool)を使用して、`--max-instances=8` をデータベースがゲートウェイ用に残している接続数と照らし合わせて確認し、ローリング アップデートで起動される追加のインスタンスも計算に含めてください。
+> 以下のコマンドは内部ロード バランサーの背後で本番環境用にデプロイします。
+>
+> ```bash theme={null}
+> gcloud run deploy claude-gateway \
+>   --image="${REGION}-docker.pkg.dev/${PROJECT_ID}/claude-gateway/gateway:<version>" \
+>   --region="$REGION" \
+>   --service-account="claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com" \
+>   --min-instances=1 \
+>   --max-instances=8 \
+>   --timeout=3600 \
+>   --ingress=internal \
+>   --network="$VPC" --subnet=cc-gateway-subnet --vpc-egress=private-ranges-only \
+>   --set-secrets=/etc/claude/gateway.yaml=gateway-config:latest,GATEWAY_JWT_SECRET=gateway-jwt-secret:latest,OIDC_CLIENT_SECRET=gateway-oidc-client-secret:latest,GATEWAY_POSTGRES_URL=gateway-postgres-url:latest \
+>   --no-invoker-iam-check
+> ```
+>
+> `--network`、`--subnet`、`--vpc-egress=private-ranges-only` 経由の直接 VPC エグレスにより、サービスは Cloud SQL プライベート IP に直接到達できます。Google Cloud の Agent Platform エンドポイントと `accounts.google.com` へのパブリック エグレスは VPC を通さずにインターネットに直接移動するため、Cloud NAT は不要です。
+>
+> > [!NOTE]
+> >
+> > 各インスタンスは最大 [`store.max_connections`](https://code.claude.com/docs/ja/claude-apps-gateway-config#store) 個の Postgres 接続を保持し、デフォルトは 5 です。[接続プールのサイズを決める](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#size-the-connection-pool)を使用して、`--max-instances=8` をデータベースがゲートウェイ用に残している接続数と照らし合わせて確認し、ローリング アップデートで起動される追加のインスタンスも計算に含めてください。
+>
+> インボーカー IAM チェックは開いているか無効にする必要があります。ゲートウェイは独自の OIDC を実行し、そのクライアントは GCP トークンを持たないため、Cloud Run のインボーカー チェックは認証されていないリクエストを許可する必要があります。ゲートウェイの OIDC サインインはリクエストがコンテナに到達すると認証し、`allowed_email_domains` がサインインできるドメインをゲートします。
+>
+> 2 つのフラグが認証されていないリクエストを許可します。
+>
+> * `--no-invoker-iam-check`：管理する `allUsers` バインディングなしでチェックを無効にし、Domain Restricted Sharing の下で機能します
+> * `--allow-unauthenticated`：`allUsers` に `run.invoker` ロールを付与します。組織が `--no-invoker-iam-check` を許可しない場合はこれを使用します
+>
+> `--ingress` 経由のイングレス制限はインボーカー チェックから独立した別のレイヤーです。サービスを企業ネットワークに制限するために設定したままにしておきます。
+>
+> デフォルトでは Cloud Run `*.run.app` URL はパブリック アドレスに解決され、`/login` [プライベート ネットワーク チェック](https://code.claude.com/docs/ja/claude-apps-gateway#prerequisites)がこれを拒否します。2 つのトポロジーが開発者にプライベートに解決可能なホスト名を提供し、Cloud Run はどちらもプロビジョニングしません。
+>
+> * **内部 Application Load Balancer**、このページの `gateway.yaml` が想定するトポロジー：内部 Application Load Balancer をサービスの前にプロビジョニングして、内部 DNS 名と証明書を使用し、`listen.public_url` をそのホスト名に設定します。`internal` イングレス設定は既に内部 Application Load Balancer からのトラフィックを許可します。`internal-and-cloud-load-balancing` はさらに外部 Application Load Balancer を許可しますが、そのパブリック アドレスは `/login` プライベート ネットワーク チェックが拒否するため、このページのトポロジーはそれを必要としません。
+> * **ロード バランサーなしの内部専用イングレス**：デプロイ コマンドをそのままにして、`listen.public_url` を `*.run.app` URL（以下の[リファレンス アセット](#terraform-reference)のデフォルト）のままにします。`*.run.app` がプライベートに解決するには、ネットワーク チームが既に Google API 用の Private Service Connect エンドポイント、`*.run.app` をそれに解決する Cloud DNS プライベート ゾーン、およびそのエンドポイントへのオンプレミス ルーティングを運用している必要があります。
+>
+> Google の [Cloud Run のプライベート ネットワーク ガイド](https://cloud.google.com/run/docs/securing/private-networking)は両方のオプションが必要とするインフラストラクチャをカバーしています。ゲートウェイがプライベート ホスト名で提供されたら、サインインを確認します。それまでは、Cloud Run のログからコンテナがブートしたことを確認します。
+>
+> 最初のサインイン前に OAuth クライアントの認可リダイレクト URI を `<public_url>/oauth/callback` に更新します。`public_url` を変更した後は再デプロイします。ゲートウェイはその設定からのみパブリック オリジンをビルドし、`X-Forwarded-Host` と `X-Forwarded-Proto` を無視するためです。`X-Forwarded-For` は `listen.trusted_proxies` が設定されている場合にのみクライアント IP に対して受け入れられます。
 
-インボーカー IAM チェックは開いているか無効にする必要があります。ゲートウェイは独自の OIDC を実行し、そのクライアントは GCP トークンを持たないため、Cloud Run のインボーカー チェックは認証されていないリクエストを許可する必要があります。ゲートウェイの OIDC サインインはリクエストがコンテナに到達すると認証し、`allowed_email_domains` がサインインできるドメインをゲートします。
-
-2 つのフラグが認証されていないリクエストを許可します。
-
-* `--no-invoker-iam-check`：管理する `allUsers` バインディングなしでチェックを無効にし、Domain Restricted Sharing の下で機能します
-* `--allow-unauthenticated`：`allUsers` に `run.invoker` ロールを付与します。組織が `--no-invoker-iam-check` を許可しない場合はこれを使用します
-
-`--ingress` 経由のイングレス制限はインボーカー チェックから独立した別のレイヤーです。サービスを企業ネットワークに制限するために設定したままにしておきます。
-
-デフォルトでは Cloud Run `*.run.app` URL はパブリック アドレスに解決され、`/login` [プライベート ネットワーク チェック](https://code.claude.com/docs/ja/claude-apps-gateway#prerequisites)がこれを拒否します。2 つのトポロジーが開発者にプライベートに解決可能なホスト名を提供し、Cloud Run はどちらもプロビジョニングしません。
-
-* **内部 Application Load Balancer**、このページの `gateway.yaml` が想定するトポロジー：内部 Application Load Balancer をサービスの前にプロビジョニングして、内部 DNS 名と証明書を使用し、`listen.public_url` をそのホスト名に設定します。`internal` イングレス設定は既に内部 Application Load Balancer からのトラフィックを許可します。`internal-and-cloud-load-balancing` はさらに外部 Application Load Balancer を許可しますが、そのパブリック アドレスは `/login` プライベート ネットワーク チェックが拒否するため、このページのトポロジーはそれを必要としません。
-* **ロード バランサーなしの内部専用イングレス**：デプロイ コマンドをそのままにして、`listen.public_url` を `*.run.app` URL（以下の[リファレンス アセット](#terraform-reference)のデフォルト）のままにします。`*.run.app` がプライベートに解決するには、ネットワーク チームが既に Google API 用の Private Service Connect エンドポイント、`*.run.app` をそれに解決する Cloud DNS プライベート ゾーン、およびそのエンドポイントへのオンプレミス ルーティングを運用している必要があります。
-
-Google の [Cloud Run のプライベート ネットワーク ガイド](https://cloud.google.com/run/docs/securing/private-networking)は両方のオプションが必要とするインフラストラクチャをカバーしています。ゲートウェイがプライベート ホスト名で提供されたら、サインインを確認します。それまでは、Cloud Run のログからコンテナがブートしたことを確認します。
-
-最初のサインイン前に OAuth クライアントの認可リダイレクト URI を `<public_url>/oauth/callback` に更新します。`public_url` を変更した後は再デプロイします。ゲートウェイはその設定からのみパブリック オリジンをビルドし、`X-Forwarded-Host` と `X-Forwarded-Proto` を無視するためです。`X-Forwarded-For` は `listen.trusted_proxies` が設定されている場合にのみクライアント IP に対して受け入れられます。
-
-**GKE**
-
-クラスターは Cloud SQL ステップで作成された `$VPC` 上にある必要があります。ポッドがデータベースのプライベート IP に到達できるようにするためです。VPC ピアリングだけでは機能しません。Cloud SQL プライベート IP 自体がピアリングされたネットワークであり、ピアリングは推移的ではないためです。そのVPC上に新しいクラスターを作成するには、`gcloud container clusters create` に `--network="$VPC" --subnetwork=cc-gateway-subnet` を渡します。
-
-クラスターとそのノード プールで Workload Identity を有効にし、Google サービス アカウントを Kubernetes サービス アカウントにバインドして、ポッドがその認証情報を継承するようにします。
-
-```bash theme={null}
-gcloud container clusters update <cluster> --region="$REGION" \
-  --workload-pool="${PROJECT_ID}.svc.id.goog"
-# Standard クラスターでは、既存のノード プールも GKE_METADATA が必要です。
-# Autopilot はデフォルトでこれを有効にします。
-gcloud container node-pools update <pool> --cluster=<cluster> \
-  --region="$REGION" --workload-metadata=GKE_METADATA
-
-kubectl create namespace claude-gateway
-kubectl create serviceaccount gateway -n claude-gateway
-
-gcloud iam service-accounts add-iam-policy-binding \
-  "claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com" \
-  --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:${PROJECT_ID}.svc.id.goog[claude-gateway/gateway]"
-
-kubectl annotate serviceaccount gateway -n claude-gateway \
-  iam.gke.io/gcp-service-account="claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com"
-```
-
-[Kubernetes デプロイメント](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#kubernetes)で説明されているように、ゲートウェイを標準 Deployment、Service、および内部 Ingress（クラス `gce-internal`）としてデプロイします。以下を使用します。
-
-* `serviceAccountName: gateway`
-* Secret Manager CSI ドライバーが `/secrets` にシークレットをマウント
-* 準備完了プローブが `GET /readyz` を指す
-
-ゲートウェイ Service に `timeoutSec` を上げた BackendConfig をアタッチします。GKE Ingress の背後にあるロード バランサー バックエンド サービスはデフォルトで 30 秒のタイムアウトで、長いストリーミング レスポンスを切断します。
-
-Workload Identity クラスターで `169.254.169.254` をブロックするエグレス NetworkPolicy を適用しないでください。ポッドは認証情報のためにメタデータ サーバーに到達する必要があります。ゲートウェイの組み込み [SSRF ガード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)がそこでの防御です。
-
-ゲートウェイはメタデータ エンドポイントに到達可能であることを示すブート警告をログに記録し、エグレス NetworkPolicy を適用することを提案します。Workload Identity の下ではその警告は予想されます。ポッドがエンドポイントを必要とするためです。
+> [tab] GKE
+>
+> クラスターは Cloud SQL ステップで作成された `$VPC` 上にある必要があります。ポッドがデータベースのプライベート IP に到達できるようにするためです。VPC ピアリングだけでは機能しません。Cloud SQL プライベート IP 自体がピアリングされたネットワークであり、ピアリングは推移的ではないためです。そのVPC上に新しいクラスターを作成するには、`gcloud container clusters create` に `--network="$VPC" --subnetwork=cc-gateway-subnet` を渡します。
+>
+> クラスターとそのノード プールで Workload Identity を有効にし、Google サービス アカウントを Kubernetes サービス アカウントにバインドして、ポッドがその認証情報を継承するようにします。
+>
+> ```bash theme={null}
+> gcloud container clusters update <cluster> --region="$REGION" \
+>   --workload-pool="${PROJECT_ID}.svc.id.goog"
+> # Standard クラスターでは、既存のノード プールも GKE_METADATA が必要です。
+> # Autopilot はデフォルトでこれを有効にします。
+> gcloud container node-pools update <pool> --cluster=<cluster> \
+>   --region="$REGION" --workload-metadata=GKE_METADATA
+>
+> kubectl create namespace claude-gateway
+> kubectl create serviceaccount gateway -n claude-gateway
+>
+> gcloud iam service-accounts add-iam-policy-binding \
+>   "claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com" \
+>   --role roles/iam.workloadIdentityUser \
+>   --member "serviceAccount:${PROJECT_ID}.svc.id.goog[claude-gateway/gateway]"
+>
+> kubectl annotate serviceaccount gateway -n claude-gateway \
+>   iam.gke.io/gcp-service-account="claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com"
+> ```
+>
+> [Kubernetes デプロイメント](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#kubernetes)で説明されているように、ゲートウェイを標準 Deployment、Service、および内部 Ingress（クラス `gce-internal`）としてデプロイします。以下を使用します。
+>
+> * `serviceAccountName: gateway`
+> * Secret Manager CSI ドライバーが `/secrets` にシークレットをマウント
+> * 準備完了プローブが `GET /readyz` を指す
+>
+> ゲートウェイ Service に `timeoutSec` を上げた BackendConfig をアタッチします。GKE Ingress の背後にあるロード バランサー バックエンド サービスはデフォルトで 30 秒のタイムアウトで、長いストリーミング レスポンスを切断します。
+>
+> Workload Identity クラスターで `169.254.169.254` をブロックするエグレス NetworkPolicy を適用しないでください。ポッドは認証情報のためにメタデータ サーバーに到達する必要があります。ゲートウェイの組み込み [SSRF ガード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#threat-model-summary)がそこでの防御です。
+>
+> ゲートウェイはメタデータ エンドポイントに到達可能であることを示すブート警告をログに記録し、エグレス NetworkPolicy を適用することを提案します。Workload Identity の下ではその警告は予想されます。ポッドがエンドポイントを必要とするためです。
 
 **8. ゲートウェイ URL を開発者マシンにプッシュする**
 

@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> クラウドセッションは、Pro、Max、Team プランおよび premium seats または Chat + Claude Code seats を持つ Enterprise ユーザーを対象としています。
+> クラウドセッションは、Pro、Max、Ultra、Team プランおよび premium seats または Chat + Claude Code seats を持つ Enterprise ユーザーを対象としています。
 
 クラウドセッションは、あなたのマシンではなく Anthropic が管理するクラウドインフラストラクチャで Claude Code を実行します。このクイックスタートでは、ブラウザから [claude.ai/code](https://claude.ai/code) で開始します。Claude モバイルアプリ、Desktop アプリ、またはターミナルから `claude --cloud` で開始することもできます。
 
@@ -77,7 +77,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
 
 [cloud environment](https://code.claude.com/docs/ja/cloud-environments.md) は、セッション中に Claude が持つネットワークアクセスと、セッション開始時に実行される内容を制御する保存された設定です。GitHub を接続した後の動作はプランによって異なります。
 
-* **Pro および Max**：オンボーディングは **Default** という名前の環境を作成します。
+* **Pro、Max、および Ultra**：**Default** という名前の環境が自動的に用意されます。
 * **Team および Enterprise**：オンボーディングは **Create your first cloud environment** フォームを表示します。事前入力された名前とネットワークアクセスを変更せず、**Create & finish** をクリックして **Default** 環境を作成します。Owner が [Quick setup](https://code.claude.com/docs/ja/claude-code-on-the-web.md#quick-setup-for-team-and-enterprise) をオンにしている場合、オンボーディングは代わりに **Default** を作成します。
 
 **Default** は [`Trusted` ネットワークアクセス](https://code.claude.com/docs/ja/cloud-environments#access-levels) を使用します。セッションは [common package registries](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains) およびその他のホワイトリストに登録されたドメインに到達し、セッションのネットワークを通じて他には何も到達しません。設定なしで利用可能な内容については、[Installed tools](https://code.claude.com/docs/ja/cloud-environments.md#installed-tools) を参照してください。

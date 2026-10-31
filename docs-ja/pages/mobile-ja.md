@@ -39,7 +39,7 @@ Claude Code に使用するのと同じ claude.ai アカウントと組織でサ
 | [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | Anthropic が管理するクラウドインフラストラクチャ上のセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [クラウドクイックスタート](https://code.claude.com/docs/ja/web-quickstart.md)を参照してください。 |
 | [プロジェクト](https://code.claude.com/docs/ja/claude-projects.md) | Claude が並列スレッドの作業を調整し、報告する会話 | 1 つのタスクではなく関連する作業のストリームがあり、どのスレッドが完了したか、または自分の対応が必要かを確認したい場合。 |
 | [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) | コンピュータで実行されている Claude Code セッション | 作業にローカルファイルシステム、ツール、または MCP サーバーが必要な場合。 |
-| [Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) | コンピュータの Desktop アプリ | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro または Max プランが必要です。 |
+| [Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) | コンピューターの Desktop アプリ | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro、Max、または Ultra プランが必要です。 |
 
 コンピュータがオフになる場合は、クラウドセッションまたはプロジェクトを使用してください。これらはクラウドで実行され、ラップトップを閉じた後も続行されます。リモートコントロールと Dispatch は自分のマシンを操作するため、Claude Code または Desktop アプリが実行されている状態を保つ必要があります。リモートコントロールセッション中にマシンがスリープ状態になった場合、Claude Code はマシンがオンラインに戻ったときに再接続されます。
 
@@ -76,7 +76,7 @@ Dispatch は、生成した Code セッションが完了したときまたは�
 
 * **ローカルのみのコマンド**: `/plugin` や `/resume` など、ターミナルインターフェイスでのみ実行されるコマンドはアプリから機能しません。[リモートコントロール制限](https://code.claude.com/docs/ja/remote-control.md#limitations)には、モバイルから機能するコマンドと動作の違いが記載されています。
 * **権限モード**: クラウドセッションでは Accept edits、Plan、Auto を、Remote Control セッションでは Manual、Accept edits、Plan、Auto を選択できます。どちらの場合でも、アプリから Bypass permissions を選択することはできません。Auto が利用可能な条件については、[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。
-* **Dispatch プラン**: Dispatch には Pro または Max プランが必要であり、Team または Enterprise では利用できません。
+* **Dispatch プラン**: Dispatch には Pro、Max、または Ultra プランが必要であり、Team または Enterprise では利用できません。
 
 ## 関連リソース
 

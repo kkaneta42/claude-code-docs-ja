@@ -48,23 +48,23 @@ tmux 内で実行している場合、外側のターミナルがサポートし
 
 Claude Code の一部のショートカットは Option キーを使用します。例えば、Option+Enter で改行したり、Option+P でモデルを切り替えたりします。macOS では、ほとんどのターミナルはデフォルトで Option を修飾キーとして送信しないため、これを有効にするまでこれらのショートカットは機能しません。ターミナル設定は通常「Use Option as Meta Key」というラベルが付いています。Meta は、現在 Option または Alt というラベルが付いているキーの歴史的な Unix 名です。
 
-**Apple Terminal**
+> [tab] Apple Terminal
+>
+> 設定 → プロファイル → キーボードを開き、「Use Option as Meta Key」をチェックします。
+>
+> Claude Code の初回実行時のターミナルセットアッププロンプトを受け入れた場合、これはすでに完了しています。そのプロンプトは `/terminal-setup` を実行し、Option を Meta として有効にし、Apple Terminal プロファイルで可聴ベルをオフにします。
+>
+> [スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、`/terminal-setup` はベル設定を変更しないままにするため、ターミナルベルは可聴のままです。以前の実行でベルがオフになった場合は、設定 → プロファイル → 詳細 → 「可聴ベル」でオンに戻してください。
 
-設定 → プロファイル → キーボードを開き、「Use Option as Meta Key」をチェックします。
+> [tab] iTerm2
+>
+> 設定 → プロファイル → キー → 一般を開き、左 Option キーと右 Option キーを「Esc+」に設定します。
+>
+> iTerm2 で `/terminal-setup` を実行すると、設定 → 一般 → 選択の下で「Applications in terminal may access clipboard」が有効になり、`/copy` コマンドがシステムクリップボードに書き込むことができます。このコマンドは tmux 内から実行された場合でも iTerm2 を検出します。変更を有効にするために iTerm2 を再起動してください。
 
-Claude Code の初回実行時のターミナルセットアッププロンプトを受け入れた場合、これはすでに完了しています。そのプロンプトは `/terminal-setup` を実行し、Option を Meta として有効にし、Apple Terminal プロファイルで可聴ベルをオフにします。
-
-[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、`/terminal-setup` はベル設定を変更しないままにするため、ターミナルベルは可聴のままです。以前の実行でベルがオフになった場合は、設定 → プロファイル → 詳細 → 「可聴ベル」でオンに戻してください。
-
-**iTerm2**
-
-設定 → プロファイル → キー → 一般を開き、左 Option キーと右 Option キーを「Esc+」に設定します。
-
-iTerm2 で `/terminal-setup` を実行すると、設定 → 一般 → 選択の下で「Applications in terminal may access clipboard」が有効になり、`/copy` コマンドがシステムクリップボードに書き込むことができます。このコマンドは tmux 内から実行された場合でも iTerm2 を検出します。変更を有効にするために iTerm2 を再起動してください。
-
-**VS Code**
-
-VS Code 設定に `"terminal.integrated.macOptionIsMeta": true` を追加します。
+> [tab] VS Code
+>
+> VS Code 設定に `"terminal.integrated.macOptionIsMeta": true` を追加します。
 
 Ghostty、Kitty、およびその他のターミナルについては、ターミナルの設定ファイルで Option-as-Alt または Option-as-Meta 設定を探してください。
 
@@ -188,7 +188,7 @@ Claude Code は `~/.claude/themes/` を監視しており、ファイルが追�
 
 以下のリファレンスでは、`overrides` で設定できるトークンについて説明します。`/theme` の対話型エディターでは、同じトークンがライブプレビュー付きで表示されるほか、ここでは省略しているオンボーディング画面の色などの単一用途のアクセントもいくつか表示されます。
 
-> **カラートークンリファレンス**
+> [accordion] カラートークンリファレンス
 >
 > 次の例では、以下のいくつかのグループのトークンを組み合わせています：ブランドアクセント、plan モードの枠線、差分の背景、メッセージの背景です。
 >

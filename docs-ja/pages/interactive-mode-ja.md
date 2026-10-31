@@ -537,41 +537,41 @@ Claude Code は、入力中にプロンプト入力のスペルミスのある�
 
 Claude Code は [`spellcheck`](https://code.claude.com/docs/ja/settings-reference#spellcheck) 設定を 3 つの場所から読み込み、プロジェクトの `.claude/settings.json` と `.claude/settings.local.json` では無視します。使用している場所からオンにしてください。
 
-**ユーザー設定**
+> [tab] ユーザー設定
+>
+> `~/.claude/settings.json` に `spellcheck` を追加してください。これは、[ユーザー設定](https://code.claude.com/docs/ja/settings.md#where-settings-live) の残りの部分と同様に、開くすべてのプロジェクトに適用されます。
+>
+> ```json theme={null}
+> {
+>   "spellcheck": { "enabled": true }
+> }
+> ```
 
-`~/.claude/settings.json` に `spellcheck` を追加してください。これは、[ユーザー設定](https://code.claude.com/docs/ja/settings.md#where-settings-live) の残りの部分と同様に、開くすべてのプロジェクトに適用されます。
+> [tab] コマンドライン
+>
+> `spellcheck.json` などの JSON ファイルに `spellcheck` を保存してください。
+>
+> ```json theme={null}
+> {
+>   "spellcheck": { "enabled": true }
+> }
+> ```
+>
+> 次に、ファイルを `--settings` に渡してください。これはそのセッションのみに適用されます。
+>
+> ```bash theme={null}
+> claude --settings spellcheck.json
+> ```
 
-```json theme={null}
-{
-  "spellcheck": { "enabled": true }
-}
-```
-
-**コマンドライン**
-
-`spellcheck.json` などの JSON ファイルに `spellcheck` を保存してください。
-
-```json theme={null}
-{
-  "spellcheck": { "enabled": true }
-}
-```
-
-次に、ファイルを `--settings` に渡してください。これはそのセッションのみに適用されます。
-
-```bash theme={null}
-claude --settings spellcheck.json
-```
-
-**管理設定**
-
-組織の [管理設定ソース](https://code.claude.com/docs/ja/permissions.md#managed-settings) の 1 つに `spellcheck` を追加してください。これは、それらの設定を受け取るすべてのユーザーに適用され、ユーザーはそれをオフにすることはできません。
-
-```json theme={null}
-{
-  "spellcheck": { "enabled": true }
-}
-```
+> [tab] 管理設定
+>
+> 組織の [管理設定ソース](https://code.claude.com/docs/ja/permissions.md#managed-settings) の 1 つに `spellcheck` を追加してください。これは、それらの設定を受け取るすべてのユーザーに適用され、ユーザーはそれをオフにすることはできません。
+>
+> ```json theme={null}
+> {
+>   "spellcheck": { "enabled": true }
+> }
+> ```
 
 スペルチェックがオンになっていることを確認するには、スペルミスのある単語とスペースを入力してください。Claude Code は単語に下線を引きます。下線が引かれない場合は、[Claude Code が何も下線を引かない場合](#when-claude-code-underlines-nothing) を参照してください。スペルチェックを再度オフにするには、同じ場所で `enabled` を `false` に設定するか、`spellcheck` を削除してください。
 

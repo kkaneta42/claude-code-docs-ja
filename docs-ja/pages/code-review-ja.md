@@ -32,23 +32,23 @@ Code Review をセットアップする前に、組織が条件を満たして�
 
 目的に応じたページを選んでください：
 
-> **[Code Review をセットアップする](https://code.claude.com/docs/ja/code-review-setup.md)**
+> [card] [Code Review をセットアップする](https://code.claude.com/docs/ja/code-review-setup.md)
 >
 > 要件を確認し、Claude GitHub App をインストールして、リポジトリ、レビューレベル、レビューを実行するタイミングを選択します
 
-> **[Code Review をカスタマイズする](https://code.claude.com/docs/ja/code-review-customize.md)**
+> [card] [Code Review をカスタマイズする](https://code.claude.com/docs/ja/code-review-customize.md)
 >
 > リポジトリ内の `REVIEW.md` と `CLAUDE.md` ファイルで、指摘される内容を調整します
 
-> **[プルリクエストでレビューを読み、リクエストする](https://code.claude.com/docs/ja/code-review-pull-requests.md)**
+> [card] [プルリクエストでレビューを読み、リクエストする](https://code.claude.com/docs/ja/code-review-pull-requests.md)
 >
 > 結果とその重大度を読み、コメントで再度レビューをリクエストします
 
-> **[Code Review のトラブルシューティング](https://code.claude.com/docs/ja/code-review-troubleshooting.md)**
+> [card] [Code Review のトラブルシューティング](https://code.claude.com/docs/ja/code-review-troubleshooting.md)
 >
 > 開始されなかったレビュー、失敗したレビュー、予算のためにスキップされたレビューを修正します
 
-> **[Code Review のコストと使用状況](https://code.claude.com/docs/ja/code-review-costs.md)**
+> [card] [Code Review のコストと使用状況](https://code.claude.com/docs/ja/code-review-costs.md)
 >
 > レビューの課金方法の確認、支出の見積もり、月間支出上限の設定、レビューアクティビティの追跡を行います
 

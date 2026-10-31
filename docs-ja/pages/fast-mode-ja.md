@@ -20,8 +20,8 @@ Opus 4.7 は高速モードをサポートしていないため、それに切�
 
 * Claude Code CLI で `/fast` を使用して高速モードをオンにします。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)は、選択したモデルが高速モードをサポートしている場合、**高速モードを切り替え**コマンドを提供します。Claude Code はそのトグルを [`fastMode` 設定](#toggle-fast-mode)に保存します。
 * 高速モード価格は Opus 5.5 で入力/出力あたり $8/$40 MTok、Opus 5 および Opus 4.8 で入力/出力あたり $10/$50 MTok です。
-* サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーと Claude Console で利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織は Opus 5 または Opus 4.8 で使用するために、最初にアクセスをプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
-* サブスクリプションプラン（Pro/Max/Team/Enterprise）の Claude Code ユーザーの場合、高速モードは使用量クレジットのみで利用可能であり、サブスクリプションレート制限に含まれていません。
+* サブスクリプションプラン（Pro/Max/Ultra/Team/Enterprise）の Claude Code ユーザーと Claude Console で利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織は Opus 5 または Opus 4.8 で使用するために、最初にアクセスをプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
+* サブスクリプションプラン（Pro/Max/Ultra/Team/Enterprise）の Claude Code ユーザーの場合、fast mode は使用クレジットのみで利用可能であり、サブスクリプションのレート制限には含まれていません。
 
 ## 高速モードの切り替え
 
@@ -86,7 +86,7 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 
 fast mode の支出がどこに表示されるかは、サインイン方法によって異なるため、まず [`/status`](https://code.claude.com/docs/ja/commands) を実行して確認してください。`Claude Max account` などの `Login method` 行が表示される場合は、Claude サブスクリプションでサインインしています。代わりに `API key` 行が表示される場合は、リクエストが Claude Console 組織に請求されます。
 
-* **Pro と Max**：使用クレジットから高速モードの料金を支払います。claude.ai の [**設定 > 使用状況**](https://claude.ai/settings/usage)に移動します。ここで、**使用クレジット**セクションに今月の使用クレジットの支出額が表示されます。この数字には高速モードが含まれていますが、別途に分類されていません。
+* **Pro、Max、Ultra**：使用クレジットから fast mode の料金を支払います。claude.ai の [**設定 > 使用状況**](https://claude.ai/settings/usage)に移動します。ここで、**使用クレジット**セクションに今月の使用クレジットの支出額が表示されます。この数字には fast mode が含まれていますが、別途に分類されていません。
 * **Team と Enterprise**：組織が使用クレジットから高速モード使用の料金を支払います。自分の使用クレジット支出を確認するには、[`/usage`](https://code.claude.com/docs/ja/costs#check-your-usage-credits-spend)を実行してください。組織がその支出をどこで確認するかについては、[Claude for Teams and Enterprise](https://code.claude.com/docs/ja/costs.md#claude-for-teams-and-enterprise)を参照してください。
 * **Claude Console**：組織が API 使用の残りの部分と一緒に高速モードの料金を支払います。Console の [使用状況](https://platform.claude.com/usage)ページと [コスト](https://platform.claude.com/cost)ページで、**グループ化**メニューの \*\*速度（Research Preview）\*\*を選択して、高速モードを標準速度の使用から分離します。選択した日付範囲に高速モード使用が含まれている場合にのみ、このオプションが表示されます。
 
@@ -120,8 +120,8 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 高速モードには以下のすべてが必要です：
 
 * **Anthropic API またはサブスクリプションのみ**：fast mode は Anthropic Console API および使用クレジットを使用する Claude サブスクリプションプランで利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform では利用できません。Console 組織が Opus 5 または Opus 4.8 で fast mode を使用するには、[fast mode アクセスをプロビジョニング](#enable-fast-mode-for-your-organization)する必要もあります。
-* **サブスクリプションプランで使用クレジットが有効**：Pro、Max、Team、または Enterprise プランでは、アカウントで[使用クレジット](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて課金できるようになります。有効になるまで、`/fast` は「Fast mode requires usage credits」と表示します。有効にする方法はプランによって異なります：
-  * Pro および Max では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) の **Usage credits** セクションで有効にするか、`/usage-credits` を実行してそのページを開きます。
+* **サブスクリプションプランで使用クレジットが有効**：Pro、Max、Ultra、Team、または Enterprise プランでは、アカウントで[使用クレジット](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて課金できるようになります。有効になるまで、`/fast` は「Fast mode requires usage credits」と表示します。有効にする方法はプランによって異なります：
+  * Pro、Max、および Ultra では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) の **Usage credits** セクションで有効にするか、`/usage-credits` を実行してそのページを開きます。
   * Team および Enterprise では、請求アクセス権を持つメンバーが [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で組織の使用クレジットを有効にし、アクセス権を持たないメンバーは `/usage-credits` を実行して組織の管理者にリクエストを送信します。
 
 > [!NOTE]

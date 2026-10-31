@@ -10,58 +10,58 @@
 
 ### データトレーニングポリシー
 
-**コンシューマーユーザー（Free、Pro、Max プラン）**：
-将来の Claude モデルの改善のためにデータを使用することを許可するかどうかを選択できます。この設定がオンの場合、Free、Pro、Max アカウントからのデータを使用して新しいモデルをトレーニングします（これらのアカウントから Claude Code を使用する場合も含みます）。
+**コンシューマーユーザー（Free、Pro、Max、Ultra プラン）**：
+データを将来の Claude モデルの改善に使用することを許可するかどうかを選択できます。この設定がオンになっている場合、Free、Pro、Max、Ultra アカウントのデータ（これらのアカウントから Claude Code を使用する場合を含む）を使用して新しいモデルをトレーニングします。
 
-**商用ユーザー**：（Team および Enterprise プラン、API、サードパーティプラットフォーム、Claude Gov）既存のポリシーを維持します。Anthropic は、商用条件の下で Claude Code に送信されたコードまたはプロンプトを使用して生成モデルをトレーニングしません。ただし、カスタマーがモデル改善のためにデータを提供することを選択した場合は除きます（例えば、[Developer Partner Program](https://support.claude.com/ja/articles/11174108-about-the-development-partner-program)）。
+**商用ユーザー**：（Team および Enterprise プラン、API、サードパーティプラットフォーム、Claude Gov）には既存のポリシーが引き続き適用されます。顧客がモデル改善のためにデータを提供することを選択した場合（たとえば [Developer Partner Program](https://support.claude.com/en/articles/11174108-about-the-development-partner-program)）を除き、Anthropic は商用規約の下で Claude Code に送信されたコードやプロンプトを使用して生成モデルをトレーニングすることはありません。
 
 ### Development Partner Program
 
-[Development Partner Program](https://support.claude.com/ja/articles/11174108-about-the-development-partner-program) などを通じて、トレーニング用の資料を提供する方法に明示的にオプトインした場合、提供された資料を使用してモデルをトレーニングする可能性があります。組織管理者は、組織の Development Partner Program に明示的にオプトインできます。このプログラムは Anthropic ファーストパーティ API でのみ利用可能であり、Amazon Bedrock または Google Cloud の Agent Platform ユーザーは利用できないことに注意してください。
+[Development Partner Program](https://support.claude.com/en/articles/11174108-about-the-development-partner-program) などを通じて、トレーニング用の素材を提供する方法に明示的にオプトインした場合、提供された素材をモデルのトレーニングに使用することがあります。組織の管理者は、組織として Development Partner Program に明示的にオプトインできます。このプログラムは Anthropic のファーストパーティ API でのみ利用可能であり、Amazon Bedrock または Google Cloud の Agent Platform のユーザーは利用できません。
 
-### `/feedback` コマンドを使用したフィードバック
+### `/feedback` コマンドによるフィードバック
 
-`/feedback` コマンドを使用して Claude Code に関するフィードバックを送信することを選択した場合、製品とサービスを改善するためにフィードバックを使用する可能性があります。`/feedback`、`/bug`、`/share` を通じて共有されたトランスクリプトは、同じパスを通じてレポートされ、5 年間保持されます。
+`/feedback` コマンドを使用して Claude Code に関するフィードバックを送信することを選択した場合、そのフィードバックを製品やサービスの改善に使用することがあります。`/feedback`、または同じ経路で報告される `/bug` および `/share` を通じて共有されたトランスクリプトは 5 年間保持されます。
 
-[Claude が作成したフィードバック](https://code.claude.com/docs/ja/tools-reference.md#sendfeedback-tool-behavior) では、Claude はフィードバックレポートを作成し、レビュー用にマシンにキューイングすることもできます。Claude Code は、ドラフトを送信することを選択するまで何も送信しません。送信されたドラフトは、他の `/feedback` レポートと同じ送信パスと保持期間を通じて処理されます。
+[Claude が作成するフィードバック](https://code.claude.com/docs/ja/tools-reference.md#sendfeedback-tool-behavior)では、Claude がフィードバックレポートの下書きを作成し、ユーザーが確認できるようにマシン上のキューに入れることもできます。ユーザーが下書きの送信を選択するまで Claude Code は何も送信せず、送信された下書きは他の `/feedback` レポートと同じ送信経路と保持期間が適用されます。
 
-### セッション品質調査
+### セッション品質アンケート
 
-Claude Code で「How is Claude doing this session?」プロンプトが表示されたときに、この調査に応答する場合（「Dismiss」を選択する場合を含む）、数値評価のみが記録されます。この調査の一部として、会話トランスクリプト、入力、出力、またはその他のセッションデータは収集または保存されません。サムズアップ/ダウンフィードバックまたは `/feedback` レポートとは異なり、このセッション品質調査は単純な製品満足度メトリックです。
+Claude Code で「How is Claude doing this session?」というプロンプトが表示された場合、このアンケートへの回答（「Dismiss」の選択を含む）では評価のみが記録されます。評価プロンプト自体の一部として、会話のトランスクリプト、入力、出力、その他のセッションデータを収集または保存することはありません。高評価/低評価のフィードバックや `/feedback` レポートとは異なり、このセッション品質アンケートは単純な製品満足度の指標です。
 
-数値評価プロンプトの後、「Can Anthropic look at your session transcript to help us improve Claude Code?」と尋ねる別の追加フォローアップが表示される場合があります。これは数値評価とは異なるオプションの 2 番目のステップです。
+評価プロンプトの後に、「Can Anthropic look at your session transcript to help us improve Claude Code?」と尋ねる別のフォローアップが表示される場合があります。これは評価とは別の、任意の 2 番目のステップです。
 
-* **Yes**：会話トランスクリプト、サブエージェントトランスクリプト、ディスクからの生のセッションログファイルを Anthropic にアップロードします。既知の API キーとトークンパターンはアップロード前に削除されます。ソースコード、ファイルコンテンツ、およびその他の会話コンテンツはそのままアップロードされます。共有されたトランスクリプトは最大 6 ヶ月間保持されます。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッションでは、Yes は同じペイロードを `~/.claude/feedback-bundles/` の下のローカルアーカイブに書き込みます。アップロードの代わりに、ファイルを転送するまで何もマシンから出ません。
-* **No**：何も送信せずに拒否します
-* **Don't ask again**：拒否し、今後のセッションでこのフォローアップが表示されなくなります
+* **Yes**：会話のトランスクリプト、すべてのサブエージェントのトランスクリプト、およびディスク上の生のセッションログファイルを Anthropic にアップロードします。既知の API キーおよびトークンのパターンはアップロード前に編集されます。ソースコード、ファイルの内容、その他の会話内容はそのままアップロードされます。共有されたトランスクリプトは最大 6 か月間保持されます。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは、Yes を選択するとアップロードする代わりに同じペイロードが `~/.claude/feedback-bundles/` 配下のローカルアーカイブに書き込まれます。そのファイルを転送するまで、マシンから何も送信されません。
+* **No**：何も送信せずに辞退します
+* **Don't ask again**：辞退し、今後のセッションでこのフォローアップが表示されないようにします
 
-**Yes** を明示的に選択しない限り、何もアップロードされません。[ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md) を設定している組織、または組織ポリシーで製品フィードバックが無効になっている組織、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている組織は、このフォローアップを表示しません。数値評価プロンプトの後に送信されたセッショントランスクリプトを含む、この調査への応答は、データトレーニング設定に影響を与えず、AI モデルをトレーニングするために使用することはできません。
+明示的に **Yes** を選択しない限り、何もアップロードされません。[ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md)が適用されている組織、組織のポリシーで製品フィードバックが無効になっている組織、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている組織では、このフォローアップは表示されません。評価プロンプトの後に送信されたセッショントランスクリプトを含め、このアンケートへの回答はデータトレーニングの設定に影響せず、AI モデルのトレーニングに使用されることはありません。
 
-これらの調査を無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。調査は、`DISABLE_TELEMETRY`、`DO_NOT_TRACK`、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合にも無効になります。無効にする代わりに頻度を制御するには、設定ファイルで [`feedbackSurveyRate`](https://code.claude.com/docs/ja/settings-reference#feedbacksurveyrate) を `0` から `1` の間の確率に設定します。非必須トラフィックをブロックしているが、独自の [OpenTelemetry collector](https://code.claude.com/docs/ja/monitoring-usage.md) を通じて調査応答をキャプチャしている組織は、`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL=1` を設定することで調査をオプトバックインできます。調査は、設定されたコレクターのみに数値評価をログします。トランスクリプト共有フォローアップおよび他のすべての Anthropic バウンドフィードバックトラフィックは無効のままです。
+これらのアンケートを無効にするには、`CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` を設定します。`DISABLE_TELEMETRY`、`DO_NOT_TRACK`、または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合も、アンケートは無効になります。不要なトラフィックをブロックしつつ、独自の [OpenTelemetry コレクター](https://code.claude.com/docs/ja/monitoring-usage.md)でアンケートの回答を収集している組織は、`CLAUDE_CODE_ENABLE_FEEDBACK_SURVEY_FOR_OTEL=1` を設定することでアンケートを再度有効にできます。その場合、アンケートは設定されたコレクターにのみ評価をログに記録します。トランスクリプト共有のフォローアップと、Anthropic 宛てのその他すべてのフィードバックトラフィックは無効のままです。無効にする代わりに頻度を制御するには、設定ファイルで [`feedbackSurveyRate`](https://code.claude.com/docs/ja/settings-reference#feedbacksurveyrate) を `0` から `1` の間の確率に設定します。
 
 ### データ保持
 
-Anthropic は、アカウントタイプと設定に基づいて Claude Code データを保持します。
+Anthropic は、アカウントの種類と設定に基づいて Claude Code のデータを保持します。
 
-**コンシューマーユーザー（Free、Pro、Max プラン）**：
+**コンシューマーユーザー（Free、Pro、Max、Ultra プラン）**：
 
-* モデル改善のためのデータ使用を許可するユーザー：モデル開発とセキュリティ改善をサポートするための 5 年間の保持期間
-* モデル改善のためのデータ使用を許可しないユーザー：30 日間の保持期間
-* プライバシー設定は、[claude.ai/settings/data-privacy-controls](https://claude.ai/settings/data-privacy-controls) でいつでも変更できます。
+* モデル改善のためのデータ使用を許可しているユーザー：モデル開発と安全性の向上をサポートするため、保持期間は 5 年間です
+* モデル改善のためのデータ使用を許可していないユーザー：保持期間は 30 日間です
+* プライバシー設定は [claude.ai/settings/data-privacy-controls](https://claude.ai/settings/data-privacy-controls) でいつでも変更できます。
 
 **商用ユーザー（Team、Enterprise、API）**：
 
-* 標準：30 日間の保持期間
-* [ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md)：Claude for Enterprise の Claude Code で利用可能。ZDR は組織ごとに有効になります。新しい各組織は、アカウントチームによって個別に ZDR を有効にする必要があります
-* ローカルキャッシング：Claude Code クライアントは、セッション再開を有効にするために、`~/.claude/projects/` の下にセッショントランスクリプトをプレーンテキストでローカルに 30 日間保存します。`cleanupPeriodDays` で期間を調整できます。[application data](https://code.claude.com/docs/ja/claude-directory.md#application-data) を参照して、何が保存されているか、およびそれをクリアする方法を確認してください。
+* 標準：保持期間は 30 日間です
+* [ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md)：Claude for Enterprise 上の Claude Code について、条件を満たすアカウントで利用できます。ZDR は標準の Enterprise プランには含まれていません。資格の確認後、アカウントチームによって組織ごとに有効化されます
+* ローカルキャッシュ：Claude Code クライアントは、セッションを再開できるように、セッショントランスクリプトをデフォルトで 30 日間 `~/.claude/projects/` 配下にプレーンテキストでローカルに保存します。期間は `cleanupPeriodDays` で調整できます。保存される内容と削除方法については、[アプリケーションデータ](https://code.claude.com/docs/ja/claude-directory.md#application-data)を参照してください。
 
-  Claude Desktop または Cowork で開始または最後に続行されたセッションのトランスクリプトは、[デフォルトではその制限から除外されます](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)。
+  Claude Desktop または Cowork で開始された、または最後に続行されたセッションのトランスクリプトは、[デフォルトでこの制限の対象外](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)です。
 
-Web 上の個別の Claude Code セッションはいつでも削除できます。セッションを削除すると、セッションのイベントデータが永久に削除されます。セッションの削除方法については、[Delete sessions](https://code.claude.com/docs/ja/claude-code-on-the-web.md#delete-sessions) を参照してください。
+個々のクラウドセッションはいつでも削除できます。セッションを削除すると、そのセッションのイベントデータは完全に削除されます。セッションの削除方法については、[セッションの削除](https://code.claude.com/docs/ja/claude-code-on-the-web.md#delete-sessions)を参照してください。
 
-データ保持慣行の詳細については、[Privacy Center](https://privacy.anthropic.com/) を参照してください。
+データ保持の取り組みの詳細については、[Privacy Center](https://privacy.anthropic.com/) をご覧ください。
 
-詳細については、[Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または [Consumer Terms](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max ユーザー向け）および [Privacy Policy](https://www.anthropic.com/legal/privacy) を確認してください。
+詳細については、[商用利用規約](https://www.anthropic.com/legal/commercial-terms)（Team、Enterprise、API ユーザー向け）または[コンシューマー規約](https://www.anthropic.com/legal/consumer-terms)（Free、Pro、Max、Ultra ユーザー向け）、および[プライバシーポリシー](https://www.anthropic.com/legal/privacy)をご確認ください。
 
 ## データアクセス
 
@@ -107,7 +107,7 @@ Claude Code は 2 種類の運用テレメトリを送信します。使用メ�
 
 エラーレポートは、以下のすべてが当てはまる場合にのみオンになります。
 
-* Claude Pro または Max サブスクリプションでサインインしている
+* Claude Pro、Max、または Ultra サブスクリプションでサインインしている
 * Claude Code v2.1.198 以降を実行している
 * Claude API に直接接続している
 * 組織がゼロデータ保持または HIPAA 契約を持っていない
@@ -123,7 +123,7 @@ Amazon Bedrock や Google Cloud の Agent Platform などのサードパーテ�
 | サービス | Claude API | Google Cloud の Agent Platform API | Amazon Bedrock API | Microsoft Foundry API | Claude Platform on AWS |
 | - | - | - | - | - | - |
 | **メトリクス** | デフォルトオン。 `DISABLE_TELEMETRY=1` で無効にします。 | デフォルトオフ。 `CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
-| **エラーレポート** | v2.1.198 以降の Pro および Max サインインではオン、それ以外はオフ。 `DISABLE_ERROR_REPORTING=1` で無効にします。 | デフォルトオフ。 `CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
+| **エラーレポート** | v2.1.198 以降の Pro、Max、および Ultra サインインではオン、それ以外はオフ。 `DISABLE_ERROR_REPORTING=1` で無効にします。 | デフォルトオフ。 `CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
 | **Claude API（`/feedback` レポート）** | デフォルトオン。 `DISABLE_FEEDBACK_COMMAND=1` で無効にします。 | デフォルトオフ。 `CLAUDE_CODE_USE_VERTEX` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_BEDROCK` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_FOUNDRY` は 1 である必要があります。 | デフォルトオフ。 `CLAUDE_CODE_USE_ANTHROPIC_AWS` は 1 である必要があります。 |
 | **セッション品質調査** | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 | デフォルトオン。 `CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1` で無効にします。 |
 | **WebFetch ドメインセーフティチェック** | デフォルトオン。 [settings](https://code.claude.com/docs/ja/settings.md) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](https://code.claude.com/docs/ja/settings.md) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](https://code.claude.com/docs/ja/settings.md) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](https://code.claude.com/docs/ja/settings.md) で `skipWebFetchPreflight: true` で無効にします。 | デフォルトオン。 [settings](https://code.claude.com/docs/ja/settings.md) で `skipWebFetchPreflight: true` で無効にします。 |

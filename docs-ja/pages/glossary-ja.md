@@ -12,7 +12,7 @@
 
 ### AGENTS.md
 
-AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、CLAUDE.md のみを読み込むかを指定できます。AGENTS.md を直接読み込むには、Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [AGENTS.md を読み込めない](https://code.claude.com/docs/ja/memory.md#when-agents-md-support-is-unavailable) ため、代わりに [CLAUDE.md からインポート](https://code.claude.com/docs/ja/memory.md#share-one-file-with-other-coding-tools) してください。
+AI コーディングエージェント向けに作成するプロジェクト指示のマークダウンファイル。リポジトリに AGENTS.md があり、[CLAUDE.md](#claude-md) がない場合、Claude はこれをプロジェクト指示として読み込みます。別のファイルを追加する必要はありません。`/config` の **Project instructions** 設定を変更して、Claude が両方のファイルを読み込むか、`CLAUDE.md` のみを読み込むかを指定できます。`AGENTS.md` を直接読み込むには、Claude Code v2.1.277 以降が必要です。一部のセッションでは Claude が [`AGENTS.md` を読み込めない](https://code.claude.com/docs/ja/memory#when-agents-md-support-is-unavailable) ため、代わりに [`CLAUDE.md` からインポート](https://code.claude.com/docs/ja/memory#share-one-file-with-other-coding-tools) してください。
 
 詳細情報: [AGENTS.md](https://code.claude.com/docs/ja/memory.md#agents-md)
 
@@ -54,7 +54,10 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定�
 
 ### Auto mode
 
-[permission mode](#permission-mode) の一種。承認プロンプトを表示する代わりに、別の分類器モデルが各アクションをレビューするため、Claude Code はほとんどのアクションをあなたに尋ねることなく実行できます。Claude Code は、あなたの明示的な ask ルールに一致するアクションの前にはあなたに尋ねます。Claude Code v2.1.283 以降では、auto mode はインタラクティブターミナルと VS Code セッションの [built-in starting permission mode](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in) であり、以前のバージョンでは Pro、Max、Team プランのみです。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。ツール結果はそれが見るものから削除されるため、ファイルまたは Web ページ内の悪意のあるコンテンツはそれを直接操作することはできません。
+[permission mode](#permission-mode) の一種。ユーザーの代わりに別の分類器モデルがアクションをレビューするため、Claude Code はほとんどのアクションを確認なしで実行します。明示的な ask ルールに一致するアクションについては、Claude Code は引き続き実行前に確認を求めます。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。分類器が見る内容からはツール結果が除去されるため、ファイルや Web ページ内の悪意のあるコンテンツが分類器を直接操作することはできません。
+
+* **Claude Code v2.1.283 以降**: auto モードは、インタラクティブなターミナルセッションと VS Code セッションの [built-in starting permission mode](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in) です
+* **それ以前のバージョン**: auto モードが組み込みの開始権限モードとなるのは、Pro、Max、Ultra、Team プランのみです
 
 詳細情報: [Eliminate prompts with auto mode](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)
 
@@ -140,7 +143,7 @@ Claude Code で設定するのではなく、claude.ai アカウントに追加�
 
 ### Dispatch
 
-電話で開始されたタスクルーター。Claude モバイルアプリからコーディングタスクを送信すると、Desktop アプリで Claude Code セッションを生成します。プロンプトは自動的に正しいツールにルーティングされます。Pro および Max プランで利用可能です。
+電話で開始されたタスクルーター。Claude モバイルアプリからコーディングタスクを送信すると、Desktop アプリで Claude Code セッションを生成します。プロンプトは自動的に正しいツールにルーティングされます。Pro、Max、Ultra プランで利用可能です。
 
 詳細情報: [Sessions from Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)
 

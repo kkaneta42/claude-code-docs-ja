@@ -62,24 +62,24 @@
 * `<gateway-key>` は、現在ゲートウェイを呼び出すことができる認証情報です。管理キー、テストキー、または既に発行した自分の開発者キーです。すべてのゲートウェイ製品に個別の管理認証情報があるわけではありません。ない場合は、まず [開発者認証情報を発行する](#issue-developer-credentials)で自分用の開発者キーを発行してください。
 * `model` はゲートウェイがルーティングするように設定されている Claude モデル名です。例では `claude-sonnet-4-6` を使用しています。設定した名前に置き換えてください。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> curl -X POST "https://llm-gateway.example.com/v1/messages" \
+>   -H "Authorization: Bearer <gateway-key>" \
+>   -H "anthropic-version: 2023-06-01" \
+>   -H "content-type: application/json" \
+>   -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+> ```
 
-```bash theme={null}
-curl -X POST "https://llm-gateway.example.com/v1/messages" \
-  -H "Authorization: Bearer <gateway-key>" \
-  -H "anthropic-version: 2023-06-01" \
-  -H "content-type: application/json" \
-  -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-```
-
-**PowerShell**
-
-```powershell theme={null}
-Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
-  -Headers @{ "Authorization" = "Bearer <gateway-key>"; "anthropic-version" = "2023-06-01" } `
-  -ContentType "application/json" `
-  -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
+>   -Headers @{ "Authorization" = "Bearer <gateway-key>"; "anthropic-version" = "2023-06-01" } `
+>   -ContentType "application/json" `
+>   -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+> ```
 
 **チェックポイント**：`content` フィールド付きの `200` は、ゲートウェイがそのモデル名でプロバイダーに到達したことを意味します。`404` はその名前がゲートウェイでルーティングされていないことを意味します。プロバイダーからの `401` はゲートウェイのプロバイダー認証情報が間違っていることを意味します。
 
@@ -95,24 +95,24 @@ Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages
 
 新しく発行されたキーが [ゲートウェイがモデルをルーティングしていることを確認する](#confirm-the-gateway-routes-your-models)と同じリクエストでゲートウェイに対して機能することを確認し、`<gateway-key>` を新しい `<developer-key>` に置き換えます。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> curl -X POST "https://llm-gateway.example.com/v1/messages" \
+>   -H "Authorization: Bearer <developer-key>" \
+>   -H "anthropic-version: 2023-06-01" \
+>   -H "content-type: application/json" \
+>   -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+> ```
 
-```bash theme={null}
-curl -X POST "https://llm-gateway.example.com/v1/messages" \
-  -H "Authorization: Bearer <developer-key>" \
-  -H "anthropic-version: 2023-06-01" \
-  -H "content-type: application/json" \
-  -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-```
-
-**PowerShell**
-
-```powershell theme={null}
-Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
-  -Headers @{ "Authorization" = "Bearer <developer-key>"; "anthropic-version" = "2023-06-01" } `
-  -ContentType "application/json" `
-  -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages" `
+>   -Headers @{ "Authorization" = "Bearer <developer-key>"; "anthropic-version" = "2023-06-01" } `
+>   -ContentType "application/json" `
+>   -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+> ```
 
 **チェックポイント**：`content` フィールド付きの `200` は、開発者キーがゲートウェイに到達し、ゲートウェイがそれを転送することを意味します。[前のステップ](#confirm-the-gateway-routes-your-models)が成功した場合のここでの `401` は、開発者キーが間違っているか、ゲートウェイでまだ有効になっていないことを意味します。
 
@@ -122,19 +122,19 @@ Invoke-RestMethod -Method Post -Uri "https://llm-gateway.example.com/v1/messages
 
 ロールアウトが fleet 全体に配布する同じ設定を使用して、ゲートウェイを通じて Claude Code を自分で実行してください。これらをターミナルに直接入力し、`.env` またはセッティングファイルには入力しないでください。これらはこのターミナルセッションのみ有効なため、セッションを閉じるとマシンは通常の設定に戻ります。ゲートウェイが `x-api-key` ヘッダーを読み取る場合は、`ANTHROPIC_AUTH_TOKEN` の代わりに `ANTHROPIC_API_KEY` を使用してください。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> export ANTHROPIC_BASE_URL=https://llm-gateway.example.com
+> export ANTHROPIC_AUTH_TOKEN="<developer-key>"
+> ```
 
-```bash theme={null}
-export ANTHROPIC_BASE_URL=https://llm-gateway.example.com
-export ANTHROPIC_AUTH_TOKEN="<developer-key>"
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:ANTHROPIC_BASE_URL = "https://llm-gateway.example.com"
-$env:ANTHROPIC_AUTH_TOKEN = "<developer-key>"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:ANTHROPIC_BASE_URL = "https://llm-gateway.example.com"
+> $env:ANTHROPIC_AUTH_TOKEN = "<developer-key>"
+> ```
 
 次に、ゲートウェイを通じてワンショットプロンプトを送信します。
 
@@ -224,26 +224,26 @@ claude -p "Reply with one word: connected"
 
 ゲートウェイホストではなく開発者マシンからすべてが機能することを確認し、テストが開発者が使用するネットワークパスをカバーするようにします。ストリーミングリクエストを送信します。これはエンドポイント、ストリーミングパススルー、およびモデルルーティングを一度にチェックします。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> curl -N -X POST "https://llm-gateway.example.com/v1/messages" \
+>   -H "Authorization: Bearer <developer-key>" \
+>   -H "anthropic-version: 2023-06-01" \
+>   -H "content-type: application/json" \
+>   -d '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
+> ```
 
-```bash theme={null}
-curl -N -X POST "https://llm-gateway.example.com/v1/messages" \
-  -H "Authorization: Bearer <developer-key>" \
-  -H "anthropic-version: 2023-06-01" \
-  -H "content-type: application/json" \
-  -d '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$body = '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
-$body | curl.exe -N -X POST "https://llm-gateway.example.com/v1/messages" `
-  -H "Authorization: Bearer <developer-key>" `
-  -H "anthropic-version: 2023-06-01" `
-  -H "content-type: application/json" `
-  --data-binary '@-'
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $body = '{"model": "claude-sonnet-4-6", "max_tokens": 16, "stream": true, "messages": [{"role": "user", "content": "count to 3"}]}'
+> $body | curl.exe -N -X POST "https://llm-gateway.example.com/v1/messages" `
+>   -H "Authorization: Bearer <developer-key>" `
+>   -H "anthropic-version: 2023-06-01" `
+>   -H "content-type: application/json" `
+>   --data-binary '@-'
+> ```
 
 `data:` 行が段階的に到着するのが見えるはずです。一時停止後にすべての応答が一度に到着することは、ゲートウェイがバッファリングしていることを意味し、Claude Code を停止させます。`404` はモデル名がルーティングされていないことを意味します。モデル名ごとに繰り返します。
 

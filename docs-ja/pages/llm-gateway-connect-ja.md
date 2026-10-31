@@ -73,19 +73,19 @@ Claude Code をゲートウェイに認証するには、環境変数に認証�
 
 ゲートウェイチームが提供した値に置き換えます：
 
-**Bash または Zsh**
+> [tab] Bash または Zsh
+>
+> ```bash theme={null}
+> export ANTHROPIC_BASE_URL=https://llm-gateway.example.com
+> export ANTHROPIC_AUTH_TOKEN=sk-gateway-key
+> ```
 
-```bash theme={null}
-export ANTHROPIC_BASE_URL=https://llm-gateway.example.com
-export ANTHROPIC_AUTH_TOKEN=sk-gateway-key
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:ANTHROPIC_BASE_URL = "https://llm-gateway.example.com"
-$env:ANTHROPIC_AUTH_TOKEN = "sk-gateway-key"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:ANTHROPIC_BASE_URL = "https://llm-gateway.example.com"
+> $env:ANTHROPIC_AUTH_TOKEN = "sk-gateway-key"
+> ```
 
 シェルエクスポートはそのターミナルセッションと、そこから開始されたプログラムにのみ適用されます。ドックまたはスタートメニューから起動されたエディターはそれらを見ません。新しいターミナル全体で値を永続化するには、同じ行をシェルプロファイル（`~/.zshrc`、`~/.bashrc`、PowerShell `$PROFILE` など）に追加してください。
 
@@ -119,24 +119,24 @@ Claude Code が実行されるすべての場所で設定を適用し、[バッ�
 
 シェルで変数をエクスポートした状態で、ゲートウェイに 1 トークンのリクエストを直接送信します。これは Claude Code を開く前に URL と認証情報が機能することを確認するため、失敗はゲートウェイを指し、設定ではなく。以下のコマンドはシェル変数を読み取るため、設定ファイルに値を入れた場合でも[シェルエクスポート](#set-as-shell-environment-variables)が必要です。
 
-**Bash または Zsh**
+> [tab] Bash または Zsh
+>
+> ```bash theme={null}
+> curl -sS -w '\n%{http_code}\n' -X POST "$ANTHROPIC_BASE_URL/v1/messages" \
+>   -H "Authorization: Bearer $ANTHROPIC_AUTH_TOKEN" \
+>   -H "anthropic-version: 2023-06-01" \
+>   -H "content-type: application/json" \
+>   -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+> ```
 
-```bash theme={null}
-curl -sS -w '\n%{http_code}\n' -X POST "$ANTHROPIC_BASE_URL/v1/messages" \
-  -H "Authorization: Bearer $ANTHROPIC_AUTH_TOKEN" \
-  -H "anthropic-version: 2023-06-01" \
-  -H "content-type: application/json" \
-  -d '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-```
-
-**PowerShell**
-
-```powershell theme={null}
-Invoke-RestMethod -Method Post -Uri "$env:ANTHROPIC_BASE_URL/v1/messages" `
-  -Headers @{ "Authorization" = "Bearer $env:ANTHROPIC_AUTH_TOKEN"; "anthropic-version" = "2023-06-01" } `
-  -ContentType "application/json" `
-  -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> Invoke-RestMethod -Method Post -Uri "$env:ANTHROPIC_BASE_URL/v1/messages" `
+>   -Headers @{ "Authorization" = "Bearer $env:ANTHROPIC_AUTH_TOKEN"; "anthropic-version" = "2023-06-01" } `
+>   -ContentType "application/json" `
+>   -Body '{"model": "claude-sonnet-4-6", "max_tokens": 1, "messages": [{"role": "user", "content": "."}]}'
+> ```
 
 ゲートウェイが `x-api-key` ヘッダーのキーを期待する場合、Bash コマンドの `Authorization` ヘッダーを `x-api-key: $ANTHROPIC_API_KEY` に置き換えるか、PowerShell コマンドの `"Authorization"` ハッシュテーブルエントリを `"x-api-key" = "$env:ANTHROPIC_API_KEY"` に置き換えてください。
 
@@ -274,17 +274,17 @@ options = ClaudeAgentOptions(
 
 一部のゲートウェイは、認証情報に加えて、テナント識別子やルーティングキーなどのカスタムヘッダーを使用してリクエストをルーティングまたはタグ付けします。これを送信するには、[`ANTHROPIC_CUSTOM_HEADERS`](https://code.claude.com/docs/ja/env-vars)を 1 行に 1 つの`Name: Value`ペアで設定します。以下の例は、`X-Org-Route`という名前のルーティングヘッダーを追加します。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> export ANTHROPIC_CUSTOM_HEADERS="X-Org-Route: prod"
+> ```
 
-```bash theme={null}
-export ANTHROPIC_CUSTOM_HEADERS="X-Org-Route: prod"
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:ANTHROPIC_CUSTOM_HEADERS = "X-Org-Route: prod"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:ANTHROPIC_CUSTOM_HEADERS = "X-Org-Route: prod"
+> ```
 
 設定ファイルの`env`ブロックで`ANTHROPIC_CUSTOM_HEADERS`を設定することもできます。JSON 文字列は複数行にまたがることができないため、ペア間で`\n`を使用します。
 
@@ -318,38 +318,38 @@ $env:ANTHROPIC_CUSTOM_HEADERS = "X-Org-Route: prod"
 
 ヘルパーは、現在の認証情報を stdout に出力する任意のシェルコマンドです。Claude Code はシステムシェルを通じて実行するため、Windows ではそれは実行可能ファイルまたは PowerShell 呼び出しです。コマンドが認証情報以外に何も出力しないようにします。Claude Code v2.1.227 以降では、キーと一緒に出力されるバナーまたはログ行により、[ヘルパーが失敗します](https://code.claude.com/docs/ja/errors.md#your-apikeyhelper-script-is-failing)。スクリプトを作成し、実行可能にして、[設定ファイル](https://code.claude.com/docs/ja/settings.md)の`apiKeyHelper`から参照します。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> 例えば、コンテナから読み取るスクリプト：
+>
+> ```bash theme={null}
+> #!/bin/bash
+> vault kv get -field=api_key secret/llm-gateway/claude-code
+> ```
+>
+> `~/.claude/settings.json`でそのパスを参照します：
+>
+> ```json theme={null}
+> {
+>   "apiKeyHelper": "~/bin/get-gateway-key.sh"
+> }
+> ```
 
-例えば、コンテナから読み取るスクリプト：
-
-```bash theme={null}
-#!/bin/bash
-vault kv get -field=api_key secret/llm-gateway/claude-code
-```
-
-`~/.claude/settings.json`でそのパスを参照します：
-
-```json theme={null}
-{
-  "apiKeyHelper": "~/bin/get-gateway-key.sh"
-}
-```
-
-**PowerShell**
-
-例えば、コンテナから読み取るスクリプト：
-
-```powershell theme={null}
-vault kv get -field=api_key secret/llm-gateway/claude-code
-```
-
-`%USERPROFILE%\.claude\settings.json`で PowerShell 呼び出しを参照し、JSON 文字列内のバックスラッシュをエスケープします：
-
-```json theme={null}
-{
-  "apiKeyHelper": "powershell -NoProfile -File C:\\scripts\\get-gateway-key.ps1"
-}
-```
+> [tab] PowerShell
+>
+> 例えば、コンテナから読み取るスクリプト：
+>
+> ```powershell theme={null}
+> vault kv get -field=api_key secret/llm-gateway/claude-code
+> ```
+>
+> `%USERPROFILE%\.claude\settings.json`で PowerShell 呼び出しを参照し、JSON 文字列内のバックスラッシュをエスケープします：
+>
+> ```json theme={null}
+> {
+>   "apiKeyHelper": "powershell -NoProfile -File C:\\scripts\\get-gateway-key.ps1"
+> }
+> ```
 
 Claude Code はデフォルトでヘルパーの出力を 5 分間キャッシュし、キャッシュの有効期限が経過した後にヘルパーを再実行します。有効期限を変更するには、ミリ秒単位で`CLAUDE_CODE_API_KEY_HELPER_TTL_MS`を設定します。例えば、15 分の場合は`CLAUDE_CODE_API_KEY_HELPER_TTL_MS=900000`です。
 
@@ -363,17 +363,17 @@ Claude Code がヘルパーを再実行する他のケースについては、[`
 
 そのトラフィックをオフにするには、ゲートウェイ変数と同じシェルエクスポートまたは設定ファイルの`env`ブロックで`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`を設定します。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+> ```
 
-```bash theme={null}
-export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
+> ```
 
 変数を設定すると、以下の効果と制限があります。
 
@@ -398,45 +398,45 @@ $env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1"
 
 ゲートウェイが独自の認証情報を発行する場合、`AWS_BEARER_TOKEN_BEDROCK`を設定しないままにします。設定した場合、Claude Code は`CLAUDE_CODE_SKIP_BEDROCK_AUTH`が設定されていても、ゲートウェイトークンの代わりにその[Amazon Bedrock API キー](https://code.claude.com/docs/ja/amazon-bedrock.md#2-configure-aws-credentials)を`Authorization`ヘッダーとして送信します。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> export ANTHROPIC_BEDROCK_BASE_URL=https://llm-gateway.example.com/bedrock
+> export CLAUDE_CODE_SKIP_BEDROCK_AUTH=1
+> export CLAUDE_CODE_USE_BEDROCK=1
+> ```
 
-```bash theme={null}
-export ANTHROPIC_BEDROCK_BASE_URL=https://llm-gateway.example.com/bedrock
-export CLAUDE_CODE_SKIP_BEDROCK_AUTH=1
-export CLAUDE_CODE_USE_BEDROCK=1
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:ANTHROPIC_BEDROCK_BASE_URL = "https://llm-gateway.example.com/bedrock"
-$env:CLAUDE_CODE_SKIP_BEDROCK_AUTH = "1"
-$env:CLAUDE_CODE_USE_BEDROCK = "1"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:ANTHROPIC_BEDROCK_BASE_URL = "https://llm-gateway.example.com/bedrock"
+> $env:CLAUDE_CODE_SKIP_BEDROCK_AUTH = "1"
+> $env:CLAUDE_CODE_USE_BEDROCK = "1"
+> ```
 
 #### Google Cloud の Agent Platform
 
 プロジェクト ID とリージョンを独自の値に置き換えます。Claude Code はゲートウェイに送信する各リクエストのパスに両方を含めます。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> export ANTHROPIC_VERTEX_BASE_URL=https://llm-gateway.example.com/vertex
+> export ANTHROPIC_VERTEX_PROJECT_ID=your-gcp-project-id
+> export CLAUDE_CODE_SKIP_VERTEX_AUTH=1
+> export CLAUDE_CODE_USE_VERTEX=1
+> export CLOUD_ML_REGION=us-east5
+> ```
 
-```bash theme={null}
-export ANTHROPIC_VERTEX_BASE_URL=https://llm-gateway.example.com/vertex
-export ANTHROPIC_VERTEX_PROJECT_ID=your-gcp-project-id
-export CLAUDE_CODE_SKIP_VERTEX_AUTH=1
-export CLAUDE_CODE_USE_VERTEX=1
-export CLOUD_ML_REGION=us-east5
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:ANTHROPIC_VERTEX_BASE_URL = "https://llm-gateway.example.com/vertex"
-$env:ANTHROPIC_VERTEX_PROJECT_ID = "your-gcp-project-id"
-$env:CLAUDE_CODE_SKIP_VERTEX_AUTH = "1"
-$env:CLAUDE_CODE_USE_VERTEX = "1"
-$env:CLOUD_ML_REGION = "us-east5"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:ANTHROPIC_VERTEX_BASE_URL = "https://llm-gateway.example.com/vertex"
+> $env:ANTHROPIC_VERTEX_PROJECT_ID = "your-gcp-project-id"
+> $env:CLAUDE_CODE_SKIP_VERTEX_AUTH = "1"
+> $env:CLAUDE_CODE_USE_VERTEX = "1"
+> $env:CLOUD_ML_REGION = "us-east5"
+> ```
 
 ブロックはルーティングと認証をカバーします。[Agent Platform セットアップ](https://code.claude.com/docs/ja/google-vertex-ai.md#4-configure-claude-code)からのリージョンオーバーライドとモデルピンはゲートウェイを通じても適用されます。
 
@@ -450,43 +450,43 @@ $env:CLOUD_ML_REGION = "us-east5"
 
 独自の`Authorization`ヘッダーを挿入するゲートウェイの場合、`CLAUDE_CODE_SKIP_FOUNDRY_AUTH=1`を設定し、両方の認証情報変数を設定しないままにします。Claude Code はその後、Azure 認証情報なしでリクエストを送信し、例えば`ANTHROPIC_CUSTOM_HEADERS`を通じて提供する`Authorization`ヘッダーを保持します。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> export ANTHROPIC_FOUNDRY_BASE_URL=https://llm-gateway.example.com/foundry
+> export ANTHROPIC_FOUNDRY_API_KEY=sk-gateway-key
+> export CLAUDE_CODE_USE_FOUNDRY=1
+> ```
 
-```bash theme={null}
-export ANTHROPIC_FOUNDRY_BASE_URL=https://llm-gateway.example.com/foundry
-export ANTHROPIC_FOUNDRY_API_KEY=sk-gateway-key
-export CLAUDE_CODE_USE_FOUNDRY=1
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:ANTHROPIC_FOUNDRY_BASE_URL = "https://llm-gateway.example.com/foundry"
-$env:ANTHROPIC_FOUNDRY_API_KEY = "sk-gateway-key"
-$env:CLAUDE_CODE_USE_FOUNDRY = "1"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:ANTHROPIC_FOUNDRY_BASE_URL = "https://llm-gateway.example.com/foundry"
+> $env:ANTHROPIC_FOUNDRY_API_KEY = "sk-gateway-key"
+> $env:CLAUDE_CODE_USE_FOUNDRY = "1"
+> ```
 
 #### AWS 上の Claude Platform
 
 ワークスペース ID については、[AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md)を参照してください。
 
-**Bash or Zsh**
+> [tab] Bash or Zsh
+>
+> ```bash theme={null}
+> export ANTHROPIC_AWS_BASE_URL=https://llm-gateway.example.com/anthropic-aws
+> export ANTHROPIC_AWS_WORKSPACE_ID=wrkspc_01ABCDEFGHIJKLMN
+> export CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH=1
+> export CLAUDE_CODE_USE_ANTHROPIC_AWS=1
+> ```
 
-```bash theme={null}
-export ANTHROPIC_AWS_BASE_URL=https://llm-gateway.example.com/anthropic-aws
-export ANTHROPIC_AWS_WORKSPACE_ID=wrkspc_01ABCDEFGHIJKLMN
-export CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH=1
-export CLAUDE_CODE_USE_ANTHROPIC_AWS=1
-```
-
-**PowerShell**
-
-```powershell theme={null}
-$env:ANTHROPIC_AWS_BASE_URL = "https://llm-gateway.example.com/anthropic-aws"
-$env:ANTHROPIC_AWS_WORKSPACE_ID = "wrkspc_01ABCDEFGHIJKLMN"
-$env:CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH = "1"
-$env:CLAUDE_CODE_USE_ANTHROPIC_AWS = "1"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> $env:ANTHROPIC_AWS_BASE_URL = "https://llm-gateway.example.com/anthropic-aws"
+> $env:ANTHROPIC_AWS_WORKSPACE_ID = "wrkspc_01ABCDEFGHIJKLMN"
+> $env:CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH = "1"
+> $env:CLAUDE_CODE_USE_ANTHROPIC_AWS = "1"
+> ```
 
 #### プロバイダーのルートを確認する
 

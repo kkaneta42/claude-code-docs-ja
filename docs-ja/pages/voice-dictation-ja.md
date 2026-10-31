@@ -105,7 +105,7 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 音声ディクテーションは、Claude の応答言語を制御する同じ [`language` 設定](https://code.claude.com/docs/ja/settings-reference#language)を使用します。その設定が空の場合、音声ディクテーションはデフォルトで英語になります。VS Code 拡張機能では、`language` が空の場合、音声ディクテーションは VS Code の `accessibility.voice.speechLanguage` 設定を使用してから、デフォルトで英語になります。
 
-> **サポートされている音声ディクテーション言語**
+> [accordion] サポートされている音声ディクテーション言語
 >
 > | 言語 | コード |
 > | :- | :- |

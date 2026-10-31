@@ -33,74 +33,74 @@
 
 これを標準的な組織全体のロールアウトメッセージとして使用してください。Claude Code が何であるかをカバーし、2 分のインストールパスを提供し、読者に 1 つの具体的なタスクを試すよう促し、「私のコードはどこに行くのか？」に誰かが尋ねる前に答えます。
 
-**メール**
+> [tab] メール
+>
+> ```text theme={null}
+> 件名：Claude Code は [エンジニアリング / あなたのチーム] で利用可能です
+>
+> チームへ、
+>
+> 本日より、Claude Code にアクセスできるようになりました。Claude Code は、
+> ターミナルで実行され、実際のコードベースを読み、実際のタスクを最後まで
+> 処理する AI コーディングエージェントです。デバッグ、リファクタリング、
+> テスト、PR などです。オートコンプリートではなく、チャットウィンドウでも
+> ありません。ファイルを編集し、コマンドを実行します。
+>
+> 2 分で実行開始：
+>
+>     curl -fsSL https://claude.ai/install.sh | bash
+>     cd <your-repo>
+>     claude
+>
+> その後、/init を 1 回実行してください。Claude はプロジェクトを読み、
+> ビルドコマンドと規約を含む CLAUDE.md を書き込むため、基本を何度も
+> 説明する必要がなくなります。
+>
+> その後、既に使用しているリポジトリで次のいずれかを試してください：
+>
+>   - '[ファイル] のテストは不安定です。理由を調べて修正してください'
+>   - '[モジュール] が [X] をどのように処理するかを説明してください'
+>   - '私の動作中の diff を見て、プッシュする前に何が危険かを教えてください'
+>
+> コードの行き先：Claude Code はターミナルで実行され、Anthropic の API と
+> 直接通信します。当社の Team または Enterprise プランでは、Anthropic は
+> モデルのトレーニングにコードまたはプロンプトを使用しません。
+> 詳細：https://code.claude.com/docs/en/data-usage
+>       https://code.claude.com/docs/en/security
+>
+> 質問がある場合：#claude-code。[所有者名] がこの週を監視しています。
+>
+> - [名前]
+>
+> P.S. エディタを好みますか？VS Code 拡張機能と JetBrains プラグインが
+> あります。同じエージェント、ターミナルは不要です。
+> ```
 
-```text theme={null}
-件名：Claude Code は [エンジニアリング / あなたのチーム] で利用可能です
-
-チームへ、
-
-本日より、Claude Code にアクセスできるようになりました。Claude Code は、
-ターミナルで実行され、実際のコードベースを読み、実際のタスクを最後まで
-処理する AI コーディングエージェントです。デバッグ、リファクタリング、
-テスト、PR などです。オートコンプリートではなく、チャットウィンドウでも
-ありません。ファイルを編集し、コマンドを実行します。
-
-2 分で実行開始：
-
-    curl -fsSL https://claude.ai/install.sh | bash
-    cd <your-repo>
-    claude
-
-その後、/init を 1 回実行してください。Claude はプロジェクトを読み、
-ビルドコマンドと規約を含む CLAUDE.md を書き込むため、基本を何度も
-説明する必要がなくなります。
-
-その後、既に使用しているリポジトリで次のいずれかを試してください：
-
-  - '[ファイル] のテストは不安定です。理由を調べて修正してください'
-  - '[モジュール] が [X] をどのように処理するかを説明してください'
-  - '私の動作中の diff を見て、プッシュする前に何が危険かを教えてください'
-
-コードの行き先：Claude Code はターミナルで実行され、Anthropic の API と
-直接通信します。当社の Team または Enterprise プランでは、Anthropic は
-モデルのトレーニングにコードまたはプロンプトを使用しません。
-詳細：https://code.claude.com/docs/en/data-usage
-      https://code.claude.com/docs/en/security
-
-質問がある場合：#claude-code。[所有者名] がこの週を監視しています。
-
-- [名前]
-
-P.S. エディタを好みますか？VS Code 拡張機能と JetBrains プラグインが
-あります。同じエージェント、ターミナルは不要です。
-```
-
-**Slack または Teams**
-
-```markdown theme={null}
-🚀 *Claude Code は [チーム] で利用可能です*
-
-AI コーディングエージェント、ターミナルで実行、リポジトリを読み、実際の
-作業を実行：バグ、リファクタリング、テスト、PR。
-
-`curl -fsSL https://claude.ai/install.sh | bash` → `cd your-repo` → `claude`
-
-*最初に試すこと* → `/init` を実行してから：「[ファイル] のテストは
-不安定です、理由を調べて修正してください。」
-
-🔒 ターミナルで実行、Anthropic の API と直接通信します。当社の Team または
-Enterprise プランでは、コードとプロンプトはモデルのトレーニングに
-使用されません。
-データ使用 → https://code.claude.com/docs/en/data-usage
-
-📚 クイックスタート · VS Code · 無料 1 時間コース
-   https://code.claude.com/docs/en/quickstart
-   https://code.claude.com/docs/en/vs-code
-   https://academy.claude.com/courses/claude-code-in-action
-
-質問 → このスレッド。[所有者] が対応しています。
-```
+> [tab] Slack または Teams
+>
+> ```markdown theme={null}
+> 🚀 *Claude Code は [チーム] で利用可能です*
+>
+> AI コーディングエージェント、ターミナルで実行、リポジトリを読み、実際の
+> 作業を実行：バグ、リファクタリング、テスト、PR。
+>
+> `curl -fsSL https://claude.ai/install.sh | bash` → `cd your-repo` → `claude`
+>
+> *最初に試すこと* → `/init` を実行してから：「[ファイル] のテストは
+> 不安定です、理由を調べて修正してください。」
+>
+> 🔒 ターミナルで実行、Anthropic の API と直接通信します。当社の Team または
+> Enterprise プランでは、コードとプロンプトはモデルのトレーニングに
+> 使用されません。
+> データ使用 → https://code.claude.com/docs/en/data-usage
+>
+> 📚 クイックスタート · VS Code · 無料 1 時間コース
+>    https://code.claude.com/docs/en/quickstart
+>    https://code.claude.com/docs/en/vs-code
+>    https://academy.claude.com/courses/claude-code-in-action
+>
+> 質問 → このスレッド。[所有者] が対応しています。
+> ```
 
 ### エグゼクティブスポンサーバリアント
 
@@ -108,47 +108,47 @@ CTO、CIO、SVP エンジニアリングなどのスポンサーエグゼクテ�
 
 このバージョンは意図的に 1 つの要求に削減されています。インストールして 1 つの実際のタスクで実行してください。エグゼクティブの仕事は要求を着地させることです。標準的なアナウンスメントと `#claude-code` が方法を処理します。
 
-**メール**
+> [tab] メール
+>
+> ```text theme={null}
+> 件名：この週、すべてのエンジニアに試してもらいたいことが 1 つあります
+>
+> チームへ、
+>
+> エンジニアリング全体に対して Claude Code をオンにしました。これは
+> ターミナルで直接動作し、実際のコードベースで動作する AI エージェントで、
+> 既に使用しているチームからの初期結果は十分に強いため、この週、全員に
+> 使用してもらいたいと考えています。
+>
+> 10 分をお願いします：
+>
+>     curl -fsSL https://claude.ai/install.sh | bash
+>     cd <your-repo>
+>     claude
+>
+> その後、1 つの実際のタスクを渡してください。先延ばしにしていたバグ、
+> または'[モジュール] がどのように機能するかを説明してください'。
+>
+> それが全体の要求です。[所有者名] とチームは、何か問題が発生した場合は
+> #claude-code にいます。
+>
+> - [エグゼクティブ名]
+>   [職位]
+> ```
 
-```text theme={null}
-件名：この週、すべてのエンジニアに試してもらいたいことが 1 つあります
-
-チームへ、
-
-エンジニアリング全体に対して Claude Code をオンにしました。これは
-ターミナルで直接動作し、実際のコードベースで動作する AI エージェントで、
-既に使用しているチームからの初期結果は十分に強いため、この週、全員に
-使用してもらいたいと考えています。
-
-10 分をお願いします：
-
-    curl -fsSL https://claude.ai/install.sh | bash
-    cd <your-repo>
-    claude
-
-その後、1 つの実際のタスクを渡してください。先延ばしにしていたバグ、
-または'[モジュール] がどのように機能するかを説明してください'。
-
-それが全体の要求です。[所有者名] とチームは、何か問題が発生した場合は
-#claude-code にいます。
-
-- [エグゼクティブ名]
-  [職位]
-```
-
-**Slack または Teams**
-
-```markdown theme={null}
-📣 *[エグゼクティブ名] から：この週試すべき 1 つのこと*
-
-エンジニアリング全体に対して *Claude Code* をオンにしました。初期結果は
-十分に強いため、この週、全員に実際の作業で 10 分試すよう要求しています。
-
-`curl -fsSL https://claude.ai/install.sh | bash` → `cd your-repo` →
-`claude` → 1 つの実際のタスクを渡してください。
-
-それだけです。質問 → #claude-code。
-```
+> [tab] Slack または Teams
+>
+> ```markdown theme={null}
+> 📣 *[エグゼクティブ名] から：この週試すべき 1 つのこと*
+>
+> エンジニアリング全体に対して *Claude Code* をオンにしました。初期結果は
+> 十分に強いため、この週、全員に実際の作業で 10 分試すよう要求しています。
+>
+> `curl -fsSL https://claude.ai/install.sh | bash` → `cd your-repo` →
+> `claude` → 1 つの実際のタスクを渡してください。
+>
+> それだけです。質問 → #claude-code。
+> ```
 
 ### パイロットグループバリアント
 

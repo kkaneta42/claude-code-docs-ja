@@ -531,28 +531,28 @@ claude self-hosted-runner orchestrator \
 
 これらのランナーは [`--confine-repo-settings enforce`](https://code.claude.com/docs/ja/self-hosted-environments-deploy#harden-your-deployment) を指定して起動してください。このモードでは、コミットされた設定が警告対象となったリポジトリでのセッションを拒否するため、まずデフォルトの `warn` モードで実行し、ログに記録された内容を解消してください。
 
-**Amazon Bedrock**
+> [tab] Amazon Bedrock
+>
+> リージョンを自分のものに置き換えます。
+>
+> ```bash theme={null}
+> export CLAUDE_CODE_USE_BEDROCK=1
+> export AWS_REGION=us-east-1
+> ```
+>
+> Claude Code がリージョンを解決する方法については、[Claude Code を設定する](https://code.claude.com/docs/ja/amazon-bedrock.md#3-configure-claude-code)を参照してください。Claude Code がリージョンに応じて使用する推論プロファイルのプレフィックスについては、[クロスリージョン推論プロファイルのプレフィックス](https://code.claude.com/docs/ja/amazon-bedrock.md#cross-region-inference-profile-prefixes)を参照してください。
 
-リージョンを自分のものに置き換えます。
-
-```bash theme={null}
-export CLAUDE_CODE_USE_BEDROCK=1
-export AWS_REGION=us-east-1
-```
-
-Claude Code がリージョンを解決する方法については、[Claude Code を設定する](https://code.claude.com/docs/ja/amazon-bedrock.md#3-configure-claude-code)を参照してください。Claude Code がリージョンに応じて使用する推論プロファイルのプレフィックスについては、[クロスリージョン推論プロファイルのプレフィックス](https://code.claude.com/docs/ja/amazon-bedrock.md#cross-region-inference-profile-prefixes)を参照してください。
-
-**Google Cloud の Agent Platform**
-
-リージョンとプロジェクト ID を自分のものに置き換えます。
-
-```bash theme={null}
-export CLAUDE_CODE_USE_VERTEX=1
-export CLOUD_ML_REGION=global
-export ANTHROPIC_VERTEX_PROJECT_ID=YOUR-PROJECT-ID
-```
-
-リージョンの選択については、[リージョンの設定](https://code.claude.com/docs/ja/google-vertex-ai.md#region-configuration)を参照してください。
+> [tab] Google Cloud の Agent Platform
+>
+> リージョンとプロジェクト ID を自分のものに置き換えます。
+>
+> ```bash theme={null}
+> export CLAUDE_CODE_USE_VERTEX=1
+> export CLOUD_ML_REGION=global
+> export ANTHROPIC_VERTEX_PROJECT_ID=YOUR-PROJECT-ID
+> ```
+>
+> リージョンの選択については、[リージョンの設定](https://code.claude.com/docs/ja/google-vertex-ai.md#region-configuration)を参照してください。
 
 **4. 変数がセッションに届いたことを確認する**
 

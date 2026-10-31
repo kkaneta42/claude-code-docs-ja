@@ -24,199 +24,199 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
 
 サポートされている各チャネルはプラグインで、[Bun](https://bun.sh) が必要です。実際のプラットフォームを接続する前にプラグインフローの実践的なデモを試すには、[fakechat クイックスタート](#quickstart)を試してください。
 
-**Telegram**
-
-完全な[Telegram プラグインソース](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram)を表示します。
-
-**1. Telegram ボットを作成する**
-
-Telegram で [BotFather](https://t.me/BotFather) を開き、`/newbot` を送信します。表示名と `bot` で終わる一意のユーザー名を指定します。BotFather が返すトークンをコピーします。
-
-**2. プラグインをインストールする**
-
-ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
-
-```
-/plugin install telegram@claude-plugins-official
-```
-
-インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
-
-* `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
-
-インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](https://code.claude.com/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-
-**3. トークンを設定する**
-
-BotFather からのトークンで設定コマンドを実行します。
-
-```
-/telegram:configure <token>
-```
-
-これは `~/.claude/channels/telegram/.env` に保存されます。Claude Code を起動する前に、シェル環境で `TELEGRAM_BOT_TOKEN` を設定することもできます。
-
-**4. チャネルを有効にして再起動する**
-
-Claude Code を終了し、チャネルフラグで再起動します。これにより Telegram プラグインが起動し、ボットからのメッセージのポーリングが開始されます。
-
-```bash theme={null}
-claude --channels plugin:telegram@claude-plugins-official
-```
-
-**5. アカウントをペアリングする**
-
-Telegram を開き、ボットに任意のメッセージを送信します。ボットはペアリングコードで返信します。
-
-> [!NOTE]
+> [tab] Telegram
 >
-> ボットが応答しない場合は、前のステップから `--channels` で Claude Code が実行されていることを確認してください。ボットはチャネルがアクティブな間だけ返信できます。
-
-Claude Code に戻り、以下を実行します。
-
-```
-/telegram:access pair <code>
-```
-
-その後、アクセスをロックダウンして、アカウントだけがメッセージを送信できるようにします。
-
-```
-/telegram:access policy allowlist
-```
-
-**Discord**
-
-完全な[Discord プラグインソース](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord)を表示します。
-
-**1. Discord ボットを作成する**
-
-[Discord Developer Portal](https://discord.com/developers/applications) に移動し、**New Application** をクリックして名前を付けます。**Bot** セクションでユーザー名を作成し、**Reset Token** をクリックしてトークンをコピーします。
-
-**2. Message Content Intent を有効にする**
-
-ボットの設定で、**Privileged Gateway Intents** までスクロールし、**Message Content Intent** を有効にします。
-
-**3. ボットをサーバーに招待する**
-
-**OAuth2 > URL Generator** に移動します。`bot` スコープを選択し、以下の権限を有効にします。
-
-* View Channels
-* Send Messages
-* Send Messages in Threads
-* Read Message History
-* Attach Files
-* Add Reactions
-
-生成された URL を開いてボットをサーバーに追加します。
-
-**4. プラグインをインストールする**
-
-ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
-
-```
-/plugin install discord@claude-plugins-official
-```
-
-インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
-
-* `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
-
-インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](https://code.claude.com/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
-
-**5. トークンを設定する**
-
-コピーしたボットトークンで設定コマンドを実行します。
-
-```
-/discord:configure <token>
-```
-
-これは `~/.claude/channels/discord/.env` に保存されます。Claude Code を起動する前に、シェル環境で `DISCORD_BOT_TOKEN` を設定することもできます。
-
-**6. チャネルを有効にして再起動する**
-
-Claude Code を終了し、チャネルフラグで再起動します。これにより Discord プラグインが接続され、ボットがメッセージを受信して応答できるようになります。
-
-```bash theme={null}
-claude --channels plugin:discord@claude-plugins-official
-```
-
-**7. アカウントをペアリングする**
-
-Discord でボットに DM を送信します。ボットはペアリングコードで返信します。
-
-> [!NOTE]
+> 完全な[Telegram プラグインソース](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram)を表示します。
 >
-> ボットが応答しない場合は、前のステップから `--channels` で Claude Code が実行されていることを確認してください。ボットはチャネルがアクティブな間だけ返信できます。
-
-Claude Code に戻り、以下を実行します。
-
-```
-/discord:access pair <code>
-```
-
-その後、アクセスをロックダウンして、アカウントだけがメッセージを送信できるようにします。
-
-```
-/discord:access policy allowlist
-```
-
-**iMessage**
-
-完全な[iMessage プラグインソース](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage)を表示します。
-
-iMessage チャネルは Messages データベースを直接読み取り、AppleScript を通じて返信を送信します。macOS が必要で、ボットトークンや外部サービスは不要です。
-
-**1. フルディスクアクセスを許可する**
-
-`~/Library/Messages/chat.db` にある Messages データベースは macOS によって保護されています。サーバーが初めてそれを読み取るとき、macOS はアクセスを求めるプロンプトを表示します。**Allow** をクリックします。プロンプトは Bun を起動したアプリ（Terminal、iTerm、IDE など）の名前を表示します。
-
-プロンプトが表示されない場合、または Don't Allow をクリックした場合は、**System Settings > Privacy & Security > Full Disk Access** でアクセスを手動で許可し、ターミナルを追加します。これがないと、サーバーは `authorization denied` で直ちに終了します。
-
-**2. プラグインをインストールする**
-
-ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
-
-```
-/plugin install imessage@claude-plugins-official
-```
-
-インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
-
-* `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
-* `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
-
-インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
-
-インストール概要で `Run /reload-plugins to apply.` と報告された場合でも、次のステップで再起動するとプラグインが読み込まれるため、ここで対応する必要はありません。
-
-**3. チャネルを有効にして再起動する**
-
-Claude Code を終了し、チャネルフラグで再起動します。
-
-```bash theme={null}
-claude --channels plugin:imessage@claude-plugins-official
-```
-
-**4. 自分自身にテキストを送信する**
-
-Apple ID にサインインしているデバイスで Messages を開き、自分自身にメッセージを送信します。それは Claude に直ちに到着します。セルフチャットはセットアップなしでアクセス制御をバイパスします。
-
-> [!NOTE]
+> **1. Telegram ボットを作成する**
 >
-> Claude が送信する最初の返信は、ターミナルが Messages を制御できるかどうかを尋ねる macOS Automation プロンプトをトリガーします。**OK** をクリックします。
+> Telegram で [BotFather](https://t.me/BotFather) を開き、`/newbot` を送信します。表示名と `bot` で終わる一意のユーザー名を指定します。BotFather が返すトークンをコピーします。
+>
+> **2. プラグインをインストールする**
+>
+> ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
+>
+> ```
+> /plugin install telegram@claude-plugins-official
+> ```
+>
+> インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
+>
+> * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+> * `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
+>
+> インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](https://code.claude.com/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+>
+> **3. トークンを設定する**
+>
+> BotFather からのトークンで設定コマンドを実行します。
+>
+> ```
+> /telegram:configure <token>
+> ```
+>
+> これは `~/.claude/channels/telegram/.env` に保存されます。Claude Code を起動する前に、シェル環境で `TELEGRAM_BOT_TOKEN` を設定することもできます。
+>
+> **4. チャネルを有効にして再起動する**
+>
+> Claude Code を終了し、チャネルフラグで再起動します。これにより Telegram プラグインが起動し、ボットからのメッセージのポーリングが開始されます。
+>
+> ```bash theme={null}
+> claude --channels plugin:telegram@claude-plugins-official
+> ```
+>
+> **5. アカウントをペアリングする**
+>
+> Telegram を開き、ボットに任意のメッセージを送信します。ボットはペアリングコードで返信します。
+>
+> > [!NOTE]
+> >
+> > ボットが応答しない場合は、前のステップから `--channels` で Claude Code が実行されていることを確認してください。ボットはチャネルがアクティブな間だけ返信できます。
+>
+> Claude Code に戻り、以下を実行します。
+>
+> ```
+> /telegram:access pair <code>
+> ```
+>
+> その後、アクセスをロックダウンして、アカウントだけがメッセージを送信できるようにします。
+>
+> ```
+> /telegram:access policy allowlist
+> ```
 
-**5. 他の送信者を許可する**
+> [tab] Discord
+>
+> 完全な[Discord プラグインソース](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/discord)を表示します。
+>
+> **1. Discord ボットを作成する**
+>
+> [Discord Developer Portal](https://discord.com/developers/applications) に移動し、**New Application** をクリックして名前を付けます。**Bot** セクションでユーザー名を作成し、**Reset Token** をクリックしてトークンをコピーします。
+>
+> **2. Message Content Intent を有効にする**
+>
+> ボットの設定で、**Privileged Gateway Intents** までスクロールし、**Message Content Intent** を有効にします。
+>
+> **3. ボットをサーバーに招待する**
+>
+> **OAuth2 > URL Generator** に移動します。`bot` スコープを選択し、以下の権限を有効にします。
+>
+> * View Channels
+> * Send Messages
+> * Send Messages in Threads
+> * Read Message History
+> * Attach Files
+> * Add Reactions
+>
+> 生成された URL を開いてボットをサーバーに追加します。
+>
+> **4. プラグインをインストールする**
+>
+> ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
+>
+> ```
+> /plugin install discord@claude-plugins-official
+> ```
+>
+> インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
+>
+> * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+> * `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
+>
+> インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。インストール概要を確認してください。`Run /reload-plugins to apply.` と報告されている場合は、[プラグイン変更を再起動なしで適用する](https://code.claude.com/docs/ja/plugins/cli-reference.md#reload-plugins)を参照して、プラグインの設定コマンドを利用可能にしてください。
+>
+> **5. トークンを設定する**
+>
+> コピーしたボットトークンで設定コマンドを実行します。
+>
+> ```
+> /discord:configure <token>
+> ```
+>
+> これは `~/.claude/channels/discord/.env` に保存されます。Claude Code を起動する前に、シェル環境で `DISCORD_BOT_TOKEN` を設定することもできます。
+>
+> **6. チャネルを有効にして再起動する**
+>
+> Claude Code を終了し、チャネルフラグで再起動します。これにより Discord プラグインが接続され、ボットがメッセージを受信して応答できるようになります。
+>
+> ```bash theme={null}
+> claude --channels plugin:discord@claude-plugins-official
+> ```
+>
+> **7. アカウントをペアリングする**
+>
+> Discord でボットに DM を送信します。ボットはペアリングコードで返信します。
+>
+> > [!NOTE]
+> >
+> > ボットが応答しない場合は、前のステップから `--channels` で Claude Code が実行されていることを確認してください。ボットはチャネルがアクティブな間だけ返信できます。
+>
+> Claude Code に戻り、以下を実行します。
+>
+> ```
+> /discord:access pair <code>
+> ```
+>
+> その後、アクセスをロックダウンして、アカウントだけがメッセージを送信できるようにします。
+>
+> ```
+> /discord:access policy allowlist
+> ```
 
-デフォルトでは、独自のメッセージだけが通過します。別の連絡先が Claude に到達できるようにするには、ハンドルを追加します。
-
-```
-/imessage:access allow +15551234567
-```
-
-ハンドルは `+country` 形式の電話番号または `user@example.com` のような Apple ID メールです。
+> [tab] iMessage
+>
+> 完全な[iMessage プラグインソース](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/imessage)を表示します。
+>
+> iMessage チャネルは Messages データベースを直接読み取り、AppleScript を通じて返信を送信します。macOS が必要で、ボットトークンや外部サービスは不要です。
+>
+> **1. フルディスクアクセスを許可する**
+>
+> `~/Library/Messages/chat.db` にある Messages データベースは macOS によって保護されています。サーバーが初めてそれを読み取るとき、macOS はアクセスを求めるプロンプトを表示します。**Allow** をクリックします。プロンプトは Bun を起動したアプリ（Terminal、iTerm、IDE など）の名前を表示します。
+>
+> プロンプトが表示されない場合、または Don't Allow をクリックした場合は、**System Settings > Privacy & Security > Full Disk Access** でアクセスを手動で許可し、ターミナルを追加します。これがないと、サーバーは `authorization denied` で直ちに終了します。
+>
+> **2. プラグインをインストールする**
+>
+> ターミナルで `claude` を実行して Claude Code を起動し、そのプロンプトで以下を入力します。
+>
+> ```
+> /plugin install imessage@claude-plugins-official
+> ```
+>
+> インストールが失敗した場合は、Claude Code が報告するメッセージと照合してください。
+>
+> * `Marketplace "claude-plugins-official" not found`：`/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行してください。
+> * `Plugin "<name>" not found in marketplace "claude-plugins-official"`：ローカルにあるマーケットプレイスカタログのコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行してください。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
+>
+> インストールがインストールスコープを求めるとき、ユーザースコープオプションを選択して、プラグインがすべてのプロジェクト全体で利用可能になるようにしてください。
+>
+> インストール概要で `Run /reload-plugins to apply.` と報告された場合でも、次のステップで再起動するとプラグインが読み込まれるため、ここで対応する必要はありません。
+>
+> **3. チャネルを有効にして再起動する**
+>
+> Claude Code を終了し、チャネルフラグで再起動します。
+>
+> ```bash theme={null}
+> claude --channels plugin:imessage@claude-plugins-official
+> ```
+>
+> **4. 自分自身にテキストを送信する**
+>
+> Apple ID にサインインしているデバイスで Messages を開き、自分自身にメッセージを送信します。それは Claude に直ちに到着します。セルフチャットはセットアップなしでアクセス制御をバイパスします。
+>
+> > [!NOTE]
+> >
+> > Claude が送信する最初の返信は、ターミナルが Messages を制御できるかどうかを尋ねる macOS Automation プロンプトをトリガーします。**OK** をクリックします。
+>
+> **5. 他の送信者を許可する**
+>
+> デフォルトでは、独自のメッセージだけが通過します。別の連絡先が Claude に到達できるようにするには、ハンドルを追加します。
+>
+> ```
+> /imessage:access allow +15551234567
+> ```
+>
+> ハンドルは `+country` 形式の電話番号または `user@example.com` のような Apple ID メールです。
 
 ## クイックスタート
 
@@ -308,7 +308,7 @@ iMessage は異なります。自分自身にテキストを送信するとゲ�
 | `channelsEnabled` | マスタースイッチ。チャネルがメッセージを配信するには `true` である必要があります。[組織のチャネルを有効にする](#enable-channels-for-your-organization)を参照してください。オフの場合、開発フラグを含むすべてのチャネルをブロックします。 | claude.ai Team および Enterprise：チャネルがブロックされます。Console：組織が管理設定をデプロイしない限りチャネルが許可されます。その場合、このキーが設定されるまでチャネルがブロックされます。 |
 | `allowedChannelPlugins` | チャネルが有効になったら、どのプラグインが登録できるか。設定されている場合、Anthropic が管理するリストを置き換えます。 | Anthropic デフォルトリストが適用されます。 |
 
-組織のない Pro および Max ユーザーはこれらのチェックを完全にスキップします。チャネルが利用可能で、ユーザーは `--channels` でセッションごとにオプトインします。
+組織のない Pro、Max、および Ultra ユーザーはこれらのチェックを完全にスキップします。チャネルが利用可能で、ユーザーは `--channels` でセッションごとにオプトインします。
 
 ### 組織のチャネルを有効にする
 

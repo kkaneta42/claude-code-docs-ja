@@ -3865,7 +3865,7 @@ Claude Code に同梱されている[スキル](https://code.claude.com/docs/ja/
 * **型**: Boolean
   * `true`: Claude Code は組織でチャネルを許可します
   * `false`: 未設定と同じです。チャネルがブロックされるかどうかは、「デフォルト」に記載のとおりプランによって異なります
-* **デフォルト**: 未設定。Team プランと Enterprise プラン、および管理設定のある Console アカウントではチャネルがブロックされ、Pro プランと Max プラン、および管理設定のない Console アカウントでは許可されます
+* **デフォルト**: 未設定。Team プランと Enterprise プラン、および管理設定のある Console アカウントではチャネルがブロックされ、Pro プラン、Max プラン、Ultra プラン、および管理設定のない Console アカウントでは許可されます
 
 ```json managed-settings.json theme={null}
 {

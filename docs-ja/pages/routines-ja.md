@@ -25,7 +25,7 @@
 * API トリガーのみを持つタスクは、そのエンドポイントを呼び出したときに実行されます。
 * GitHub トリガーのみを持つタスクは、一致するリポジトリイベントが発生したときに実行されます。
 
-スケジュールタスクは Pro、Max、Team、Enterprise プランで利用できます。[claude.ai/code/routines](https://claude.ai/code/routines) で作成・管理するか、CLI で `/schedule` を使用します。以前の名前であるルーティンは[引き続き表示されます](#where-the-name-routines-still-appears)。
+スケジュールタスクは Pro、Max、Ultra、Team、Enterprise プランで利用できます。[claude.ai/code/routines](https://claude.ai/code/routines) で作成・管理するか、CLI で `/schedule` を使用します。以前の名前であるルーティンは[引き続き表示されます](#where-the-name-routines-still-appears)。
 
 > [!NOTE]
 >
@@ -85,17 +85,17 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 **Trigger** 行で、タスクの開始方法を選択します。複数のトリガーを組み合わせるには、行の末尾にある **+** をクリックします。
 
-**Schedule**
+> [tab] Schedule
+>
+> 定期実行のプリセット頻度を選択します。タイムゾーンの扱い、遅延開始、カスタム cron 間隔、1 回限りの実行については、[スケジュールトリガーを追加する](#add-a-schedule-trigger)を参照してください。
 
-定期実行のプリセット頻度を選択します。タイムゾーンの扱い、遅延開始、カスタム cron 間隔、1 回限りの実行については、[スケジュールトリガーを追加する](#add-a-schedule-trigger)を参照してください。
+> [tab] GitHub event
+>
+> リポジトリ、反応するイベント、およびオプションのフィルタを選択します。サポートされているイベントとフィルタフィールドの完全なリストについては、[GitHub トリガーを追加する](#add-a-github-trigger)を参照してください。
 
-**GitHub event**
-
-リポジトリ、反応するイベント、およびオプションのフィルタを選択します。サポートされているイベントとフィルタフィールドの完全なリストについては、[GitHub トリガーを追加する](#add-a-github-trigger)を参照してください。
-
-**API**
-
-ここで **API** を選択します。**Create** をクリックすると、**API token** ダイアログにトークンが 1 回だけ表示されるため、ダイアログを閉じる前にコピーしてください。URL をコピーしたり新しいトークンを生成したりするには、[API トリガーを追加する](#add-an-api-trigger)を参照してください。
+> [tab] API
+>
+> ここで **API** を選択します。**Create** をクリックすると、**API token** ダイアログにトークンが 1 回だけ表示されるため、ダイアログを閉じる前にコピーしてください。URL をコピーしたり新しいトークンを生成したりするには、[API トリガーを追加する](#add-an-api-trigger)を参照してください。
 
 **4. リポジトリを選択する**
 
@@ -502,7 +502,7 @@ CLI は `/schedule` の要件の 1 つが満たされていない場合、この
 * Owner が Team または Enterprise 組織の[スケジュールタスクをオフにした](#routines-are-disabled-by-your-organizations-policy)。v2.1.227 より前は、このケースでもコマンドが表示されており、Claude がタスクを作成または実行しようとしたときに claude.ai がそれを拒否していました
 * Enterprise 組織が[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスを管理しており、どのロールにも **Remote sessions** のスケジュールタスク権限が含まれていない。いずれかのロールにこの権限を追加するよう Owner に依頼してください
 
-原因が CLI のサインインやクラウドセッション内にいることである場合でも、[claude.ai/code/routines](https://claude.ai/code/routines) でスケジュールタスクを作成・管理できます。そのためには Pro、Max、Team、または Enterprise アカウントが必要です。組織でスケジュールタスクまたはクラウドセッションがオフになっている場合や、ロールにそれらが含まれていない場合は、Web でも作成できません。
+原因が CLI のサインインやクラウドセッション内にいることである場合でも、[claude.ai/code/routines](https://claude.ai/code/routines) でスケジュールタスクを作成・管理できます。そのためには Pro、Max、Ultra、Team、または Enterprise アカウントが必要です。組織でスケジュールタスクまたはクラウドセッションがオフになっている場合や、ロールにそれらが含まれていない場合は、Web でも作成できません。
 
 ### "Routines are disabled by your organization's policy"
 

@@ -89,93 +89,93 @@ Claude が作業を終えて入力を必要とするたびにデスクトップ�
 
 以下の各タブでは、プラットフォームネイティブの通知コマンドを使用しています。これを `~/.claude/settings.json` に追加します。
 
-**macOS**
-
-```json theme={null}
-{
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-> **通知が表示されない場合**
+> [tab] macOS
 >
-> `osascript` は、組み込みのスクリプトエディタアプリを経由して通知を送ります。スクリプトエディタに通知の権限がない場合、コマンドは何も表示せずに失敗し、macOS は権限の付与を求めるプロンプトを表示しません。
->
-> ターミナルで次のコマンドを一度実行して、スクリプトエディタが通知設定に表示されるようにします。
->
-> ```bash theme={null}
-> osascript -e 'display notification "test"'
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "Notification": [
+>       {
+>         "matcher": "",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
 > ```
 >
-> この時点ではまだ何も表示されません。**システム設定 > 通知**を開き、一覧から**スクリプトエディタ**を見つけて、**通知を許可**をオンにします。コマンドを再度実行して、テスト通知が表示されることを確認します。
+> > [accordion] 通知が表示されない場合
+> >
+> > `osascript` は、組み込みのスクリプトエディタアプリを経由して通知を送ります。スクリプトエディタに通知の権限がない場合、コマンドは何も表示せずに失敗し、macOS は権限の付与を求めるプロンプトを表示しません。
+> >
+> > ターミナルで次のコマンドを一度実行して、スクリプトエディタが通知設定に表示されるようにします。
+> >
+> > ```bash theme={null}
+> > osascript -e 'display notification "test"'
+> > ```
+> >
+> > この時点ではまだ何も表示されません。**システム設定 > 通知**を開き、一覧から**スクリプトエディタ**を見つけて、**通知を許可**をオンにします。コマンドを再度実行して、テスト通知が表示されることを確認します。
 
-**Linux**
-
-```json theme={null}
-{
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "notify-send 'Claude Code' 'Claude Code needs your attention'"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-> **通知が表示されない場合**
+> [tab] Linux
 >
-> `notify-send` にはデスクトップ通知デーモンが必要ですが、ヘッドレスサーバー、SSH セッション、およびほとんどのコンテナにはこれがありません。まずコマンドを直接テストします。
->
-> ```bash theme={null}
-> notify-send 'Claude Code' 'test'
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "Notification": [
+>       {
+>         "matcher": "",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "notify-send 'Claude Code' 'Claude Code needs your attention'"
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
 > ```
 >
-> コマンドが見つからない場合は、Debian および Ubuntu では `libnotify-bin` パッケージを、それ以外ではディストリビューションの同等のパッケージをインストールします。
+> > [accordion] 通知が表示されない場合
+> >
+> > `notify-send` にはデスクトップ通知デーモンが必要ですが、ヘッドレスサーバー、SSH セッション、およびほとんどのコンテナにはこれがありません。まずコマンドを直接テストします。
+> >
+> > ```bash theme={null}
+> > notify-send 'Claude Code' 'test'
+> > ```
+> >
+> > コマンドが見つからない場合は、Debian および Ubuntu では `libnotify-bin` パッケージを、それ以外ではディストリビューションの同等のパッケージをインストールします。
 
-**Windows (PowerShell)**
-
-```json theme={null}
-{
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell.exe -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude Code needs your attention', 'Claude Code')\""
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-> **ダイアログが表示されない場合**
+> [tab] Windows (PowerShell)
 >
-> このコマンドは画面の隅に表示される通知ではなくダイアログボックスを開くため、ダイアログがターミナルウィンドウの背後に開くことがあります。まず PowerShell でコマンドを直接テストしてください。
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "Notification": [
+>       {
+>         "matcher": "",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "powershell.exe -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude Code needs your attention', 'Claude Code')\""
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
 >
-> WSL 内で Claude Code を実行している場合は、Windows の相互運用機能を通じて `powershell.exe` が `PATH` 上で利用可能である必要があります。
+> > [accordion] ダイアログが表示されない場合
+> >
+> > このコマンドは画面の隅に表示される通知ではなくダイアログボックスを開くため、ダイアログがターミナルウィンドウの背後に開くことがあります。まず PowerShell でコマンドを直接テストしてください。
+> >
+> > WSL 内で Claude Code を実行している場合は、Windows の相互運用機能を通じて `powershell.exe` が `PATH` 上で利用可能である必要があります。
 
 空の `matcher` はすべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかの値を設定します。
 
@@ -705,73 +705,73 @@ matcher がない場合、フックはそのイベントが発生するたびに
 
 以下のタブでは、さまざまなイベントタイプに対する matcher の例をさらにいくつか示します。
 
-**すべての Bash コマンドをログに記録する**
+> [tab] すべての Bash コマンドをログに記録する
+>
+> `Bash` ツールの呼び出しのみに一致させ、各コマンドをファイルにログとして記録します。`PostToolUse` イベントはコマンドの完了後に発火するため、`tool_input.command` には実行された内容が含まれます。フックは stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` がコマンド文字列のみを抽出し、`>>` がそれをログファイルに追記します。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PostToolUse": [
+>       {
+>         "matcher": "Bash",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "jq -r '.tool_input.command' >> ~/.claude/command-log.txt"
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
 
-`Bash` ツールの呼び出しのみに一致させ、各コマンドをファイルにログとして記録します。`PostToolUse` イベントはコマンドの完了後に発火するため、`tool_input.command` には実行された内容が含まれます。フックは stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` がコマンド文字列のみを抽出し、`>>` がそれをログファイルに追記します。
+> [tab] MCP ツールに一致させる
+>
+> MCP ツールは、組み込みツールとは異なる命名規則 `mcp__<server>__<tool>` を使用します。ここで `<server>` は MCP サーバー名、`<tool>` はそのサーバーが提供するツールです。たとえば、`mcp__github__search_repositories` や `mcp__filesystem__read_file` などです。[プラグインにバンドルされたサーバー](https://code.claude.com/docs/ja/mcp.md#plugin-provided-mcp-servers) のツールは、代わりに `mcp__plugin_my-plugin_db__query` のようにスコープ付きのサーバーセグメントを使用します。特定のサーバーのすべてのツールを対象にするには正規表現の matcher を使用し、サーバーをまたいで一致させるには `mcp__.*__write.*` のようなパターンを使用します。例の完全な一覧については、リファレンスの [MCP ツールに一致させる](https://code.claude.com/docs/ja/hooks.md#match-mcp-tools) を参照してください。
+>
+> 以下のコマンドは、`jq` を使ってフックの JSON 入力からツール名を抽出し、stderr に書き込みます。stderr に書き込むことで、stdout を JSON 出力用にクリーンに保ち、メッセージを [デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks) に送ることができます。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "PreToolUse": [
+>       {
+>         "matcher": "mcp__github__.*",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "echo \"GitHub tool called: $(jq -r '.tool_name')\" >&2"
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
 
-```json theme={null}
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '.tool_input.command' >> ~/.claude/command-log.txt"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**MCP ツールに一致させる**
-
-MCP ツールは、組み込みツールとは異なる命名規則 `mcp__<server>__<tool>` を使用します。ここで `<server>` は MCP サーバー名、`<tool>` はそのサーバーが提供するツールです。たとえば、`mcp__github__search_repositories` や `mcp__filesystem__read_file` などです。[プラグインにバンドルされたサーバー](https://code.claude.com/docs/ja/mcp.md#plugin-provided-mcp-servers) のツールは、代わりに `mcp__plugin_my-plugin_db__query` のようにスコープ付きのサーバーセグメントを使用します。特定のサーバーのすべてのツールを対象にするには正規表現の matcher を使用し、サーバーをまたいで一致させるには `mcp__.*__write.*` のようなパターンを使用します。例の完全な一覧については、リファレンスの [MCP ツールに一致させる](https://code.claude.com/docs/ja/hooks.md#match-mcp-tools) を参照してください。
-
-以下のコマンドは、`jq` を使ってフックの JSON 入力からツール名を抽出し、stderr に書き込みます。stderr に書き込むことで、stdout を JSON 出力用にクリーンに保ち、メッセージを [デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks) に送ることができます。
-
-```json theme={null}
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "mcp__github__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo \"GitHub tool called: $(jq -r '.tool_name')\" >&2"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-**セッション終了時にクリーンアップする**
-
-`SessionEnd` イベントは、セッションが終了した理由に対する matcher をサポートしています。このフックは、`/clear` を実行したときに設定される `clear` の理由でのみ発火し、通常の終了では発火しません。
-
-```json theme={null}
-{
-  "hooks": {
-    "SessionEnd": [
-      {
-        "matcher": "clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "rm -f /tmp/claude-scratch-*.txt"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+> [tab] セッション終了時にクリーンアップする
+>
+> `SessionEnd` イベントは、セッションが終了した理由に対する matcher をサポートしています。このフックは、`/clear` を実行したときに設定される `clear` の理由でのみ発火し、通常の終了では発火しません。
+>
+> ```json theme={null}
+> {
+>   "hooks": {
+>     "SessionEnd": [
+>       {
+>         "matcher": "clear",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "rm -f /tmp/claude-scratch-*.txt"
+>           }
+>         ]
+>       }
+>     ]
+>   }
+> }
+> ```
 
 #### `if` フィールドでツール名と引数によって絞り込む
 

@@ -39,7 +39,7 @@ Claude Code を Chrome で使用する前に、以下が必要です。
 * [Google Chrome](https://www.google.com/chrome/)、[Microsoft Edge](https://www.microsoft.com/edge)、または Brave、Arc、Vivaldi、Opera などのその他の Chromium ベースのブラウザ
 * [Claude in Chrome 拡張機能](https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn) バージョン 1.0.36 以上（Chrome Web Store で入手可能）
 * [Claude Code](https://code.claude.com/docs/ja/quickstart.md#step-1-install-claude-code)
-* 直接 Anthropic プラン（Pro、Max、Team、または Enterprise）
+* 直接 Anthropic プラン（Pro、Max、Ultra、Team、または Enterprise）
 
 HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
 

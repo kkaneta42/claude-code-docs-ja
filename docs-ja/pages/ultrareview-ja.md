@@ -120,8 +120,9 @@ Ultrareview はプランに含まれる使用量ではなく、追加使用量�
 | - | - | - |
 | Pro | 3 回の無料実行 | [追加使用量](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans)として請求 |
 | Max | 3 回の無料実行 | [追加使用量](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans)として請求 |
+| Ultra | 3 回の無料実行 | [使用クレジット](https://support.claude.com/ja/articles/12429409-extra-usage-for-paid-claude-plans)として請求 |
 
-* **無料実行回数**: Pro および Max の 3 回の実行はアカウントごとの 1 回限りの割り当てであり、更新されません。
+* **無料実行回数**: Pro、Max、Ultra の 3 回の実行はアカウントごとの 1 回限りの割り当てであり、更新されません。
 * **レビューあたりのコスト**: 無料実行回数を使用した後、通常は変更のサイズに応じて $5 から $25 の使用量クレジットがかかり、各実行前に起動ダイアログに表示される見積もりと一致します。
 * **実行がカウントされるタイミング**: クラウドセッションが開始されたとき。早期に停止したレビューまたは完了に失敗したレビューでも無料実行を使用します。有料レビューの場合、使用量クレジットは実行された部分に対してのみ請求されます。
 

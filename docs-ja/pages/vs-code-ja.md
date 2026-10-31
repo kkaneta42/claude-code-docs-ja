@@ -23,7 +23,7 @@ VS Code 拡張機能は、Claude Code 用のネイティブグラフィカルイ
 インストール前に、以下があることを確認してください。
 
 * VS Code 1.94.0 以上
-* Anthropic アカウント：任意の有料 Claude サブスクリプション（Pro、Max、Team、または Enterprise）または Claude Console アカウントが機能し、API キーは不要です。拡張機能を初めて開くときに、このアカウントで[サインイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code)します。Amazon Bedrock や Google Cloud の Agent Platform などのサードパーティプロバイダーを通じて Claude にアクセスする場合は、セットアップ手順について[サードパーティプロバイダーを使用する](#use-third-party-providers)を参照してください。
+* Anthropic アカウント：任意の有料 Claude サブスクリプション（Pro、Max、Ultra、Team、または Enterprise）または Claude Console アカウントが機能し、API キーは不要です。拡張機能を初めて開くときに、このアカウントで[サインイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code)します。Amazon Bedrock や Google Cloud の Agent Platform などのサードパーティプロバイダーを通じて Claude にアクセスする場合は、セットアップ手順について[サードパーティプロバイダーを使用する](#use-third-party-providers)を参照してください。
 
 > [!TIP]
 >
@@ -38,11 +38,15 @@ VS Code 拡張機能は、Claude Code 用のネイティブグラフィカルイ
 
 または、VS Code で `Cmd+Shift+X`（Mac）または `Ctrl+Shift+X`（Windows/Linux）を押して拡張機能ビューを開き、「Claude Code」を検索して **Install** をクリックします。
 
+> [!NOTE]
+>
+> 拡張機能のマーケットプレイスはサードパーティのソフトウェアであり、Anthropic はこれを推奨、保守、監査していません。Anthropic は、Visual Studio Marketplace と Open VSX Registry に拡張機能を公開申請しています。
+
 拡張機能のバージョン番号は、同梱されている Claude Code のバージョンです。たとえば、Claude Code v2.1.286 以降を必要とする機能には、拡張機能のバージョン 2.1.286 以降が必要です。拡張機能のバージョンは拡張機能ビューに表示されます。
 
 Claude Code は、ほかのエディタやコンテナでも動作します。
 
-* **その他の VS Code フォーク**：拡張機能は Devin Desktop や Kiro などのフォークにもインストールできます。エディタの拡張機能ビューで「Claude Code」を検索するか、[Open VSX レジストリ](https://open-vsx.org/extension/Anthropic/claude-code)からインストールしてください。
+* **その他の VS Code フォーク**：この拡張機能は Devin Desktop や Kiro などのフォークにもインストールできます。エディタの拡張機能ビューで「Claude Code」を検索するか、[Open VSX Registry](https://open-vsx.org/extension/Anthropic/claude-code) からインストールしてください。
 * **拡張機能をインストールできないエディタ**：代わりに [CLI をインストール](https://code.claude.com/docs/ja/quickstart.md)し、エディタの統合ターミナルで `claude` を実行してください。CLI はどのターミナルでも動作します。
 * **開発コンテナ**：開発コンテナ内で Claude Code を実行するには、[開発コンテナ](https://code.claude.com/docs/ja/devcontainer.md)を参照してください。
 
@@ -117,7 +121,7 @@ Claude Code でできることのその他のアイデアについては、[一�
 
 プロンプトボックスには次の機能があります。
 
-* **権限モード**: プロンプトボックス下部のモードインジケーターをクリックすると、権限モードを切り替えられます。Claude Code v2.1.283 以降では Auto が組み込みの開始時の権限モードです。それより前のバージョンでは、Pro、Max、Team プランでのみ Auto が開始時の権限モードになります。何によって変わるか、およびインジケーターで選択できるすべての権限モードについては、[拡張機能が開始時の権限モードを選択する仕組み](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。
+* **権限モード**: プロンプトボックス下部のモードインジケーターをクリックすると、権限モードを切り替えられます。Claude Code v2.1.283 以降では Auto が組み込みの開始時の権限モードです。それより前のバージョンでは、Pro、Max、Ultra、Team プランでのみ Auto が開始時の権限モードになります。何によって変わるか、およびインジケーターで選択できるすべての権限モードについては、[拡張機能が開始時の権限モードを選択する仕組み](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。
   * **Auto**: ユーザーに確認する代わりに、分類器がほとんどのアクションをレビューします。レビューおよびブロックされる内容については、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を参照してください。
   * **Manual**: Claude はファイルの編集やほとんどのシェルコマンドの前に権限を求めます。
   * **Plan**: Claude は実行する内容を説明し、変更を加える前に承認を待ちます。VS Code はプランを完全な Markdown ドキュメントとして自動的に開き、Claude が作業を始める前にインラインコメントを追加してフィードバックを伝えられます。
@@ -656,33 +660,33 @@ VS Code では、デフォルトでサブエージェントにこのアクショ
 
 オペレーティングシステムの URL オープナーを使用してハンドラーを呼び出します。
 
-**macOS**
+> [tab] macOS
+>
+> ```bash theme={null}
+> open "vscode://anthropic.claude-code/open"
+> ```
 
-```bash theme={null}
-open "vscode://anthropic.claude-code/open"
-```
+> [tab] Linux
+>
+> ```bash theme={null}
+> xdg-open "vscode://anthropic.claude-code/open"
+> ```
+>
+> `xdg-open` コマンドは `xdg-utils` パッケージに含まれています。シェルでコマンドが見つからないと報告された場合は、[Linux で xdg-open が見つからない](https://code.claude.com/docs/ja/deep-links.md#xdg-open-is-not-found-on-linux)を参照してください。
 
-**Linux**
-
-```bash theme={null}
-xdg-open "vscode://anthropic.claude-code/open"
-```
-
-`xdg-open` コマンドは `xdg-utils` パッケージに含まれています。シェルでコマンドが見つからないと報告された場合は、[Linux で xdg-open が見つからない](https://code.claude.com/docs/ja/deep-links.md#xdg-open-is-not-found-on-linux)を参照してください。
-
-**Windows**
-
-PowerShell の場合：
-
-```powershell theme={null}
-Start-Process "vscode://anthropic.claude-code/open"
-```
-
-`cmd.exe` では、`start` は最初の引用符付き引数をウィンドウタイトルとして扱うため、URL の前に空のタイトルを渡します。
-
-```cmd theme={null}
-start "" "vscode://anthropic.claude-code/open"
-```
+> [tab] Windows
+>
+> PowerShell の場合：
+>
+> ```powershell theme={null}
+> Start-Process "vscode://anthropic.claude-code/open"
+> ```
+>
+> `cmd.exe` では、`start` は最初の引用符付き引数をウィンドウタイトルとして扱うため、URL の前に空のタイトルを渡します。
+>
+> ```cmd theme={null}
+> start "" "vscode://anthropic.claude-code/open"
+> ```
 
 ハンドラーは 2 つのオプションのクエリパラメーターを受け付けます。
 
@@ -704,7 +708,7 @@ vscode://anthropic.claude-code/open?prompt=review%20my%20changes
 拡張機能は、VS Code の拡張機能設定と Claude Code の設定ファイルの 2 か所で構成します。
 
 * VS Code の**拡張機能設定**：VS Code 内での拡張機能の動作を制御します。`Cmd+,`（Mac）または `Ctrl+,`（Windows/Linux）で開き、**Extensions > Claude Code** に移動します。`/` と入力して **General config…** を選択して設定を開くこともできます。
-* `~/.claude/settings.json` の **Claude Code 設定**：拡張機能と CLI の間で共有されます。許可するコマンド、環境変数、フック、MCP サーバーに使用します。Claude Code v2.1.283 以降では、会話が開始される権限モードを決める入力の 1 つにもなります。それより前のバージョンでは、Pro、Max、Team プランでのみ該当します。順序については[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。詳細は[設定](https://code.claude.com/docs/ja/settings.md)を参照してください。
+* `~/.claude/settings.json` の **Claude Code 設定**：拡張機能と CLI の間で共有されます。許可するコマンド、環境変数、フック、MCP サーバーに使用します。Claude Code v2.1.283 以降では、会話が開始される権限モードを決める入力の 1 つにもなります。それより前のバージョンでは、Pro、Max、Ultra、Team プランでのみ該当します。順序については[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。詳細は[設定](https://code.claude.com/docs/ja/settings.md)を参照してください。
 
 > [!TIP]
 >
@@ -933,7 +937,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 
 * 互換性のあるバージョンの VS Code（1.94.0 以降）を使用していることを確認してください
 * VS Code に拡張機能をインストールする権限があることを確認してください
-* [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) から直接インストールしてみてください
+* [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) から直接インストールしてみてください
 
 ### Spark アイコンが表示されない
 

@@ -4,13 +4,13 @@
 
 # Slack での Claude Code
 
-> Slack からコーディングタスクを委任します。この以前のバージョンは、Claude Tag に接続されていないワークスペースで、Pro および Max アカウントからのチャンネルメンションにのみ応答します。
+> Slack からコーディングタスクを委任します。この以前のバージョンは、Claude Tag に接続されていないワークスペースで、Pro、Max、Ultra アカウントからのメンションにのみ応答します。
 
 > [!WARNING]
 >
-> このページは、各セッションが個別ユーザーのアカウントで実行される以前の Claude Code in Slack について説明しています。このバージョンは、Pro および Max アカウントからのチャンネルでの @メンションにのみ応答し、しかもどの組織も [Claude Tag](https://claude.com/product/tag) に接続していない Slack ワークスペースでのみ応答します。Claude Tag は、組織の共有 ID として @Claude を実行し、管理者が設定したアクセス権限を持ちます。
+> この以前の Claude Code in Slack は、Pro、Max、Ultra アカウントからのチャンネルでの @メンションにのみ応答し、しかもどの組織も [Claude Tag](https://claude.com/product/tag) に接続していない Slack ワークスペースでのみ応答します。各セッションは個別ユーザーのアカウントで実行されます。Claude Tag は、組織の共有 ID として @Claude を実行し、管理者が設定したアクセス権限を持ちます。
 >
-> * **Pro および Max プラン：** Claude Tag は個別プランでは利用できないため、Claude Tag に接続されていないワークスペースでは、このページがセットアップパスのままです。
+> * **Pro、Max、Ultra プラン：** Claude Tag は個別プランでは利用できないため、Claude Tag に接続されていないワークスペースで[このバージョンをセットアップ](#setting-up-claude-code-in-slack)してください。
 > * **Team および Enterprise プラン：** 既存の Slack アプリと @Claude ハンドルは変わりません。新しいワークスペースの場合は [Claude Tag をセットアップ](https://claude.com/docs/claude-tag/overview)してください。このバージョンを既に使用しているワークスペースを移行する場合は、[以前の Claude in Slack から移行する](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)を参照してください。
 > * **回答ではなく通知が返された場合：** @Claude が返信した[セットアップ通知](#this-workspace-isnt-set-up-for-claude-tag-yet)または[廃止通知](#the-legacy-claude-in-slack-bot-is-retired)を確認してください。
 
@@ -31,7 +31,7 @@ Claude Code in Slack を使用する前に、以下を確認してください�
 
 | 要件 | 詳細 |
 | :- | :- |
-| Claude プラン | Pro または Max |
+| Claude プラン | Pro、Max、または Ultra |
 | Slack ワークスペース | どの組織によっても [Claude Tag](https://claude.com/docs/claude-tag/overview) に接続されていない。@Claude が[廃止のお知らせ](#the-legacy-claude-in-slack-bot-is-retired)で返信する場合、そのワークスペースは接続されています |
 | クラウドセッション | [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) がアカウントで有効になっている |
 | GitHub アカウント | [claude.ai/code](https://claude.ai/code) で接続され、少なくとも 1 つのリポジトリが認証されている |
@@ -178,13 +178,13 @@ Enterprise および Team アカウントの場合、Slack の Claude から作�
 次の両方に該当する場合、@Claude は回答の代わりにスレッドでこの通知を返信します。
 
 * どの組織も Slack ワークスペースを [Claude Tag](https://claude.com/docs/claude-tag/overview) に接続していない。
-* Slack でリンクした Claude アカウントが Pro プランまたは Max プランではない。
+* Slack でリンクした Claude アカウントが Pro、Max、または Ultra プランではない。
 
 Claude Tag は Team プランと Enterprise プランで利用できます。ワークスペースを接続するには、通知に記載されている `@Claude connect` コマンドから始め、[Claude Tag をセットアップする](https://claude.com/docs/claude-tag/overview)の手順に従ってください。
 
 ### "The legacy Claude in Slack bot is retired"
 
-この通知は `The legacy Claude in Slack bot is retired effective October 5, 2026 and no longer responds in channels.` で始まります。Slack ワークスペースは Claude 組織に接続されていますが、その組織の Claude Tag 設定で、チャンネル、ワークスペース、または組織のデフォルトに対して以前のバージョンがまだ選択されています。この通知は自分のプランに依存しないため、Pro アカウントや Max アカウントにも表示されます。
+この通知は `The legacy Claude in Slack bot is retired effective October 5, 2026 and no longer responds in channels.` で始まります。Slack ワークスペースは Claude 組織に接続されていますが、その組織の Claude Tag 設定で、チャンネル、ワークスペース、または組織のデフォルトに対して以前のバージョンがまだ選択されています。この通知は自分のプランに依存しないため、Pro、Max、Ultra アカウントにも表示されます。
 
 その組織の Owner である場合は、[Claude 管理設定](https://claude.ai/admin-settings/claude-tag)を開き、チャンネルで Claude Tag をオンにします。設定を継承しているすべてのチャンネルを修正するには、代わりにワークスペースまたは組織のデフォルトで設定を変更します。移行の全体については、[以前の Claude in Slack から移行する](https://claude.com/docs/claude-tag/admins/migrate-from-earlier)を参照してください。Owner でない場合は、このエントリを Owner に送信してください。
 
@@ -235,22 +235,22 @@ Owner でない場合は、このエントリを Owner に送信してくださ�
 
 ## 関連リソース
 
-> **[クラウド上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)**
+> [card] [クラウド上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)
 >
 > クラウドセッションについて詳しく学ぶ
 
-> **[Claude for Slack](https://claude.com/claude-and-slack)**
+> [card] [Claude for Slack](https://claude.com/claude-and-slack)
 >
 > Claude for Slack の一般的なドキュメント
 
-> **[Claude Tag](https://claude.com/docs/claude-tag/overview)**
+> [card] [Claude Tag](https://claude.com/docs/claude-tag/overview)
 >
 > Slack での組織管理の @Claude（管理者が設定したアクセス権限付き）
 
-> **[Slack App Marketplace](https://slack.com/marketplace/A08SF47R6P4)**
+> [card] [Slack App Marketplace](https://slack.com/marketplace/A08SF47R6P4)
 >
 > Slack Marketplace から Claude アプリをインストール
 
-> **[Claude ヘルプセンター](https://support.claude.com)**
+> [card] [Claude ヘルプセンター](https://support.claude.com)
 >
 > 追加サポートを取得

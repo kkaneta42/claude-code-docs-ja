@@ -20,75 +20,75 @@
 
 1 人の開発者の個人設定です。モデルと努力レベルを選択し、ターミナルを調整し、読み取り専用コマンドと 1 つのファイル読み取りを事前承認します。リストされていないすべてのものはデフォルトを保持します。このようなファイルは `~/.claude/settings.json` に保存され、開くすべてのプロジェクトに適用されます。
 
-**コピー可能な設定ファイル**
+> [tab] コピー可能な設定ファイル
+>
+> これを `~/.claude/settings.json` として保存してください。コメントのない有効な JSON なので、そのまま貼り付けて、不要なキーを削除できます。
+>
+> ```json ~/.claude/settings.json theme={null}
+> {
+>   "model": "claude-sonnet-5",
+>   "modelSettings": {
+>     "claude-sonnet-5": { "effortLevel": "xhigh" }
+>   },
+>   "editorMode": "vim",
+>   "theme": "light-daltonized",
+>   "statusLine": {
+>     "type": "command",
+>     "command": "jq -r '\"[\\(.model.display_name)] \\(.context_window.used_percentage // 0)% context\"'",
+>     "padding": 2
+>   },
+>   "spinnerTipsEnabled": false,
+>   "preferredNotifChannel": "terminal_bell",
+>   "permissions": {
+>     "allow": [
+>       "Bash(git diff *)",
+>       "Read(~/.zshrc)"
+>     ]
+>   },
+>   "autoUpdatesChannel": "stable",
+>   "cleanupPeriodDays": 20
+> }
+> ```
 
-これを `~/.claude/settings.json` として保存してください。コメントのない有効な JSON なので、そのまま貼り付けて、不要なキーを削除できます。
-
-```json ~/.claude/settings.json theme={null}
-{
-  "model": "claude-sonnet-5",
-  "modelSettings": {
-    "claude-sonnet-5": { "effortLevel": "xhigh" }
-  },
-  "editorMode": "vim",
-  "theme": "light-daltonized",
-  "statusLine": {
-    "type": "command",
-    "command": "jq -r '\"[\\(.model.display_name)] \\(.context_window.used_percentage // 0)% context\"'",
-    "padding": 2
-  },
-  "spinnerTipsEnabled": false,
-  "preferredNotifChannel": "terminal_bell",
-  "permissions": {
-    "allow": [
-      "Bash(git diff *)",
-      "Read(~/.zshrc)"
-    ]
-  },
-  "autoUpdatesChannel": "stable",
-  "cleanupPeriodDays": 20
-}
-```
-
-**各キーの機能**
-
-同じファイルですが、各キーの上にコメントがあります。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、別のタブからコピーしてください。
-
-```jsonc ~/.claude/settings.json theme={null}
-{
-  // すべてのセッションを Sonnet 5 で開始
-  "model": "claude-sonnet-5",
-  // Sonnet 5 をデフォルトの高レベルより上で実行します。/effort はモデルごとにレベルを保存し、--effort は単一セッションに設定します
-  "modelSettings": {
-    "claude-sonnet-5": { "effortLevel": "xhigh" }
-  },
-  // プロンプトの Vim キーバインディング
-  "editorMode": "vim",
-  // 色覚異常対応のライトテーマ
-  "theme": "light-daltonized",
-  // プロンプトの下のステータスライン：モデル名とコンテキスト使用量
-  "statusLine": {
-    "type": "command",
-    "command": "jq -r '\"[\\(.model.display_name)] \\(.context_window.used_percentage // 0)% context\"'",
-    "padding": 2
-  },
-  // スピナーの下で回転するヒントを非表示にする
-  "spinnerTipsEnabled": false,
-  // 完了したタスクや待機中の権限プロンプトなどの通知のためにターミナルベルを鳴らす
-  "preferredNotifChannel": "terminal_bell",
-  // Claude Code が git diff を実行し、.zshrc を読み取ることを許可する（確認なし）
-  "permissions": {
-    "allow": [
-      "Bash(git diff *)",
-      "Read(~/.zshrc)"
-    ]
-  },
-  // 安定チャネルから更新を取得
-  "autoUpdatesChannel": "stable",
-  // 20 日以上前のセッショントランスクリプトおよび他のローカルセッションデータを削除
-  "cleanupPeriodDays": 20
-}
-```
+> [tab] 各キーの機能
+>
+> 同じファイルですが、各キーの上にコメントがあります。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、別のタブからコピーしてください。
+>
+> ```jsonc ~/.claude/settings.json theme={null}
+> {
+>   // すべてのセッションを Sonnet 5 で開始
+>   "model": "claude-sonnet-5",
+>   // Sonnet 5 をデフォルトの高レベルより上で実行します。/effort はモデルごとにレベルを保存し、--effort は単一セッションに設定します
+>   "modelSettings": {
+>     "claude-sonnet-5": { "effortLevel": "xhigh" }
+>   },
+>   // プロンプトの Vim キーバインディング
+>   "editorMode": "vim",
+>   // 色覚異常対応のライトテーマ
+>   "theme": "light-daltonized",
+>   // プロンプトの下のステータスライン：モデル名とコンテキスト使用量
+>   "statusLine": {
+>     "type": "command",
+>     "command": "jq -r '\"[\\(.model.display_name)] \\(.context_window.used_percentage // 0)% context\"'",
+>     "padding": 2
+>   },
+>   // スピナーの下で回転するヒントを非表示にする
+>   "spinnerTipsEnabled": false,
+>   // 完了したタスクや待機中の権限プロンプトなどの通知のためにターミナルベルを鳴らす
+>   "preferredNotifChannel": "terminal_bell",
+>   // Claude Code が git diff を実行し、.zshrc を読み取ることを許可する（確認なし）
+>   "permissions": {
+>     "allow": [
+>       "Bash(git diff *)",
+>       "Read(~/.zshrc)"
+>     ]
+>   },
+>   // 安定チャネルから更新を取得
+>   "autoUpdatesChannel": "stable",
+>   // 20 日以上前のセッショントランスクリプトおよび他のローカルセッションデータを削除
+>   "cleanupPeriodDays": 20
+> }
+> ```
 
 ## チームの共有設定
 
@@ -100,135 +100,135 @@
 * **hook はリポジトリ内のスクリプトです。** このファイルの hook は `.claude/hooks/block-rm.sh` を実行します。[hook がどのように解決されるか](https://code.claude.com/docs/ja/hooks.md#how-a-hook-resolves)では、これを書く方法について説明しています。
 * **ルールはコマンドとパスを記述されたとおりにマッチします。** `Bash(git push *)` は [`git -C . push`](https://code.claude.com/docs/ja/permissions#bash-rule-limits) にはマッチしません。`Read(./.env)` 単独では、ファイルツールと `cat .env` のようにファイルを名前で指定するコマンドを停止しますが、[`grep -r` をディレクトリ上で実行](https://code.claude.com/docs/ja/permissions#read-and-edit)することは停止しません。このファイルの `sandbox` ブロックはそのギャップを埋めます。sandbox は[あなたの `Read` 拒否パス](https://code.claude.com/docs/ja/settings-reference#sandbox-filesystem-denyread)をすべてのサンドボックス化されたコマンドが読み取れないものに追加するためです。
 
-**コピー可能な設定ファイル**
+> [tab] コピー可能な設定ファイル
+>
+> これをリポジトリのトップレベルに `.claude/settings.json` として保存してコミットしてください。コメントのない有効な JSON なので、そのまま貼り付けて、不要なキーを削除できます。
+>
+> ```json .claude/settings.json theme={null}
+> {
+>   "permissions": {
+>     "allow": [
+>       "Bash(npm run *)"
+>     ],
+>     "ask": [
+>       "Bash(git push *)"
+>     ],
+>     "deny": [
+>       "Read(./.env)",
+>       "Read(./.env.*)",
+>       "Read(./secrets/**)"
+>     ]
+>   },
+>   "hooks": {
+>     "PreToolUse": [
+>       {
+>         "matcher": "Bash",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh"
+>           }
+>         ]
+>       }
+>     ]
+>   },
+>   "extraKnownMarketplaces": {
+>     "acme-tools": {
+>       "source": {
+>         "source": "github",
+>         "repo": "acme-corp/claude-plugins"
+>       }
+>     }
+>   },
+>   "enabledPlugins": {
+>     "code-formatter@acme-tools": true
+>   },
+>   "sandbox": {
+>     "enabled": true,
+>     "filesystem": {
+>       "allowWrite": [
+>         "/tmp/build"
+>       ]
+>     },
+>     "network": {
+>       "allowedDomains": [
+>         "registry.npmjs.org",
+>         "*.example.com"
+>       ]
+>     }
+>   },
+>   "plansDirectory": "./plans"
+> }
+> ```
 
-これをリポジトリのトップレベルに `.claude/settings.json` として保存してコミットしてください。コメントのない有効な JSON なので、そのまま貼り付けて、不要なキーを削除できます。
-
-```json .claude/settings.json theme={null}
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm run *)"
-    ],
-    "ask": [
-      "Bash(git push *)"
-    ],
-    "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)"
-    ]
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh"
-          }
-        ]
-      }
-    ]
-  },
-  "extraKnownMarketplaces": {
-    "acme-tools": {
-      "source": {
-        "source": "github",
-        "repo": "acme-corp/claude-plugins"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "code-formatter@acme-tools": true
-  },
-  "sandbox": {
-    "enabled": true,
-    "filesystem": {
-      "allowWrite": [
-        "/tmp/build"
-      ]
-    },
-    "network": {
-      "allowedDomains": [
-        "registry.npmjs.org",
-        "*.example.com"
-      ]
-    }
-  },
-  "plansDirectory": "./plans"
-}
-```
-
-**各キーの機能**
-
-各キーの上にコメントが付いた同じファイルです。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、他のタブからコピーしてください。
-
-```jsonc .claude/settings.json theme={null}
-{
-  "permissions": {
-    // npm スクリプトを確認なしで実行
-    "allow": [
-      "Bash(npm run *)"
-    ],
-    // git push コマンドの前に確認
-    "ask": [
-      "Bash(git push *)"
-    ],
-    // ファイルツールとファイル読み取りコマンドによる env ファイルと secrets フォルダの読み取りを拒否
-    "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./secrets/**)"
-    ]
-  },
-  // すべての Bash コマンドの前に、リポジトリ内のスクリプトを実行してそれをブロックできます
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh"
-          }
-        ]
-      }
-    ]
-  },
-  // すべてのクローンでチームのプラグインマーケットプレイスを登録
-  "extraKnownMarketplaces": {
-    "acme-tools": {
-      "source": {
-        "source": "github",
-        "repo": "acme-corp/claude-plugins"
-      }
-    }
-  },
-  // そのマーケットプレイスから 1 つのプラグインを有効化。GitHub リポジトリなどの外部ソースからのプラグインは、各ユーザーが 1 回インストールする必要があります
-  "enabledPlugins": {
-    "code-formatter@acme-tools": true
-  },
-  // サンドボックスコマンド：書き込み可能なビルドディレクトリ。npm と example.com は事前に許可
-  "sandbox": {
-    "enabled": true,
-    "filesystem": {
-      "allowWrite": [
-        "/tmp/build"
-      ]
-    },
-    "network": {
-      "allowedDomains": [
-        "registry.npmjs.org",
-        "*.example.com"
-      ]
-    }
-  },
-  // プランファイルをリポジトリ内に保持
-  "plansDirectory": "./plans"
-}
-```
+> [tab] 各キーの機能
+>
+> 各キーの上にコメントが付いた同じファイルです。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、他のタブからコピーしてください。
+>
+> ```jsonc .claude/settings.json theme={null}
+> {
+>   "permissions": {
+>     // npm スクリプトを確認なしで実行
+>     "allow": [
+>       "Bash(npm run *)"
+>     ],
+>     // git push コマンドの前に確認
+>     "ask": [
+>       "Bash(git push *)"
+>     ],
+>     // ファイルツールとファイル読み取りコマンドによる env ファイルと secrets フォルダの読み取りを拒否
+>     "deny": [
+>       "Read(./.env)",
+>       "Read(./.env.*)",
+>       "Read(./secrets/**)"
+>     ]
+>   },
+>   // すべての Bash コマンドの前に、リポジトリ内のスクリプトを実行してそれをブロックできます
+>   "hooks": {
+>     "PreToolUse": [
+>       {
+>         "matcher": "Bash",
+>         "hooks": [
+>           {
+>             "type": "command",
+>             "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh"
+>           }
+>         ]
+>       }
+>     ]
+>   },
+>   // すべてのクローンでチームのプラグインマーケットプレイスを登録
+>   "extraKnownMarketplaces": {
+>     "acme-tools": {
+>       "source": {
+>         "source": "github",
+>         "repo": "acme-corp/claude-plugins"
+>       }
+>     }
+>   },
+>   // そのマーケットプレイスから 1 つのプラグインを有効化。GitHub リポジトリなどの外部ソースからのプラグインは、各ユーザーが 1 回インストールする必要があります
+>   "enabledPlugins": {
+>     "code-formatter@acme-tools": true
+>   },
+>   // サンドボックスコマンド：書き込み可能なビルドディレクトリ。npm と example.com は事前に許可
+>   "sandbox": {
+>     "enabled": true,
+>     "filesystem": {
+>       "allowWrite": [
+>         "/tmp/build"
+>       ]
+>     },
+>     "network": {
+>       "allowedDomains": [
+>         "registry.npmjs.org",
+>         "*.example.com"
+>       ]
+>     }
+>   },
+>   // プランファイルをリポジトリ内に保持
+>   "plansDirectory": "./plans"
+> }
+> ```
 
 ## 組織の管理設定
 
@@ -247,125 +247,125 @@
 
 管理者は、このようなファイルを `managed-settings.json` として、または MDM もしくは [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) を通じて同じ JSON をデプロイします。デプロイされた 1 つのファイルは、それが到達するすべてのマシンまたはアカウントに適用されます。グループに異なる値を付与するには、そのグループに異なるファイルまたはプロファイルをデプロイしてください。[サーバー管理設定はまだグループごとのポリシーをサポートしていない](https://code.claude.com/docs/ja/server-managed-settings.md#current-limitations) ためです。
 
-**コピー可能な設定ファイル**
+> [tab] コピー可能な設定ファイル
+>
+> これを `managed-settings.json` としてデプロイするか、MDM または claude.ai コンソールを通じて同じ JSON をデプロイしてください。コメントのない有効な JSON です。例の組織 UUID、サーバー URL、およびマーケットプレイスを自分のものに置き換え、不要なキーを削除してください。
+>
+> ```json managed-settings.json theme={null}
+> {
+>   "forceLoginMethod": "claudeai",
+>   "forceLoginOrgUUID": [
+>     "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+>   ],
+>   "availableModels": [
+>     "opus",
+>     "sonnet"
+>   ],
+>   "enforceAvailableModels": true,
+>   "permissions": {
+>     "deny": [
+>       "Bash(curl *)",
+>       "Read(./.env)",
+>       "Read(./secrets/**)"
+>     ],
+>     "disableBypassPermissionsMode": "disable"
+>   },
+>   "allowManagedPermissionRulesOnly": true,
+>   "allowedMcpServers": [
+>     {
+>       "serverUrl": "https://api.githubcopilot.com/*"
+>     }
+>   ],
+>   "allowManagedMcpServersOnly": true,
+>   "strictKnownMarketplaces": [
+>     {
+>       "source": "github",
+>       "repo": "acme-corp/approved-plugins"
+>     }
+>   ],
+>   "sandbox": {
+>     "enabled": true,
+>     "failIfUnavailable": true,
+>     "allowUnsandboxedCommands": false,
+>     "network": {
+>       "allowedDomains": [
+>         "registry.npmjs.org",
+>         "github.com"
+>       ],
+>       "allowManagedDomainsOnly": true
+>     }
+>   },
+>   "requiredMinimumVersion": "2.1.150",
+>   "cleanupPeriodDays": 7,
+>   "companyAnnouncements": [
+>     "Welcome to Acme Corp! Review our code guidelines at docs.example.com"
+>   ]
+> }
+> ```
 
-これを `managed-settings.json` としてデプロイするか、MDM または claude.ai コンソールを通じて同じ JSON をデプロイしてください。コメントのない有効な JSON です。例の組織 UUID、サーバー URL、およびマーケットプレイスを自分のものに置き換え、不要なキーを削除してください。
-
-```json managed-settings.json theme={null}
-{
-  "forceLoginMethod": "claudeai",
-  "forceLoginOrgUUID": [
-    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  ],
-  "availableModels": [
-    "opus",
-    "sonnet"
-  ],
-  "enforceAvailableModels": true,
-  "permissions": {
-    "deny": [
-      "Bash(curl *)",
-      "Read(./.env)",
-      "Read(./secrets/**)"
-    ],
-    "disableBypassPermissionsMode": "disable"
-  },
-  "allowManagedPermissionRulesOnly": true,
-  "allowedMcpServers": [
-    {
-      "serverUrl": "https://api.githubcopilot.com/*"
-    }
-  ],
-  "allowManagedMcpServersOnly": true,
-  "strictKnownMarketplaces": [
-    {
-      "source": "github",
-      "repo": "acme-corp/approved-plugins"
-    }
-  ],
-  "sandbox": {
-    "enabled": true,
-    "failIfUnavailable": true,
-    "allowUnsandboxedCommands": false,
-    "network": {
-      "allowedDomains": [
-        "registry.npmjs.org",
-        "github.com"
-      ],
-      "allowManagedDomainsOnly": true
-    }
-  },
-  "requiredMinimumVersion": "2.1.150",
-  "cleanupPeriodDays": 7,
-  "companyAnnouncements": [
-    "Welcome to Acme Corp! Review our code guidelines at docs.example.com"
-  ]
-}
-```
-
-**各キーの機能**
-
-各キーの上にコメントが付いた同じファイルです。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、他のタブからコピーしてください。
-
-```jsonc managed-settings.json theme={null}
-{
-  // claude.ai ログインのみ、かつこの組織内のみ
-  "forceLoginMethod": "claudeai",
-  "forceLoginOrgUUID": [
-    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  ],
-  // Opus と Sonnet モデルのみ。enforceAvailableModels を使用すると、デフォルトオプションもリストに従います
-  "availableModels": [
-    "opus",
-    "sonnet"
-  ],
-  "enforceAvailableModels": true,
-  "permissions": {
-    // すべてのマシンで curl、プロジェクトの .env ファイル、およびそのシークレットフォルダをブロック
-    "deny": [
-      "Bash(curl *)",
-      "Read(./.env)",
-      "Read(./secrets/**)"
-    ],
-    // すべてのセッションから権限モードのバイパスを削除
-    "disableBypassPermissionsMode": "disable"
-  },
-  // ユーザー、プロジェクト、およびローカル設定からの権限ルールを無視
-  "allowManagedPermissionRulesOnly": true,
-  // GitHub MCP サーバーのみ。ユーザーは任意のサーバーに「github」という名前を付けることができるため、名前ではなく URL で照合されます。リストに一致しないユーザーが追加したサーバーは読み込まれません。リストに URL エントリのみがある場合、すべての stdio サーバーを含みます。以下の allowManagedMcpServersOnly キーは、この管理リストのみが適用される許可リストにします
-  "allowedMcpServers": [
-    {
-      "serverUrl": "https://api.githubcopilot.com/*"
-    }
-  ],
-  "allowManagedMcpServersOnly": true,
-  // プラグインはこのマーケットプレイスからのみ取得可能
-  "strictKnownMarketplaces": [
-    {
-      "source": "github",
-      "repo": "acme-corp/approved-plugins"
-    }
-  ],
-  // Claude が実行するすべてのコマンドをサンドボックス化し、サンドボックスをセットアップできない場合は起動を拒否し、ブロックされたコマンドがサンドボックス外で再試行されることを許可しません。ネットワークは npm と GitHub に制限され、ユーザーはドメインを追加できません
-  "sandbox": {
-    "enabled": true,
-    "failIfUnavailable": true,
-    "allowUnsandboxedCommands": false,
-    "network": {
-      "allowedDomains": [
-        "registry.npmjs.org",
-        "github.com"
-      ],
-      "allowManagedDomainsOnly": true
-    }
-  },
-  // 2.1.150 より古いバージョンでの起動を拒否
-  "requiredMinimumVersion": "2.1.150",
-  // 7 日後にセッショントランスクリプトおよび他のローカルセッションデータを削除
-  "cleanupPeriodDays": 7,
-  // すべてのユーザーが起動時に表示するメッセージ
-  "companyAnnouncements": [
-    "Welcome to Acme Corp! Review our code guidelines at docs.example.com"
-  ]
-}
-```
+> [tab] 各キーの機能
+>
+> 各キーの上にコメントが付いた同じファイルです。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、他のタブからコピーしてください。
+>
+> ```jsonc managed-settings.json theme={null}
+> {
+>   // claude.ai ログインのみ、かつこの組織内のみ
+>   "forceLoginMethod": "claudeai",
+>   "forceLoginOrgUUID": [
+>     "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+>   ],
+>   // Opus と Sonnet モデルのみ。enforceAvailableModels を使用すると、デフォルトオプションもリストに従います
+>   "availableModels": [
+>     "opus",
+>     "sonnet"
+>   ],
+>   "enforceAvailableModels": true,
+>   "permissions": {
+>     // すべてのマシンで curl、プロジェクトの .env ファイル、およびそのシークレットフォルダをブロック
+>     "deny": [
+>       "Bash(curl *)",
+>       "Read(./.env)",
+>       "Read(./secrets/**)"
+>     ],
+>     // すべてのセッションから権限モードのバイパスを削除
+>     "disableBypassPermissionsMode": "disable"
+>   },
+>   // ユーザー、プロジェクト、およびローカル設定からの権限ルールを無視
+>   "allowManagedPermissionRulesOnly": true,
+>   // GitHub MCP サーバーのみ。ユーザーは任意のサーバーに「github」という名前を付けることができるため、名前ではなく URL で照合されます。リストに一致しないユーザーが追加したサーバーは読み込まれません。リストに URL エントリのみがある場合、すべての stdio サーバーを含みます。以下の allowManagedMcpServersOnly キーは、この管理リストのみが適用される許可リストにします
+>   "allowedMcpServers": [
+>     {
+>       "serverUrl": "https://api.githubcopilot.com/*"
+>     }
+>   ],
+>   "allowManagedMcpServersOnly": true,
+>   // プラグインはこのマーケットプレイスからのみ取得可能
+>   "strictKnownMarketplaces": [
+>     {
+>       "source": "github",
+>       "repo": "acme-corp/approved-plugins"
+>     }
+>   ],
+>   // Claude が実行するすべてのコマンドをサンドボックス化し、サンドボックスをセットアップできない場合は起動を拒否し、ブロックされたコマンドがサンドボックス外で再試行されることを許可しません。ネットワークは npm と GitHub に制限され、ユーザーはドメインを追加できません
+>   "sandbox": {
+>     "enabled": true,
+>     "failIfUnavailable": true,
+>     "allowUnsandboxedCommands": false,
+>     "network": {
+>       "allowedDomains": [
+>         "registry.npmjs.org",
+>         "github.com"
+>       ],
+>       "allowManagedDomainsOnly": true
+>     }
+>   },
+>   // 2.1.150 より古いバージョンでの起動を拒否
+>   "requiredMinimumVersion": "2.1.150",
+>   // 7 日後にセッショントランスクリプトおよび他のローカルセッションデータを削除
+>   "cleanupPeriodDays": 7,
+>   // すべてのユーザーが起動時に表示するメッセージ
+>   "companyAnnouncements": [
+>     "Welcome to Acme Corp! Review our code guidelines at docs.example.com"
+>   ]
+> }
+> ```

@@ -119,17 +119,17 @@ Linux と WSL2 では、サンドボックスは次のパッケージに依存�
 
 ディストリビューションのパッケージマネージャーでインストールします。
 
-**Ubuntu/Debian**
+> [tab] Ubuntu/Debian
+>
+> ```bash theme={null}
+> sudo apt-get install bubblewrap socat
+> ```
 
-```bash theme={null}
-sudo apt-get install bubblewrap socat
-```
-
-**Fedora**
-
-```bash theme={null}
-sudo dnf install bubblewrap socat
-```
+> [tab] Fedora
+>
+> ```bash theme={null}
+> sudo dnf install bubblewrap socat
+> ```
 
 依存関係が不足している場合、`/sandbox` の Dependencies タブには、`ripgrep`、`bubblewrap`、`socat`、seccomp フィルターのうちプラットフォームに不足しているものが一覧表示されます。インストールして Claude Code を再起動した後にこのタブが表示されなければ、すべての依存関係がそろっています。
 
@@ -137,7 +137,7 @@ Ripgrep はネイティブの Claude Code バイナリに同梱されていま�
 
 必須の依存関係が不足している場合、インストールするまで Dependencies タブだけが表示されます。オプションの seccomp フィルターだけが不足している場合は、Dependencies タブが他のタブと並んで表示されます。依存関係のチェックは起動時に実行されるため、`/sandbox` にパッケージを検出させるには、インストール後に Claude Code を再起動してください。
 
-> **Ubuntu 24.04 以降：bubblewrap によるユーザー名前空間の作成を許可する**
+> [accordion] Ubuntu 24.04 以降：bubblewrap によるユーザー名前空間の作成を許可する
 >
 > Ubuntu 24.04 以降では、デフォルトの AppArmor ポリシーにより、bubblewrap が分離に必要なユーザー名前空間を作成できません。
 >
@@ -161,7 +161,7 @@ Ripgrep はネイティブの Claude Code バイナリに同梱されていま�
 > sudo systemctl reload apparmor
 > ```
 
-> **WSL2 に関する注意事項**
+> [accordion] WSL2 に関する注意事項
 >
 > PowerShell から `wsl -l -v` を実行して WSL のバージョンを確認します。`Sandboxing requires WSL2` と表示される場合、ディストリビューションは WSL1 で実行されています。WSL2 にアップグレードするか、サンドボックス化せずに Claude Code を実行してください。
 >

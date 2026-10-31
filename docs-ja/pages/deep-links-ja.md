@@ -110,41 +110,41 @@ Enter キーを押して送信する前にプロンプトを編集できます�
 
 クリックする代わりに、シェルスクリプト、エイリアス、または自動化からディープリンクを開くこともできます。オペレーティングシステムの URL を開くコマンドをリンクを引数として呼び出します。これらのコマンドは、Claude Code がマシンに[登録](#registration-and-supported-platforms)するハンドラーに依存しています。
 
-**macOS**
+> [tab] macOS
+>
+> 組み込みの `open` コマンドは URL を登録された `claude-cli://` ハンドラーに渡します。
+>
+> ```bash theme={null}
+> open "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
+> ```
+>
+> 成功すると、Claude Code が実行されており、プロンプトが事前に入力された新しいターミナルウィンドウが開きます。
 
-組み込みの `open` コマンドは URL を登録された `claude-cli://` ハンドラーに渡します。
+> [tab] Linux
+>
+> ほとんどのデスクトップ環境は `xdg-open` を提供し、URL を登録されたハンドラーに渡します。
+>
+> ```bash theme={null}
+> xdg-open "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
+> ```
+>
+> 成功すると、Claude Code が実行されており、プロンプトが事前に入力された新しいターミナルウィンドウが開きます。シェルが `xdg-open` が見つからないと報告する場合は、[トラブルシューティング](#xdg-open-is-not-found-on-linux)を参照してください。
 
-```bash theme={null}
-open "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
-```
-
-成功すると、Claude Code が実行されており、プロンプトが事前に入力された新しいターミナルウィンドウが開きます。
-
-**Linux**
-
-ほとんどのデスクトップ環境は `xdg-open` を提供し、URL を登録されたハンドラーに渡します。
-
-```bash theme={null}
-xdg-open "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
-```
-
-成功すると、Claude Code が実行されており、プロンプトが事前に入力された新しいターミナルウィンドウが開きます。シェルが `xdg-open` が見つからないと報告する場合は、[トラブルシューティング](#xdg-open-is-not-found-on-linux)を参照してください。
-
-**Windows**
-
-PowerShell では、`Start-Process` は URL を登録されたハンドラーに渡します。
-
-```powershell theme={null}
-Start-Process "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
-```
-
-`cmd.exe` では、`start` は最初の引用符付き引数をウィンドウタイトルとして扱うため、URL の前に空のタイトルを渡します。
-
-```cmd theme={null}
-start "" "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
-```
-
-成功すると、Claude Code が実行されており、プロンプトが事前に入力された新しいターミナルウィンドウが開きます。
+> [tab] Windows
+>
+> PowerShell では、`Start-Process` は URL を登録されたハンドラーに渡します。
+>
+> ```powershell theme={null}
+> Start-Process "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
+> ```
+>
+> `cmd.exe` では、`start` は最初の引用符付き引数をウィンドウタイトルとして扱うため、URL の前に空のタイトルを渡します。
+>
+> ```cmd theme={null}
+> start "" "claude-cli://open?repo=acme/payments&q=review%20open%20PRs"
+> ```
+>
+> 成功すると、Claude Code が実行されており、プロンプトが事前に入力された新しいターミナルウィンドウが開きます。
 
 ## 登録とサポートされているプラットフォーム
 

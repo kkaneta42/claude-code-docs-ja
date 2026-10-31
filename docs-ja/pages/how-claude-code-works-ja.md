@@ -163,7 +163,7 @@ Claude には 2 つのセーフティメカニズムがあります。チェッ�
 
 権限モードを選択して、Claude が質問なしにできることを設定します。`Shift+Tab` を押して権限モードをサイクルさせます。
 
-* **Auto**: 分類器がバックグラウンドでほとんどのアクションをレビューし、質問する代わりにリスクのあるものをブロックします。Claude Code v2.1.283 以降では、インタラクティブターミナルと VS Code セッションの [組み込みの開始権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in) であり、以前のバージョンでは Pro、Max、Team プランのみです
+* **Auto**: 分類器がバックグラウンドでほとんどのアクションをレビューし、質問する代わりにリスクのあるものをブロックします。Claude Code v2.1.283 以降では、インタラクティブターミナルと VS Code セッションの [組み込みの開始権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in) です。以前のバージョンでは、Pro、Max、Ultra、Team プランでのみ組み込みの開始権限モードになります。
 * **Manual**: Claude はファイル編集とシェルコマンドの前に質問します
 * **Accept edits**: Claude は `mkdir` や `mv` などの一般的なファイルシステムコマンドを質問なしでファイル編集および実行し、他のコマンドについては引き続き質問します
 * **Plan**: Claude はソースファイルを編集せずにプランを探索および提案します
@@ -223,10 +223,10 @@ The relevant code is in src/payments/. Can you investigate and fix it?
 
 ## 次のステップ
 
-> **[機能で拡張する](https://code.claude.com/docs/ja/features-overview.md)**
+> [card] [機能で拡張する](https://code.claude.com/docs/ja/features-overview.md)
 >
 > スキルと MCP 接続を追加
 
-> **[一般的なワークフロー](https://code.claude.com/docs/ja/common-workflows.md)**
+> [card] [一般的なワークフロー](https://code.claude.com/docs/ja/common-workflows.md)
 >
 > 典型的なタスクのステップバイステップガイド

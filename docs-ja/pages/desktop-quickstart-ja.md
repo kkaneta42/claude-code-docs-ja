@@ -6,19 +6,19 @@
 
 > Claude デスクトップアプリをインストールして、Code タブを開き、コンピューター上のプロジェクトフォルダーで最初の Claude Code セッションを開始します。
 
-デスクトップアプリは、グラフィカルインターフェース付きの Claude Code を提供します。コンピューター上のフォルダー内のコードに対して Claude に作業を依頼し、ターミナルを使用せずにその変更をレビューできます。
+デスクトップアプリでは、Claude Code をグラフィカルインターフェースで利用できます。ターミナルを使わずに、コンピューター上のフォルダ内のコードに対する作業を Claude に依頼し、その変更内容を自分で確認できます。
 
-Claude Code は、アプリのサイドバー上部にある **Code** タブにあります。このページでは、アプリのインストールと、そこで最初のセッションを開始する方法について説明します。Claude Code には [Pro、Max、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
+Claude Code は、アプリのサイドバー上部にある **Code** タブにあります。このページでは、アプリのインストールと、そこで最初のセッションを開始する方法について説明します。Claude Code には [Pro、Max、Ultra、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
 
-> **[macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
+> [card] [macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)
 >
 > Intel と Apple Silicon 向けのユニバーサルビルド
 
-> **[Windows 用にダウンロード](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
+> [card] [Windows 用にダウンロード](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)
 >
 > x64 プロセッサ向け
 
-> **[Linux 用 Claude を入手（ベータ版）](https://code.claude.com/docs/ja/desktop-linux.md)**
+> [card] [Linux 用 Claude を入手（ベータ版）](https://code.claude.com/docs/ja/desktop-linux.md)
 >
 > Ubuntu と Debian 向けの apt または .deb
 

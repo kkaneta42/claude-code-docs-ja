@@ -32,51 +32,51 @@ Claude Code には、Claude が必要に応じて自動的に使用する組み�
 
 Explore と Plan は、調査を高速かつ低コストに保つために、CLAUDE.md ファイルと git ステータスのスナップショットを読み込まずに開始します。その他の組み込みサブエージェントと[カスタムサブエージェント](#configure-subagents)は両方を読み込みます。ただし、カスタムサブエージェントの定義で [`omitClaudeMd`](#supported-frontmatter-fields) を設定すると、ユーザー、プロジェクト、およびローカルの CLAUDE.md ファイルを読み込まずに開始できます。サブエージェントに到達するものの完全な内訳については、[スタートアップ時に読み込まれるもの](#what-loads-at-startup)を参照してください。
 
-**Explore**
+> [tab] Explore
+>
+> コードベースの検索と分析に最適化された高速な読み取り専用エージェント。
+>
+> * **モデル**: メイン会話のモデル。メイン会話が Fable で実行されている場合、Explore のモデルは接続方法によって異なります。
+>   * Claude サブスクリプション、Anthropic Console アカウント、または `ANTHROPIC_BASE_URL` 経由で接続する [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を使用する場合、Explore は [`opus` エイリアス](https://code.claude.com/docs/ja/model-config#model-aliases)が解決される Opus モデルで実行されます。
+>   * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)では、Explore はメイン会話のモデルのままです。
+> * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
+> * **目的**: ファイル検出、コード検索、コードベース探索
+>
+> `Explore` という名前の[ユーザーまたはプロジェクトサブエージェント](#choose-the-subagent-scope)は組み込みを上書きし、独自の `model` フィールドを保持します。そのため、`model: haiku` で定義すると、探索をより低コストのモデルで実行できます。Explore を含むすべてのサブエージェントに 1 つのモデルを強制するには、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)を参照してください。
+>
+> Claude は、変更を加えずにコードベースを検索または理解する必要がある場合、Explore に委譲します。これにより、探索結果がメイン会話コンテキストから除外されます。
+>
+> Explore を呼び出すとき、Claude は徹底度レベルを指定します。ターゲット検索の場合は**quick**、バランスの取れた探索の場合は**medium**、包括的な分析の場合は**very thorough**です。
 
-コードベースの検索と分析に最適化された高速な読み取り専用エージェント。
+> [tab] Plan
+>
+> [プランモード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)中にプランを提示する前にコンテキストを収集するために使用される研究エージェント。
+>
+> * **モデル**: メイン会話から継承されます。ただし、`CLAUDE_CODE_SUBAGENT_MODEL`を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)する場合を除きます。
+> * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
+> * **目的**: 計画のためのコードベース研究
+>
+> プランモード中で Claude がコードベースを理解する必要がある場合、探索出力が別のコンテキストウィンドウに留まるように、Plan サブエージェントに研究を委譲し、メイン会話は読み取り専用のままです。
 
-* **モデル**: メイン会話のモデル。メイン会話が Fable で実行されている場合、Explore のモデルは接続方法によって異なります。
-  * Claude サブスクリプション、Anthropic Console アカウント、または `ANTHROPIC_BASE_URL` 経由で接続する [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を使用する場合、Explore は [`opus` エイリアス](https://code.claude.com/docs/ja/model-config#model-aliases)が解決される Opus モデルで実行されます。
-  * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)では、Explore はメイン会話のモデルのままです。
-* **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
-* **目的**: ファイル検出、コード検索、コードベース探索
+> [tab] General-purpose
+>
+> 探索とアクションの両方を必要とする複雑なマルチステップタスク用の有能なエージェント。
+>
+> * **モデル**: [`CLAUDE_CODE_SUBAGENT_MODEL`](#choose-a-model)モデル（設定した場合で、他の何もモデルを別の方法で割り当てない場合）、それ以外の場合はメイン会話のモデル。[モデルを選択](#choose-a-model)は完全な順序を示し、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)は変数がこれらのソースをオーバーライドする方法を示します。
+> * **ツール**: [サブエージェントで利用可能](#available-tools)なすべてのツール
+> * **目的**: 複雑な研究、マルチステップ操作、コード変更
+>
+> Claude は、タスクが探索と変更の両方を必要とする場合、結果を解釈するための複雑な推論、または複数の依存ステップが必要な場合、general-purpose に委譲します。
 
-`Explore` という名前の[ユーザーまたはプロジェクトサブエージェント](#choose-the-subagent-scope)は組み込みを上書きし、独自の `model` フィールドを保持します。そのため、`model: haiku` で定義すると、探索をより低コストのモデルで実行できます。Explore を含むすべてのサブエージェントに 1 つのモデルを強制するには、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)を参照してください。
-
-Claude は、変更を加えずにコードベースを検索または理解する必要がある場合、Explore に委譲します。これにより、探索結果がメイン会話コンテキストから除外されます。
-
-Explore を呼び出すとき、Claude は徹底度レベルを指定します。ターゲット検索の場合は**quick**、バランスの取れた探索の場合は**medium**、包括的な分析の場合は**very thorough**です。
-
-**Plan**
-
-[プランモード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)中にプランを提示する前にコンテキストを収集するために使用される研究エージェント。
-
-* **モデル**: メイン会話から継承されます。ただし、`CLAUDE_CODE_SUBAGENT_MODEL`を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)する場合を除きます。
-* **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
-* **目的**: 計画のためのコードベース研究
-
-プランモード中で Claude がコードベースを理解する必要がある場合、探索出力が別のコンテキストウィンドウに留まるように、Plan サブエージェントに研究を委譲し、メイン会話は読み取り専用のままです。
-
-**General-purpose**
-
-探索とアクションの両方を必要とする複雑なマルチステップタスク用の有能なエージェント。
-
-* **モデル**: [`CLAUDE_CODE_SUBAGENT_MODEL`](#choose-a-model)モデル（設定した場合で、他の何もモデルを別の方法で割り当てない場合）、それ以外の場合はメイン会話のモデル。[モデルを選択](#choose-a-model)は完全な順序を示し、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)は変数がこれらのソースをオーバーライドする方法を示します。
-* **ツール**: [サブエージェントで利用可能](#available-tools)なすべてのツール
-* **目的**: 複雑な研究、マルチステップ操作、コード変更
-
-Claude は、タスクが探索と変更の両方を必要とする場合、結果を解釈するための複雑な推論、または複数の依存ステップが必要な場合、general-purpose に委譲します。
-
-**Other**
-
-Claude Code には、特定のタスク用の追加のヘルパーエージェントが含まれています。これらは通常自動的に呼び出されるため、直接使用する必要はありません。
-
-| エージェント | モデル | Claude が使用する場合 |
-| :- | :- | :- |
-| claude | 独自のモデルはありません。Claude がサブエージェントとして生成する場合は[モデル順序](#choose-a-model)に従います | タスクがより特化したエージェントに適合しない場合。[サブエージェントで利用可能](#available-tools)なすべてのツールを備えたキャッチオール。また、ディスパッチされた[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)のデフォルトエージェント。[セッションが開始される方法に応じて、開始される権限モード](https://code.claude.com/docs/ja/agent-view.md#permission-mode-model-and-effort)。 |
-| statusline-setup | Sonnet | `/statusline`を実行してステータスラインを設定する場合 |
-| claude-code-guide | Haiku | Claude Code 機能について質問する場合 |
+> [tab] Other
+>
+> Claude Code には、特定のタスク用の追加のヘルパーエージェントが含まれています。これらは通常自動的に呼び出されるため、直接使用する必要はありません。
+>
+> | エージェント | モデル | Claude が使用する場合 |
+> | :- | :- | :- |
+> | claude | 独自のモデルはありません。Claude がサブエージェントとして生成する場合は[モデル順序](#choose-a-model)に従います | タスクがより特化したエージェントに適合しない場合。[サブエージェントで利用可能](#available-tools)なすべてのツールを備えたキャッチオール。また、ディスパッチされた[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)のデフォルトエージェント。[セッションが開始される方法に応じて、開始される権限モード](https://code.claude.com/docs/ja/agent-view.md#permission-mode-model-and-effort)。 |
+> | statusline-setup | Sonnet | `/statusline`を実行してステータスラインを設定する場合 |
+> | claude-code-guide | Haiku | Claude Code 機能について質問する場合 |
 
 組み込みサブエージェントはインタラクティブセッションでデフォルトで登録されます。これらを制限するには：
 
@@ -179,41 +179,41 @@ Claude Code は `.claude/agents/` と `~/.claude/agents/` を再帰的にスキ�
 
 **CLI で定義されたサブエージェント**は、Claude Code の起動時に JSON として渡されます。そのセッションの間だけ存在し、ディスクには保存されないため、簡単なテストや自動化スクリプトに便利です。1 回の `--agents` 呼び出しで複数のサブエージェントを定義できます。
 
-**macOS, Linux, WSL**
+> [tab] macOS, Linux, WSL
+>
+> ```bash theme={null}
+> claude --agents '{
+>   "code-reviewer": {
+>     "description": "Expert code reviewer. Use proactively after code changes.",
+>     "prompt": "You are a senior code reviewer. Focus on code quality, security, and best practices.",
+>     "tools": ["Read", "Grep", "Glob", "Bash"],
+>     "model": "sonnet"
+>   },
+>   "debugger": {
+>     "description": "Debugging specialist for errors and test failures.",
+>     "prompt": "You are an expert debugger. Analyze errors, identify root causes, and provide fixes."
+>   }
+> }'
+> ```
 
-```bash theme={null}
-claude --agents '{
-  "code-reviewer": {
-    "description": "Expert code reviewer. Use proactively after code changes.",
-    "prompt": "You are a senior code reviewer. Focus on code quality, security, and best practices.",
-    "tools": ["Read", "Grep", "Glob", "Bash"],
-    "model": "sonnet"
-  },
-  "debugger": {
-    "description": "Debugging specialist for errors and test failures.",
-    "prompt": "You are an expert debugger. Analyze errors, identify root causes, and provide fixes."
-  }
-}'
-```
-
-**Windows PowerShell**
-
-```powershell theme={null}
-claude --agents @'
-{
-  "code-reviewer": {
-    "description": "Expert code reviewer. Use proactively after code changes.",
-    "prompt": "You are a senior code reviewer. Focus on code quality, security, and best practices.",
-    "tools": ["Read", "Grep", "Glob", "Bash"],
-    "model": "sonnet"
-  },
-  "debugger": {
-    "description": "Debugging specialist for errors and test failures.",
-    "prompt": "You are an expert debugger. Analyze errors, identify root causes, and provide fixes."
-  }
-}
-'@
-```
+> [tab] Windows PowerShell
+>
+> ```powershell theme={null}
+> claude --agents @'
+> {
+>   "code-reviewer": {
+>     "description": "Expert code reviewer. Use proactively after code changes.",
+>     "prompt": "You are a senior code reviewer. Focus on code quality, security, and best practices.",
+>     "tools": ["Read", "Grep", "Glob", "Bash"],
+>     "model": "sonnet"
+>   },
+>   "debugger": {
+>     "description": "Debugging specialist for errors and test failures.",
+>     "prompt": "You are an expert debugger. Analyze errors, identify root causes, and provide fixes."
+>   }
+> }
+> '@
+> ```
 
 [非対話モード](https://code.claude.com/docs/ja/headless.md)では、コマンドラインで渡すには大きすぎる定義のために、`--agents` は同じオブジェクトを含む JSON ファイルへのパスも受け付けます。たとえば、`claude -p --agents ./agents.json "Review my changes"` はそのファイルから定義を読み込みます。対話セッションでは、Claude Code はファイルパスを拒否します。ファイル形式には Claude Code v2.1.281 以降が必要です。
 

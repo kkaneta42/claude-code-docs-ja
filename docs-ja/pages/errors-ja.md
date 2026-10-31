@@ -830,7 +830,7 @@ claude.ai サブスクリプションでサインインしたインタラクテ�
 * [Desktop アプリ](https://code.claude.com/docs/ja/desktop.md) の Code タブでは、セッション制限カードに **Auto-continue when limits reset** チェックボックスが表示されます。週間制限カードには表示されません。チェックされている場合、Desktop アプリはリセット後に中断されたターンを再試行し、カードに再試行時刻を表示します。Desktop チェックボックスと CLI の `/config` の **Continue automatically at usage limit** 設定は別個なので、それぞれ個別にオフにしてください。
 * Opus または Sonnet 制限の場合、`/model` を実行してそのファミリー外のモデルに切り替えて、作業を続行します。各モデルは独自のプロンプトキャッシュを持つため、次のリクエストは会話全体を再度読み込み、キャッシュヒットはありません。[モデルの切り替え](https://code.claude.com/docs/ja/prompt-caching.md#switching-models) を参照してください
 * `/usage` を実行して、プラン制限とリセット時刻を確認します
-* `/usage-credits` を実行して、Pro と Max で追加使用量を購入するか、Team と Enterprise で管理者にリクエストします。[有料プランの使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を参照して、これがどのように請求されるかを確認してください。
+* `/usage-credits` を実行して、Pro、Max、Ultra で追加使用量を購入するか、Team と Enterprise で管理者にリクエストします。[有料プランの使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を参照して、これがどのように請求されるかを確認してください。
 * プランをアップグレードしてベース制限を高くするには、[claude.com/pricing](https://claude.com/pricing) を参照してください
 
 ウィンドウが終了する前に、Claude Code はほとんどを使用したことを警告できます。例えば `You've used 85% of your session limit · resets 3:45pm` というメッセージが表示されます。残りの許容量を継続的に監視するには、`rate_limits` フィールドを [カスタムステータスライン](https://code.claude.com/docs/ja/statusline.md#rate-limit-usage) に追加するか、Desktop アプリでモデルピッカーの横にある [使用量リング](https://code.claude.com/docs/ja/desktop.md#check-usage) をクリックします。
@@ -852,7 +852,7 @@ Claude Desktop アプリが実行するセッションでは、ヒントはコ�
 **対応方法：**
 
 * `/model` を実行し、`[1m]` サフィックスなしのバリアントを選択して、標準コンテキストウィンドウにフォールバックします
-* メッセージが `/usage-credits` を指定する場合、それを実行して Pro と Max で 1M バリアントの従量課金をオンにするか、Team と Enterprise で管理者に使用クレジットをリクエストします。使用クレジットがオンになったら、メッセージの指示に従って Claude Code を再起動するか、新しいセッションを開始します。それまでは、セッションは標準コンテキスト制限に留まります。
+* メッセージが `/usage-credits` を指定する場合、それを実行して Pro、Max、Ultra で 1M バリアントの従量課金をオンにするか、Team と Enterprise で管理者に使用クレジットをリクエストします。使用クレジットがオンになったら、メッセージの指示に従って Claude Code を再起動するか、新しいセッションを開始します。それまでは、セッションは標準コンテキスト制限に留まります。
 * `/model` の後もエラーが続く場合、1M モデル ID が他の場所に設定されている可能性があります。[モデルの設定](https://code.claude.com/docs/ja/model-config.md#setting-your-model) を参照して、優先順位順に確認する設定場所を確認してください。
 * モデルピッカーから 1M バリアントを完全に削除するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](https://code.claude.com/docs/ja/env-vars) を設定します
 
@@ -933,7 +933,7 @@ Claude アプリゲートウェイを通じて接続し、小文字の `spend li
 
 **対応方法：**
 
-* Pro と Max では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) で月間支出制限を増やすか、`/usage-credits` を実行します
+* Pro、Max、Ultra では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) で月間支出制限を増やすか、`/usage-credits` を実行します
 * Team と Enterprise では、請求を管理している場合は [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で制限を増やすか、管理者に依頼します。`/usage-credits` は管理者にそのリクエストを送信します
 * チャンネルの制限については、組織の所有者またはチャンネルのマネージャーに claude.ai で引き上げるよう依頼してください。Claude Tag ドキュメントの [Per-channel limits](https://claude.com/docs/claude-tag/admins/set-spend-limit#per-channel-limits) を参照してください
 * メッセージがプランのウィンドウのリセット時刻を示している場合は、代わりにそれを待つこともできます
@@ -966,7 +966,7 @@ Credit balance is too low
 
 **対応方法：**
 
-* Pro、Max、Team、または Enterprise プランを利用していてこれが表示される場合は、`/status` を実行して `API key` 行を確認します。環境内の承認済み `ANTHROPIC_API_KEY` は、サブスクリプションの代わりにそのキーを通じてリクエストをルーティングします。現在のシェルでそれを設定解除し、シェルプロファイルから削除してから、`claude` を再起動します。サブスクリプションでまだサインインしていない場合は `/login` を実行します。
+* Pro、Max、Ultra、Team、または Enterprise プランを利用していてこれが表示される場合は、`/status` を実行して `API key` 行を確認します。環境内の承認済み `ANTHROPIC_API_KEY` は、サブスクリプションの代わりにそのキーを通じてリクエストをルーティングします。現在のシェルでそれを設定解除し、シェルプロファイルから削除してから、`claude` を再起動します。サブスクリプションでまだサインインしていない場合は `/login` を実行します。
 * [platform.claude.com/settings/billing](https://platform.claude.com/settings/billing) でクレジットを追加し、そこで自動リロードを有効にして、残高がゼロに達する前に補充されるようにすることを検討してください
 * Console でワークスペースごとの支出上限を設定して、単一のプロジェクトが組織残高を使い果たすのを防ぎます。[コストを効果的に管理](https://code.claude.com/docs/ja/costs.md) を参照してください。
 
@@ -1120,7 +1120,7 @@ API Error: 400 ... This organization has been disabled.
 
 `·` の後のヒントは、保存済みの認証情報によって異なります。1 つ目の形式は、キーの設定を解除した後に保存済みの `/login` が引き継げる場合に表示され、2 つ目の形式はキーが唯一の認証情報である場合に表示されます。
 
-環境変数は `/login` より優先されるため、シェルプロファイルでエクスポートされたキーや `.env` ファイルから読み込まれたキーは、有効な Pro または Max サブスクリプションがある場合でも使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。
+シェルプロファイルでキーをエクスポートしている場合や `.env` からキーを読み込んでいる場合、Pro、Max、Ultra のサブスクリプションが有効であっても、Claude Code は `/login` の代わりにそのキーを使用します。非対話モード（`-p`）では、キーが存在する場合は常にキーが使用されます。
 
 **対処方法：**
 

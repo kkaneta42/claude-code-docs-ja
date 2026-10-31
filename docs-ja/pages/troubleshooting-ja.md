@@ -134,37 +134,37 @@ OSC 52 なしでテキストを取得するには：
 
 Search ツール、`@file` メンション、カスタムエージェント、またはカスタムスキルがファイルを見つけられない場合、バンドルされた `ripgrep` バイナリがシステムで実行されない可能性があります。プラットフォームの `ripgrep` パッケージをインストールして、Claude Code にそれを使用するよう指示します：
 
-**macOS**
+> [tab] macOS
+>
+> ```bash theme={null}
+> brew install ripgrep
+> ```
 
-```bash theme={null}
-brew install ripgrep
-```
+> [tab] Ubuntu/Debian
+>
+> ```bash theme={null}
+> sudo apt install ripgrep
+> ```
 
-**Ubuntu/Debian**
+> [tab] Alpine
+>
+> ```bash theme={null}
+> apk add ripgrep
+> ```
+>
+> `ripgrep` は Alpine のコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、[Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。
 
-```bash theme={null}
-sudo apt install ripgrep
-```
+> [tab] Arch
+>
+> ```bash theme={null}
+> pacman -S ripgrep
+> ```
 
-**Alpine**
-
-```bash theme={null}
-apk add ripgrep
-```
-
-`ripgrep` は Alpine のコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、[Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。
-
-**Arch**
-
-```bash theme={null}
-pacman -S ripgrep
-```
-
-**Windows**
-
-```powershell theme={null}
-winget install BurntSushi.ripgrep.MSVC
-```
+> [tab] Windows
+>
+> ```powershell theme={null}
+> winget install BurntSushi.ripgrep.MSVC
+> ```
 
 その後、`USE_BUILTIN_RIPGREP` を `0` に設定します。シェル[環境](https://code.claude.com/docs/ja/env-vars.md)または [`settings.json`](https://code.claude.com/docs/ja/settings-reference#all-settings) の `env` ブロックで設定します：
 

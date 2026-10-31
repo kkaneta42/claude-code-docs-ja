@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> クラウド環境は [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) に適用されます。これは Pro、Max、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
+> クラウド環境は [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) に適用されます。これは Pro、Max、Ultra、Team プランで利用可能であり、[プレミアムシートまたは Chat + Claude Code シートを持つ](https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan) Enterprise ユーザー向けです。
 
 各 [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) はクラウド環境で実行されます。環境を設定して [ネットワークアクセス](#access-levels) を許可または拒否し、セッション用に [環境変数を設定](#set-environment-variables) し、セッションが内容を見ずに使用できる [ネットワークシークレット](#add-network-secrets) を保存し、Claude が作業を開始する前に [セットアップスクリプト](#setup-scripts) を実行できます。
 
@@ -32,7 +32,7 @@
 環境がまだない場合、オンボーディングは **Default** 環境をセットアップします。どのように設定されるかは、オンボーディングの場所によって異なります。
 
 * **`/web-setup` などの CLI フロー**：**Default** を作成します
-* **Pro および Max での Web オンボーディング**：**Default** を作成します
+* **Pro、Max、および Ultra での Web オンボーディング**：**Default** が自動的に用意されます
 * **Team および Enterprise での Web オンボーディング**：オーナーが [Quick setup](https://code.claude.com/docs/ja/claude-code-on-the-web.md#quick-setup-for-team-and-enterprise) をオンにしていない限り、**最初のクラウド環境を作成** フォームを表示します。フォームのデフォルトを保持して **作成して完了** をクリックして、同じ **Default** 環境を取得します
 
 **Default** は独自の設定を持ちません。
@@ -93,7 +93,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 ネットワークシークレットは、クラウド環境に保存する API キーまたはトークンで、Claude が環境内の任意のセッションからそのキーを見ることなく API を呼び出すことができます。Anthropic のエージェントプロキシは、各リクエストがセッションの VM を離れた後、リストしたホストへのリクエストにキーを追加するため、キー自体は VM の外部にとどまります。
 
-ネットワークシークレットは Pro、Max、Team、Enterprise プランで利用可能です。自分で追加できるかどうかを確認するには、[要件](#requirements) を参照してください。
+ネットワークシークレットは Pro、Max、Ultra、Team、Enterprise プランで利用可能です。自分で追加できるかどうかを確認するには、[要件](#requirements) を参照してください。
 
 #### 要件
 
@@ -552,7 +552,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 
 **Trusted** ネットワークアクセスでは、セッションはデフォルトで次のドメインに到達できます。`*` でマークされたドメインはワイルドカードサブドメインマッチングを示すため、`*.gcr.io` は `gcr.io` のすべてのサブドメインを許可します。
 
-> **Anthropic サービス**
+> [accordion] Anthropic サービス
 >
 > * api.anthropic.com
 > * docs.claude.com
@@ -564,7 +564,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * anthropic.com
 > * [www.anthropic.com](http://www.anthropic.com)
 
-> **バージョン管理**
+> [accordion] バージョン管理
 >
 > * github.com
 > * [www.github.com](http://www.github.com)
@@ -585,7 +585,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * [www.bitbucket.org](http://www.bitbucket.org)
 > * api.bitbucket.org
 
-> **コンテナレジストリ**
+> [accordion] コンテナレジストリ
 >
 > * registry-1.docker.io
 > * auth.docker.io
@@ -602,7 +602,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * \*.data.mcr.microsoft.com
 > * public.ecr.aws
 
-> **クラウドプラットフォーム**
+> [accordion] クラウドプラットフォーム
 >
 > * cloud.google.com
 > * accounts.google.com
@@ -633,7 +633,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * yum.oracle.com
 > * \*.r2.cloudflarestorage.com
 
-> **JavaScript と Node パッケージマネージャー**
+> [accordion] JavaScript と Node パッケージマネージャー
 >
 > * registry.npmjs.org
 > * [www.npmjs.com](http://www.npmjs.com)
@@ -645,7 +645,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * jsr.io
 > * npm.jsr.io
 
-> **Python パッケージマネージャー**
+> [accordion] Python パッケージマネージャー
 >
 > * pypi.org
 > * [www.pypi.org](http://www.pypi.org)
@@ -656,7 +656,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * pypa.io
 > * [www.pypa.io](http://www.pypa.io)
 
-> **Ruby パッケージマネージャー**
+> [accordion] Ruby パッケージマネージャー
 >
 > * rubygems.org
 > * [www.rubygems.org](http://www.rubygems.org)
@@ -671,7 +671,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * rvm.io
 > * get.rvm.io
 
-> **Rust パッケージマネージャー**
+> [accordion] Rust パッケージマネージャー
 >
 > * crates.io
 > * [www.crates.io](http://www.crates.io)
@@ -681,7 +681,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * static.rust-lang.org
 > * [www.rust-lang.org](http://www.rust-lang.org)
 
-> **Go パッケージマネージャー**
+> [accordion] Go パッケージマネージャー
 >
 > * proxy.golang.org
 > * sum.golang.org
@@ -691,7 +691,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * goproxy.io
 > * pkg.go.dev
 
-> **JVM パッケージマネージャー**
+> [accordion] JVM パッケージマネージャー
 >
 > * maven.org
 > * repo.maven.org
@@ -710,7 +710,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * spring.io
 > * repo.spring.io
 
-> **その他のパッケージマネージャー**
+> [accordion] その他のパッケージマネージャー
 >
 > * packagist.org（PHP Composer）
 > * [www.packagist.org](http://www.packagist.org)
@@ -736,7 +736,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * swift.org
 > * [www.swift.org](http://www.swift.org)
 
-> **Linux ディストリビューション**
+> [accordion] Linux ディストリビューション
 >
 > * archive.ubuntu.com
 > * security.ubuntu.com
@@ -748,7 +748,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * [www.launchpad.net](http://www.launchpad.net)
 > * \*.nixos.org
 
-> **開発ツールとプラットフォーム**
+> [accordion] 開発ツールとプラットフォーム
 >
 > * dl.k8s.io（Kubernetes）
 > * pkgs.k8s.io
@@ -780,14 +780,14 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * pkg.stainless.com
 > * binaries.prisma.sh
 
-> **クラウドサービスと監視**
+> [accordion] クラウドサービスと監視
 >
 > * http-intake.logs.datadoghq.com
 > * \*.datadoghq.com
 > * \*.datadoghq.eu
 > * api.honeycomb.io
 
-> **コンテンツ配信とミラー**
+> [accordion] コンテンツ配信とミラー
 >
 > * sourceforge.net
 > * \*.sourceforge.net
@@ -796,14 +796,14 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 > * fonts.googleapis.com
 > * fonts.gstatic.com
 
-> **スキーマと設定**
+> [accordion] スキーマと設定
 >
 > * json-schema.org
 > * [www.json-schema.org](http://www.json-schema.org)
 > * json.schemastore.org
 > * [www.schemastore.org](http://www.schemastore.org)
 
-> **Model Context Protocol**
+> [accordion] Model Context Protocol
 >
 > * \*.modelcontextprotocol.io
 

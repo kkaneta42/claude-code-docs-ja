@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> iOS シミュレータペインは、macOS 上の Claude Code Desktop でパブリックベータ版です。Pro、Max、Team、Enterprise プランで利用可能です。ただし、HIPAA 設定が有効になっている Enterprise 組織では利用できません。
+> iOS シミュレータペインは、macOS 上の Claude Code Desktop でパブリックベータ版です。Pro、Max、Ultra、Team、Enterprise プランで利用可能です。ただし、HIPAA 設定が有効になっている Enterprise 組織では利用できません。
 
 iOS シミュレータペインは、Claude Code Desktop の会話の横に Apple の iOS シミュレータで実行されているアプリを表示します。Claude がシミュレータでアプリをビルド、インストール、起動、またはチェックするときに、ペインが自動的に開き、デバイス画面がライブでストリーミングされます。Claude がアプリを実行してテストするのを見守ったり、Claude が作業を続けている間に自分でアプリをタップして操作したりできます。
 

@@ -455,11 +455,11 @@ effort 上限は[組織のモデル制限](#organization-model-restrictions)と�
 
 `default` の動作はアカウントの種類によって異なります。
 
-* **Pro、Max、Team、Enterprise、Anthropic API**：デフォルトは Opus 5.5
+* **Pro、Max、Ultra、Team、Enterprise、Anthropic API**：デフォルトは Opus 5.5
 * **Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform**：デフォルトは Opus 5.5
 * **Microsoft Foundry**：デフォルトは Sonnet 4.5
 
-v2.1.280 より前は、`default` は Pro と Team Standard では Sonnet 5 に、Max、Team Premium、Enterprise、Anthropic API では Opus 5 に解決され、Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform では v2.1.219 以降 Opus 5 に解決されていました。v2.1.219 より前は、`default` は Anthropic API、Max、Team Premium、Enterprise の従量課金では v2.1.154 以降 Opus 4.8 に解決され、Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform では v2.1.207 以降 Opus 4.8 に解決されていました。v2.1.207 より前は、`default` は Claude Platform on AWS では Opus 4.7 に、Amazon Bedrock と Google Cloud's Agent Platform では Sonnet 4.5 に解決されていました。
+v2.1.280 より前は、`default` は Pro と Team Standard では Sonnet 5 に、Max、Ultra、Team Premium、Enterprise、Anthropic API では Opus 5 に解決され、Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform では v2.1.219 以降 Opus 5 に解決されていました。v2.1.219 より前は、`default` は Anthropic API、Max、Ultra、Team Premium、Enterprise の従量課金では v2.1.154 以降 Opus 4.8 に解決され、Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform では v2.1.207 以降 Opus 4.8 に解決されていました。v2.1.207 より前は、`default` は Claude Platform on AWS では Opus 4.7 に、Amazon Bedrock と Google Cloud's Agent Platform では Sonnet 4.5 に解決されていました。
 
 管理者が[組織のデフォルトモデル](#organization-default-model)を設定している場合、`default` は上記のアカウント種類ごとのデフォルトではなく、そのモデルに解決されます。Claude Code v2.1.196 以降が必要です。また、`default` は、該当セクションに記載された条件のもとで [`ANTHROPIC_DEFAULT_MODEL`](#set-a-default-model-for-new-sessions) で設定したモデルに解決されることや、[アカウントに記録されている](#setting-your-model)モデルに解決されることもあります。
 
@@ -758,11 +758,11 @@ Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、Sonnet 4.6
 
 Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、デフォルトで 1M ウィンドウで動作し、`[1m]` サフィックスは不要です。これには、Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry 上のセッションや、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションも含まれます。代わりに 200K ウィンドウで実行するには、[1M コンテキストをオフにする](#turn-off-1m-context)を参照してください。
 
-Opus 4.6 と Sonnet 4.6 が 1M に到達するのは `[1m]` バリアントを通じてのみで、そのバリアントへのアクセスはプランによって異なります。Team Standard と Team Premium の両方のシートを含む Max、Team、Enterprise プランでは、1M コンテキストの Opus 4.6 はサブスクリプションに含まれています。1M コンテキストの Sonnet 4.6 は、Max を含むすべてのサブスクリプションプランで[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要です。
+Opus 4.6 と Sonnet 4.6 が 1M に到達するのは `[1m]` バリアントを通じてのみで、そのバリアントへのアクセスはプランによって異なります。Team Standard と Team Premium の両方のシートを含む Max、Ultra、Team、Enterprise プランでは、1M コンテキストの Opus 4.6 はサブスクリプションに含まれています。1M コンテキストの Sonnet 4.6 は、Max と Ultra を含むすべてのサブスクリプションプランで[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要です。
 
 | プラン | 1M コンテキストの Opus 4.6 | 1M コンテキストの Sonnet 4.6 |
 | - | - | - |
-| Max、Team、Enterprise | サブスクリプションに含まれる | [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要 |
+| Max、Ultra、Team、Enterprise | サブスクリプションに含まれる | [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要 |
 | Pro | [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要 | [使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要 |
 | API と従量課金 | フルアクセス | フルアクセス |
 

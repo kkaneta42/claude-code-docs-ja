@@ -212,7 +212,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 | `worktree.original_cwd` | worktree に入る前に Claude がいたディレクトリ |
 | `worktree.original_branch` | worktree に入る前にチェックアウトされていた Git ブランチ。フックベースの worktree では存在しません |
 
-> **完全な JSON スキーマ**
+> [accordion] 完全な JSON スキーマ
 >
 > ステータスラインコマンドは、stdin 経由で次の JSON 構造を受け取ります。
 >
@@ -341,7 +341,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 > * `agent`：`--agent` フラグで実行している場合、またはエージェント設定が構成されている場合にのみ表示されます
 > * `pr`：現在のブランチでオープンな PR または GitLab マージリクエストが見つかっている間のみ表示され、マージまたはクローズされると削除されます。`pr.review_state` と `pr.kind` は独立して存在しないことがあります
 > * `worktree`：セッションが [worktree セッション](https://code.claude.com/docs/ja/worktrees.md)にある間のみ表示されます。存在する場合でも、フックベースの worktree では `branch` と `original_branch` が存在しないことがあります
-> * `rate_limits`：claude.ai の Pro および Max サブスクライバー、または支出上限を設定する Claude apps ゲートウェイの背後にいる場合にのみ、かつセッションの最初の API レスポンスの後にのみ表示されます。各ウィンドウ（`five_hour`、`seven_day`、`spend_limit`）は独立して存在しないことがあり、Claude Code は `resets_at` の時刻を過ぎたウィンドウを削除します。存在しない場合を適切に処理するには、`jq -r '.rate_limits.five_hour.used_percentage // empty'` を使用してください。
+> * `rate_limits`：claude.ai の Pro、Max、Ultra サブスクライバー、または支出上限を設定する Claude apps ゲートウェイの背後にいる場合にのみ表示されます。その場合でも、セッションの最初の API レスポンスの後にのみ表示されます。各ウィンドウ（`five_hour`、`seven_day`、`spend_limit`）は独立して存在しないことがあり、Claude Code は `resets_at` の時刻を過ぎたウィンドウを削除します。存在しない場合を適切に処理するには、`jq -r '.rate_limits.five_hour.used_percentage // empty'` を使用してください。
 > * `prompt_cache`：メインの会話の最初の API レスポンスの後に表示されます。[プロンプトキャッシュのフィールド](#prompt-cache-fields)を参照してください
 >
 > **`null` になる可能性のあるフィールド**：
@@ -819,9 +819,9 @@ process.stdin.on('end', () => {
 
 ### レート制限の使用状況
 
-claude.ai サブスクリプションのレート制限使用状況、または Claude アプリゲートウェイの支出制限に対する支出額をステータスラインに表示します。サブスクライバーの場合、`rate_limits` オブジェクトには、ローリング `five_hour` ウィンドウと週間 `seven_day` ウィンドウが含まれます。各ウィンドウは `used_percentage`（0～100）とウィンドウがリセットされる Unix エポック秒の `resets_at` を提供します。ゲートウェイの背後では、[支出制限フィールド](#spend-limit-fields) で説明されている `spend_limit` オブジェクトを読み取ります。
+claude.ai サブスクリプションのレート制限の使用状況、または Claude apps ゲートウェイの支出制限に対する支出額をステータスラインに表示します。サブスクライバーの場合、`rate_limits` オブジェクトには、ローリング方式の `five_hour` ウィンドウと週単位の `seven_day` ウィンドウを含めることができます。各ウィンドウは、0 から 100 までの値をとる `used_percentage` と、ウィンドウがリセットされる時刻を Unix エポック秒で表す `resets_at` を提供します。ゲートウェイを経由している場合は、[支出制限フィールド](#spend-limit-fields)で説明されている `spend_limit` オブジェクトを読み取ります。
 
-`rate_limits` オブジェクトは claude.ai Pro および Max サブスクライバー、または支出制限を持つ Claude アプリゲートウェイの背後にある場合のみ存在し、最初の API レスポンスの後のみです。各スクリプトは不在のフィールドを適切に処理し、ゲートウェイの背後では `spend: $314.12 / $500` を出力します。ドル額のフィールドが不在の間は `spend: 63%` を出力します：
+`rate_limits` オブジェクトは claude.ai Pro、Max、Ultra サブスクライバー、または支出制限を持つ Claude アプリゲートウェイの背後にある場合のみ存在し、最初の API レスポンスの後のみです。各スクリプトは不在のフィールドを適切に処理し、ゲートウェイの背後では `spend: $314.12 / $500` を出力します。ドル額のフィールドが不在の間は `spend: 63%` を出力します：
 
 ```bash Bash theme={null}
 #!/bin/bash

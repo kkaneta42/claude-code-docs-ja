@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> Projects は Pro および Max プランでパブリックベータ版として提供されており、段階的にロールアウト中です。ロールアウトは、[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を使用したことがあり、claude.ai チャットまたは Cowork に既存のプロジェクトがないアカウントから開始されました。Team または Enterprise プランではまだ利用できません。
+> Projects は Pro、Max、Ultra プランでパブリックベータ版として提供されており、段階的にロールアウト中です。ロールアウトは、[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を使用したことがあり、claude.ai チャットまたは Cowork に既存のプロジェクトがないアカウントから開始されました。Team または Enterprise プランではまだ利用できません。
 >
 > [claude.ai/code](https://claude.ai/code) のサイドバーまたは [デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md) の Code タブに **Projects** が表示されない場合は、そこにある **More** の下を確認してください。そこにもない場合は、ロールアウトがまだアカウントに到達していません。[ウェイトリストに参加](https://claude.com/form/projects) できます。また、その間に利用できるものについては [エージェントを並列実行する](https://code.claude.com/docs/ja/agents.md) を参照してください。
 
@@ -78,7 +78,7 @@
 
 プロジェクトを作成する前に、プランと GitHub のセットアップ、および作業が到達する必要があるものを確認してください。
 
-* **プラン**：Pro または Max プランを利用しており、サイドバーに **Projects** が直接または **More** の下に表示されている。**Projects** を選択し、**New project** または **Get started** が表示されることを確認してください。
+* **プラン**：Pro、Max、または Ultra プランを利用しており、サイドバーに **Projects** が直接または **More** の下に表示されている。**Projects** を選択し、**New project** または **Get started** が表示されることを確認してください。
 * **GitHub（プロジェクトがコードで作業する場合）**：コードが GitHub Enterprise Server、GitLab、または Bitbucket ではなく github.com にあり、接続された GitHub アカウントがそれへのプッシュアクセス権を持っており、Claude GitHub App がインストールされている。[`/web-setup`](https://code.claude.com/docs/ja/web-quickstart#connect-from-your-terminal)で GitHub を接続した場合、そのトークンは他のクラウドセッションがリポジトリに到達することを許可しますが、Claude GitHub App が必要なプロジェクトスレッドには十分ではありません。[GitHub アクセスをセットアップする](#set-up-github-access)に手順があります。
 * **ネットワークアクセス、シークレット、ツール**：クラウドスレッドの場合、これらはプロジェクトの [クラウド環境](#choose-an-environment-for-threads)から取得されます。デフォルト環境は既に [一般的なパッケージレジストリ](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)に到達しているため、作業が他のドメイン、シークレット、またはプリインストールされていないツールを必要とする場合のみ確認してください。作業が MCP サーバーを必要とする場合は、[claude.ai connectors](https://claude.ai/customize/connectors)で接続済みとして表示されていることを確認してください。
 
@@ -421,7 +421,7 @@ Claude は**デバイス上のフォルダーで作業することを Claude に
 
 **プロジェクト設定**で**使用状況**を開くと、スレッド別およびモデル別のトークン使用状況、およびプロジェクト会話に使用された量を確認できます。削減するには、以下の方法があります。
 
-* [キャッシュ有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)より長くアイドル状態にあったスレッドにルーティングされたフォローアップは、Pro および Max ではプランの制限内で 1 時間であり、何かを実行する前にそのスレッドの会話全体を再度読み込みます。新しい作業の場合、Claude に新しいスレッドを開始するよう要求すると、大きな古いスレッドを復活させるよりも少ないトークンを使用できます。
+* Pro、Max、Ultra では、プランの制限内であれば[キャッシュ有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)は 1 時間です。それより長くアイドル状態にあったスレッドは、フォローアップが届くと、何かを実行する前に会話全体を再度読み込みます。新しい作業の場合、Claude に新しいスレッドを開始するよう要求すると、大きな古いスレッドを復活させるよりも少ないトークンを使用できます。
 * 最大のモデルを必要としない作業の場合、スレッド、会話、またはその両方に対して[より小さいモデルまたはより低い努力レベルを選択](#choose-models-and-let-claude-manage-context)してください。
 * プロジェクト会話で Claude に、一度に実行するスレッド数を減らすか、スレッドを開始する代わりに小さな質問に自分で答えるよう要求してください。
 
@@ -429,7 +429,9 @@ Claude は**デバイス上のフォルダーで作業することを Claude に
 
 複数の Claude Code 機能により、複数のセッションを同時に実行できるため、並列で作業を実行することだけがプロジェクトの目的ではありません。プロジェクトでは、Claude があなたの代わりにセッションを開始して追跡し、各セッションは同じ指示から開始します。各隣接機能がプロジェクトにどのように接続するかは以下の通りです。
 
-* **Claude Tag**: [Claude Tag](https://claude.com/docs/claude-tag/overview) は Team および Enterprise プランでチームの Slack チャネルに存在する Claude です。チャネル内の誰もが作業を割り当てることができ、チャネル内の全員がそれを見て操作でき、管理者がそのチャネル用に設定した接続を使用します。プロジェクトはあなただけのものです。作業を送信したり、スレッドを見たりするのはあなただけで、独自の GitHub アクセスとコネクタを使用し、Pro および Max で利用できます。[Claude Tag が Cowork および Claude Code とどのように異なるか](https://claude.com/docs/claude-tag/concepts/how-it-works#how-claude-tag-differs-from-cowork-and-claude-code)に並べて比較があります。
+* **Claude Tag**: [Claude Tag](https://claude.com/docs/claude-tag/overview) は Team および Enterprise プランでチームの Slack チャンネルに存在する Claude です。チャンネル内の誰もが作業を割り当てることができ、チャンネル内の全員がそれを見て操作でき、管理者がそのチャンネル用に設定した接続を使用します。
+
+  プロジェクトは Pro、Max、Ultra で利用できます。プロジェクトは自分だけのものです。作業を送信したり、スレッドを見たりするのは自分だけで、自分の GitHub アクセスとコネクタを使用します。[Claude Tag が Cowork および Claude Code とどのように異なるか](https://claude.com/docs/claude-tag/concepts/how-it-works#how-claude-tag-differs-from-cowork-and-claude-code)に並べて比較があります。
 * **クラウドセッション**: すべてのスレッドは[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)です。ただし、Claude にマシン上で実行するよう要求する場合を除きます。どちらの場合でも、Claude がユーザーに代わってそれを開始して追跡します。自分で開始したクラウドセッションの作業をプロジェクトに取り込むこともできます。そのセッションのサイドバーメニューで [**Continue in project**](#start-from-an-existing-cloud-session) を選択します。
 * **スケジュールタスク**: プロジェクトでスケジュールされた作業を要求すると、Claude はそのプロジェクト内のスレッドとして実行され、その **Scheduled tasks** タブに表示される[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)を作成します。プロジェクト外で作成したスケジュールタスクは独立して動作し続けます。
 * **Remote Control**: [Remote Control](https://code.claude.com/docs/ja/remote-control.md) は claude.ai をマシン上で実行している Claude Code セッションに接続します。プロジェクトで Claude にコンピュータ上でスレッドを実行するよう要求すると、プロジェクトは [Remote Control を使用してそれを実行します](#run-a-thread-on-your-own-computer)。

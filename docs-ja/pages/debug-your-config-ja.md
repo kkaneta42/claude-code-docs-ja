@@ -95,39 +95,39 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 Claude Code のセッションを実行していない状態のシェルで、ディレクトリを作成して移動します。
 
-**Bash または Zsh**
+> [tab] Bash または Zsh
+>
+> ```bash theme={null}
+> mkdir -p ~/claude-clean/empty && cd ~/claude-clean/empty
+> ```
 
-```bash theme={null}
-mkdir -p ~/claude-clean/empty && cd ~/claude-clean/empty
-```
-
-**PowerShell**
-
-```powershell theme={null}
-New-Item -ItemType Directory -Force "$HOME/claude-clean/empty" | Out-Null
-Set-Location "$HOME/claude-clean/empty"
-```
+> [tab] PowerShell
+>
+> ```powershell theme={null}
+> New-Item -ItemType Directory -Force "$HOME/claude-clean/empty" | Out-Null
+> Set-Location "$HOME/claude-clean/empty"
+> ```
 
 **2. クリーンな設定ディレクトリで Claude Code を起動する**
 
 同じシェルから、[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) を `~/.claude` の代わりに新しいディレクトリに設定し、[`--setting-sources user`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を渡して、`.claude/settings.json`、`CLAUDE.md`、`.mcp.json` などのプロジェクト設定をオフにします。
 
-**Bash または Zsh**
+> [tab] Bash または Zsh
+>
+> この変数は今回の起動にのみ適用されます。
+>
+> ```bash theme={null}
+> CLAUDE_CONFIG_DIR=~/claude-clean/config claude --setting-sources user
+> ```
 
-この変数は今回の起動にのみ適用されます。
-
-```bash theme={null}
-CLAUDE_CONFIG_DIR=~/claude-clean/config claude --setting-sources user
-```
-
-**PowerShell**
-
-この変数はこの PowerShell セッションの残りの間ずっと設定されたままになるため、同じウィンドウでの以降の `claude` の起動でもクリーンなディレクトリが使われ続けます。通常のディレクトリに戻すには、次回の起動前に `Remove-Item Env:CLAUDE_CONFIG_DIR` を実行してください。
-
-```powershell theme={null}
-$env:CLAUDE_CONFIG_DIR = "$HOME/claude-clean/config"
-claude --setting-sources user
-```
+> [tab] PowerShell
+>
+> この変数はこの PowerShell セッションの残りの間ずっと設定されたままになるため、同じウィンドウでの以降の `claude` の起動でもクリーンなディレクトリが使われ続けます。通常のディレクトリに戻すには、次回の起動前に `Remove-Item Env:CLAUDE_CONFIG_DIR` を実行してください。
+>
+> ```powershell theme={null}
+> $env:CLAUDE_CONFIG_DIR = "$HOME/claude-clean/config"
+> claude --setting-sources user
+> ```
 
 最初の起動時には、初回実行時のセットアップ画面が再び表示されます。これはクリーンな設定ディレクトリが有効になっていることを示しています。管理設定は引き続き適用され、claude.ai アカウントでログインした場合は[コネクタ](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)も引き続き読み込まれます。
 

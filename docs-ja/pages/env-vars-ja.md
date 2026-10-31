@@ -23,52 +23,52 @@
 
 `claude` を起動する前に変数を設定します。
 
-**macOS、Linux、WSL**
+> [tab] macOS、Linux、WSL
+>
+> ```bash theme={null}
+> export API_TIMEOUT_MS="1200000"
+> claude
+> ```
+>
+> すべてのセッションで設定するには、`export` 行を `~/.bashrc`、`~/.zshrc`、またはシェルのプロファイルファイルに追加します。
 
-```bash theme={null}
-export API_TIMEOUT_MS="1200000"
-claude
-```
+> [tab] Windows PowerShell
+>
+> ```powershell theme={null}
+> $env:API_TIMEOUT_MS = "1200000"
+> claude
+> ```
+>
+> すべてのセッションで設定するには、`[Environment]::SetEnvironmentVariable("API_TIMEOUT_MS", "1200000", "User")` を実行して新しいターミナルを開きます。
 
-すべてのセッションで設定するには、`export` 行を `~/.bashrc`、`~/.zshrc`、またはシェルのプロファイルファイルに追加します。
-
-**Windows PowerShell**
-
-```powershell theme={null}
-$env:API_TIMEOUT_MS = "1200000"
-claude
-```
-
-すべてのセッションで設定するには、`[Environment]::SetEnvironmentVariable("API_TIMEOUT_MS", "1200000", "User")` を実行して新しいターミナルを開きます。
-
-**Windows CMD**
-
-```batch theme={null}
-set API_TIMEOUT_MS=1200000
-claude
-```
-
-すべてのセッションで設定するには、`setx API_TIMEOUT_MS "1200000"` を実行して新しいターミナルを開きます。
+> [tab] Windows CMD
+>
+> ```batch theme={null}
+> set API_TIMEOUT_MS=1200000
+> claude
+> ```
+>
+> すべてのセッションで設定するには、`setx API_TIMEOUT_MS "1200000"` を実行して新しいターミナルを開きます。
 
 代入行は成功時に何も出力しないため、同じシェルで変数を出力して確認します。
 
-**macOS、Linux、WSL**
+> [tab] macOS、Linux、WSL
+>
+> ```bash theme={null}
+> echo $API_TIMEOUT_MS
+> ```
 
-```bash theme={null}
-echo $API_TIMEOUT_MS
-```
+> [tab] Windows PowerShell
+>
+> ```powershell theme={null}
+> echo $env:API_TIMEOUT_MS
+> ```
 
-**Windows PowerShell**
-
-```powershell theme={null}
-echo $env:API_TIMEOUT_MS
-```
-
-**Windows CMD**
-
-```batch theme={null}
-echo %API_TIMEOUT_MS%
-```
+> [tab] Windows CMD
+>
+> ```batch theme={null}
+> echo %API_TIMEOUT_MS%
+> ```
 
 ### 設定ファイルで変数を設定する
 
@@ -130,7 +130,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 
 | 変数 | 目的 |
 | :- | :- |
-| `ANTHROPIC_API_KEY` | `X-Api-Key` ヘッダーとして送信される API キー。設定すると、ログインしている場合でも、Claude Pro、Max、Team、Enterprise のサブスクリプションの代わりにこのキーが使用されます。非対話モード（`-p`）では、キーが存在する場合は常に使用されます。対話モードでは、キーがサブスクリプションより優先される前に、キーを承認するよう一度求められます。代わりにサブスクリプションを使用するには、`unset ANTHROPIC_API_KEY` を実行します |
+| `ANTHROPIC_API_KEY` | `X-Api-Key` ヘッダーとして送信される API キー。設定されている場合、ログイン中であっても、Claude Pro、Max、Ultra、Team、または Enterprise のサブスクリプションの代わりにこのキーが使用されます。非対話モード（`-p`）では、キーが存在すれば常に使用されます。対話モードでは、キーがサブスクリプションを上書きする前に、一度だけキーの承認を求められます。代わりにサブスクリプションを使用するには、`unset ANTHROPIC_API_KEY` を実行します |
 | `ANTHROPIC_AUTH_TOKEN` | `Authorization` ヘッダーのカスタム値（ここで設定した値の先頭には `Bearer ` が付加されます） |
 | `ANTHROPIC_AWS_API_KEY` | AWS Console で生成された [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) 用のワークスペース API キー。`x-api-key` として送信され、AWS SigV4 より優先されます |
 | `ANTHROPIC_AWS_BASE_URL` | [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) のエンドポイント URL を上書きします。カスタムリージョンを使用する場合や、[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由でルーティングする場合に使用します。デフォルトは `https://aws-external-anthropic.{region}.api.aws` です。Claude Code は [Amazon Bedrock と同じ優先順位](https://code.claude.com/docs/ja/amazon-bedrock.md#3-configure-claude-code)でリージョンを解決します |
@@ -575,7 +575,7 @@ Claude Code の一部の機能は、Anthropic から取得する機能フラグ�
 * [Remote Control](https://code.claude.com/docs/ja/remote-control.md#requirements) が利用できない場合に、[このマシン以外のセッションにメッセージを送る](https://code.claude.com/docs/ja/cross-session-messaging.md#message-sessions-on-other-machines)。このマシン上のセッション間のメッセージングは、取得がオフでも機能します
 * [`claude import` または `/import` コマンド](https://code.claude.com/docs/ja/cli-reference#cli-commands)を実行する
 * [`/skill-doctor`](https://code.claude.com/docs/ja/skills#find-unused-skills) を実行する、またはそのレポートを `/plugin` の **Stats** タブで開く
-* Pro プランおよび Max プランで [`/restart`](https://code.claude.com/docs/ja/commands) を実行する
+* Pro、Max、および Ultra プランで [`/restart`](https://code.claude.com/docs/ja/commands) を実行する
 * claude.ai アカウントで有効にした[スキル](https://code.claude.com/docs/ja/skills.md#where-synced-skills-load)と[プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)をターミナルセッションに同期する
 * [You should know mod](https://code.claude.com/docs/ja/interactive-mode.md#you-should-know-suggestions) をオンにする
 * [アドバイザーツール](https://code.claude.com/docs/ja/advisor.md#requirements)を使用する

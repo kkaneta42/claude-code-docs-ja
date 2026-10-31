@@ -500,18 +500,18 @@ git log --oneline -20 | claude -p "summarize these recent commits"
 
 ## 次のステップ
 
-> **[ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)**
+> [card] [ベストプラクティス](https://code.claude.com/docs/ja/best-practices.md)
 >
 > Claude Code から最大限の価値を得るためのパターン
 
-> **[セッションを管理する](https://code.claude.com/docs/ja/sessions.md)**
+> [card] [セッションを管理する](https://code.claude.com/docs/ja/sessions.md)
 >
 > 会話を再開、名前付け、ブランチする
 
-> **[Worktrees](https://code.claude.com/docs/ja/worktrees.md)**
+> [card] [Worktrees](https://code.claude.com/docs/ja/worktrees.md)
 >
 > 分離された並列セッションを実行する
 
-> **[Claude Code を拡張する](https://code.claude.com/docs/ja/features-overview.md)**
+> [card] [Claude Code を拡張する](https://code.claude.com/docs/ja/features-overview.md)
 >
 > skill、フック、MCP、subagent、プラグインを追加する

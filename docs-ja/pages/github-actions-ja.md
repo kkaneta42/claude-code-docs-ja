@@ -74,7 +74,7 @@ GitHub App をインストールした後、Claude Code は GitHub Actions セ�
 認証方法に応じて、リポジトリに以下のシークレットのいずれかを追加します。GitHub の [GitHub Actions でシークレットを使用する](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions) ガイドを参照してください。
 
 * `ANTHROPIC_API_KEY`：[Claude Console](https://platform.claude.com) からの Claude API キー
-* `CLAUDE_CODE_OAUTH_TOKEN`：Claude サブスクリプションで認証する OAuth トークン。Pro、Max、Team、Enterprise プランで利用可能。`claude setup-token` をローカルで実行して生成します。[長期トークンを生成する](https://code.claude.com/docs/ja/authentication.md#generate-a-long-lived-token) を参照してください
+* `CLAUDE_CODE_OAUTH_TOKEN`：Claude サブスクリプションで認証する OAuth トークン。Pro、Max、Ultra、Team、Enterprise プランで利用可能。`claude setup-token` をローカルで実行して生成します。[長期トークンを生成する](https://code.claude.com/docs/ja/authentication.md#generate-a-long-lived-token) を参照してください
 
 ワークフローファイルで、シークレットを一致する入力に渡します。API キーの場合は `anthropic_api_key`、OAuth トークンの場合は `claude_code_oauth_token`。
 

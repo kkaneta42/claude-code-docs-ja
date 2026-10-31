@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> クラウドセッションは Pro、Max、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスが管理されている場合、ブラウザ、アプリ、またはターミナルから Anthropic のインフラストラクチャでセッションを開始するには、クラウドセッションの権限を含むロールも必要です。Owner に依頼して、[**Organization settings > Roles**](https://claude.ai/admin-settings/roles) でいずれかのロールにこの権限を追加してもらってください。
+> クラウドセッションは Pro、Max、Ultra、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスが管理されている場合、ブラウザ、アプリ、またはターミナルから Anthropic のインフラストラクチャでセッションを開始するには、クラウドセッションの権限を含むロールも必要です。Owner に依頼して、[**Organization settings > Roles**](https://claude.ai/admin-settings/roles) でいずれかのロールにこの権限を追加してもらってください。
 
 クラウドセッションは、マシン上ではなくクラウドインフラストラクチャで実行される Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャで実行されるか、ルーティングされた場合は組織の[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)で実行されます。セッションはラップトップを閉じた後も実行を続け、任意のデバイスから確認または操作できます。クラウドセッションは、Claude および Claude Code のその他の使用量と合わせてプランの使用制限にカウントされ、クラウド VM に対する別途料金はかかりません。
 
@@ -342,9 +342,7 @@ Enterprise および Team アカウントでは、共有は次のように機能
 * **ユーザーの名前**：アカウントの表示名はアクセス権を持つすべての受信者に表示されます
 * **Slack セッション**：[Claude in Slack](https://code.claude.com/docs/ja/slack.md) セッションは自動的に Team 可視性で共有されます
 
-#### Max または Pro アカウントから共有
-
-Max および Pro アカウントでは、共有は次のように機能します：
+#### Max、Ultra、または Pro アカウントから共有
 
 * **可視性オプション**：**Private** と **Public**。Public 可視性により、セッションは claude.ai にログインしているすべてのユーザーに表示されます
 * **リポジトリアクセス**：検証はデフォルトで有効になっていません

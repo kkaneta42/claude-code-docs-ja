@@ -8,15 +8,15 @@
 
 Claude Desktop アプリでは、Claude Code は **Code** タブです。アプリにはチャットと [Cowork](https://claude.com/product/cowork) もあり、Cowork は Dispatch やより長いエージェント型の作業を担います。このページは Code タブのリファレンスです。
 
-> **[macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
+> [card] [macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)
 >
 > Intel と Apple Silicon 向けのユニバーサルビルド
 
-> **[Windows 用にダウンロード](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)**
+> [card] [Windows 用にダウンロード](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)
 >
 > x64 プロセッサ向け
 
-> **[Linux 用 Claude を入手（ベータ版）](https://code.claude.com/docs/ja/desktop-linux.md)**
+> [card] [Linux 用 Claude を入手（ベータ版）](https://code.claude.com/docs/ja/desktop-linux.md)
 >
 > Ubuntu と Debian 向けの apt または .deb
 
@@ -92,7 +92,7 @@ Claude にファイルを渡すには、プロンプトボックスでファイ�
 | **Accept edits** | `acceptEdits` | Claude はファイル編集と`mkdir`、`touch`、`mv`などの一般的なファイルシステムコマンドを自動的に受け入れますが、他のターミナルコマンドの実行前には確認を求めます。ファイル変更を信頼し、より高速な反復を望む場合に使用します。 |
 | **Plan** | `plan` | Claude はファイルを読み取り、コマンドを実行して探索してから、ソースコードを編集せずにプランを提案します。アプローチを最初に確認したい複雑なタスクに適しています。 |
 | **Auto** | `auto` | Claude は日常的なプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド分類器がリクエストとの整合性を確認します。[auto モードが利用可能](#auto-mode-availability)な場合に表示されます。設定用の個別トグルはありません。 |
-| **Bypass permissions** | `bypassPermissions` | Claude は権限プロンプトなしで実行されます。ただし、[どのモードも自動承認しないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)、Claude が[外部サイトで機能する](#browse-external-sites)場合の安全分類器、またはセッションの削除などのデスクトップアクション（[セッションのアーカイブ](#work-across-sessions)は含みません）は除きます。CLI の`--dangerously-skip-permissions`と同等です。Pro および Max プランでは、**Settings > Code** または **Settings > Claude Code** の「Allow bypass permissions mode」で有効にします。Team および Enterprise プランでは設定トグルはなく、組織ポリシーで制御されます。サンドボックス化されたコンテナまたは VM でのみ使用してください。 |
+| **Bypass permissions** | `bypassPermissions` | Claude は権限プロンプトなしで実行されます。ただし、[どのモードも自動承認しないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)、Claude が[外部サイトで機能する](#browse-external-sites)場合の安全分類器、またはセッションの削除などのデスクトップアクション（[セッションのアーカイブ](#work-across-sessions)は含みません）は除きます。CLI の`--dangerously-skip-permissions`と同等です。Pro、Max、および Ultra プランでは、**Settings > Code** または **Settings > Claude Code** の「Allow bypass permissions mode」で有効にします。Team および Enterprise プランでは設定トグルはなく、組織ポリシーで制御されます。サンドボックス化されたコンテナまたは VM でのみ使用してください。 |
 
 Code タブの以前のバージョンでは、これらのモードを Ask permissions、Auto accept edits、および Plan mode というラベルが付けられていました。
 
@@ -320,7 +320,7 @@ macOS で\*\*Cmd+/**を、Windows で**Ctrl+/\*\*を押して、Code タブで�
 
 > [!NOTE]
 >
-> コンピューター操作は macOS と Windows で提供されているリサーチプレビューで、Pro または Max プランが必要です。Team プランおよび Enterprise プランでは利用できません。Claude Desktop アプリが起動している必要があります。macOS では、コンピューター操作には macOS 14 以降が必要です。
+> コンピューター操作は macOS と Windows で提供されているリサーチプレビューで、Pro、Max、または Ultra プランが必要です。Team プランおよび Enterprise プランでは利用できません。Claude Desktop アプリが起動している必要があります。macOS では、コンピューター操作には macOS 14 以降が必要です。
 
 コンピューター操作はデフォルトでオフになっています。Claude が画面を操作できるようにするには、事前に[設定で有効にしてください](#enable-computer-use)。macOS では、アクセシビリティと画面収録の権限も付与する必要があります。
 
@@ -362,7 +362,7 @@ Claude Desktop が最新バージョンであることを確認してくださ�
 * **Windows**: トグルがすぐに有効になり、セットアップは完了です
 * **macOS**: 次のステップに進みます
 
-トグルが表示されない場合は、macOS または Windows で Pro または Max プランを利用していることを確認してから、アプリを更新して再起動してください。
+トグルが表示されない場合は、macOS または Windows で Pro、Max、または Ultra プランを利用していることを確認してから、アプリを更新して再起動してください。
 
 **3. macOS の権限を付与する**
 
@@ -562,7 +562,8 @@ Dispatch が開始したセッションは、Code タブのサイドバーに他
 
 #### Dispatch をセットアップする
 
-セットアップ、ペアリング、Dispatch 設定については、[Dispatch ヘルプ記事](https://support.claude.com/en/articles/13947068)を参照してください。Dispatch には Pro または Max プランが必要であり、Team または Enterprise プランでは利用できません。
+* **プラン**：Dispatch には Pro、Max、または Ultra プランが必要であり、Team または Enterprise プランでは利用できません
+* **セットアップ、ペアリング、Dispatch 設定**：[Dispatch ヘルプ記事](https://support.claude.com/en/articles/13947068)を参照してください
 
 Dispatch は、ターミナルから離れているときに Claude で作業する複数の方法の 1 つです。他のオプションとの比較については、[プラットフォームと統合](https://code.claude.com/docs/ja/platforms.md#work-when-you-are-away-from-your-terminal)を参照してください。
 
@@ -738,70 +739,70 @@ localhost アドレスは、デフォルトのポートアドレスとまった�
 
 以下の設定は、さまざまなプロジェクトタイプの一般的なセットアップを示しています。
 
-**Next.js**
+> [tab] Next.js
+>
+> この設定は、Yarn を使用してポート 3000 で Next.js アプリを実行します。
+>
+> ```json theme={null}
+> {
+>   "version": "0.0.1",
+>   "configurations": [
+>     {
+>       "name": "web",
+>       "runtimeExecutable": "yarn",
+>       "runtimeArgs": ["dev"],
+>       "port": 3000
+>     }
+>   ]
+> }
+> ```
 
-この設定は、Yarn を使用してポート 3000 で Next.js アプリを実行します。
+> [tab] 複数のサーバー
+>
+> フロントエンドと API サーバーを持つモノレポでは、複数の設定を定義します。フロントエンドは `autoPort: true` を使用するため、3000 が使用中の場合は空いているポートを選択します。一方、API サーバーはポート 8080 を厳密に必要とします。
+>
+> ```json theme={null}
+> {
+>   "version": "0.0.1",
+>   "configurations": [
+>     {
+>       "name": "frontend",
+>       "runtimeExecutable": "npm",
+>       "runtimeArgs": ["run", "dev"],
+>       "cwd": "apps/web",
+>       "port": 3000,
+>       "autoPort": true
+>     },
+>     {
+>       "name": "api",
+>       "runtimeExecutable": "npm",
+>       "runtimeArgs": ["run", "start"],
+>       "cwd": "server",
+>       "port": 8080,
+>       "env": { "NODE_ENV": "development" },
+>       "autoPort": false
+>     }
+>   ]
+> }
+> ```
 
-```json theme={null}
-{
-  "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "web",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["dev"],
-      "port": 3000
-    }
-  ]
-}
-```
-
-**複数のサーバー**
-
-フロントエンドと API サーバーを持つモノレポでは、複数の設定を定義します。フロントエンドは `autoPort: true` を使用するため、3000 が使用中の場合は空いているポートを選択します。一方、API サーバーはポート 8080 を厳密に必要とします。
-
-```json theme={null}
-{
-  "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "frontend",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "cwd": "apps/web",
-      "port": 3000,
-      "autoPort": true
-    },
-    {
-      "name": "api",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start"],
-      "cwd": "server",
-      "port": 8080,
-      "env": { "NODE_ENV": "development" },
-      "autoPort": false
-    }
-  ]
-}
-```
-
-**Node.js スクリプト**
-
-パッケージマネージャーのコマンドを使用せずに Node.js スクリプトを直接実行するには、`program` フィールドを使用します。
-
-```json theme={null}
-{
-  "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "server",
-      "program": "server.js",
-      "args": ["--verbose"],
-      "port": 4000
-    }
-  ]
-}
-```
+> [tab] Node.js スクリプト
+>
+> パッケージマネージャーのコマンドを使用せずに Node.js スクリプトを直接実行するには、`program` フィールドを使用します。
+>
+> ```json theme={null}
+> {
+>   "version": "0.0.1",
+>   "configurations": [
+>     {
+>       "name": "server",
+>       "program": "server.js",
+>       "args": ["--verbose"],
+>       "port": 4000
+>     }
+>   ]
+> }
+> ```
 
 ## 環境設定
 
@@ -1327,7 +1328,7 @@ Claude Code は、Desktop がリモートマシンにインストールするバ
 * **ワークフロー**：Desktop は新しい[ワークフロー](https://code.claude.com/docs/ja/workflows.md)をそれぞれ開始前にチェックするため、Desktop が切断されている間、新しいワークフローは最大 10 分間待機した後に失敗します
 * **MCP サーバー**：Claude Code がリモートマシンで起動する MCP サーバーは Desktop を経由しないため、Claude は引き続きそれらのツールを呼び出せます。`claude_desktop_config.json` のサーバーがこれに含まれるのは、Desktop が[組み込みの SSH クライアント](#worktree-edits-while-disconnected)を使用していない場合のみです。それ以外の場合、および[一部の Windows リモートマシン](#windows-remote-machines)では、Desktop が切断されている間、Claude はそれらのツールを呼び出せません。
 
-> **worktree 内の編集が引き続き機能する場合**
+> [accordion] worktree 内の編集が引き続き機能する場合
 >
 > Linux または macOS のリモートマシンでは、チェックが Desktop を経由しないため、Desktop が切断されている間も worktree 内の編集は引き続き機能します。Claude Desktop v2.37337.0 より前では、これは Linux リモートマシンにのみ当てはまります。
 >
@@ -1368,7 +1369,7 @@ Claude Code は、Bypass permissions を含むどの権限モードでも、[い
 * **記憶されたパスワード**：Desktop に記憶させたパスワードもプロンプトなしで機能しますが、長期間不在にする場合は SSH エージェントが保持する鍵を使用することをお勧めします。そのパスワードでのサインインが途中で切れたり応答しなくなったりする場合、Desktop は再接続を停止してユーザーを待つことがあります。
 * **その他のプロンプト**：リモートマシンがワンタイムコードなど、その他の入力を求める場合、コンピューターに通知が届くことがあります。通知をクリックするか、セッションでメッセージを送信すると、Desktop にプロンプトが表示されます。
 
-> **ジャンプホストがサインインを求める場合、停止が長い場合、出力が欠落している場合、またはプロセスが存在しない場合**
+> [accordion] ジャンプホストがサインインを求める場合、停止が長い場合、出力が欠落している場合、またはプロセスが存在しない場合
 >
 > * **ジャンプホスト、不在中にプッシュ通知が止まる**：これは、ジャンプホストのサインイン（スマートフォンへのプッシュ通知など）に誰も応答しない場合に、macOS または Linux の Desktop で発生することがあります。その場合、Desktop はコンピューターの前に誰もいない間は再接続を停止します。コンピューターのロックを解除するか使用すると、Desktop が再試行できるため、別のプッシュ通知が届くことがあります。応答のない試行が 3 回続くと、ユーザーが再試行するかメッセージを送信するまで待機します。
 > * **ジャンプホスト、プッシュ通知が届き続ける**：Windows の Desktop のように、Desktop が誰も応答していないことを判別できない場合、再参加するプロセスがある間は、そのプロセスがまだ実行中かどうかにかかわらず試行を続けます。試行のたびに別のプッシュ通知が届くことがあります。試行を終了するには Desktop を終了しますが、その場合は[実行中のタスクが失われる可能性があります](#reopen-a-session-after-you-quit-desktop)。
@@ -1592,18 +1593,18 @@ Desktop はリンクを開いたときに、未送信のテキストを置き換
 >
 > コマンドからの接続には、macOS または Linux 上の Claude Desktop v3.6556.0 以降と、Claude アカウントでのサインインが必要です。管理者は[コマンドをチームに配布](#distribute-commands-to-your-team)できます。
 
-各エントリーは 1 つの接続であり、一度に 1 つのホストを持ちます。Desktop がコマンドを実行するのは、接続を作成するときか[そのホストを置き換える](#replace-the-host)ときだけで、接続のたびに実行するわけではありません。2 台のマシンを同時に保持するには、2 つ目のエントリーを追加します。
+Desktop がコマンドを実行するのは、接続の作成時、または[別のマシンを作成](#create-another-machine)するときのみで、接続のたびに実行するわけではありません。各エントリは 1 つの接続であり、その接続は、エントリのコマンドから Desktop が最後に保存したホストを指します。
 
 > [!WARNING]
 >
 > Desktop はマシンを停止も削除もしません。次のものはいずれも、ツールで削除するまで実行され続け、費用が発生し続ける可能性があります。
 >
-> * 置き換えたホスト
-> * ファイルから削除したエントリー、または `id` を変更したエントリーのホスト
-> * コマンドが作成したものの、Desktop がそのホストを保存しなかったマシン（例えば次のような場合）
+> * [別のマシンを作成](#create-another-machine)する前にエントリが指していたマシン
+> * ファイルから削除したエントリ、または `id` を変更したエントリのマシン
+> * コマンドが作成したものの、Desktop がそのホストを保存しなかったマシン。たとえば次の場合です。
 >   * コマンドが失敗した、またはタイムアウトした
->   * 出力されたホストを Desktop が使用できない、別の接続がすでにそのホストを使用している、または組織がそのホストを許可していない
->   * コマンドの実行中に、キャンセルした、そのエントリーを削除した、その `command` や `id` を変更した、または Desktop を終了した
+>   * 出力されたホストを Desktop が使用できない、別の接続がすでにそのホストを使用している、または組織がそれを許可していない
+>   * コマンドの実行中に、コマンドをキャンセルした、そのエントリを削除した、その `command` または `id` を変更した、あるいは Desktop を終了した
 
 次の例は、Dev box という名前の接続を追加します。ファイルが存在しない場合は作成してください。すでに設定が含まれている場合は、その横にキーを追加します。コマンド `acme-dev create` は独自のツールを表し、`~/project` はコマンドが作成した各マシンで Desktop が選択するフォルダーです。
 
@@ -1624,7 +1625,7 @@ Desktop はリンクを開いたときに、未送信のテキストを置き換
 
 | フィールド | 値 |
 | :- | :- |
-| `id` | ASCII の英字、数字、`.`、`_`、`-` で構成される最大 64 文字で、英字または数字で始めます。`sshHostCommands` や [`sshConfigs`](#pre-configure-ssh-connections-for-your-team) のほかのエントリーと重複しない `id` を使用してください。Desktop は接続のホストをこの `id` の下に保持するため、変更すると接続はホストなしの状態からやり直しになり、古いマシンは実行され続けます。 |
+| `id` | 最大 64 文字の ASCII 英字、数字、`.`、`_`、`-` で、英字または数字で始まるもの。`sshHostCommands` または [`sshConfigs`](#pre-configure-ssh-connections-for-your-team) の他のどのエントリにもない `id` を使用してください。Desktop は接続のホストをこの ID の下に保持するため、これを変更すると、接続はホストのない状態からやり直しになり、そのマシンは実行され続け、Desktop は[引き続きそれらに接続できます](#remove-an-entry)。 |
 | `name` | 環境セレクターに表示される接続の名前。1 行で最大 200 文字 |
 | `command` | プログラムとその引数。[コマンドを記述する](#write-the-command)で説明するとおりに記述します |
 | `sshIdentityFile` | 秘密鍵へのパス（`~/.ssh/id_ed25519` など）。SSH 設定または SSH エージェントを使う場合は省略します。 |
@@ -1677,14 +1678,39 @@ tail -n 1 "$out"
 
 これらのホストではホストキー検証をオンのままにし、`known_hosts` ファイルを保持してください。`StrictHostKeyChecking` が `no` または `accept-new` で、かつ `UserKnownHostsFile` が `/dev/null` または `none` の場合、キーはどこにも記録されません。その状態でツールが名前を再利用すると、警告なしに別のマシンに接続してしまう可能性があります。
 
-##### ホストを置き換える
+Desktop はこれらのホストに自動的に接続するため、コンピューターの前に誰もいない場合にも、名前の再利用は問題になります。たとえば、ホストに到達できない間に送信したメッセージは、ホストが応答した時点で配信されます。ホストキーチェックがオンであっても、次の場合にはメッセージがその名前の新しいマシンに届く可能性があるため、マシンが削除される前に[マシンの使用を停止](#stop-using-a-machine)してください。
 
-Dev box にホストが設定されると、セレクターの SSH 接続の中に Dev box が表示され、**Create Dev box** は **Replace Dev box's host** に変わります。その項目がリストにない場合は、**More** の下を確認してください。
+* ユーザー、コマンド、または別のプログラムが新しいキーを `known_hosts` に追加した、または古いキーの行を削除した（コマンドがホストキーを追加する場合はコマンドがこれを行います）
+* ツールのマシンがホストキーを共有している
+* ツールのマシンが、`known_hosts` が信頼する認証局を共有している
+* ユーザーまたは管理者が `KnownHostsCommand` または `VerifyHostKeyDNS yes` を設定しているため、SSH が `known_hosts` 以外からのキーを受け入れる
 
-マシンがなくなった場合や新しいマシンが必要な場合に選択します。新規セッションページで Desktop がホストに到達できないことを示すメッセージからも選択できます。Desktop はコマンドを再度実行し、新しいセッションでは新しいホストが使われます。
+##### 別のマシンを作成する
 
-* **新しいホスト**: 新しいマシンの起動には時間がかかることがあるため、Desktop がホストを保存してから 10 分間、この項目はグレー表示になります。新しいホストが応答しない間、新規セッションページはその 10 分間接続を試み続けます。
-* **古いホスト上のセッション**: セッションは古いホストに残り、そのホストを再度追加しない限り Desktop はそのホストに接続しません。セッションを続けるには、セッションを開いて **Add SSH connection** を選択します。Desktop が古いホストを入力するので、独立した接続として保存してください。
+**Create another Dev box** を選択した後も、以前のマシン上のセッションは引き続き機能し、新しいセッションは新しいマシンを使用します。新しいマシンを作成する場合や、なくなったマシンを置き換える場合は、環境セレクターでこの項目を選択します。新規セッションページでは、Desktop がホストに到達できないことを示すメッセージからも選択できます。
+
+* **以前のマシン上のセッション**: セレクターには Dev box の現在のマシンが表示され、以前のマシンは表示されないため、サイドバーからセッションを続行します。Desktop は、たとえば起動時などに、それらのマシンに自動的に接続することがあるため、使用を終えたら[マシンの使用を停止](#stop-using-a-machine)してください。
+* **Claude Desktop v4.4212.0 より前に置き換えたホスト**: これらのバージョンでは **Replace Dev box's host** が表示され、置き換えられたホストへの接続を停止します。そのホスト上のセッションを続行するには、セッションを開いて **Add SSH connection** を選択し、Desktop が入力した接続を保存します。別のホストを置き換える前に Desktop を更新してください。
+* **2 台のマシンでの新しいセッション**: [`sshHostCommands`](#create-an-ssh-connection-from-a-command) に 2 つ目のエントリを追加します
+* **まだ応答しない新しいホスト**: 新規セッションページが接続を試行し続けている間、最大 10 分間ページを開いたままにします。それでもホストが応答しない場合は、ページのメッセージで **Create another Dev box** を選択します。
+* **直後に別のマシンを作成する**: 1 時間以内にコマンドを何度か実行した後は、それ以降の実行ごとに、Desktop が開くコマンドを表示するダイアログで確認します
+
+##### マシンの使用を停止する
+
+コマンドが作成したマシンに Desktop が自動的に接続しないようにするには、そのマシン上のすべてのセッションをアーカイブします。
+
+1. サイドバーでそのマシンのセッションを探します。セッションの[詳細パネル](#see-session-details)には、セッションが実行されているホストが表示されます。
+2. [各セッションをアーカイブ](#archive-a-session)し、アーカイブしたままにします。
+3. このマシンを作成した後に同じ `sshHostCommands` エントリから別のマシンを作成していない場合は、[別のマシンを作成](#create-another-machine)するか、[エントリを削除](#remove-an-entry)もします。それまでは、このマシンがエントリの保存済み接続であり、その接続が選択された状態で新規セッションページを開くと、Desktop がこのマシンに接続する可能性があります。
+4. アプリでそのマシンへの他の SSH 接続を削除するか、その [`sshConfigs`](#pre-configure-ssh-connections-for-your-team) エントリを削除します。
+5. Desktop を終了して再度開きます。これにより、マシンへの接続が閉じられ、到達の試行が終了します。
+6. ツールでマシンを削除します。
+
+##### エントリを削除する
+
+設定ファイルからエントリを削除したり、その `id` を変更したりした後も、そのマシン上のセッションは残るため、Desktop は引き続きそれらのマシンに接続できます。たとえば、セッションの実行中のプロセスに再接続したり、送信待ちだったメッセージを配信したりするために、コンピューターの前に誰もいなくても接続することがあります。これを停止するには、[マシンの使用を停止する](#stop-using-a-machine)で説明するとおりにセッションをアーカイブします。
+
+管理者が管理対象のエントリを削除した場合も、ユーザーのセッションは残り、各ユーザーが自分のセッションをアーカイブする必要があります。エントリのマシンを管理者側でブロックするには、ユーザーが引き続き必要とするホストには一致し、マシンのホスト名には一致しない [`sshHostAllowlist`](#restrict-which-ssh-hosts-users-can-connect-to) を設定します。これができるのは、パターンで両者を区別できる場合のみです。
 
 ##### コマンドをチームに配布する
 
@@ -1708,10 +1734,10 @@ Dev box にホストが設定されると、セレクターの SSH 接続の中�
 キーをデプロイする前に、次の各点を決めておいてください。
 
 * **キーの配置場所**: Claude Code 用の MDM ポリシーですでに[ポリシーキー](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を設定している場合は、そこに配置します。そうでない場合は、管理設定ファイルに配置します。デフォルトでは、そのようなポリシーはファイルより優先され、その場合 Desktop はファイル内のエントリーを無視します。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)が適用される環境でも、コンピューター上で設定してください。Desktop はサーバー管理設定、およびプロジェクト設定とローカル設定にあるこのキーを無視します。
-* **`id`**: ユーザーの `sshHostCommands` エントリーが管理者のものと同じ `id` を持つ場合、管理者のエントリーのみが機能します。ユーザーの `sshConfigs` にあるものなど、ほかの SSH 接続が同じ `id` を持つ場合、管理者のエントリーはグレー表示になります。ユーザーが選びそうにない `id` を選んでください。
+* **`id`**: ユーザーの `sshHostCommands` エントリが管理者の `id` を持っている場合、管理者のエントリのみが機能します。ユーザーの `sshConfigs` にあるものなど、他の SSH 接続がその ID を持っている場合、管理者のエントリはグレー表示になります。ユーザーが選びそうにない `id` を選んでください。
 * **プログラム**: Desktop は名前のみの場合に各ユーザー自身の `PATH` から検索するため、フルパスを指定してください。プログラムはそのユーザーとして、ユーザーのログインシェルがエクスポートする変数を使って実行されます。
 * **ユーザー独自のエントリー**: どちらもコンピューター上でプログラムを実行するため、Desktop はユーザーのエントリーを[フック](https://code.claude.com/docs/ja/hooks.md)と同様に扱います。管理者のエントリーのみを許可するには、[`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization) を `["hooks"]` に設定するか、そのリストに `"hooks"` を追加します。これにより、ユーザー設定、プロジェクト設定、ローカル設定の Claude Code フックも停止され、それらを維持する方法はありません。代わりにこのキーまたは [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) を `true` に設定すると、各キーの項目に記載されているとおり、より多くのものがブロックされます。
-* **すべてのエントリー**: 管理者のエントリーもオフにするには、管理設定で [`disableAllHooks`](https://code.claude.com/docs/ja/settings-reference#disableallhooks) を設定します。[`disableDesktopLocalSessions`](https://code.claude.com/docs/ja/settings-reference#disabledesktoplocalsessions) を設定した場合、またはどのホストも許可しない `sshHostAllowlist` を設定した場合、セレクターには **Create** や **Replace** の項目が表示されません。
+* **すべてのエントリ**: 管理者のエントリもオフにするには、管理設定で [`disableAllHooks`](https://code.claude.com/docs/ja/settings-reference#disableallhooks) を設定します。[`disableDesktopLocalSessions`](https://code.claude.com/docs/ja/settings-reference#disabledesktoplocalsessions)、またはどのホストも許可しない `sshHostAllowlist` を設定した場合、セレクターには **Create** や **Create another** の項目は表示されません。
 * **ロックが有効になる場所**: これらのエントリーについて、Desktop は `allowManagedHooksOnly`、`strictPluginOnlyCustomization`、`disableAllHooks` をサーバー管理設定とコンピューター自身のファイルまたはポリシーから読み取り、より厳しい結果を適用します。組織にサーバー管理設定がない場合でも、Desktop が claude.ai でサーバー管理設定を確認するまで、すべてのエントリーはグレー表示のままです。
 * **許可されたホスト**: [`sshHostAllowlist`](#restrict-which-ssh-hosts-users-can-connect-to) を設定する場合は、ツールが出力する各ホスト名にいずれかのパターンが一致するようにし、パターンには `user@` を含めないでください。Desktop が出力された名前を確認するのはコマンドの実行後であるため、リストで拒否されたマシンはすでに存在しており、ユーザーはツールを使ってそれを削除する必要があります。各接続時には、解決後の `HostName` も一致する必要があります。
 
@@ -1719,7 +1745,7 @@ Dev box にホストが設定されると、セレクターの SSH 接続の中�
 
 ##### コマンドが表示されない、またはグレー表示になる場合
 
-次の場合、環境セレクターには **Create** や **Replace** の項目が表示されません。
+次の場合、環境セレクターには **Create** や **Create another** の項目が表示されません。
 
 * **ファイル**: `~/.claude/settings.json` に[無効な JSON またはスキーマで拒否される値](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)がある、キーのスペルを間違えている、またはプロジェクトの設定にキーを記述している。ファイルを修正してください。
 * **プラットフォームとアカウント**: Windows を使用している、または Claude アカウントではなく[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用している。各ホストを自分で [SSH 接続](#ssh-sessions)として追加してください。
@@ -1728,9 +1754,9 @@ Dev box にホストが設定されると、セレクターの SSH 接続の中�
 
 選択できないエントリーはグレー表示になります。ホバーすると理由が表示されます。
 
-* **エントリーの誤り**: メッセージが示すフィールドまたはコマンドを修正します。`id` が使用中の場合は、エントリーに別の `id` を指定します。
+* **エントリの誤り**: メッセージに示されたフィールドまたはコマンドを修正します。`id` が使用中の場合は、エントリに別の ID を付けます。
 * **壊れた設定ファイル**: 自分の設定ファイルが壊れている間、管理者のエントリーが、ファイル名を示すメッセージとともにグレー表示になることがあります。[ファイルを修正](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)してください。
-* **新しいホスト**: ホストは保存から 10 分経過すると[置き換え](#replace-the-host)られるようになります。
+* **新しいホスト**: Desktop がホストを保存してから 1 分間、[**Create another**](#create-another-machine) はグレー表示になります。1 分経過後に選択してください。Claude Desktop v4.4212.0 より前では、**Replace Dev box's host** が 10 分間グレー表示になります。
 * **フックがオフまたは制限されている**: 自分のエントリーは、自分のフックが実行できる場合にのみ機能します。設定から `disableAllHooks` を削除するか、管理者に相談してください。
 * **設定がまだ読み込み中**: Desktop が組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を読み込むまで（通常は起動から数秒）、すべてのエントリーはグレー表示になります。エントリーがグレー表示のままの場合は、claude.ai への接続を確認してください。
 
@@ -1946,6 +1972,10 @@ Linux では、このキーのみを設定するポリシーファイルは次�
 
 プレースホルダーを、[claude.ai 管理設定](https://claude.ai/admin-settings/organization)に表示される claude.ai 組織 ID に置き換えてください。これは Claude Code の[`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid)設定が受け取るものと同じ ID です。このキーを設定する macOS および Windows のサンプルについては、HIPAA 対応組織向け Cowork ガイドの[Deploy the Claude Desktop policy](https://claude.com/docs/cowork/hipaa-setup#deploy-the-claude-desktop-policy)を参照してください。
 
+> [!WARNING]
+>
+> デプロイする前に`forceLoginOrgUUID`の値を確認してください。ID が自組織のものでない場合、組織のメンバーは、その ID を持つ組織にも所属していない限り Claude Desktop を使用できません。復旧するには、正しい ID をデプロイし、メンバーに Claude Desktop を再起動してもらってください。
+
 Claude Code の[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で`forceLoginMethod`と`forceLoginOrgUUID`を設定しても、Claude Desktop のサインイン画面は変わりません。
 
 ### ネットワークアクセス要件
@@ -2055,7 +2085,7 @@ Desktop は同じセッションを続行するため、コピーではなく、
 | `--model sonnet` | プロンプトボックスの下の行にあるモデルピッカー |
 | `--resume`、`--continue` | サイドバーのセッションをクリックするか、プロンプトボックスで `/resume` と入力して CLI から開始したセッションを選択します |
 | `--permission-mode` | プロンプトボックスの下の行にあるモードセレクタ |
-| `--dangerously-skip-permissions` | 権限モードをバイパスします。Pro および Max プランでは、**設定 > Code** または **設定 > Claude Code** で「権限モードのバイパスを許可」を有効にします。Team および Enterprise プランでは、組織ポリシーで制御されます |
+| `--dangerously-skip-permissions` | 権限モードをバイパスします。Pro、Max、および Ultra プランでは、**設定 > Code** または **設定 > Claude Code** で「権限モードのバイパスを許可」を有効にします。Team および Enterprise プランでは、組織ポリシーで制御されます |
 | `--add-dir` | ローカルセッションと SSH セッションでは[セッションにフォルダを追加](#add-folders-to-a-session)し、クラウドセッションでは[複数のリポジトリ](#run-long-running-tasks-in-the-cloud)を選択します |
 | `--allowedTools`、`--disallowedTools` | セッションごとの同等物はありません。[設定ファイル](https://code.claude.com/docs/ja/settings.md)の権限ルールは引き続き適用されます。 |
 | `--verbose` | [詳細ビューモード](#switch-view-modes) |
@@ -2091,7 +2121,7 @@ Desktop アプリは、`claude_desktop_config.json` から MCP サーバーを�
 
 | 機能 | CLI | Desktop |
 | - | - | - |
-| 権限モード | `dontAsk` を含むすべてのモード | Manual、Accept edits、Plan、および Auto。権限モードのバイパスは、モードセレクタで有効にされると表示されます：Pro および Max プランでは設定トグルを通じて、Team および Enterprise プランでは組織ポリシーを通じて |
+| 権限モード | `dontAsk` を含むすべてのモード | Manual、Accept edits、Plan、および Auto。権限モードのバイパスは、有効にされるとモードセレクタに表示されます：Pro、Max、および Ultra プランでは設定トグルを通じて、Team および Enterprise プランでは組織ポリシーを通じて |
 | [サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md) | Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry | デフォルトで Anthropic の API。ゲートウェイルーティングについては、[Desktop アプリをゲートウェイに接続](https://code.claude.com/docs/ja/llm-gateway-connect.md#desktop-app)を参照してください。Code タブを Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または自己ホスト型 LLM ゲートウェイで実行するには、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview)を参照してください。 |
 | [MCP サーバー](https://code.claude.com/docs/ja/mcp.md) | 設定ファイルで設定 | ローカルおよび SSH セッションのコネクタ UI、または設定ファイル |
 | [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md) | `/plugin` コマンド | プラグインマネージャー UI |
@@ -2153,7 +2183,7 @@ Desktop アプリは、`claude_desktop_config.json` から MCP サーバーを�
 Code タブを使用するときに`Error 403: Forbidden`またはその他の認証エラーが表示される場合：
 
 1. アプリメニューからサインアウトして再度サインインします。これが最も一般的な修正です。
-2. アクティブな有料サブスクリプション（Pro、Max、Team、または Enterprise）があることを確認します。
+2. アクティブな有料サブスクリプション（Pro、Max、Ultra、Team、または Enterprise）があることを確認します。
 3. CLI は機能するが Desktop は機能しない場合、デスクトップアプリを完全に終了し（ウィンドウを閉じるだけではなく）、再度開いてサインインします。
 4. インターネット接続とプロキシ設定を確認します。
 
