@@ -120,7 +120,7 @@ Claude は dev サーバーを起動し、Browser ペインで開いて変更を
 
 > [!NOTE]
 >
-> [SSH セッション](#ssh-sessions)では、Claude は Browser ペインのツールを利用できないため、Browser ペインでアプリを開くことができません。アプリを自分で確認するには、[そのポートをコンピューターに転送](#reach-a-port-on-the-remote-machine)します。
+> [SSH セッション](#ssh-sessions)では、Claude は Browser ペインのツールを利用できないため、ペインでアプリを開いたり、変更を[自動検証](#auto-verify-changes)したりすることができません。ペインの **Dev servers** メニューと[設定済みのプレビューサーバー](#configure-preview-servers)も利用できません。アプリを自分で確認するには、リモートマシンでサーバーを起動してから、[そのポートをコンピューターに転送](#reach-a-port-on-the-remote-machine)します。
 
 ローカルセッションで Claude がサーバーを起動した後に Browser ペインが開いていない場合は、チャット内のサーバーのカードにある **Open** をクリックします。
 
@@ -1002,7 +1002,7 @@ Linux または macOS のリモートマシンには、サポートされてい�
 * **`MaxSessions 1` でのワンタイムコード**: ワンタイムコードのようにログインのたびにプロンプトが表示される場合、`!` コマンドは失敗します。代わりに、それらのコマンドはターミナルタブで実行してください。ターミナルタブでは、独自のペインでプロンプトが表示されます。
 * **インストールフォルダ**：Desktop は、ホームディレクトリの `~/.claude/remote/` の下にヘルパープログラムと Claude Code をインストールします。そこからそれらを実行するため、そのフォルダを `noexec` でマウントされたファイルシステム上に置くことはできません。接続する各ユーザーのホームディレクトリに約 1 GB のディスク容量を確保してください。そのフォルダに含まれる内容については、[リモートマシン上のファイルとプロセス](#files-and-processes-on-the-remote-machine)を参照してください。
 * **シェル**：リモートマシン上のアカウントに設定されているシェルは、Bash、Zsh、`sh` と同様に、SSH 経由で送信されたコマンドを実行できる必要があります
-* **ネットワーク**：Claude Code はリモートマシンで実行され、そこからネットワークリクエストを行うため、マシンには [Claude Code が必要とするネットワークアクセス](https://code.claude.com/docs/ja/network-config.md#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop はコンピューター上でダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。Linux のリモートマシンで、それらのリクエストにプロキシが必要な場合は、[SSH セッション用に設定してください](#set-a-proxy-or-a-ca-certificate-for-ssh-sessions)。
+* **ネットワーク**: Claude Code はリモートマシン上で実行され、そこからネットワークリクエストを送信するため、マシンには [Claude Code が必要とするネットワークアクセス](https://code.claude.com/docs/ja/network-config.md#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop が自分のコンピューターでダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。Linux のリモートマシンでプロキシや CA 証明書が必要な場合は、[SSH セッション用に設定](#set-a-proxy-or-a-ca-certificate-for-ssh-sessions)してください。
 
 #### リモートマシンのホスト鍵を確認する
 
@@ -1030,7 +1030,7 @@ Linux または macOS のリモートマシンには、サポートされてい�
 
 Linux のリモートマシンがプロキシ経由でインターネットに接続する場合、または CA 証明書が必要な場合は、そのマシン上の `~/.claude/settings.json` の `env` に[プロキシと CA の変数](https://code.claude.com/docs/ja/network-config.md)を追加してください。そのマシンの `~/.profile`、`~/.bash_profile`、`~/.zprofile`、または `~/.zshrc` ですでにエクスポートしている場合でも追加してください。
 
-SSH セッションでは、そのマシンのターミナルで実行した `claude` にはそれらのファイルの変数が渡される場合でも、Claude Code には渡されません。その結果、セッションがハングしたり、**The connection from … to the API failed** や **Authentication failed** が表示されたりすることがあり、再度サインインしても解決しません。
+SSH セッションでは、そのマシンのターミナルで実行する `claude` には変数が渡される場合でも、Claude Code にはこれらのファイルの変数が渡されません。その結果、セッションがハングしたり、**The connection from … to the API failed**、**Authentication failed**、**Claude Code on … couldn’t verify the API connection’s certificate** と表示されたりすることがあります。再度サインインしても解決しません。
 
 **1. 変数を追加する**
 
@@ -1948,6 +1948,28 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
 
 管理ソースのみが設定できる権限、プラグイン、および配信キーについては、[管理設定のみが設定できるキー](https://code.claude.com/docs/ja/managed-settings.md#managed-only-settings)を参照してください。
 
+#### Code タブで動作が異なる Claude Code 設定
+
+ローカルセッションでは、Code タブがターミナルインターフェースを置き換えるため、以下のキーをはじめとする一部のキーは、効果が異なるか、目に見える効果がありません。これらのキーはターミナルでは引き続き適用されるため、設定したままにしておいてかまいません。
+
+| キー | ローカルセッションでの動作 |
+| - | - |
+| `askUserQuestionTimeout` | タイムアウトは適用されないため、Claude からの質問はユーザーが回答するまで開いたままになります |
+| `awaySummaryEnabled` | このキーは効果がありません |
+| `bashEditDiffEnabled` | Code タブには、Bash コマンドが変更したファイルの一覧は表示されません |
+| `companyAnnouncements` | Code タブにはアナウンスは表示されません |
+| `defaultShell` | ユーザーが`!`の後に入力したコマンドは、アプリが選択するシェルで実行されます。macOS と Linux ではユーザーのログインシェル、Windows では PowerShell です |
+| `fileSuggestion` | `@`ファイルピッカーは独自のファイルリストを作成し、設定したコマンドは実行しません |
+| `modelPicker` | モデルピッカーには、各ユーザーのアカウントで利用可能なモデルが表示されます。これを制限するには、[`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection)を設定します。 |
+| `pluginTrustMessage` | ユーザーがプラグインをインストールするときに表示される警告には、設定したメッセージは含まれません |
+| `prUrlTemplate` | プルリクエストのリンクには、テンプレートではなくプルリクエスト自体の URL が使用されます |
+| `respectGitignore` | `@`ファイルピッカーは独自のファイルリストを作成し、このキーは読み取りません |
+| `respondToBashCommands` | 値に関係なく、Claude はユーザーが`!`で実行したコマンドの出力に応答します |
+| `showClearContextOnPlanAccept` | ユーザーがプランを承認するときに、コンテキストをクリアするオプションは表示されません |
+| `skipDangerousModePermissionPrompt` | Code タブには[Bypass permissions モード](#choose-a-permission-mode)用の独自の確認があり、このキーではその確認をスキップできません |
+| `verbose`、`viewMode` | 各ユーザーが[セッションメニューの **Transcript view**](#switch-view-modes)でビューを選択します |
+| `worktree.baseRef`、`worktree.sparsePaths`、`worktree.symlinkDirectories` | Code タブがセッション用に作成する worktree には使用されません |
+
 ### デバイス管理ポリシー
 
 IT チームは、macOS の MDM、Windows のグループポリシー、または Linux のポリシーファイルを通じてデスクトップアプリを管理できます。利用可能なポリシーには、Claude Code 機能の有効化または無効化、macOS と Windows での自動更新の制御、およびカスタムデプロイ URL の設定が含まれます。
@@ -2100,7 +2122,7 @@ Desktop と CLI は同じ設定ファイルを読み込むため、セットア�
 * プロジェクト内の **[CLAUDE.md](https://code.claude.com/docs/ja/memory.md)** および `CLAUDE.local.md` ファイルは両方で使用されます
 * `~/.claude.json` または `.mcp.json` で設定された **[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)** は両方で機能します
 * 設定で定義された **[フック](https://code.claude.com/docs/ja/hooks.md)** および **[スキル](https://code.claude.com/docs/ja/skills.md)** は両方に適用されます
-* `~/.claude.json` および `~/.claude/settings.json` の **[設定](https://code.claude.com/docs/ja/settings.md)** は共有されます。`settings.json` の権限ルール、許可されたツール、およびその他の設定は Desktop セッションに適用されます。
+* `~/.claude.json` および `~/.claude/settings.json` の **[設定](https://code.claude.com/docs/ja/settings.md)** は共有されます。`settings.json` の権限ルール、許可されたツール、およびその他の設定は Desktop セッションに適用されます。一部のキーは[コードタブでは異なる動作をします](#claude-code-settings-that-behave-differently-in-the-code-tab)。
 * **モデル**：同じ[モデル](https://code.claude.com/docs/ja/model-config.md#available-models)が両方で利用可能です。Desktop では、プロンプトボックスの下の行にあるモデルピッカーからモデルを選択します。セッション中にも同じピッカーからモデルを変更できます。
 
 #### Claude Desktop チャットアプリからの MCP サーバー
@@ -2281,7 +2303,12 @@ Desktop の SSH 接続の記録である `ssh.log` は、**Help** メニュー�
 
 ファイルには環境内の名前やその他の詳細が含まれる可能性があるため、送信する前に内容を確認してください。`<host>` と `<user>` は、Desktop が置き換えた名前を表します。Desktop はすべての名前を置き換えるわけではなく、SSH のホスト名やユーザー名が記述されたまま表示される場合もあります。zip ファイルを誰かに送信する場合は、ログにホスト名が記載されていない可能性があるため、どのホストでいつ失敗したかを伝えてください。
 
-zip ファイルには、Desktop がリモートマシンにインストールするヘルパープログラムのログは含まれていません。そのログも取得するには、接続したユーザーのホームディレクトリにある [`~/.claude/remote/run/`](#files-and-processes-on-the-remote-machine) 配下のヘルパーのフォルダから `remote-server.log` をコピーします。このファイルも送信する前に内容を確認してください。
+zip ファイルには、Desktop がリモートマシンにインストールするヘルパープログラムのログは含まれていません。そのログも取得するには、接続したユーザーのホームディレクトリにある [`~/.claude/remote/run/`](#files-and-processes-on-the-remote-machine) 配下のヘルパーのフォルダから、以下のファイルをコピーします：
+
+* **`remote-server.log`**：ヘルパーの最新の実行のログです。
+* **`remote-server.log.old`**（存在する場合）：その前の実行のログです。Desktop が次回接続してヘルパーを再起動する必要が生じると失われるため、できるだけ早くコピーしてください。
+
+これらのファイルも送信する前に内容を確認してください。
 
 ### アプリが終了しない
 

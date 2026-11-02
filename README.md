@@ -17,6 +17,96 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-11-02</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/desktop-ja.md | 37 ++++++++++++++++++++++++++++++++-----
+ docs-ja/pages/setup-ja.md   | 11 ++++++-----
+ 2 files changed, 38 insertions(+), 10 deletions(-)
+```
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index ddf761f..0248d07 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -121,5 +121,5 @@ Claude は dev サーバーを起動し、Browser ペインで開いて変更を
+ > [!NOTE]
+ >
+-> [SSH セッション](#ssh-sessions)では、Claude は Browser ペインのツールを利用できないため、Browser ペインでアプリを開くことができません。アプリを自分で確認するには、[そのポートをコンピューターに転送](#reach-a-port-on-the-remote-machine)します。
++> [SSH セッション](#ssh-sessions)では、Claude は Browser ペインのツールを利用できないため、ペインでアプリを開いたり、変更を[自動検証](#auto-verify-changes)したりすることができません。ペインの **Dev servers** メニューと[設定済みのプレビューサーバー](#configure-preview-servers)も利用できません。アプリを自分で確認するには、リモートマシンでサーバーを起動してから、[そのポートをコンピューターに転送](#reach-a-port-on-the-remote-machine)します。
+ 
+ ローカルセッションで Claude がサーバーを起動した後に Browser ペインが開いていない場合は、チャット内のサーバーのカードにある **Open** をクリックします。
+@@ -1003,5 +1003,5 @@ Linux または macOS のリモートマシンには、サポートされてい
+ * **インストールフォルダ**：Desktop は、ホームディレクトリの `~/.claude/remote/` の下にヘルパープログラムと Claude Code をインストールします。そこからそれらを実行するため、そのフォルダを `noexec` でマウントされたファイルシステム上に置くことはできません。接続する各ユーザーのホームディレクトリに約 1 GB のディスク容量を確保してください。そのフォルダに含まれる内容については、[リモートマシン上のファイルとプロセス](#files-and-processes-on-the-remote-machine)を参照してください。
+ * **シェル**：リモートマシン上のアカウントに設定されているシェルは、Bash、Zsh、`sh` と同様に、SSH 経由で送信されたコマンドを実行できる必要があります
+-* **ネットワーク**：Claude Code はリモートマシンで実行され、そこからネットワークリクエストを行うため、マシンには [Claude Code が必要とするネットワークアクセス](https://code.claude.com/docs/ja/network-config.md#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop はコンピューター上でダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。Linux のリモートマシンで、それらのリクエストにプロキシが必要な場合は、[SSH セッション用に設定してください](#set-a-proxy-or-a-ca-certificate-for-ssh-sessions)。
++* **ネットワーク**: Claude Code はリモートマシン上で実行され、そこからネットワークリクエストを送信するため、マシンには [Claude Code が必要とするネットワークアクセス](https://code.claude.com/docs/ja/network-config.md#network-access-requirements)が必要です。マシンが Claude Code をダウンロードできない場合、Desktop が自分のコンピューターでダウンロードしてアップロードします。Claude Code のその他のリクエストは引き続きリモートマシンから送信されます。Linux のリモートマシンでプロキシや CA 証明書が必要な場合は、[SSH セッション用に設定](#set-a-proxy-or-a-ca-certificate-for-ssh-sessions)してください。
+ 
+ #### リモートマシンのホスト鍵を確認する
+@@ -1031,5 +1031,5 @@ Linux または macOS のリモートマシンには、サポートされてい
+ Linux のリモートマシンがプロキシ経由でインターネットに接続する場合、または CA 証明書が必要な場合は、そのマシン上の `~/.claude/settings.json` の `env` に[プロキシと CA の変数](https://code.claude.com/docs/ja/network-config.md)を追加してください。そのマシンの `~/.profile`、`~/.bash_profile`、`~/.zprofile`、または `~/.zshrc` ですでにエクスポートしている場合でも追加してください。
+ 
+-SSH セッションでは、そのマシンのターミナルで実行した `claude` にはそれらのファイルの変数が渡される場合でも、Claude Code には渡されません。その結果、セッションがハングしたり、**The connection from … to the API failed** や **Authentication failed** が表示されたりすることがあり、再度サインインしても解決しません。
++SSH セッションでは、そのマシンのターミナルで実行する `claude` には変数が渡される場合でも、Claude Code にはこれらのファイルの変数が渡されません。その結果、セッションがハングしたり、**The connection from … to the API failed**、**Authentication failed**、**Claude Code on … couldn’t verify the API connection’s certificate** と表示されたりすることがあります。再度サインインしても解決しません。
+ 
+ **1. 変数を追加する**
+@@ -1949,4 +1949,26 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
+ 管理ソースのみが設定できる権限、プラグイン、および配信キーについては、[管理設定のみが設定できるキー](https://code.claude.com/docs/ja/managed-settings.md#managed-only-settings)を参照してください。
+ 
++#### Code タブで動作が異なる Claude Code 設定
++
+```
+
+</details>
+
+<details>
+<summary>setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/setup-ja.md b/docs-ja/pages/setup-ja.md
+index 0869e11..c6f6a8b 100644
+--- a/docs-ja/pages/setup-ja.md
++++ b/docs-ja/pages/setup-ja.md
+@@ -27,4 +27,5 @@ Claude Code は以下のプラットフォームと構成で実行されます
+ 
+ * **ripgrep**: 通常は Claude Code に含まれています。検索が失敗する場合は、[検索トラブルシューティング](https://code.claude.com/docs/ja/troubleshooting.md#search-and-discovery-issues)を参照してください。
++* **Git**: 任意です。git がインストールされている場合、[`claude plugin eval`](https://code.claude.com/docs/ja/plugin-evals#requirements) には 2.31 以降が必要です。macOS、Linux、または WSL からの[ローカルリポジトリのクラウドセッションへのアップロード](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)には git 2.31 以降が必要です。`git --version` を実行してバージョンを確認してください。
+ 
+ ## Claude Code をインストール
+@@ -40,5 +41,5 @@ Claude Code をインストールするには、ターミナルを開いてシ
+ > **macOS、Linux、WSL：**
+ >
+-> ```bash theme={null}
++> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+ > curl -fsSL https://claude.ai/install.sh | bash
+ > ```
+@@ -48,5 +49,5 @@ Claude Code をインストールするには、ターミナルを開いてシ
+ > **Windows PowerShell：**
+ >
+-> ```powershell theme={null}
++> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+ > irm https://claude.ai/install.ps1 | iex
+ > ```
+@@ -54,5 +55,5 @@ Claude Code をインストールするには、ターミナルを開いてシ
+ > **Windows CMD：**
+ >
+-> ```batch theme={null}
++> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+ > curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-10-31</summary>
 
 **変更ファイル:**
@@ -3314,120 +3404,6 @@ index f3a18fe..0ed93c5 100644
  
 -一部の Claude Code 機能には claude.ai アカウントが必要です。[web 上の Claude Code](/docs/ja/claude-code-on-the-web)、[Routines](/docs/ja/routines)、[Code Review](/docs/ja/code-review)、[Remote Control](/docs/ja/remote-control)、および [Chrome 拡張機能](/docs/ja/chrome) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
 +一部の Claude Code 機能には claude.ai アカウントが必要です。[クラウドセッション](/docs/ja/claude-code-on-the-web)、[クラウドのスケジュールタスク](/docs/ja/routines)、[Code Review](/docs/ja/code-review)、[Remote Control](/docs/ja/remote-control)、および [Chrome 拡張機能](/docs/ja/chrome) は、Console API キーまたはクラウドプロバイダーの認証情報だけでは利用できません。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を通じてデプロイする場合は、開発者が Claude for Teams または Enterprise シートも必要かどうかを検討してください。各機能ページにはプラン要件が記載されています。
- 
-```
-
-</details>
-
-<details>
-<summary>advisor-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
-index dd69937..2ca1537 100644
---- a/docs-ja/pages/advisor-ja.md
-+++ b/docs-ja/pages/advisor-ja.md
-@@ -7,7 +7,7 @@
- > メインモデルをより強力な advisor モデルと組み合わせて、タスク中の重要な瞬間に Claude が相談できるようにします。
- 
--<Note>
--  advisor ツールは実験的機能であり、Anthropic API が必要です。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
--</Note>
-+> [!NOTE]
-+>
-+> advisor ツールは実験的機能であり、Anthropic API が必要です。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
- 
- advisor ツールを使用すると、Claude はタスク中の重要な瞬間（アプローチをコミットする前、繰り返し発生するエラーで行き詰まった場合、またはタスク完了を宣言する前など）に、通常はより強力な 2 番目のモデルに相談できます。advisor は、すべてのツール呼び出しと結果を含む完全な会話を受け取り、Claude が続行する前に適用するガイダンスを返します。
-@@ -17,7 +17,5 @@ advisor は Anthropic インフラストラクチャ上でサーバー側で実
- このページでは、advisor を有効にする方法、受け入れられるモデルペアリング、相談中に Claude が表示する内容、および advisor 使用量がどのように課金されるかについて説明します。
- 
--<h2 id="when-to-use-the-advisor">
--  advisor を使用する場合
--</h2>
-+## advisor を使用する場合
- 
- advisor は、ほとんどのターンが定型的であるが、プラン品質が結果を決定する長い複数ステップのタスクに適しています。例としては、大規模なリファクタリング、エラーが繰り返し発生するデバッグセッション、および Claude が完了を宣言する前に独立して確認したいタスクが挙げられます。
-@@ -25,7 +23,5 @@ advisor は、ほとんどのターンが定型的であるが、プラン品質
- 計画する必要がほとんどない短いタスク、またはすべてのターンで最強のモデルが必要な作業では、価値が低くなります。その場合は、[メインモデルを切り替える](/docs/ja/model-config#setting-your-model)か、[advisor が opusplan およびサブエージェントとどのように比較されるか](#compare-with-related-features)を参照して、2 番目の意見を得る他の方法を確認してください。
- 
--<h2 id="enable-the-advisor">
--  advisor を有効にする
--</h2>
-```
-
-</details>
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index d8d8fc6..ab3ca26 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -7,7 +7,7 @@
- > 複数の Claude Code インスタンスがチームとして連携して動作するように調整し、共有タスク、エージェント間メッセージング、および一元管理を実現します。
- 
--<Warning>
--  エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
--</Warning>
-+> [!WARNING]
-+>
-+> エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](/docs/ja/settings) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
- 
- エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。リーダーを経由せずに、任意のチームメンバーと直接対話することもできます。
-@@ -15,7 +15,5 @@
- チームを設定する前に、より軽量なオプションで十分かどうかを確認してください。[Subagents](/docs/ja/sub-agents) は単一セッション内で動作し、[クロスセッションメッセージング](/docs/ja/cross-session-messaging) を使用すると Claude は自分で実行するセッション間で検出結果を渡すことができます。
- 
--<h2 id="when-to-use-agent-teams">
--  エージェントチームを使用する場合
--</h2>
-+## エージェントチームを使用する場合
- 
- エージェントチームは、並列探索が実際の価値を追加するタスクに最も効果的です。完全なシナリオについては、[ユースケース例](#use-case-examples)を参照してください。最も強力なユースケースは以下の通りです。
-@@ -28,15 +26,9 @@
- エージェントチームは調整オーバーヘッドを追加し、単一セッションよりも大幅に多くのトークンを使用します。チームメンバーが独立して動作できる場合に最も効果的です。順序付きタスク、同じファイルの編集、または多くの依存関係を持つ作業の場合は、単一セッションまたは [subagents](/docs/ja/sub-agents) がより効果的です。
- 
--<h3 id="compare-with-subagents">
--  subagents との比較
--</h3>
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index 64f64e3..a7f0649 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -9,7 +9,5 @@
- `claude agents` で開くエージェントビューは、すべてのバックグラウンドセッションの 1 つの画面です。実行中のもの、入力が必要なもの、完了したものが表示されます。新しいセッションをディスパッチし、トランスクリプトをスクロールする代わりに一目でセッションの状態を確認し、セッションが必要とするときだけ介入します。各バックグラウンドセッションは完全な Claude Code の会話であり、ターミナルが接続されていなくてもバックグラウンドで実行し続けるため、いつでも開いて、返信して、去ることができます。
- 
--<img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/agent-view-light.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=d6905012bee31f3e6b3920b09c05dd02" className="dark:hidden" alt="ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。" width="1872" height="680" data-path="images/agent-view-light.png" />
--
--<img src="https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/agent-view-dark.png?fit=max&auto=format&n=HDAmBwgbrZVk0pOt&q=85&s=fc3c195bfc57e313ced1f1beb36cee93" className="hidden dark:block" alt="ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。" width="1872" height="680" data-path="images/agent-view-dark.png" />
-+![ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。](https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/agent-view-light.png?fit=max\&auto=format\&n=HDAmBwgbrZVk0pOt\&q=85\&s=d6905012bee31f3e6b3920b09c05dd02)
- 
- Claude が複数の独立したタスクに対して、あなたが毎ステップを監視することなく作業できる場合に、エージェントビューを使用します。バグ修正、プルリクエストレビュー、不安定なテストの調査を 3 つの行としてディスパッチし、別のウィンドウで作業を続け、行が入力が必要であることを示すか、結果が得られたときに確認します。
-@@ -19,83 +17,79 @@ Claude が複数の独立したタスクに対して、あなたが毎ステッ
- エージェントビューを subagents、agent teams、worktrees と比較するには、[エージェントを並列で実行する](/docs/ja/agents)を参照してください。エージェントビューはあなたのマシン上でセッションを実行し、各セッションをディスパッチします。1 つの会話からクラウドで Claude が並列セッションを開始して追跡するには、[Projects](/docs/ja/claude-projects)を参照してください。
- 
--<Note>
--  エージェントビューはリサーチプレビュー中です。インターフェースとキーボードショートカットは機能の進化に伴って変更される可能性があります。
--</Note>
-+> [!NOTE]
-+>
-+> エージェントビューはリサーチプレビュー中です。インターフェースとキーボードショートカットは機能の進化に伴って変更される可能性があります。
- 
--<h2 id="quick-start">
--  クイックスタート
--</h2>
-+## クイックスタート
- 
- このチュートリアルでは、コアエージェントビューループについて説明します。タスクをディスパッチし、Claude が作業する際に行が更新されるのを見守り、ピークして確認して返信し、フル会話にアタッチします。ディスパッチしたセッションはエージェントビューを閉じた後も実行し続けるため、離れて後で戻ることができます。
  
 ```
 

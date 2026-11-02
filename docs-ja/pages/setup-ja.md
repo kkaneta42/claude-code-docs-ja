@@ -26,6 +26,7 @@ Claude Code は以下のプラットフォームと構成で実行されます�
 ### 追加の依存関係
 
 * **ripgrep**: 通常は Claude Code に含まれています。検索が失敗する場合は、[検索トラブルシューティング](https://code.claude.com/docs/ja/troubleshooting.md#search-and-discovery-issues)を参照してください。
+* **Git**: 任意です。git がインストールされている場合、[`claude plugin eval`](https://code.claude.com/docs/ja/plugin-evals#requirements) には 2.31 以降が必要です。macOS、Linux、または WSL からの[ローカルリポジトリのクラウドセッションへのアップロード](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)には git 2.31 以降が必要です。`git --version` を実行してバージョンを確認してください。
 
 ## Claude Code をインストール
 
@@ -39,7 +40,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **macOS、Linux、WSL：**
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.sh | bash
 > ```
 >
@@ -47,13 +48,13 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **Windows PowerShell：**
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > irm https://claude.ai/install.ps1 | iex
 > ```
 >
 > **Windows CMD：**
 >
-> ```batch theme={null}
+> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 > ```
 >
@@ -71,7 +72,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] Homebrew
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > brew install --cask claude-code
 > ```
 >
@@ -83,7 +84,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] WinGet
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > winget install Anthropic.ClaudeCode
 > ```
 >
