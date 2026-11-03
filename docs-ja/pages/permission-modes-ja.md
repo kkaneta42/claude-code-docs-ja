@@ -41,6 +41,7 @@ Claude Code は、`bypassPermissions` を含むどのモードでも、次の操
 * [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) が有効な間の作業ディレクトリ外の読み取り: 認識されたファイル読み取り用の Bash コマンドは、auto モードや `bypassPermissions` モードであってもプロンプトを表示します。サンドボックスの外で実行するために承認が必要な[サンドボックス外での再試行](https://code.claude.com/docs/ja/sandboxing.md#the-unsandboxed-retry-escape-hatch)も同様にプロンプトを表示します。Claude Code v2.1.257 以降が必要です。
 
   ディレクトリを複数回変更するコマンドやサブシェルを実行するコマンドなど、シェルパーサーが追跡できないコマンドは、外部のパスを指定していない場合でも同じようにプロンプトを表示します。このプロンプトは、コマンドが[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)内で実行され、サンドボックスがブロックを強制している場合には適用されません。
+* [`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効な間の作業ディレクトリ外への書き込み: Claude Code は、[Claude Code 自身の一部のファイル](https://code.claude.com/docs/ja/settings-reference.md#what-the-write-block-refuses-and-what-stays-writable)を除き、作業ディレクトリ外での `Write`、`Edit`、`NotebookEdit` の呼び出しを拒否します。このキーはシェルコマンド、MCP ツール、フックが実行するプログラムを制限しないため、シェルコマンドの書き込み先を制限するには[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)を使用してください。Claude Code v2.1.314 以降が必要です。
 
 ## 一般的なセットアップ
 
@@ -531,7 +532,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 どのように回答しても、Claude は作業を続けます。
 
 * **はい、今後も作業ディレクトリ外の読み取りを許可する**: 読み取りが実行され、以降の作業ディレクトリ外の読み取りも従来どおり実行されます。Claude Code は回答を記録するため、このプロンプトは再び表示されません
-* **いいえ、今後は作業ディレクトリ外の読み取りをブロックする**: 読み取りは拒否され、Claude Code はユーザー設定で [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) を `true` に設定します。これにより、以降のすべてのセッションとすべての権限モードで、ファイルツールはそのような読み取りを拒否します。後でそのようなパスを Claude が読み取れるようにするには、`/add-dir` でそのディレクトリを追加するか、この設定を削除します。
+* **いいえ、今後は作業ディレクトリ外の読み取りをブロックする**: 読み取りは拒否され、Claude Code はユーザー設定で [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) を `true` に設定します。これにより、このセッションと以降のすべてのセッション、およびすべての権限モードで、ファイルツールはそのような読み取りを拒否します。ブロックを解除するには、この設定を含むすべての[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-files-and-who-they-affect)からこの設定を削除してから、実行中の各セッションを再起動します。このセッションで 1 つのディレクトリについてのみ読み取れるようにするには、`/add-dir` を使用します。
 * **いいえ、次回も確認する**: 読み取りは拒否され、次に作業ディレクトリ外を読み取るときに再びプロンプトが表示されます
 * **はい、ただし次回も確認する**: 読み取りが実行されますが何も保存されず、次に作業ディレクトリ外を読み取るときに再びプロンプトが表示されます
 
@@ -553,9 +554,9 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 
 auto モードがセッションのアクションを承認できない場合、その後の動作はケースによって異なります。
 
-* **アクションがブロックされた場合**: Claude Code は通知を表示し、そのアクションを `/permissions` の **Recently denied** タブに表示します。そこで `r` を押すと、手動承認で再試行できます。
+* **アクションがブロックされた場合**: Claude Code は通知を表示し、そのアクションを `/permissions` の **Recently blocked** タブに表示します。そこで[アクションを承認して Claude が再試行できるようにする](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)ことができます。
 * **ブロックが繰り返された場合**: 分類器がアクションを 3 回連続、または合計 20 回ブロックすると、auto モードは一時停止し、Claude Code はプロンプトの表示を再開します。プロンプトで示されたアクションを承認すると auto モードが再開します。ブロックの数え方については、[繰り返しブロックのしきい値](#repeated-block-thresholds)を参照してください。
-* **分類器から判定が得られない場合**: auto モードとは別の安全チェックが分類器自体のリクエストを拒否した場合、または分類器の応答を解析できない場合、Claude Code は通知も **Recently denied** のエントリもなしにアクションを拒否します。各ケースで表示されるメッセージと対処方法については、[auto モードがアクションの安全性を判断できない](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)を参照してください。
+* **分類器から判定が得られない場合**: auto モードとは別の安全チェックが分類器自体のリクエストを拒否した場合、または分類器の応答を解析できない場合、Claude Code は通知も **Recently blocked** のエントリもなしにアクションをブロックします。各ケースで表示されるメッセージと対処方法については、[auto モードがアクションの安全性を判断できない](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)を参照してください。
 * **サーバーから判定が得られない場合**: [サーバー側の分類器レビュー](#server-side-classifier-review)では、Claude Code はサーバーが判定を返さないアクションを拒否し、判定のないレスポンスが 10 回連続するとターンを停止します。[サーバーが安全性の判定を返さなかった](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)を参照してください。
 * **チェック中にモードを切り替えた場合**: 分類器のチェックが保留中に権限モードを切り替えると、Claude Code は新しいモードでは要求されなかったはずの判定を破棄します。代わりに承認を求めるプロンプトが表示されるか、[`dontAsk` モード](#allow-only-pre-approved-tools-with-dontask-mode)ではアクションが自動的に拒否されます。
 
@@ -738,6 +739,8 @@ Bypass permissions was requested at launch and ignored · if that was you, ~/.cl
 
 [`--restricted`](https://code.claude.com/docs/ja/cli-reference#cli-flags)で開始されたセッションでは、Claude Code v2.1.248 以降が必要で、分類器は保護されたパスへの書き込みを承認できません。
 
+[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効な間は、Claude Code はすべての権限モードにおいて、設定ファイルへの `Write`、`Edit`、`NotebookEdit` による書き込みを拒否します。
+
 保護されたパスへの書き込みを分類器にルーティングするモードでは、[symlink チェック](https://code.claude.com/docs/ja/permissions.md#symlinks)が保護されたパスに解決される書き込みは、Claude が要求したパス自体が保護されていない場合、代わりにプロンプトを表示します。
 
 設定ファイルの [`permissions.allow`](https://code.claude.com/docs/ja/permissions#manage-permissions) ルールは、保護されたパスへの書き込みを事前承認しません。安全性チェックは Claude Code が設定から allow ルールを評価する前に実行されるため、`~/.claude/settings.json` または `.claude/settings.json` の `Edit(.claude/**)` などのエントリは、上記の表のモード別の結果を変更しません。プロンプトを表示するモードでは、プロジェクトの `.claude/` フォルダまたは `~/.claude/` への書き込みのプロンプトで、以下のセッション スコープ オプションのいずれかを提供できます。
@@ -776,6 +779,7 @@ Bypass permissions was requested at launch and ignored · if that was you, ~/.cl
 * `.devcontainer.json`
 * `.ripgreprc`、`pyrightconfig.json`
 * `.mcp.json`、`.claude.json`
+* `~/.claude` または [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) が指すディレクトリ内にある、組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)の保存コピーである `remote-settings.json`、および Claude Code がそれとともに保持する署名、同期、同意の各ファイル
 * セッション開始時に [`--settings`](https://code.claude.com/docs/ja/cli-reference#cli-flags)、`--mcp-config`、または `--agents` に渡したファイル
 * ユーザー、プロジェクト、またはローカルの[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-files-and-who-they-affect)自体がシンボリックリンクである場合に、その設定ファイルが指し示すファイル（たとえば dotfiles リポジトリ内のファイル）。保護されたパスへの書き込みを分類器にルーティングするモードでは、このファイルへの書き込みは、許可ルールに一致する場合でも、代わりにプロンプトを表示します。このファイル自体のパスが別のフォルダの `.claude/settings.json` など設定ファイルのパスでもある場合、その書き込みは他の保護されたパスへの書き込みと同様に分類器に送られます
 

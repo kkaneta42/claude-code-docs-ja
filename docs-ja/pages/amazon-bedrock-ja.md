@@ -308,15 +308,29 @@ export ANTHROPIC_MODEL='arn:aws:bedrock:us-east-2:your-account-id:application-in
 
 Claude Code が Amazon Bedrock で設定されて起動する場合、使用予定のモデルがアカウントでアクセス可能であることを確認します。
 
-現在の Claude Code デフォルトより古いモデルバージョンをピン留めしており、アカウントが新しいバージョンを呼び出せる場合、Claude Code はピンを更新するよう促します。受け入れると、新しいモデル ID が[ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)に書き込まれ、Claude Code が再起動します。拒否すると、次のデフォルトバージョン変更まで記憶されます。[アプリケーション推論プロファイル ARN](#map-each-model-version-to-an-inference-profile) を指す pin は、管理者によって管理されるため、スキップされます。
+現在の Claude Code デフォルトより古いモデルバージョンをピン留めしている場合があります。アカウントが新しいバージョンを呼び出せる場合、Claude Code はピンを更新するよう促します。受け入れると、新しいモデル ID が[ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)に書き込まれ、Claude Code が再起動します。拒否すると、次のデフォルトバージョン変更まで記憶されます。
+
+Claude Code は、次のピンについてはチェックも更新の促しも行いません。
+
+* [管理設定](https://code.claude.com/docs/ja/managed-settings.md)の `env` ブロック内のピン
+* [アプリケーション推論プロファイル ARN](#map-each-model-version-to-an-inference-profile) を指すピン（管理者が管理しているため）
+
+管理設定のピンについて更新の促しが引き続き表示される場合は、Claude Code を v2.1.314 以降に更新してください。v2.1.314 より前では、受け入れた後も管理設定のピンが有効なままだったため、次回の起動時に再び促しが表示されていました。
 
 モデルをピン留めしておらず、現在のデフォルトがアカウントで利用できない場合、Claude Code は現在のセッションにフォールバックし、通知を表示します。デフォルトモデルの以前のバージョンを最初に試し、デフォルトが Opus モデルで Opus バージョンが利用できない場合、デフォルト Sonnet モデルにフォールバックします。フォールバックは保持されません。Amazon Bedrock アカウントで新しいモデルを有効にするか、[バージョンをピン留めして](#4-pin-model-versions)選択を永続的にしてください。
 
+### 特定のモデルでセッションを開始する
+
 特定の Sonnet または Opus バージョンでセッションを開始する場合（例えば `--model`、`ANTHROPIC_MODEL`、または[`model` 設定](https://code.claude.com/docs/ja/settings-reference#model)を使用）、そのバージョンは一致する `sonnet` または `opus` エイリアスのセッションのピン留めされたデフォルトとして機能します。Claude Code は、設定したモデルが置き換える組み込みデフォルトの可用性チェックをスキップし、設定したモデルで起動し、フォールバック通知はありません。
 
-`opus` などのモデルエイリアスはピンとして機能せず、Claude Code が認識しないモデル ID（アプリケーション推論プロファイル ARN など）も同様です。
+次のものでセッションを開始しても、ピンとしては機能しません。
 
-これらのチェックがアカウントが呼び出せないモデルを見つけた場合、Claude Code はこのマシンで最大 1 日間その拒否を記憶し、その時間中は Amazon Bedrock に再度問い合わせることなく記憶されたモデルをスキップして起動します。Claude Code は、現在のデフォルトモデルの記憶された拒否を、最後のチェック以降 10 分が経過すると起動時に再度チェックするため、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。
+* `opus` などのモデルエイリアス
+* Claude Code が認識しないモデル ID（アプリケーション推論プロファイル ARN など）
+
+### 記憶されたモデルの拒否
+
+スタートアップモデルチェックでアカウントが呼び出せないモデルが見つかった場合、Claude Code はこのマシンで最大 1 日間その拒否を記憶できます。最後のチェックから 10 分が経過すると、Claude Code は現在のデフォルトモデルについて記憶された拒否を起動時に再度チェックします。これにより、管理者が再度有効にしたデフォルトが戻ります。メモリをオフにするには、[`CLAUDE_CODE_SKIP_MODEL_ACCESS_MEMORY=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。
 
 ### 組織がモデルの許可リストを強制する場合
 

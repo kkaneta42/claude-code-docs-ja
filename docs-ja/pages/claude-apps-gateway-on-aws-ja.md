@@ -620,7 +620,7 @@ managed:
 
 開発者には、`claude --model data-claude-opus-4-8` のように、その作業の対象となるチームの ID を渡してもらいます。
 
-ゲートウェイは[最初に一致したポリシー](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#managed)を適用するため、2 つのチームグループにのみ所属する開発者には `team-platform` ポリシーが適用されます。その場合、データチームの ID でのセッションは `is not in your role's availableModels allowlist` で失敗し、エラーには入力した ID ではなく Claude Code のデフォルトモデルが示されます。代わりに 1 つのポリシーの `groups` に両方のチームグループを記載すると、どちらかのチームに所属する全員が、どちらのチームのプロファイルにも請求できるようになります。
+デフォルトでは、ゲートウェイは[最初に一致したポリシー](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#managed)を適用するため、2 つのチームグループにのみ所属する開発者には `team-platform` ポリシーが適用されます。その場合、データチームの ID でのセッションは `is not in your role's availableModels allowlist` で失敗し、エラーには入力した ID ではなく Claude Code のデフォルトモデルが示されます。代わりに 1 つのポリシーの `groups` に両方のチームグループを記載すると、どちらかのチームに所属する全員が、どちらのチームのプロファイルにも請求できるようになります。
 
 ゲートウェイ独自の[支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md#set-a-cap)では、セッションがどの ID を使用するかにかかわらず、開発者には期間ごとに 1 つの合計と 1 つの上限があり、上限はデフォルトで所属グループの上限のうち最も低いものになります。一方のチームの低い上限によってもう一方のチームの作業が止まらないようにするには、その開発者にユーザーごとの上限を設定します。
 

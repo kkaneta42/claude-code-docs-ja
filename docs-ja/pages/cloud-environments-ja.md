@@ -335,6 +335,7 @@ EOF
 | **C/C++** | GCC、Clang、cmake、ninja、conan |
 | **Docker** | docker、dockerd、docker compose |
 | **データベース** | PostgreSQL 16、Redis 7.0 |
+| **ブラウザ** | `/usr/bin/google-chrome` の Chrome for Testing（`CHROME_PATH` 環境変数がそのパスに設定されています） |
 | **ユーティリティ** | git、gh、jq、yq、ripgrep、tmux、vim、nano |
 
 ¹ Bun はインストールされていますが、パッケージ取得の[プロキシ互換性の問題](#install-dependencies-with-a-sessionstart-hook)が既知です。

@@ -708,7 +708,13 @@ Claude は補足質問に対して、会話に既に含まれている内容か�
 
 接続された[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#attach-to-a-session)では、`Left` はデタッチしてエージェントビューに戻ります。これは、回答がまだ到着している間でも行われます。補足質問は、あなたが離れている間も実行を続けます。次回セッションに接続するときに、オーバーレイは補足質問、またはその回答で再度開きます。v2.1.257 より前では、`Left` はそこでデタッチしませんでした。
 
-`/btw` はあなたの完全な会話を見ていますが、ツールはありません。[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)はツールを持ち、受け取るプロンプトから開始するか、[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)の場合はこの会話のコピーから開始します。`/btw` を使用して、Claude がこのセッションから既に知っていることについて質問してください。サブエージェントを使用して、何か新しいことを見つけてください。
+`/btw` は完全な会話、または[開いているサブエージェントのトランスクリプト](#ask-btw-about-a-subagent)を参照しますが、ツールはありません。[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)はツールを持ち、受け取るプロンプトから開始します。[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)はこの会話のコピーから開始します。`/btw` を使用して、Claude がこのセッションから既に知っていることについて質問してください。サブエージェントを使用して、何か新しいことを見つけてください。
+
+### サブエージェントについて /btw で質問する
+
+[サブエージェントのトランスクリプトを開いている](https://code.claude.com/docs/ja/sub-agents.md#observe-and-steer-running-forks)場合、Claude はメインの会話ではなくそのトランスクリプトから `/btw` に回答するため、サブエージェントが何をしたかを質問できます。そのトランスクリプトからの後続の `/btw` は、そこから行った補足質問のみを参照します。Claude Code v2.1.314 以降が必要です。
+
+[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイトのトランスクリプトからの場合、Claude はメインの会話から回答します。
 
 ## タスクリスト
 
@@ -749,7 +755,9 @@ Continuing automatically at 3:45pm · Esc to cancel
 * **コンピューターがスリープした後**：約 30 分以上スリープし、スリープ中に制限がリセットされた場合、1 行目は `Your usage limit has reset`、2 行目は `Press enter to continue` と表示されます。`Enter` キーを押して続行してください。スリープが短かった場合や、リセット前にスリープが終了した場合は、Claude Code が自動的に続行します。
 * **早期**：待機中に `/usage-credits` で[使用クレジットを追加](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)したり、`/upgrade` の後に再度サインインしたり、`/model` でモデルを切り替えたりした場合、Claude Code は使用可能な使用量があるかどうかを確認し、ある場合はすぐに続行します。ブラウザで自分で行ったアップグレードまたは購入の後は確認されません。[`opusplan`](https://code.claude.com/docs/ja/model-config#opusplan-model-setting) および他のモデル設定で異なるモデルでプランモードを実行する場合、Claude Code はリセットを待機します。
 
-続行されたタスクは他のターンと同様に実行されます。Claude Code は通常通り[権限](https://code.claude.com/docs/ja/permissions.md)を要求するため、タスクはあなたが不在の間にプロンプトで停止する可能性があります。再度制限に達した場合、Claude Code は最大 2 回連続で待機を再度有効にしてから停止し、`Automatic continue stopped after repeated usage-limit hits · /rate-limit-options to try again` と表示します。
+続行されたタスクでも、Claude Code は通常どおり[権限](https://code.claude.com/docs/ja/permissions.md)を求めるため、不在の間にタスクが権限プロンプトで停止する可能性があります。タスクが再び制限に達した場合、待機が再び開始されます。
+
+自動続行が 3 回行われると、自動続行は停止し、`Automatic continue stopped after repeated usage-limit hits` という通知が表示されます。次にどうするかを選ぶには `/rate-limit-options` を実行してください。別のプロンプトを送信するか、そのメニューから待機を選択すると、回数のカウントは最初からやり直しになります。複数のリセットウィンドウにまたがって実行される [`/goal`](https://code.claude.com/docs/ja/goal) や[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)でも、自動続行は 3 回の続行後に停止します。
 
 ### 待機をキャンセルする
 

@@ -20,7 +20,9 @@ Claude Code は API トークン消費によって課金されます。サブス
 >
 > `/usage` のセッションブロックは API トークン使用量を表示し、API ユーザーを対象としています。Claude Pro、Max、および Ultra サブスクライバーはサブスクリプションに使用量が含まれているため、セッションコスト数値は請求目的では関連がありません。サブスクライバーは同じ画面でプラン使用量バー、アクティビティ統計、および使用量の内訳を表示します。
 
-`/usage` の上部のセッションブロックは、現在のセッションの詳細なトークン使用統計を表示します。Claude Code はトークン数からドル数値をローカルで計算します。ただし、[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効な場合は除きます。管理者は組織の管理設定でテーブルを設定し、数値が契約レートを使用するようにします。テーブルが有効な場合、`Total cost` 行には `at your organization's configured rates` という注記が付きます。この数値は推定値であるため、権限のある請求については [Claude Console](https://platform.claude.com/usage) の使用量ページを参照してください。
+`/usage` の上部のセッションブロックは、現在のセッションの詳細なトークン使用統計を表示します。
+
+Claude Code は、[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効でない限り、トークン数から定価に基づいてドル数値をローカルで計算します。管理者は組織の管理設定でこのテーブルを設定し、数値が契約レートを使用するようにします。テーブルが有効な間、`Total cost` 行には `at your organization's configured rates` という注記が付きます。この数値は推定値であるため、正式な請求情報については [組織のコストを管理する](#manage-costs-for-your-organization) を参照してください。
 
 ```text theme={null}
 Total cost:            $0.55
@@ -140,7 +142,7 @@ Claude Code は最新のレポートを `~/.claude/usage-data/report.html` に�
 
 以前のリクエストが管理者を待機している間に `/usage-credits` を再度実行した場合、Claude Code はリクエストが既に送信されたことを通知し、重複を送信しません。管理者がリクエストを却下した後、コマンドを再度実行すると新しいリクエストが送信されます。v2.1.222 より前では、却下されたリクエストも新しいリクエストをブロックしていました。
 
-Pro および Max プランでは、支出制限に達しても使用量クレジットがまだ利用可能な場合、Claude Code は制限を引き上げるか削除するよう促し、CLI を離れることなく続行できます。サーバーが変更を拒否した場合、[Could not update your spend limit](https://code.claude.com/docs/ja/errors.md#could-not-update-your-spend-limit) を参照してください。
+Pro、Max、および Ultra プランでは、使用クレジットが残っている状態で支出制限に達すると、Claude Code は CLI を離れることなく制限を引き上げるか削除するよう促します。サーバーが変更を拒否した場合は、[Could not update your spend limit](https://code.claude.com/docs/ja/errors.md#could-not-update-your-spend-limit) を参照してください。
 
 ## 組織のコストを管理する
 
@@ -151,7 +153,7 @@ Claude Code にアクセスする方法によって、利用可能なコント�
 | セットアップ | 支出を確認 | 支出をキャップ | ユーザーごとのレポート |
 | :- | :- | :- | :- |
 | [Claude for Teams または Enterprise](#claude-for-teams-and-enterprise) | [org analytics の支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans) | 管理者設定の支出制限 | [支出レポート CSV](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans)、Enterprise の [Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics) |
-| [Claude Console（API）](#claude-console) | [Console 使用状況ページ](https://platform.claude.com/usage) | ワークスペース支出制限 | [Console ダッシュボード](https://platform.claude.com/claude-code)、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) |
+| [Claude Console（API）](#claude-console) | [Console の Cost ページ](https://platform.claude.com/cost) | ワークスペース支出制限 | [Console ダッシュボード](https://platform.claude.com/claude-code)、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) |
 | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry](#cloud-providers) | クラウド請求コンソール | クラウドの予算コントロール | [OpenTelemetry](https://code.claude.com/docs/ja/monitoring-usage.md) または [LLM gateway](https://code.claude.com/docs/ja/llm-gateway) |
 
 [OpenTelemetry エクスポート](https://code.claude.com/docs/ja/monitoring-usage.md) はすべてのセットアップで機能し、ユーザーごとのトークンおよびコストメトリクスをほぼリアルタイムで独自の可観測性スタックにストリーミングする唯一のオプションです。
@@ -195,7 +197,7 @@ API 組織は [ワークスペース](https://platform.claude.com/docs/en/build-
 >
 > カスタムレート制限を持つ組織の場合、このワークスペースの Claude Code トラフィックは組織全体の API レート制限にカウントされます。Claude Console の Limits ページでこのワークスペースに [ワークスペースレート制限](https://platform.claude.com/docs/en/api/rate-limits#setting-lower-limits-for-workspaces) を設定して、Claude Code の共有をキャップし、他の本番ワークロードを保護できます。
 
-ユーザーごとのレポートについては、[Console ダッシュボード](https://platform.claude.com/claude-code) はメンバーごとの支出と受け入れられた行を表示し、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) は [Admin API キー](https://platform.claude.com/settings/admin-keys) を使用してプログラムで同じ日次ユーザーごとのメトリクスを返します。[API カスタマー向けの analytics](https://code.claude.com/docs/ja/analytics.md#access-analytics-for-api-customers) を参照してください。
+ユーザーごとのレポートについては、[Console ダッシュボード](https://platform.claude.com/claude-code) はメンバーごとの支出と受け入れられた行を表示し、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) は [Admin API キー](https://platform.claude.com/settings/admin-keys) を使用してプログラムで日次のユーザーごとのメトリクスを返します。[API 顧客向けの analytics](https://code.claude.com/docs/ja/analytics.md#access-analytics-for-api-customers) を参照してください。
 
 #### レート制限の推奨事項
 

@@ -580,7 +580,7 @@ Claude Code は、[終了コード 0 の解析ルール](#exit-code-0)に従い�
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
 | `prompt` | はい | モデルに送信するプロンプト テキスト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します。バックスラッシュでエスケープしてリテラル テキストを含めます。`\$1.00` は `$1.00` としてレンダリングされます |
-| `model` | いいえ | 評価に使用するモデル。デフォルトは、Claude Code が[バックグラウンド機能](https://code.claude.com/docs/ja/costs.md#background-token-usage)に使用するモデル |
+| `model` | いいえ | 評価に使用するモデル。デフォルトは、Claude Code が[バックグラウンド機能](https://code.claude.com/docs/ja/model-config.md#environment-variables)に使用するモデル |
 
 ### パスでフック スクリプトを参照
 
@@ -3914,7 +3914,7 @@ Claude Code は、どの `action` を返した場合でも、ElicitationResult �
 
 プロンプト ベースのフックは Bash コマンドを実行する代わりに：
 
-1. フック入力とプロンプトを Claude モデル（デフォルトでは Claude Code が[バックグラウンド機能](https://code.claude.com/docs/ja/costs.md#background-token-usage)に使用するモデル）に送信
+1. フック入力とプロンプトを Claude モデル（デフォルトでは Claude Code が[バックグラウンド機能](https://code.claude.com/docs/ja/model-config.md#environment-variables)に使用するモデル）に送信
 2. LLM は決定を含む構造化 JSON で応答
 3. Claude Code は決定を自動的に処理
 
@@ -3947,7 +3947,7 @@ Claude Code は、どの `action` を返した場合でも、ElicitationResult �
 | :- | :- | :- |
 | `type` | はい | `"prompt"` である必要があります |
 | `prompt` | はい | LLM に送信するプロンプト テキスト。フック入力 JSON のプレースホルダーとして `$ARGUMENTS` を使用します。`$ARGUMENTS` が存在しない場合、入力 JSON がプロンプトに追加されます |
-| `model` | いいえ | 評価に使用するモデル。デフォルトは Claude Code が[バックグラウンド機能](https://code.claude.com/docs/ja/costs.md#background-token-usage)に使用するモデル |
+| `model` | いいえ | 評価に使用するモデル。デフォルトは Claude Code が[バックグラウンド機能](https://code.claude.com/docs/ja/model-config.md#environment-variables)に使用するモデル |
 | `timeout` | いいえ | タイムアウト（秒単位）。デフォルト：30 |
 | `continueOnBlock` | いいえ | 適用されるイベントでは、`true` にすると `ok: false` の理由を Claude にフィードバックし、ターンを終了する代わりに続行します。デフォルト：`false`。イベント ごとの動作については、[レスポンス スキーマ](#response-schema)を参照してください |
 

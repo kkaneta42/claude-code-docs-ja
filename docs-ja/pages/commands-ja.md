@@ -35,7 +35,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 以下の表は、Claude Code に含まれるすべてのコマンドを一覧にしています。ほとんどは組み込みコマンドで、その動作は CLI にコード化されています。2 種類のエントリが標記されています：
 
 * **[Skill](https://code.claude.com/docs/ja/skills.md#bundled-skills)**: バンドルスキル。自分で書くスキルと同じように機能します：Claude に渡されるプロンプトです。
-  * `/verify` は呼び出したときのみ実行されます。v2.1.215 より前は、Claude が自動的に `/verify` を実行することもできました。
+  * `/verify` は呼び出したときのみ実行されます。
 * **[Workflow](https://code.claude.com/docs/ja/workflows.md#bundled-workflows)**: バンドルされた[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)で、多くのサブエージェントに作業を展開し、バックグラウンドで実行されます。
   * `/deep-research` は呼び出したときのみ実行されます。
 
@@ -114,7 +114,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/model [model]` | AI モデルを切り替えて、新しいセッションのデフォルトとして保存します。サポートするモデルの場合、左右の矢印を使用して [effort レベルを調整](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)します。引数がない場合、ピッカーが開きます。行で `s` を押すと現在のセッションのみ切り替えます。[新しいモデルが適用されるタイミング](https://code.claude.com/docs/ja/interactive-mode.md#when-claude-code-sends-what-you-queued)を参照してください。v2.1.242 より前は、待機する場合がありました。`-p` では、モデル引数を渡します。この場合、デフォルトとして保存されません。v2.1.205 以降が必要です |
 | `/output-style [style]` | [出力スタイル](https://code.claude.com/docs/ja/output-styles.md)を一覧表示するか、1 つに切り替えます。たとえば `/output-style concise`。[出力スタイルを変更する](https://code.claude.com/docs/ja/output-styles.md#change-your-output-style)を参照してください。Claude Code v2.1.269 以降が必要です |
 | `/passes` | 友人と Claude Code の無料 1 週間を共有します。アカウントが適格な場合のみ表示されます |
-| `/permissions` | ツール権限の許可、質問、拒否ルールを管理します。スコープ別にルールを表示し、ルールを追加または削除し、作業ディレクトリを管理し、[最近の auto モードの拒否](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を確認できるインタラクティブなダイアログが開きます。ダイアログの **Auto mode** タブから [auto モード分類器ルール](https://code.claude.com/docs/ja/auto-mode-config.md#edit-rules-from-permissions)を表示および編集することもできます。Claude が応答している間に実行すると、Claude Code はダイアログをすぐに開き、同じターンで Claude の次のツール呼び出しから変更を適用します。v2.1.234 より前は、Claude Code はターンが終了するまでコマンドをキューに入れていました。エイリアス：`/allowed-tools` |
+| `/permissions` | ツール権限の許可、質問、拒否ルールを管理します。スコープ別にルールを表示し、ルールを追加または削除し、作業ディレクトリを管理し、[最近の auto モードの拒否](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を確認できるインタラクティブなダイアログが開きます。ダイアログの **Auto mode** タブから [auto モード分類器ルール](https://code.claude.com/docs/ja/auto-mode-config.md#edit-rules-from-permissions)を表示および編集することもできます。エイリアス：`/allowed-tools` |
 | `/plan [description]` | プロンプトから直接 plan モードに入ります。オプションの説明を渡して plan モードに入り、すぐにそのタスクで開始します。たとえば `/plan fix the auth bug` |
 | `/plugin [subcommand]` | Claude Code [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)を管理します。引数なしで実行してプラグインメニューを開くか、`list`、`install`、`enable`、`disable` などのサブコマンドを渡して直接実行します。Claude Code はインストール中にプラグインをアクティブ化できます。[インストール要約](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)は、アクティブ化したかどうか、または `/reload-plugins` を実行する必要があるかを示します |
 | `/plugin-authoring` | Claude が [mod を作成する](https://code.claude.com/docs/ja/plugins/mods/create.md#ask-claude-for-a-mod)際に参照するリファレンスを読み込みます。mod を依頼すると、Claude が自動的に読み込むこともあります。これは[組み込みプラグイン](https://code.claude.com/docs/ja/plugins/mods/overview.md#mods-built-into-claude-code)のスキルで、`/plugin` でオフにできます。Claude Code v2.1.287 以降が必要です |

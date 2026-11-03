@@ -59,6 +59,7 @@
 | `Could not resolve authentication method` | [認証](#could-not-resolve-authentication-method) |
 | `Invalid API key` | [認証](#invalid-api-key) |
 | `Your apiKeyHelper script is failing` | [認証](#your-apikeyhelper-script-is-failing) |
+| `Claude Code didn't send your claude.ai login, because the API key helper your administrator set isn't in effect` | [認証](#claude-code-didnt-send-your-claude-ai-login) |
 | `Invalid auth token · Fix external auth token` | [認証](#invalid-request-header-value) |
 | `Invalid ANTHROPIC_CUSTOM_HEADERS · Fix the environment variable` | [認証](#invalid-request-header-value) |
 | `Invalid request header from the environment · Fix the environment variable` | [認証](#invalid-request-header-value) |
@@ -326,6 +327,9 @@
 | `MCP server "<name>" tool "<tool>" timed out after <N>s. The server asked the user a question, and no answer came before the time limit.` | [ツールエラー](#mcp-tool-call-timed-out-with-the-servers-question-unanswered) |
 | `would be spawned with zero tools — refusing` | [ツールエラー](#agent-would-be-spawned-with-zero-tools) |
 | `File is covered by a Read deny rule in your permission settings` | [ツールエラー](#file-is-covered-by-a-read-deny-rule) |
+| `<path> is outside <dirs>; the permissions.blockWritesOutsideWorkingDirectories setting blocks writes outside the working directories` | [ツールエラー](#setting-blocks-writes-outside-the-working-directories) |
+| `<path>: Writes outside the working directories are blocked (permissions.blockWritesOutsideWorkingDirectories)` | [ツールエラー](#setting-blocks-writes-outside-the-working-directories) |
+| `Writes to Claude Code settings files are blocked while permissions.blockWritesOutsideWorkingDirectories is on` | [ツールエラー](#writes-to-claude-code-settings-files-are-blocked) |
 | `cannot contain null bytes (\0)` | [ツールエラー](#path-cannot-contain-null-bytes) |
 | `Path contains null bytes` | [ツールエラー](#path-cannot-contain-null-bytes) |
 | `command contains the invisible character U+FEFF (byte order mark) or U+180E (Mongolian vowel separator), and was not run` | [ツールエラー](#command-contains-an-invisible-character) |
@@ -548,7 +552,7 @@ API 自体から返される 5xx は、API 内部の予期しない障害を示�
 
 * [status.claude.com](https://status.claude.com) またはメッセージに示されているプロバイダーのステータスページで、アクティブなインシデントを確認してください
 * 1 分待ってから、メッセージを再度送信してください。元のメッセージはまだ会話に残っているため、長いプロンプトの場合は、全体を貼り付ける代わりに `try again` と入力できます。
-* [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway) を指しており、すべてのリクエストがこの形で失敗する場合は、Claude Code がデフォルトで送信するツール検索フィールドをゲートウェイが拒否していないかを確認してください。確認するには、[Tool search through an LLM gateway](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway) の説明に従って `ENABLE_TOOL_SEARCH=false` を設定してから、再度試してください。v2.1.304 より前では、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイの背後ではツール検索はオフになっていました。
+* [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway) を指しており、すべてのリクエストがこの形で失敗する場合は、ゲートウェイとそのアップストリームが [ツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway) のフィールドを受け付けることを確認してください。デフォルトでは、Claude Code は `defer_loading` ツールフィールドと `tool_reference` ブロックを、それらを有効にする `anthropic-beta` ヘッダーとともに送信します。v2.1.304 より前では、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイの背後ではツール検索はオフになっていました。
 * エラーが投稿されたインシデントなしで続く場合は、`/feedback` を実行して、Anthropic がリクエストの詳細で調査できるようにしてください。環境で `/feedback` が利用できない場合は、[Report an error](#report-an-error) を参照してください。
 
 ### API Error: Repeated 529 Overloaded errors
@@ -672,7 +676,7 @@ Claude がテキストまたはツール呼び出しを開始する前にドロ�
 <model> is temporarily unavailable, so auto mode cannot determine the safety of <tool> right now. Wait a moment and then try this action again.
 ```
 
-対話セッションでは、このメッセージの代わりに、ツール呼び出しの下に薄く表示される `Not run · auto mode's check had no usable answer` 行が現れます。`Ctrl+O` を押すと、[トランスクリプトビューアー](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer) でメッセージを読むことができます。[The server returned no safety verdict](#the-server-returned-no-safety-verdict) で説明されている `gave no verdict` 拒否でも同じ行が表示されます。v2.1.296 より前では、メッセージは呼び出しの下に赤いエラーとして表示されていました。
+対話セッションでは、このメッセージの代わりに、ツール呼び出しの下に薄く表示される `Not run · auto mode's check had no usable answer` 行が現れます。この行は、[サーバーが判定を返さなかった](#the-server-returned-no-safety-verdict)ことを示すメッセージや、リモートセッション以外では `Auto mode could not evaluate` で始まるメッセージの代わりに表示されることもあります。`Ctrl+O` を押すと、[トランスクリプトビューアー](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer) でそのメッセージを読むことができます。v2.1.296 より前では、メッセージは赤いエラーとして表示されていました。
 
 Claude Code が障害カテゴリを判定できる場合、`temporarily unavailable` の後の括弧内にカテゴリを示します。例えば `<model> is temporarily unavailable (rate-limited), so auto mode cannot determine the safety of <tool> right now`。カテゴリは `(rate-limited)`、`(overloaded)`、`(server error)`、`(timed out)`、`(connection failed)` です。`(timed out)` または `(connection failed)` が繰り返される場合は、接続を確認してください。[Unable to connect to API](#unable-to-connect-to-api) を参照してください。v2.1.229 より前では、メッセージはカテゴリを示さず、`Wait briefly and then try this action again` と読まれていました。
 
@@ -833,7 +837,7 @@ claude.ai サブスクリプションでサインインしたインタラクテ�
 * `/usage-credits` を実行して、Pro、Max、Ultra で追加使用量を購入するか、Team と Enterprise で管理者にリクエストします。[有料プランの使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) を参照して、これがどのように請求されるかを確認してください。
 * プランをアップグレードしてベース制限を高くするには、[claude.com/pricing](https://claude.com/pricing) を参照してください
 
-ウィンドウが終了する前に、Claude Code はほとんどを使用したことを警告できます。例えば `You've used 85% of your session limit · resets 3:45pm` というメッセージが表示されます。残りの許容量を継続的に監視するには、`rate_limits` フィールドを [カスタムステータスライン](https://code.claude.com/docs/ja/statusline.md#rate-limit-usage) に追加するか、Desktop アプリでモデルピッカーの横にある [使用量リング](https://code.claude.com/docs/ja/desktop.md#check-usage) をクリックします。
+ウィンドウが終了する前に、Claude Code はほとんどを使用したことを警告できます。例えば `You've used 85% of your session limit · resets 3:45pm` というメッセージが表示されます。残りの許容量を監視するには、`rate_limits` フィールドを [カスタムステータスライン](https://code.claude.com/docs/ja/statusline.md#rate-limit-usage) に追加するか、Desktop アプリで [使用量リング](https://code.claude.com/docs/ja/desktop.md#check-usage) をクリックします。
 
 ### Usage credits required for 1M context
 
@@ -1073,6 +1077,19 @@ Claude Code はこのメッセージを表示する前に、スクリプトを�
 * コマンドを修正して、キーのみを stdout に出力し（最大 16,384 文字の印字可能な ASCII からなる単一のトークンとして）、終了コード 0 で終了するようにします。動作する設定については、[apiKeyHelper で認証情報をローテーションする](https://code.claude.com/docs/ja/llm-gateway-connect.md#rotate-credentials-with-apikeyhelper)を参照してください。
 * `/status` を実行して失敗を確認し、`apiKeyHelper` が有効な認証情報ソースであることを確認します。`apiKeyHelper` 行には `Failing` と、終了コードやコマンドのエラー出力など最後の失敗の詳細が表示され、次に実行が成功すると消えます。v2.1.274 より前では、`/status` には認証情報ソースのみが表示され、失敗は表示されませんでした。
 * コマンドが失敗するたびに、その終了コードとエラー出力はターミナルの `Authentication` パネルにも表示されます。v2.1.212 より前では、パネルのタイトルは `Cloud authentication` でした。
+
+### Claude Code didn't send your claude.ai login
+
+このメッセージ全文を管理者に送ってください。メッセージには管理者が行える変更が記載されています。このメッセージは、Claude Code がプロンプトを拒否したことを意味します。claude.ai ログインを使用している間、Claude Code は再起動後もプロンプトを拒否し続けます。
+
+```text theme={null}
+Claude Code didn't send your claude.ai login, because the API key helper your administrator set isn't in effect. Your organization's managed settings may be overriding it. Ask your administrator to keep the key helper and its API address in effect, to name Anthropic's API address in those managed settings, or to remove the key helper. Run /status to see your setting sources.
+```
+
+**対処方法:**
+
+* マシンにどの管理ソースがあるかを管理者に伝えるには、Claude Code のプロンプトで `/status` を実行し、[`Setting sources` 行](https://code.claude.com/docs/ja/managed-settings#read-the-source-in-/status)をコピーします。`Skipped sources` 行が表示される場合は、それもコピーします
+* 設定を管理している場合は、[マシンのキーヘルパーが有効にならない理由](https://code.claude.com/docs/ja/server-managed-settings.md#machine-apikeyhelper-not-in-effect)を参照してください
 
 ### 無効なリクエストヘッダー値
 
@@ -1333,7 +1350,7 @@ Please run /login · API Error: 401 Invalid authentication credentials
 * `/status` にログインのみが表示される場合は、`/login` を 1 回実行します。認証情報が取り消されていた場合は、新しいログインで置き換えられます。
 * 同じログインアカウントで同じメッセージが再び表示される場合、そのアカウントまたは組織はもう有効ではありません。`/status` が報告するアカウントと組織を確認し、組織の管理者にアクセスの復元を依頼してください。
 * [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を指している場合、`401` の後のテキストは Anthropic ではなくゲートウェイのメッセージであり、`/login` では変わりません。代わりに、ゲートウェイが想定する認証情報を修正してください。
-* ゲートウェイが求める認証情報を設定した後もすべてのリクエストが `401` で失敗する場合は、Claude Code がデフォルトで送信するツール検索のフィールドをゲートウェイが拒否していないかを確認します。確認するには、[LLM ゲートウェイ経由のツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway)の説明に従って `ENABLE_TOOL_SEARCH=false` を設定してから、再試行してください。v2.1.304 より前では、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイ経由ではツール検索はオフでした。
+* ゲートウェイが求める認証情報を設定してもすべてのリクエストが `401` で失敗する場合は、ゲートウェイとそのアップストリームが[ツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway)のフィールドを受け付けるか確認します。デフォルトでは、Claude Code は `defer_loading` ツールフィールドと `tool_reference` ブロックを、それらを有効にする `anthropic-beta` ヘッダーとともに送信します。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイの背後ではツール検索はオフでした。
 
 ### ログインの有効期限切れ
 
@@ -1936,7 +1953,7 @@ v2.1.227 より前では、これらの各コード付きメッセージは `Una
 * 同じシェルから `curl -I https://api.anthropic.com` を実行して、API ホストに到達できることを確認してください。Windows PowerShell では、組み込みの `Invoke-WebRequest` エイリアスが使用されないように `curl.exe -I https://api.anthropic.com` を使用してください。
 * 企業プロキシの背後にいる場合は、Claude Code を起動する前に `HTTPS_PROXY` を設定し、[ネットワーク設定](https://code.claude.com/docs/ja/network-config.md) を参照してください。
 * LLM ゲートウェイまたはリレーを経由してルーティングする場合は、[`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) をそのアドレスに設定してください。セットアップについては [Claude Code を LLM ゲートウェイに接続する](https://code.claude.com/docs/ja/llm-gateway-connect.md) を参照してください。
-* `ANTHROPIC_BASE_URL` がすでにゲートウェイを指しており、すべてのリクエストが `Connection dropped` で終わる場合は、Claude Code がデフォルトで送信するツール検索フィールドをゲートウェイが拒否していないか確認してください。確認するには、[LLM ゲートウェイを介したツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway) の説明に従って `ENABLE_TOOL_SEARCH=false` を設定し、再試行してください。v2.1.304 より前では、ゲートウェイの背後では `ENABLE_TOOL_SEARCH` でオンにしない限り、ツール検索はオフでした。
+* `ANTHROPIC_BASE_URL` がすでにゲートウェイを指しており、すべてのリクエストが `Connection dropped` で終わる場合は、ゲートウェイとそのアップストリームが [ツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway) のフィールドを受け付けることを確認してください。デフォルトでは、Claude Code は `defer_loading` ツールフィールドと `tool_reference` ブロックを、それらを有効にする `anthropic-beta` ヘッダーとともに送信します。v2.1.304 より前では、ゲートウェイの背後では `ENABLE_TOOL_SEARCH` でオンにしない限り、ツール検索はオフでした。
 * ファイアウォールが [ネットワークアクセス要件](https://code.claude.com/docs/ja/network-config.md#network-access-requirements) に記載されているホストを許可していることを確認してください。
 * 断続的な障害は [自動的に再試行](#automatic-retries) されます。
 
@@ -2471,9 +2488,7 @@ Claude Code は、`context_management` やツール検索の `defer_loading` な
 **対応方法：**
 
 * メッセージに `context_management: Extra inputs are not permitted` が含まれている場合は、[Claude Code をアップデート](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.304 以降にします。アップデート後、Claude Code はこの拒否に対してそのフィールドを除いてリクエストをもう一度送信します。v2.1.304 より前は、Claude Code はこの拒否に対して再試行しませんでした。
-* メッセージに `defer_loading` または `tool_reference` が示されている場合は、Claude Code をアップデートするか、[ツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway)をオフにします。
-  * [Claude Code をアップデート](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.305 以降にします。これにより、Claude Code はこの拒否に対してツール検索のフィールドを除いてリクエストをもう一度送信します。
-  * アップデートできない場合や、アップデート後もメッセージが表示される場合は、シェルまたは[設定の `env`](https://code.claude.com/docs/ja/settings-reference#env) で `ENABLE_TOOL_SEARCH=false` を設定します。設定ファイルですでにこの変数を設定している場合は、その値が[シェルでのエクスポートを上書きする可能性がある](https://code.claude.com/docs/ja/settings-reference.md#how-env-values-interact-with-your-shell)ため、そちらで変更してください。これにより、Claude Code は MCP ツールを最初にまとめて読み込みます。
+* メッセージが `defer_loading` または `tool_reference` を示している場合は、[Claude Code を v2.1.305 以降にアップデート](https://code.claude.com/docs/ja/setup.md#update-claude-code)してください。その後、Claude Code はこの拒否に対して、ツール検索フィールドを除いた[リクエストをもう一度送信](https://code.claude.com/docs/ja/llm-gateway-protocol.md#retry-without-tool-search)します。
 * ゲートウェイがヘッダーを削除している場合は、`anthropic-beta` ヘッダーを転送するようにゲートウェイを設定します。ゲートウェイが転送する必要があるものについては、[機能のパススルー](https://code.claude.com/docs/ja/llm-gateway-protocol.md#feature-pass-through)を参照してください。
 * フォールバックとして、起動前に [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](https://code.claude.com/docs/ja/env-vars) を設定してください。正確なスコープについては [プリリリース機能を無効にする](https://code.claude.com/docs/ja/llm-gateway-protocol.md#disable-pre-release-capabilities)で説明しています。
 
@@ -2552,7 +2567,7 @@ There's an issue with the selected model (claude-...). It may not exist or you m
 * 完全なバージョン付き ID ではなく、`sonnet` や `opus` などのエイリアスを使用してください。エイリアスは保守されたデフォルトに解決されるため、古くなりません。[モデル設定](https://code.claude.com/docs/ja/model-config.md)を参照してください。
 * 間違ったモデルが CLI で戻り続ける場合は、古い ID がどこかに設定されています。[優先順位順](https://code.claude.com/docs/ja/model-config.md#setting-your-model)でモデルを設定できる場所を確認し、古い値を削除してください。
 * Claude Code は期限切れの claude.ai ログインを、このエラーではなく [ログイン期限切れ](#login-expired)として報告します。v2.1.206 より前では、更新できなくなった期限切れのログインはすべてのモデルでこのエラーにより失敗しました。古いバージョンでこれが表示される場合は、`/login` を実行してください。
-* [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を指しており、すべてのモデルがこのように失敗する場合は、Claude Code がデフォルトで送信するツール検索のフィールドをゲートウェイが拒否していないか確認してください。確認するには、[LLM ゲートウェイ経由のツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway)の説明に従って `ENABLE_TOOL_SEARCH=false` を設定し、もう一度試します。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイ経由ではツール検索はオフになっていました。
+* [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を指していて、すべてのモデルがこのように失敗する場合は、ゲートウェイとそのアップストリームが[ツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway)フィールドを受け付けることを確認してください。デフォルトでは、Claude Code は `defer_loading` ツールフィールドと `tool_reference` ブロックを、それらを有効にする `anthropic-beta` ヘッダーとともに送信します。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイ経由ではツール検索はオフでした。
 * Google Cloud の Agent Platform デプロイについては、[Google Cloud の Agent Platform トラブルシューティング](https://code.claude.com/docs/ja/google-vertex-ai.md#troubleshooting)を参照してください。
 
 ### Model is not a recognized model id
@@ -4173,7 +4188,7 @@ known_marketplaces.json has an entry named "claude.code.plugins", another spelli
 
 登録されたマーケットプレイスの名前は、[公式 Anthropic マーケットプレイスを偽装します](https://code.claude.com/docs/ja/plugins/marketplace-reference.md#reserved-names)。そのセクションがリストするルールの下で。
 
-マーケットプレイスがチェックがそれをブロックする前にそのような名前で登録された場合、マーケットプレイスとそこからインストールされたプラグインは読み込みを停止します。Claude Code はマーケットプレイスのカタログを読むたびに名前をチェックするためです。名前が公式のものを模倣する場合、`claude plugin list` と `/plugin` **エラー**タブは、以下で始まるメッセージで影響を受けた各プラグインを報告します：
+マーケットプレイスがチェックがそれをブロックする前にそのような名前で登録された場合、マーケットプレイスとそこからインストールされたプラグインは読み込みを停止します。Claude Code はマーケットプレイスのカタログを読むたびに名前をチェックするためです。名前が公式のものを模倣する場合、`claude plugin list` と `/plugin` **Errors** タブは、以下で始まるメッセージで影響を受けた各プラグインを報告します：
 
 ```text theme={null}
 Claude Code refuses the marketplace name "anthropic-plugins-v2"
@@ -4187,7 +4202,7 @@ v2.1.282 より前では、`claude plugin list` と `/plugin` は、マーケッ
 
 * 設定ファイルが `"source": "settings"` でインライン宣言しているマーケットプレイスを保持するには、古い名前を削除する前に名前を変更してください。マーケットプレイスを削除すると、設定ファイルからもそのエントリが削除されるためです。Claude Code v2.1.292 以降では、メッセージに次の手順が表示されます：
   1. `extraKnownMarketplaces` にそのマーケットプレイスを記載している各設定ファイルで、エントリのキーとその `source.name` に、公式のものに見えない新しいプレーン ASCII の名前を 1 つ付けます。管理者が組織の管理設定を通じてマーケットプレイスを追加している場合は、この手順は管理者が行います
-  2. `claude plugin marketplace remove <old-name>` を実行するか、`/plugin` の **マーケットプレイス**タブで古い名前を削除します。これにより、そのプラグインもアンインストールされ、それらのデータ、オプション、シークレットが削除されます
+  2. `claude plugin marketplace remove <old-name>` を実行するか、`/plugin` の **Marketplaces** タブで古い名前を削除します。これにより、そのプラグインもアンインストールされ、それらのデータ、オプション、シークレットが削除されます
   3. Claude Code を再起動します。ファイルがプロジェクトの設定ファイルである場合は、プロジェクトのフォルダで起動します。その後、名前を変更したマーケットプレイスからプラグインをインストールします
 * その他のマーケットプレイスを保持するには、メンテナーが名前を変更するまで待ってから、`claude plugin marketplace update <name>` を実行してください
 * マーケットプレイスを削除するには、`claude plugin marketplace remove <name>` を実行してください。これにより、マーケットプレイスからインストールされたプラグインもアンインストールされ、それらのデータ、オプション、シークレットが削除されます
@@ -4302,7 +4317,7 @@ v2.1.257 より前では、プラグインが宣言するパスに対するチ�
 
 ### Plugin not loaded: its manifest was not read
 
-Claude Code は、マーケットプレイスプラグインの `.claude-plugin/plugin.json` にある[マニフェスト](https://code.claude.com/docs/ja/plugins/manifest-reference.md)がプラグイン内にあることを確認できなかったため、そのプラグインから何も読み込みません。[ローカルマーケットプレイス](https://code.claude.com/docs/ja/plugins/loading.md#in-place-and-copied-plugins)内のプラグインの場合、Claude Code はマニフェストがそのマーケットプレイス内にあることも確認できませんでした。メッセージは `/plugin` の **エラー**タブに表示され、末尾の理由が Claude Code の検出内容を示します。
+Claude Code は、マーケットプレイスプラグインの `.claude-plugin/plugin.json` にある[マニフェスト](https://code.claude.com/docs/ja/plugins/manifest-reference.md)がプラグイン内にあることを確認できなかったため、そのプラグインから何も読み込みません。[ローカルマーケットプレイス](https://code.claude.com/docs/ja/plugins/loading.md#in-place-and-copied-plugins)内のプラグインの場合、Claude Code はマニフェストがそのマーケットプレイス内にあることも確認できませんでした。メッセージは `/plugin` の **Errors** タブに表示され、末尾の理由が Claude Code の検出内容を示します。
 
 例えば、次のメッセージは、`.claude-plugin` フォルダがマーケットプレイス外に導くシンボリックリンクになっている、ローカルマーケットプレイス内のプラグインに対するものです：
 
@@ -4394,7 +4409,7 @@ v2.1.246 より前では、`claude plugin install` はこの失敗を報告し�
 
 ### プラグインは組織で必須です
 
-`claude plugin disable` を実行するか、`/plugin` **インストール済み**タブを使用して、組織が必須としてマークする [claude.ai から同期されたプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)をオフにしました：
+`claude plugin disable` を実行するか、`/plugin` **Installed** タブを使用して、組織が必須としてマークする [claude.ai から同期されたプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)をオフにしました：
 
 ```text theme={null}
 Plugin "<name>@synced" is required by your organization and can't be disabled here. Contact your admin to change it.
@@ -4410,7 +4425,7 @@ Claude Code は何も保存せず、プラグインは有効なままです。
 
 ### プラグインはアンインストールされませんでした
 
-[`claude plugin uninstall`](https://code.claude.com/docs/ja/plugins/cli-reference#plugin-uninstall)を実行するか、`/plugin` **インストール済み**タブで **アンインストール**を選択し、アンインストールは `"<plugin>" was not uninstalled:` で始まるメッセージで停止しました。そのコロンの後のテキストが設定ファイルの名前ではなく `installed_plugins.json` で始まる場合、原因は `installed_plugins.json` 内のこのバージョンの Claude Code が読み取ることができないコンテンツです。その形式については、[`installed_plugins.json` はこのバージョンが読み取ることができないレコードを保持しています](https://code.claude.com/docs/ja/plugins/troubleshooting#installed-plugins-json-holds-a-record-this-version-cannot-read)を参照してください。
+[`claude plugin uninstall`](https://code.claude.com/docs/ja/plugins/cli-reference#plugin-uninstall)を実行するか、`/plugin` **Installed** タブで **Uninstall** を選択し、アンインストールは `"<plugin>" was not uninstalled:` で始まるメッセージで停止しました。そのコロンの後のテキストが設定ファイルの名前ではなく `installed_plugins.json` で始まる場合、原因は `installed_plugins.json` 内のこのバージョンの Claude Code が読み取ることができないコンテンツです。その形式については、[`installed_plugins.json` はこのバージョンが読み取ることができないレコードを保持しています](https://code.claude.com/docs/ja/plugins/troubleshooting#installed-plugins-json-holds-a-record-this-version-cannot-read)を参照してください。
 
 Claude Code がプラグインのエントリを `enabledPlugins` から削除し、そのスコープの設定ファイルを読み直したとき、プラグインはそこでまだオンに切り替えられたか、それをオンに切り替えることができるファイルを読み取ったり確認したりできませんでした。プラグインの保存されたオプション、シークレット、およびデータを削除しながら、設定エントリがそれをオンに切り替えることができるのは、それらを失うことになるため、アンインストールは代わりに停止します：プラグインはインストールされたままで、保存されたものは削除されません。
 
@@ -4562,6 +4577,46 @@ Claude Code が Write ツールを拒否する場合、メッセージは代わ�
 
 * Claude がファイルを変更できるべき場合、`/permissions` または [設定](https://code.claude.com/docs/ja/settings-reference.md#permission-settings) の `Read` 拒否ルールを削除または縮小します
 * ファイルが変更されないままである必要がある場合、ルールを保持し、NotebookEdit ツールもブロックするために同じパスの `Edit` 拒否ルールを追加します
+
+### Setting blocks writes outside the working directories
+
+Claude がファイルを書き込もうとしてツール呼び出しがこのメッセージで失敗した場合、そのパスはセッションの [作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories) の外にあり、[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) がオンになっています。
+
+```text wrap theme={null}
+<path> is outside <dirs>; the permissions.blockWritesOutsideWorkingDirectories setting blocks writes outside the working directories. Ask the user to add the directory with /add-dir, or to remove that setting.
+```
+
+Claude Code はどの権限モードでもその書き込みを拒否します。拒否メッセージは次のようになる場合もあります。
+
+```text wrap theme={null}
+<path>: Writes outside the working directories are blocked (permissions.blockWritesOutsideWorkingDirectories). Add the directory with /add-dir, or remove that setting.
+```
+
+**What to do:**
+
+* Claude がそこに書き込むべきでない場合は、何もしません
+* パスを含む既存のディレクトリへの書き込みを Claude に許可するには、Claude Code のプロンプトで `/add-dir <directory>` を実行するか、Claude Code の起動時に `--add-dir <directory>` を渡します
+* パスが `~/.claude/settings.json` などの Claude Code の設定ファイルである場合は、自分で編集します。`/add-dir` でそのディレクトリを追加しても解決しません。その場合、Claude Code はその書き込みを [設定ファイルとして](#writes-to-claude-code-settings-files-are-blocked) 拒否するためです。
+* すべてのセッションでディレクトリを書き込み可能にしておくには、ユーザー設定または管理設定の [`permissions.additionalDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-additionaldirectories) にそのディレクトリを記載します
+* `permissions.blockWritesOutsideWorkingDirectories` をオフにするには、それを設定しているすべての設定ファイルから削除してから、Claude Code を再起動します
+* どの設定ファイルにも `permissions.blockWritesOutsideWorkingDirectories` がない場合は、`--settings` またはホストアプリケーションから設定されている可能性があります。また、Claude Code は [管理設定](https://code.claude.com/docs/ja/managed-settings.md#keys-that-fail-closed) の `permissions` を読み取れない間も、これらの書き込みを拒否します。セッションを起動または管理している担当者に問い合わせてください。
+
+### Writes to Claude Code settings files are blocked
+
+Claude がファイルを書き込もうとしてツール呼び出しがこのメッセージで失敗した場合、Claude Code はそのファイルを自身の設定ファイルの 1 つとして扱っており、[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) がオンになっています。
+
+```text wrap theme={null}
+<path>: Writes to Claude Code settings files are blocked while permissions.blockWritesOutsideWorkingDirectories is on, because a settings file can lift that block. While a managed settings folder cannot be resolved, any .json file counts as one.
+```
+
+**What to do:**
+
+* 設定を変更するには、設定ファイルを自分で編集します
+* Claude が再び設定ファイルを編集できるようにするには、`permissions.blockWritesOutsideWorkingDirectories` を設定しているすべての設定ファイルからそれを削除してから、Claude Code を再起動します
+* ファイルが自分の設定ファイルではない場合は、Claude Code が設定ファイルとして扱う他のファイルの中から探します。
+  * **`--agents` または `--mcp-config` に渡したファイル**: 自分で編集します
+  * **[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#security-considerations) の保存されたコピーと、それと一緒に保持されるファイル**: サーバー管理設定で設定を変更するよう [Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) に依頼します。
+  * **Claude Code が [`managed-settings.d/`](https://code.claude.com/docs/ja/managed-settings#split-a-file-based-policy-across-teams) フォルダの参照先を特定できない間の、任意の `.json` ファイル**: そのフォルダを確認するよう管理者に依頼します
 
 ### Path cannot contain null bytes
 
@@ -6147,14 +6202,14 @@ Claude Code は、使用中の Claude Code のバージョンが認識しない�
 stderr を読み取るスクリプトやハーネスでは、`[claude-code:unrecognized_model]` プレフィックスで照合してください。プレフィックスと 1 つのスペースの後に、Claude Code は 1 行の JSON オブジェクトを書き込みます。Claude Code は今後のバージョンでフィールドを追加する可能性があるため、想定していないフィールドは無視してください。少なくとも次の 2 つのフィールドが書き込まれます。
 
 * `model`: 設定されたとおりのモデル文字列
-* `query_source`: そのモデルを使用したリクエストの経路。`-p` の実行では `sdk`、サブエージェントでは `agent:` で始まる値が報告されます。
+* `query_source`: そのモデルを使用したリクエストの経路。たとえば、`-p` の実行のメインの会話では値は `sdk` となり、サブエージェントでは `agent:` で始まります。
 
 Claude Code は、実行方法に応じて次の 2 つの場所のいずれかにこの行を書き込みます。
 
 * `-p` を使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)では、すべての `--output-format` で stderr に書き込むため、この行を除外せずに stdout を解析できます
 * 対話セッションまたは[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)では、代わりにデバッグログに書き込みます。`--debug` を付けて実行すると、`~/.claude/debug/<session-id>.txt` に記録されます
 
-Claude Code はこの行を、プロセスごとにモデル文字列ごとに 1 回書き込みます。[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)や[バックグラウンド機能](https://code.claude.com/docs/ja/costs.md#background-token-usage)が使用する ID など、さらに認識されない ID があれば、それぞれ別の行を書き込みます。
+Claude Code はこの行を、プロセスごとにモデル ID ごとに 1 回書き込みます。[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)や[バックグラウンド機能](https://code.claude.com/docs/ja/model-config.md#environment-variables)が使用する ID など、さらに認識されない ID があれば、それぞれ別の行を書き込みます。
 
 Amazon Bedrock の `us.anthropic.claude-...` ID、`@` バージョンサフィックス付きの Google Cloud の Agent Platform ID、Claude のモデル ID を含む Microsoft Foundry のデプロイ名など、Claude Code が認識可能なモデルに解決できるプロバイダー ID については、この行は書き込まれません。Amazon Bedrock の[アプリケーション推論プロファイル ARN](https://code.claude.com/docs/ja/amazon-bedrock.md#map-each-model-version-to-an-inference-profile) については、Claude Code は ARN そのものではなく、その背後にあるモデルをチェックします。入力ミスのある ARN など、解決できない ARN については行を書き込みません。
 

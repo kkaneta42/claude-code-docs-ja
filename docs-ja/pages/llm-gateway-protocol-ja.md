@@ -237,23 +237,48 @@ Claude Code は `ANTHROPIC_BASE_URL` ゲートウェイを Anthropic フォー�
 * アップストリームが `messages` 内の `role: "system"` エントリを拒否した場合、Claude Code はそれらの会話中のシステムメッセージを除いて 1 回再試行し、そのテキストを代わりにユーザーメッセージに含めます。会話内の以降のリクエストは、開発者が `/clear` を実行するか会話が圧縮されるまでその形式を維持します
 * アップストリームが会話中のシステムメッセージの `cache_control` マーカーのみを拒否した場合、Claude Code はシステムメッセージを維持し、マーカーを移動して 1 回再試行します。その再試行と、Claude Code が終了するまでの以降のリクエストでは、マーカーは `messages` 内でシステムメッセージではない最後のエントリに付けられます
 * アップストリームが[思考署名](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)を拒否する場合（`bound to a different conversation` という `400` を含む）、Claude Code はリクエストを以前の思考ブロックなしでリトライし、それらを後のすべてのリクエストから除外します。新しい応答には依然として思考が含まれます
-* ゲートウェイまたはそのアップストリームが [advisor ツール](https://code.claude.com/docs/ja/advisor.md)エントリを `tools` で認識されないツールタイプとして拒否する場合、Claude Code はそのエントリとその `anthropic-beta` 値なしでリクエストを 1 回リトライします。その後のそのベース URL へのリクエストは Claude Code が終了するまで advisor を除外し、その時間は `/advisor` は開発者に利用不可です。Claude Code はこの拒否を `Input tag` の後にツールタイプを命名するメッセージを含む `400` または `422` レスポンスによって認識します。例えば `Input tag 'advisor_20260301'` です。v2.1.280 より前では、Claude Code はこの拒否をリトライしませんでした
-* アップストリームが `output_config.effort` またはその `anthropic-beta` 値を拒否する場合、Claude Code は再試行し、Claude Code が終了するまでそのモデルへのリクエストにはどちらも追加しません。ゲートウェイがアップストリームの `400` を変更せずに転送し、メッセージが次のいずれかに該当する場合、ゲートウェイ側の変更は不要です：
+* ゲートウェイまたはそのアップストリームが [advisor ツール](https://code.claude.com/docs/ja/advisor.md)エントリを `tools` で認識されないツールタイプとして拒否する場合、Claude Code はそのエントリとその `anthropic-beta` 値なしでリクエストを 1 回リトライします。[以降のリクエスト](#how-long-a-rejected-beta-value-stays-out)ではそれらが省略されます。Claude Code はこの拒否を `Input tag` の後にツールタイプを命名するメッセージを含む `400` または `422` レスポンスによって認識します。例えば `Input tag 'advisor_20260301'` です。v2.1.280 より前では、Claude Code はこの拒否をリトライしませんでした
+* アップストリームが `output_config.effort` またはその `anthropic-beta` 値を拒否する場合、ゲートウェイにはそれらを除いたリクエストがもう一度届きます。[以降のリクエスト](#how-long-a-rejected-beta-value-stays-out)ではそれらが省略されます。ゲートウェイがアップストリームの `400` を変更せずに転送し、メッセージが次のいずれかに該当する場合、ゲートウェイ側の変更は不要です：
   * `Extra inputs are not permitted` とともに `output_config.effort` を挙げている
   * モデルが努力パラメーターをサポートしていないと述べている
   * `Unexpected value(s)` で始まり、`anthropic-beta` ヘッダーについて `effort-2025-11-24` を挙げている。v2.1.310 以降が必要です。[`ANTHROPIC_BETAS`](https://code.claude.com/docs/ja/env-vars) にこの値を含めている開発者は引き続きそれを送信して `400` を受け取るため、そのエントリを削除してもらってください
-* アップストリームが `context_management` フィールドまたはその `anthropic-beta` 値を拒否する場合、ゲートウェイにはそれらを除いたリクエストがもう一度届きます。後のリクエストでゲートウェイが再びそれらを受け取り、アップストリームが再び拒否した場合も、同じ再試行が行われます。Claude Code はこの拒否をメッセージによって認識します。たとえば `context_management: Extra inputs are not permitted` を含むメッセージです。v2.1.304 より前では、Claude Code はこの拒否を再試行しませんでした
+* アップストリームが `context_management` フィールドまたはその `anthropic-beta` 値を拒否する場合、ゲートウェイにはそれらを除いたリクエストがもう一度届きます。[以降のリクエスト](#how-long-a-rejected-beta-value-stays-out)ではそれらが省略されます。Claude Code はこの拒否をメッセージによって認識します。たとえば `context_management: Extra inputs are not permitted` を含むメッセージです。v2.1.304 より前では、Claude Code はこの拒否を再試行しませんでした
+* `400` が別の `anthropic-beta` 値を名前で拒否した場合、[その値が再試行の対象であれば](#retry-without-a-rejected-beta-value)、ゲートウェイにはその値を除いたリクエストがもう一度届きます
 * アップストリームが `strict` など `defer_loading` 以外のベータツールフィールドを拒否する場合、`400` は開発者に届きます。その前に、ゲートウェイには[ツール検索フィールドを除いた](#retry-without-tool-search)リクエストが再び届くことがあります。このようなフィールドの送信を停止するには、開発者に [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1`](#disable-pre-release-capabilities) を設定してもらってください
 
 `bound to a different conversation` 拒否は API の[保存された思考](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)チェックから来ます。これは、`system`、`tools`、または以前の `messages` コンテンツが思考を生成したリクエストと異なる場合に失敗します。そのコンテンツのいずれかを書き直すゲートウェイは、拒否自体を引き起こす可能性があります。[ライブラリ、プロキシ、およびゲートウェイ](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking#libraries-proxies-gateways)は、変更なしで渡すべき内容をカバーしています。
 
 この再試行ロジックの大部分はアップストリームのエラー文言に一致するため、エラーレスポンスボディを変更なしで転送してください。アップストリームエラーを独自のエンベロープでラップするゲートウェイは、ステータスコードを保持する場合でも回復パスを壊します。ただし、エンベロープのメッセージが安定した `capability_rejected:` トークンを含む場合は除きます。[Claude apps ゲートウェイはクラウドプロバイダーのエラー文言をそれらのトークンに置き換えます](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#upstream-error-messages)。例えば `capability_rejected: prompt_too_long` です。
 
+#### 拒否されたベータ値なしでの再試行
+
+この再試行の対象となる `anthropic-beta` 値を `400` が名前で拒否した場合、ゲートウェイにはその値を除いたリクエストがもう一度届きます。[以降のリクエスト](#how-long-a-rejected-beta-value-stays-out)ではその値が省略されます。対象となる値のほとんどは v2.1.314 以降が必要です。
+
+ゲートウェイが返す `400` のメッセージが次のいずれかの形式で値を含んでいれば、ゲートウェイ側の変更は不要です：
+
+* **API の文**：`anthropic-beta` ヘッダーについてその値を挙げる `Unexpected value(s)` の文
+* **`beta_header:` トークン**：`capability_rejected: beta_header:` の後に値が続くもの。[`capability_rejected:` トークン](#automatic-retry-and-error-forwarding)の一種です
+
+この再試行は、独自の再試行を持つ値、Claude Code が認識しない値、値を挙げていないメッセージなどのケースには対応しません：
+
+* **advisor やツール検索など、独自の再試行を持つ値**：ゲートウェイには代わりに[その機能独自の再試行](#automatic-retry-and-error-forwarding)が届きます
+* **Claude Code が認識しない値**：開発者が `ANTHROPIC_BETAS` で設定した値は各リクエストに残るため、その開発者のリクエストは `400` で失敗し続けます。開発者にそのエントリを削除してもらってください
+* **値を伴わない `invalid beta flag`**：Claude Code はアップストリームがどの値を拒否したかを推測します。推測対象となる値がリクエストに含まれていた場合、ゲートウェイにはその値を除いたリクエストが再び届きます。それでも `400` が開発者に届く場合は、ゲートウェイが拒否された値を上記いずれかの形式で挙げるようにしてください
+
+#### 拒否されたベータ値が除外される期間
+
+| アップストリームが拒否したもの | それを省略するリクエスト | 期間 |
+| :- | :- | :- |
+| advisor ツールタイプ、または advisor の `anthropic-beta` 値 | 同じベース URL へのリクエスト。`/advisor` は利用できません | Claude Code が終了するまで |
+| `output_config.effort` またはその `anthropic-beta` 値 | 同じモデルへのリクエスト | Claude Code が終了するまで |
+| `context_management`、または[名前による再試行](#retry-without-a-rejected-beta-value)の対象となるその他の `anthropic-beta` 値 | 同じ会話内のリクエスト | 会話が終了するか、メイン会話の圧縮時など Claude Code がプロンプトを再構築するまで |
+| `context_management`、またはその再試行の対象となるその他の値で、エラーメッセージが `Unexpected value(s)` など拒否に関する API 独自の文で始まるか、`beta_header:` トークンを含む場合 | 拒否されたリクエストが指定していたモデルでの新しい会話も対象（`/clear` の後も含む） | Claude Code が終了するまで |
+
 #### ツール検索なしでの再試行
 
-v2.1.305 以降では、[`defer_loading` フィールドと `tool_reference` ブロック](https://code.claude.com/docs/ja/mcp#tool-search-through-a-gateway)を含むリクエストは、Claude Code が原因を認識できない `400` または `422` の後に、それらを除いた形で再び届くことがあります。再試行が成功すると、以降のリクエストでもそれらは省略されます。
+v2.1.305 以降では、ツール検索を挙げる `400` または `422`、あるいは原因を認識できない `400` または `422` の後に、Claude Code は [`defer_loading` フィールドと `tool_reference` ブロック](https://code.claude.com/docs/ja/mcp#tool-search-through-a-gateway)を除いてリクエストを再送信します。再試行が成功すると、その会話内の以降のリクエストでもそれらは省略されます。
 
-ゲートウェイ側で何も変更しなくても開発者のリクエストは引き続き機能し、MCP ツールは事前に読み込まれます。Claude Code は後でツール検索を再度試すため、ゲートウェイでは再び拒否されたリクエストとその再試行が見られることがあります。すべてのリクエストからこれらのフィールドを除外するには、開発者に `ENABLE_TOOL_SEARCH=false` を設定してもらってください。ツール検索自体については、Claude Code はゲートウェイが `defer_loading` フィールドと `tool_reference` ブロックをその `anthropic-beta` 値とともに転送することを想定しています。
+開発者のリクエストはゲートウェイ側で何も変更しなくても引き続き機能し、MCP ツールは事前に読み込まれます。Claude Code がツール検索を再度試みると、ゲートウェイでは、拒否されたリクエストとそれに続く再試行がもう一度確認されることがあります。ツール検索そのものについては、Claude Code はゲートウェイが `defer_loading` フィールドと `tool_reference` ブロックを、その `anthropic-beta` の値とともに転送することを想定しています。
 
 ### プレリリース機能を無効化
 

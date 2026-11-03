@@ -41,7 +41,7 @@ worktree は新しいチェックアウトなので、そこで開発環境を�
 
 ### Claude に worktree の作成を依頼する
 
-セッション中に Claude に「worktree で作業する」と指示することもでき、Claude は [`EnterWorktree`](https://code.claude.com/docs/ja/tools-reference) ツールを使用して worktree を作成します。worktree に入ると、Claude はターゲットパスを指定して `EnterWorktree` を呼び出すことで、`.claude/worktrees/` の下の別の worktree に直接切り替えることができます。前の worktree はディスク上に変更されずに残ります。
+セッション中に Claude に「worktree で作業する」と指示することもでき、Claude は [`EnterWorktree`](https://code.claude.com/docs/ja/tools-reference#enterworktree-tool-behavior) ツールを使用して worktree を作成します。worktree に入ると、Claude はターゲットパスを指定して `EnterWorktree` を呼び出すことで、`.claude/worktrees/` の下の別の worktree に直接切り替えることができます。前の worktree はディスク上に変更されずに残ります。
 
 Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパスに入る場合、Claude Code は最初に承認を求めます。この移動により、セッションの作業ディレクトリ、書き込みアクセス、および `CLAUDE.md` や設定などのプロジェクト設定がその場所に移るためです。`EnterWorktree` の[権限ルール](https://code.claude.com/docs/ja/permissions.md)や「今後は確認しない」の選択ではこのプロンプトは抑制されず、`bypassPermissions` モードのみがスキップします。
 
@@ -51,6 +51,20 @@ Claude がリポジトリの `.claude/worktrees/` ディレクトリの外のパ
 >
 > * **`${CLAUDE_PROJECT_DIR}` は変わらない**: セッションが開始されたプロジェクトルートを引き続き指すため、`${CLAUDE_PROJECT_DIR}/.claude/hooks/check-style.sh` などのフックコマンドは引き続きメインチェックアウト内のスクリプトを実行します。
 > * **`cwd` は Claude に追従する**: フックの[入力 JSON](https://code.claude.com/docs/ja/hooks.md#common-input-fields) の `cwd` フィールドは worktree のルートであり、Claude が `cd` を実行すると再び移動します。フックが worktree のパスを必要とする場合はこれを読み取ります。
+
+#### Claude に `EnterWorktree` ツールがない
+
+Claude に worktree で作業するよう依頼しても `EnterWorktree` や `ExitWorktree` ツールがない場合は、[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効になっているかどうかを確認してください。このキーが有効になると、Claude Code は両方の worktree ツールを削除するか、それらの呼び出しを拒否します。
+
+このキーが有効なままでも、worktree での作業は続けられます。
+
+* **対話セッション**: `claude --worktree` を使用して worktree でセッションを開始します。
+* **[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#how-file-edits-are-isolated)**: Claude Code は、セッションが `EnterWorktree` を呼び出すまで、メインチェックアウトでのバックグラウンドセッションの編集を拒否しますが、セッションにはそのツールがありません。次のいずれかを行うと、セッションが編集できるようになります。
+  * `claude --bg --worktree` で開始する
+  * [`worktree.bgIsolation`](https://code.claude.com/docs/ja/settings-reference#worktree-bgisolation) を `"none"` に設定する
+  * セッションを開始したディレクトリの下に `git worktree add` で作成した worktree で Claude に編集させる
+
+ツールを元に戻すには、セッションで `/status` を実行して[読み込まれた設定ソース](https://code.claude.com/docs/ja/settings.md#check-what-loaded)を一覧表示し、このキーを設定しているすべてのファイルからキーを削除します。その後、Claude Code を再起動します。管理設定でこのキーが設定されている場合は、ポリシーを変更すべきかどうかを管理者に確認してください。
 
 ## worktree をクリーンアップする
 
@@ -67,7 +81,7 @@ Windows では、worktree を削除しても worktree 外のファイルは削�
 
 ## worktree セッションを再開する
 
-worktree 内で[終了](#clean-up-worktrees)せずに終わったセッションを再開すると、Claude Code はセッションをその worktree に戻します。これは対話的な再開、`-p` を使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)での `--continue` と `--resume`、および Agent SDK に当てはまります。`--continue` は、起動したディレクトリの下に記録されている最新のセッションを選択します。worktree 内に戻った後も、Claude は [`ExitWorktree`](https://code.claude.com/docs/ja/tools-reference) ツールで worktree を終了できます。
+worktree 内で[終了](#clean-up-worktrees)せずに終わったセッションを再開すると、Claude Code はセッションをその worktree に戻します。これは対話的な再開、`-p` を使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)での `--continue` と `--resume`、および Agent SDK に当てはまります。`--continue` は、起動したディレクトリの下に記録されている最新のセッションを選択します。worktree 内に戻った後、[セッションにそのツールがある場合](#claude-has-no-enterworktree-tool)は、Claude は [`ExitWorktree`](https://code.claude.com/docs/ja/tools-reference) ツールで worktree を終了できます。
 
 セッションを worktree に戻す前に、Claude Code は worktree がメインのチェックアウトとは別のチェックアウトのままであることを検証し、チェックに失敗した worktree への再入を拒否します。git worktree の場合、チェックはその git メタデータを読み取ります。[`WorktreeCreate` フック](#non-git-version-control)が作成したものなど、git メタデータを持たない worktree はチェックに合格する場合があります。Claude Code が引き続き拒否するケースは、その回復方法とともに [Claude Code が worktree の使用を拒否する](#claude-code-refuses-to-use-a-worktree) に記載されています。メッセージとそれぞれからの回復方法については、[セッションが worktree の外で再開される](#the-session-resumes-outside-its-worktree) を参照してください。
 
@@ -91,7 +105,7 @@ Claude Code が git で作成した worktree に Claude が入るか出ると、
 
 Claude Code は 4 つのチェックを適用します。
 
-* **ファイル編集**: Claude Code は、メインチェックアウト内のパスを対象とする `Edit`、`Write`、または `NotebookEdit` をブロックします。
+* **ファイル編集**: Claude Code は、メインチェックアウト内のパスを対象とする `Edit`、`Write`、または `NotebookEdit` をブロックします。メインチェックアウト内のファイルを変更するには、自分で編集するか、そこで対話型セッションを開始してください。
 * **コマンドの作業ディレクトリ**: Claude Code は、作業ディレクトリがメインチェックアウトに解決される Bash、PowerShell、または Monitor コマンド、あるいは作業ディレクトリがメインチェックアウトの外にとどまることを検証できないコマンドをブロックします。
 * **Git のリダイレクト**: Claude Code は、git をメインチェックアウトにリダイレクトする Bash または Monitor コマンドをブロックします。リダイレクトは、`git -C`、`--git-dir`、`GIT_DIR` または `GIT_WORK_TREE` 変数、あるいは git を実行する前のメインチェックアウトへの `cd` によって発生する可能性があります。
 * **コマンドの形式**: Claude Code は、コマンドが実行する git が worktree 内にとどまることをコマンドテキストから検証できない場合、Bash または Monitor コマンドをブロックします。これは、たとえばコマンド名が実行時に計算される場合、構文を解析できない場合、または `${!name}` や `${ command; }` などの展開がテキストに明記されていないコマンドを実行する可能性がある場合に発生します。Claude Code は、拒否されたコマンドを単純な個別のコマンドに分割するなど、書き直す方法を Claude に伝えます。このチェックをオフにすることはできません。

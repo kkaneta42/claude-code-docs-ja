@@ -1074,6 +1074,7 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 * **ファイルシステム権限昇格**：過度に広いファイルシステム書き込み権限は権限昇格攻撃を有効にする可能性があります。`$PATH` の実行可能ファイルを含むディレクトリ、システム設定ディレクトリ、またはユーザーシェル設定ファイル（`.bashrc` または `.zshrc`）への書き込みを許可すると、他のユーザーまたはシステムプロセスがこれらのファイルにアクセスするときに異なるセキュリティコンテキストでコード実行につながる可能性があります。
 * **Linux サンドボックス強度**：Linux 実装は強力なファイルシステムとネットワーク分離を提供しますが、特権付き名前空間のない Docker 環境内で動作できるようにする `enableWeakerNestedSandbox` モードが含まれています。このオプションはセキュリティを大幅に弱め、追加の分離が別の方法で実施される場合にのみ使用する必要があります。
 * **macOS での Apple Events**：macOS サンドボックスはデフォルトで Apple Events をブロックします。`allowAppleEvents` 設定はこの制限を解除して、`open` や `osascript` などのツールが動作するようにしますが、コード実行分離を削除します。サンドボックス化されたコマンドは、ユーザープロンプトなしで他のアプリケーションをサンドボックス化されていない状態で起動でき、実行中のアプリケーションに AppleScript コマンドを送信できます。これはアプリごとの macOS オートメーション同意プロンプト（TCC）の対象です。これはユーザー、管理、または CLI 設定からのみ有効です。プロジェクト設定では有効にできません。
+* **macOS での Mach および XPC サービス**：サンドボックス化されたコマンドは、[`network.allowMachLookup`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmachlookup) に列挙した各サービスにサンドボックスの外へ出てアクセスでき、それらのサービスがそのコマンドのために行う処理はサンドボックスによって制限されません。
 * **Linux および WSL2 でのユーザー名前空間**：デフォルトでは、サンドボックス化されたコマンドはユーザー名前空間を作成できません。[`allowNestedUserNamespaces`](https://code.claude.com/docs/ja/settings-reference#sandbox-allownestedusernamespaces) を `true` に設定すると、セキュリティ境界をオフにすることになり、サンドボックス化されたコマンドのコードがサンドボックス外で実行される可能性があります。この設定をオンにする前に、[Linux のサンドボックス内で Chromium または rootless Podman が失敗する](#chromium-or-rootless-podman-fails-inside-the-sandbox-on-linux)の警告を確認してください。
 
 ### スコープ

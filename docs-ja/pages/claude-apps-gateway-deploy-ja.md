@@ -169,6 +169,7 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ�
   * `access.public_client` には、`access_control.allow_cidrs` が空の状態でパブリックアドレスから届いた、プロセスごとの最初のリクエストのクライアント IP が含まれます。ゲートウェイはそのリクエストを通常どおり処理します。このイベントは、ゲートウェイがパブリックインターネットから到達可能である可能性を示します。何がパブリックとみなされるか、および推奨される許可リストについては、[`access_control` リファレンス](https://code.claude.com/docs/ja/claude-apps-gateway-config#http-tuning)を参照してください。
   * `inference` には、どのアップストリームがリクエストを処理したかと、レスポンスのステータスが記録されます
   * `desktop_bootstrap.denied` には、拒否された Claude Desktop のブートストラップ取得が、理由（`not_configured`、`policy_not_opted_in`、または `no_policy_matched`）およびユーザーの ID とともに記録されます
+  * `guardrail.trace` には、[どのフィルターが発動したか](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#log-which-guardrail-filter-fired)が記録されます。一致したテキストは記録されません
   * `admin.denied` には、拒否された管理 API の認証試行が、クライアント IP、メソッド、パス、理由とともに記録されます。提示された鍵情報は記録されません。理由は、`x-api-key` が提示されたもののどの設定済みキーとも一致しなかった場合は `invalid_key`、`Authorization` ヘッダーのみが提示され、それが `admin.admin_groups` のゲートウェイセッションとして検証されなかった場合は `bearer_rejected`、どちらのヘッダーも提示されなかった場合は `no_credentials` です
 * **運用ログ**: 起動、警告、アップストリームのエラーについて、`[gateway]` というプレフィックスの付いた人間が読める形式の行を出力します。詳細度は `CLAUDE_GATEWAY_LOG_LEVEL` 環境変数で制御し、`debug`、`info`、`warn`、`error` のいずれかを指定できます。デフォルトは `info` です。`debug` では、サインインとリフレッシュのたびに id\_token に含まれるクレームの名前（値ではありません）もログに記録され、`userinfo_fallback` が何らかのクレームを提供した場合は userinfo クレームの名前も記録されます。これにより、PII をログに残さずに `email_claim` と `groups_claim` の設定を診断できます。この設定は監査イベントには影響せず、監査イベントは常に出力されます。
 
@@ -311,6 +312,10 @@ IdP がダウンした場合、既存のセッションは `ttl_hours` まで機
 
 マイグレーションは追記のみであるため、認識しているマイグレーションが少ない以前のバイナリへのロールバックは安全です。以前のバイナリは余分な行を無視します。また、ロールバック時には YAML が古いバイナリのスキーマに対して再検証されるため、新しいリリースで導入されたキーを採用した設定は、古いバイナリでの起動に失敗します。ロールバックする前に新しいキーを削除してください。
 
+> [!WARNING]
+>
+> アップストリームから `groups` キーだけを削除すると、そのアップストリームはすべての開発者に開放された状態になります。[ロールバックする前に削除するもの](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#roll-back-a-gateway-that-uses-groups)を参照してください。
+
 ゲートウェイのバージョンは自社のイメージで固定するため、新しい Claude Code リリースの修正（セキュリティ修正を含む）がデプロイ環境に反映されるのは、固定バージョンを更新して再デプロイしたときだけです。本番環境の認証情報を保持する他のサービスと同じパッチ適用サイクルにゲートウェイを含めてください。
 
 ## セキュリティ
@@ -422,6 +427,7 @@ gateway の stderr には監査イベントストリームが含まれ、監査�
 | ピークロード時に、レスポンスの開始が遅い、またはハングしているように見える、または upstream が健全な場合に 502 `all upstreams failed` で失敗する | レプリカは upstream に一度に送信するよりも多くのリクエストを開いているため、余分なリクエストは gateway 内で待機します。`provider: anthropic` upstream では、`timeouts.upstream_ttfb_ms` より長く待つリクエストはその upstream をあきらめ、後の upstream がそれを処理しない場合は 502 を生成します。ログは `client requests are open` を含む警告を表示します。 | レプリカを追加するか、各レプリカの制限を上げてください。[同時 upstream リクエスト](#concurrent-upstream-requests)を参照してください。 |
 | `provider: anthropic` 以外のアップストリームで、長い思考の間を含むターンが失敗する。ゲートウェイの前にあるプロキシが、約 12.5 分間開いたままのリクエストを 1 件記録し、その後 `504` エラーを連続して記録する | Claude Code は、最初のレスポンスイベントを配信した後はキープアライブの ping のみを運んでいたストリームを終了しました。リクエストをストリーミングなしで再送信しましたが、各応答にはプロキシのタイムアウトより長い時間がかかります。 | 開発者向けに `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を上げてください。[長い思考がプロキシのタイムアウトで終わる](#long-thinking-ends-in-proxy-timeouts)を参照してください。 |
 | `provider: anthropic` で、長い思考の間を含むターンが失敗する。プロキシが約 20 分間開いたままのリクエストを 1 件記録し、その後 `502` または `504` エラーを記録する | Claude Code は、最初のレスポンスイベントを配信した後はキープアライブの ping のみを運んでいたストリームを終了しました。リクエストをストリーミングなしで再送信しましたが、各応答には、ゲートウェイがアップストリームを待つ時間である `timeouts.upstream_ttfb_ms`、またはプロキシのタイムアウトより長い時間がかかります。 | 開発者向けに `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を上げてください。[Anthropic API アップストリームでの長い思考](#long-thinking-on-an-anthropic-api-upstream)を参照してください。 |
+| 開発者のリクエストが `API Error: 400 you aren't in a group that can use this gateway. Ask your administrator to add you to one` で失敗する | すべてのアップストリームに [`groups` リスト](https://code.claude.com/docs/ja/claude-apps-gateway-config#what-happens-when-a-developer-is-in-no-listed-group)があり、開発者のセッションにはリストされたグループのいずれも含まれていない。 | IdP で開発者をリストされたグループに追加するか、`groups` のないアップストリームを最後に記載して、それ以外の全員に対応させてください。gateway は開発者の次回のトークンリフレッシュ時にグループを再度読み取ります。IdP がグループを省略しており、その userinfo エンドポイントがグループを返す場合は、[`oidc.userinfo_fallback: true`](https://code.claude.com/docs/ja/claude-apps-gateway-config#oidc) を設定してください。 |
 | IdP エラー: unknown or unsupported scope | IdP が認識しないスコープを拒否する | `oidc.scopes` を IdP が受け入れるリストに正確に設定してください。`openid` を含める必要があります。デフォルトは `openid profile email offline_access` です。 |
 | `oidc.scopes` を設定した後、セッションが自動的に更新されない | `offline_access` が上書き設定から削除された | IdP がサポートしている場合は `offline_access` を戻してください。リフレッシュトークンがない場合、開発者は `session.ttl_hours` ごとにブラウザログインを再実行します。 |
 | ブラウザが「This request came from another site and was blocked」を表示する | クロスサイトフォーム POST。CSRF 保護としてブロックされました。埋め込みまたはプロキシされたページでは予想されます | 検証リンクを直接開いてください |
@@ -449,11 +455,12 @@ gateway は、リクエストのヘッダーの合計が 256 KiB（[`limits.max_
 * **`limits.max_request_header_bytes` が設定されている**: 値を上げるか、キーを削除してください
 * **いずれにも該当しない、またはその後も `431` が続く**: IdP が発行するグループを減らしてください。Okta、Microsoft Entra ID、Google Workspace がグループを提供する方法については、[Identity provider setup](#identity-provider-setup) を参照してください
 
-groups クレームを削減する際は、以下の設定で指定したグループを残してください。これらの設定は、開発者のアクセス、ポリシー、支出上限を決定します。
+groups クレームを削減する際は、以下の設定で指定したグループを残してください。これらの設定は、開発者のアクセス、ポリシー、アップストリーム、支出上限を決定します。
 
 * **[`oidc.allowed_groups`](https://code.claude.com/docs/ja/claude-apps-gateway-config#oidc)**: サインインできるユーザーを決定します
 * **[`admin.admin_groups`](https://code.claude.com/docs/ja/claude-apps-gateway-config#admin)**: gateway セッションで管理 API を呼び出せるユーザーを決定します
 * **[`managed.policies`](https://code.claude.com/docs/ja/claude-apps-gateway-config#managed) 内の `match.groups`**: 開発者に適用されるポリシーを決定します
+* **[アップストリーム](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#send-each-team-to-its-own-upstream)の `groups`**: 開発者に対応するアップストリームを決定します
 * **`rbac_group` [支出上限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md)**: 開発者に適用されるグループ上限を決定します
 
 ### 長い思考がプロキシのタイムアウトで終わる

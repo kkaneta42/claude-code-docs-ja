@@ -1559,7 +1559,7 @@ Claude Code v2.1.274 以降が必要です。
 
 > [!NOTE]
 >
-> コストメトリクスは概算です。公式な請求データについては、API プロバイダー (Claude Console、Amazon Bedrock、または Google Cloud の Agent Platform) を参照してください。
+> コストメトリクスは概算です。公式な請求データについては、[組織のコストを管理する](https://code.claude.com/docs/ja/costs.md#manage-costs-for-your-organization) を参照してください。
 
 Claude Code は、`ANTHROPIC_BASE_URL` の背後にあるゲートウェイまたはプロキシが複数のフレーム全体で使用状況をプログレッシブにストリーミングする場合を含め、各ストリーミングレスポンスをコストおよびトークンメトリクスに対して正確に 1 回カウントします。
 

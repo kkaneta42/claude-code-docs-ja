@@ -668,9 +668,16 @@ plan モードでは、`tool.check` を処理する mod もファイル編集や
 
 ほとんどの[ネットワークパス](https://code.claude.com/docs/ja/errors.md#working-directory-is-a-network-path)（`\\server\share` などの UNC 共有など）は、作業ディレクトリとして追加できません。これは、ルックアップがそれが指す名前のホストに接続する可能性があるためです。Windows では、代わりに共有をドライブ文字にマップし、起動時に `--add-dir` でドライブを渡します。
 
-[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) を設定して、ファイルツールがすべての権限モードで囲まれたパスを拒否するようにします。自動モードでは、Claude Code は Claude が[作業ディレクトリの外側を読み取る](https://code.claude.com/docs/ja/permission-modes.md#first-read-outside-the-working-directories)最初の時点でこれをオンにするよう提案します。
-
 macOS のバックグラウンドセッションでは、セッションホストは `~/Desktop`、`~/Documents`、`~/Downloads` などの保護されたフォルダへのアクセスをターミナルとは別に要求します。Claude がそこでファイルを読み取りまたは書き込む必要がある場合、`Operation not permitted` で読み取りが失敗する場合は、[バックグラウンドセッションにフォルダアクセスを許可する方法](https://code.claude.com/docs/ja/agent-view.md#background-sessions-can%E2%80%99t-read-desktop-documents-or-downloads-on-macos)を参照してください。
+
+### 作業ディレクトリ外でのファイルツールの読み取りと書き込みをブロックする
+
+`bypassPermissions` を含むすべての権限モードで、Claude のファイルツールが作業ディレクトリ外のパスを拒否するようにするには、次のキーの一方または両方を `true` に設定します。
+
+* **[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)**：ファイルツールは、Claude Code 自体が必要とするファイルを除き、作業ディレクトリ外での読み取りを拒否します。auto モードでは、Claude が[作業ディレクトリの外側を読み取る](https://code.claude.com/docs/ja/permission-modes.md#first-read-outside-the-working-directories)最初の時点で、Claude Code がこれをオンにするよう提案します。
+* **[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories)**：`Write`、`Edit`、`NotebookEdit` ツールは、プランファイルなど Claude Code 自身の一部のファイルを除き、作業ディレクトリ外への書き込みを拒否します。このキーはシェルコマンド、MCP ツール、フックが実行するプログラムを制限しないため、シェルコマンドが書き込む場所を制限するには[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)を使用してください。Claude Code v2.1.314 以降が必要です。
+
+いずれかのキーが `true` の間も外部のディレクトリの 1 つにアクセスできるようにするには、[そのディレクトリを作業ディレクトリとして追加](https://code.claude.com/docs/ja/settings-reference.md#let-one-directory-through-the-read-or-write-block)します。
 
 ### セッションを別のディレクトリに移動する
 

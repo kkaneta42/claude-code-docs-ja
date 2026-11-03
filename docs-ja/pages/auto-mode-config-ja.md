@@ -355,21 +355,48 @@ claude auto-mode reset
 
 ## 拒否の確認
 
-オートモード分類器が拒否したアクションを確認して再試行するには、`/permissions` を開いて **Recently denied** タブを選択します。ここで Claude Code は各拒否を記録しています。拒否されたアクションで `r` を押してリトライ対象としてマークします。ダイアログを終了すると、Claude Code はモデルにそのツール呼び出しを再試行できることを伝えるメッセージを送信し、会話を再開します。
+ブロックされたアクションを Claude に再試行させるには、`/permissions` の **Recently blocked** タブを使用します。
 
-分類器が[アクションの安全性について判定できない](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)場合、オートモードとは別の安全チェックが分類器自身のリクエストを拒否したか、またはそのレスポンスが解析できなかったため、Claude Code はアクションを拒否しますが、**Recently denied** に記録しません。リンク先のエラーエントリでは、Claude に伝えられる内容と、必要な場合にアクションを実行する方法について説明しています。
+**1. タブを開く**
+
+セッションで `/permissions` を実行して権限ダイアログを開き、**Recently blocked** タブを選択します。
+
+**2. アクションを確認する**
+
+アクションの行をハイライトし、リストの下に表示されるコマンドまたは入力を読みます。行の説明は Claude またはツールが書いたものなので、説明ではなくコマンドまたは入力をもとに判断してください。
+
+**3. アクションを承認する**
+
+`r` を押してアクションを承認し、Claude に再試行させます。
+
+**4. ダイアログを閉じる**
+
+`Esc` を押してダイアログを閉じ、承認を適用します。`/permissions` を開いたときに Claude が作業中だった場合は、Claude の作業が終わった後にメッセージを送信すると、Claude がアクションを再試行します。それ以外の場合は何も送信する必要はありません。Claude はすぐに作業を続行し、アクションを再試行することがあります。再試行しない場合は、[会話で伝える承認](https://code.claude.com/docs/ja/permission-modes.md#approvals-you-state-in-conversation)で説明されているように、次のメッセージでそのアクションを指定してください。
+
+アクションを承認しても権限ルールは追加されません。auto モードでは、再試行されたアクションは再びチェックを受けるため、再度ブロックされる可能性があります。今後そのコマンドを通すには、[`allow` ルールを追加](#fix-a-denial-with-an-allow-rule-an-environment-entry-or-a-retry)します。
+
+Claude にすぐに再試行させたくない場合は、アクションを後で使うために承認する、承認を取り消す、またはダイアログを閉じて承認を破棄することができます。
+
+* **後で使うために承認する**：行で `Enter` を押してから `Esc` を押します。行はタブから消え、Claude の作業が終わった後、次のメッセージの後に Claude がアクションを再試行することがあります。別の行で `r` も押していた場合、`Enter` を押した行はタブに残り、そのアクションは Claude に伝えられません。その行は次回タブを開いたときに承認するか、両方の行で `r` を押してください
+* **承認を取り消す**：`Esc` を押す前に、その行で `Enter` を押します。`Enter` と `r` のどちらで承認した場合も同様です
+* **ダイアログを閉じて承認を破棄する**：`Ctrl+C` を 2 回押します
+
+行にコマンドまたは入力の全体を表示できない場合や、アクションに行がない場合は、タブからアクションを承認できません。
+
+* **行に `This row can't be approved here` と表示される**：そのアクションを意図していた場合は、次のメッセージで Claude に伝えると、Claude が再度試みることがあります
+* **行がなく、会話に `Not run` または分類器のエラーが表示される**：auto モードの分類器が判定を返しませんでした。アクションを実行する方法については、[auto モードがアクションの安全性を判定できない](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)を参照してください
 
 ### 許可ルール、環境エントリ、またはリトライで拒否を修正する
 
-`bash denied by auto mode · [Data Exfiltration] · /permissions` のような通知の背後にあるコマンドまたは URL を確認するには、**Recently denied** タブ、フック、または会話を使用します。
+通知は `bash blocked by auto mode · /permissions · Auto mode: [Data Exfiltration]` のように表示されます。通知の背後にあるコマンドまたは URL を確認するには、**Recently blocked** タブ、フック、または会話を使用します。
 
-* **Recently denied タブ**：`/permissions` ダイアログで、拒否された Bash または PowerShell のアクションをハイライトすると、リストの下でそのコマンドを確認できます。[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、代わりにすべてのコマンドがリストの前に表示されます。
-* **フック**：拒否の正確な入力をプログラムで取得するには、[`PermissionDenied` フック](https://code.claude.com/docs/ja/hooks#permissiondenied)を追加します。これは `tool_input` として入力を受け取ります。
+* **Recently blocked タブ**：アクションの行をハイライトします。[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、すべてのコマンドと入力がリストの前に表示されます。
+* **フック**：拒否の正確な入力をプログラムで取得するには、[`PermissionDenied` フック](https://code.claude.com/docs/ja/hooks#permissiondenied)を追加します。これは `tool_input` として入力を受け取ります。フックが `reason` を読み取る場合、`Auto mode:` プレフィックスは付かず、`No reason provided` の代わりに `Blocked by classifier` のようなテキストが入ることに注意してください。
 * **会話**：ツール呼び出しを見つけます。呼び出しが短縮されているか、`Ran 3 shell commands` のような概要行に折りたたまれている場合は、`Ctrl+O` を押して[トランスクリプトビューア](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)を開き、展開します。
 
 呼び出しの下のテキストは、修正すべきことがあるかどうかを示します。薄く表示された `Not run · auto mode's check had no usable answer` の行、または分類器自体の問題を報告するテキスト（`Auto mode could not evaluate this action` など）は、Claude Code が分類器からの判定なしに呼び出しをブロックしたことを意味します。`Not run` の行の場合は、`Ctrl+O` を押してメッセージ全文を読み、対処方法については[auto モードがアクションの安全性を判定できない](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)または[サーバーが安全性の判定を返さなかった](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)を参照してください。
 
-それ以外の場合、`Denied by auto mode classifier` と `[Production Deploy]` または `Blocked by classifier` などの理由が記載された行は、分類器が呼び出しを安全でないと判定したことを意味するため、呼び出しが何に到達しようとしていたか、または何をしようとしていたかから修正を選択します。
+それ以外の場合、`Blocked by auto mode` の行は、分類器が呼び出しを安全でないと判定したことを意味します。呼び出しを通すには、Claude が到達しようとしていたもの、または実行しようとしていたことに合った手順を実行します。
 
 * タスク全体を通じて Claude が必要とする宛先（パッケージレジストリ、内部ドメイン、リポジトリホストなど）：`autoMode.environment` に追加します。
 * これからレビューなしで実行したいコマンド：`allow` ルールを追加します。

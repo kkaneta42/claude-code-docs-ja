@@ -952,7 +952,12 @@ Claude Code は、サーバーが `401 Unauthorized` または `403 Forbidden` �
 * `headers` または [`headersHelper`](#use-dynamic-headers-for-custom-authentication) を通じて `Authorization` ヘッダーを設定したサーバーの場合、接続中の `401` または `403` ではサーバーは警告表示されません。修正すべき認証情報は設定した認証情報だからです。Claude Code は代わりに接続が失敗したことを報告します。そのヘッダーを `${VAR}` 参照から設定している場合は、その変数が Claude Code が[空として読み込む](#credential-variables-that-read-as-empty)変数の 1 つであるかどうかを確認してください。
 * [クラウドセッションに配信されたコネクタ](#how-connectors-reach-claude-code)の場合、Claude Code はサインインフローを実行しません。セッションのプロキシが claude.ai で付与した認可を使用してコネクタに認証するためです。そこでコネクタが再度認可を必要とする場合は、セッションからではなく [claude.ai/customize/connectors](https://claude.ai/customize/connectors) で再接続してください。
 
-既にサインインした OAuth サーバーが保存されたトークンを `401 Unauthorized` で拒否するとき、Claude Code はトークンをリフレッシュし、再接続して、リクエストを 1 回再試行します。その再試行も失敗した場合にのみ、`/mcp` でサーバーを警告表示します。macOS 上の `claude -p` または Agent SDK の実行では、Claude Code が保存されたトークンを読み取れない間に送信したリクエストは、代わりに[保存された認証情報のエラー](https://code.claude.com/docs/ja/errors.md#couldnt-read-the-stored-credentials-for-mcp-server)で失敗します。
+既にサインインした OAuth サーバーが保存されたトークンを `401 Unauthorized` で拒否するとき、Claude Code は新しいトークンの有無に応じて再接続します。
+
+* **保存されたログインにリフレッシュトークンがある場合**：トークンをリフレッシュし、再接続して、リクエストを 1 回再試行します。その再試行も失敗した場合にのみ、`/mcp` でサーバーが警告表示されます。
+* **保存されたログインにリフレッシュトークンがない場合**：トークンなしで 1 回接続します。サーバーが応答した場合、サインアウトした状態でもそのサーバーのツールが機能し、拒否されたトークンは削除されます。サーバーがその接続も拒否した場合は、`/mcp` にそのサーバーが認証を必要としていることが表示されます。
+
+macOS 上の `claude -p` または Agent SDK の実行では、Claude Code が保存されたトークンを読み取れない間に送信したリクエストは、[保存された認証情報のエラー](https://code.claude.com/docs/ja/errors.md#couldnt-read-the-stored-credentials-for-mcp-server)で失敗します。
 
 サーバーが保存されたリフレッシュトークンを拒否するとき、Claude Code は直ちに `/mcp` を指す通知を表示します。`/mcp` を開き、サーバーで **Re-authenticate** を選択して、次のツール呼び出しが失敗する前に再度サインインしてください。
 
@@ -1640,7 +1645,7 @@ MCP サーバーを構築する場合は、2 回呼び出しても安全なツ�
 
 ## MCP エリシテーション要求に応答する
 
-MCP サーバーは、エリシテーションを使用してタスク中に構造化された入力をリクエストできます。サーバーが独自に取得できない情報が必要な場合、Claude Code はインタラクティブなダイアログを表示し、応答をサーバーに返します。お客様側での設定は不要です。エリシテーションダイアログはサーバーがリクエストすると自動的に表示されます。
+MCP サーバーは、エリシテーションを使用して、タスクの途中でユーザーに構造化された入力を求めることができます。サーバーが独自に取得できない情報が必要な場合、Claude Code はターミナルにインタラクティブなダイアログを表示し、ユーザーの応答をサーバーに返します。ユーザー側での設定は不要です。エリシテーションダイアログはサーバーがリクエストすると自動的に表示されます。
 
 サーバーは 2 つの方法で入力をリクエストできます。
 
@@ -1652,6 +1657,17 @@ URL モードでは、Claude Code は URL をコマンドライン引数とし�
 ダイアログを表示せずにエリシテーション要求に自動応答するには、[`Elicitation` フック](https://code.claude.com/docs/ja/hooks#elicitation)を使用します。
 
 エリシテーションを使用する MCP サーバーを構築している場合は、プロトコルの詳細とスキーマの例については [MCP エリシテーション仕様](https://modelcontextprotocol.io/docs/learn/client-concepts#elicitation)を参照してください。
+
+### クラウドセッションでエリシテーション要求に回答する
+
+クラウドセッションで Claude のタスクが MCP サーバーのリクエストを待っている場合、サーバーは値やサインインなど、ユーザーからの何かを必要としています。リクエストが claude.ai/code または Desktop アプリの **Code** タブにカードとして表示された場合は、カード上で回答します。
+
+* **フォームモード**: フィールドに入力し、**Submit** をクリックします
+* **URL モード**: **Open link** をクリックし、開いたフローを完了してから、カード上の **I’m done, continue** をクリックします
+
+リクエストを拒否するには、**Decline** をクリックします。サーバーが応答すると、Claude は続行します。
+
+どちらの場所にもカードが表示されない場合、そこではリクエストに回答できません。自分のセッションでは、そこにある停止ボタンをクリックしてターンを終了します。
 
 ### Claude Code が宣言するエリシテーションモード
 
@@ -1815,9 +1831,9 @@ ENABLE_TOOL_SEARCH=false claude
 > * **`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` を設定している場合**: [ツール検索への影響](#configure-tool-search)を参照してください
 > * **`defer_loading` または `tool_reference` を含むエラーでリクエストが失敗した場合**: [Extra inputs are not permitted](https://code.claude.com/docs/ja/errors.md#extra-inputs-are-not-permitted) を参照してください
 
-`ANTHROPIC_BASE_URL` がゲートウェイを指している場合、ツール検索はデフォルトでオンになっているため、リクエストにはゲートウェイが転送するための `defer_loading` ツールフィールドと `tool_reference` ブロックが含まれます。ツール検索がオンの間、MCP ツールは[遅延](#scale-with-mcp-tool-search)されます。代わりにすべてのツールを事前に読み込むには、シェルまたは[設定の `env`](https://code.claude.com/docs/ja/settings-reference#env) で `ENABLE_TOOL_SEARCH=false` を設定します。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` が `true`、`auto`、または `auto:N` でない限り、ゲートウェイ経由ではツール検索はオフでした。
+`ANTHROPIC_BASE_URL` がゲートウェイを指している場合、Claude Code はゲートウェイが `defer_loading` ツールフィールドと `tool_reference` ブロックを [`anthropic-beta` ヘッダーとともに](https://code.claude.com/docs/ja/llm-gateway-protocol#beta-header-and-body-field-pairs)転送することを想定しています。ゲートウェイ経由でもツール検索はデフォルトでオンになっているため、MCP ツールは[遅延](#scale-with-mcp-tool-search)され、リクエストにはこれらのフィールドとブロックが含まれます。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` が `true`、`auto`、または `auto:N` でない限り、ゲートウェイ経由ではツール検索はオフでした。
 
-v2.1.305 以降では、原因を認識できない `400` または `422` が返された後、Claude Code は[ツール検索なしでリクエストを再試行](https://code.claude.com/docs/ja/llm-gateway-protocol.md#retry-without-tool-search)できます。再試行が成功した場合、画面には何も表示されず、特に対処する必要はありません。MCP ツールは代わりに事前に読み込まれます。Claude Code は後でツール検索を再度試みますが、その際にもう一度リクエストが拒否されることになります。これらのリクエストを省くには、`ENABLE_TOOL_SEARCH=false` を設定してください。
+v2.1.305 以降では、`400` または `422` が返された後、Claude Code は[ツール検索なしでリクエストを再試行](https://code.claude.com/docs/ja/llm-gateway-protocol.md#retry-without-tool-search)できます。再試行が成功した場合、画面には何も表示されず、特に対処する必要はありません。MCP ツールは代わりに事前に読み込まれます。Claude Code は後でツール検索を再度試みますが、その際にもう一度リクエストが拒否されることになります。
 
 #### `ENABLE_TOOL_SEARCH=auto` のしきい値を下回っても遅延されたままのツール
 

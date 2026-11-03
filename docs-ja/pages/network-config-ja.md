@@ -131,7 +131,11 @@ Claude Code が次の起動時に既に期限切れのペアを読み込まな�
 
 Claude Code はセッションのデバッグログで無視された各キーを記録します。
 
-アプリがプロバイダー接続を管理する [Claude Desktop](https://code.claude.com/docs/ja/desktop.md) セッション（[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)の Code タブや Cowork セッションなど）では、Claude Code はこれらの変数とプロキシ変数 `HTTP_PROXY`、`HTTPS_PROXY`、および `NO_PROXY` を [管理設定](https://code.claude.com/docs/ja/managed-settings.md) と `~/.claude/settings.json` からのみ読み込みます。リポジトリ独自の設定ファイルではこれらを無視するため、チェックアウトされたリポジトリはアプリから認証情報が来るセッションの TLS またはプロキシパスをリダイレクトできません。claude.ai を通じてサインインしたローカル、SSH、または WSL Code タブセッションでは、アプリは接続を管理せず、Claude Code はすべての設定スコープからこれらの変数を読み込みます（任意のターミナルセッションと同様）。[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)はどこから開始しても上記のクラウドセッションルールに従います。v2.1.217 より前では、アプリが接続を管理していた場合、Claude Code はすべての設定ファイルでこれらの変数を無視していました。
+アプリがプロバイダー接続を管理する [Claude Desktop](https://code.claude.com/docs/ja/desktop.md) セッション（[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)の Code タブや Cowork セッションなど）では、Claude Code は `CLAUDE_CODE_OAUTH_SCOPES` を除くこれらの変数と、プロキシ変数 `HTTP_PROXY`、`HTTPS_PROXY`、および `NO_PROXY` を、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)と `~/.claude/settings.json` からのみ読み込みます。リポジトリ独自の設定ファイルではこれらを無視するため、チェックアウトされたリポジトリはアプリから認証情報が来るセッションの TLS またはプロキシパスをリダイレクトできません。v2.1.217 より前では、アプリが接続を管理していた場合、Claude Code はすべての設定ファイルでこれらの変数を無視していました。
+
+claude.ai を通じてサインインしたローカル、SSH、または WSL Code タブセッションでは、`CLAUDE_CODE_OAUTH_SCOPES` を除き、これらの変数とプロキシ変数を任意の設定ファイルで設定できます。Desktop は Code タブと Cowork セッションで `CLAUDE_CODE_OAUTH_SCOPES` を自ら設定するため、これを設定することはできません。
+
+セッションの起動環境で既に変数が設定されている場合、Claude Code は[設定ファイルの値を無視](https://code.claude.com/docs/ja/settings-reference.md#how-env-values-interact-with-your-shell)し、[デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md)にその変数名を記録します。ローカルセッションで独自のプロキシまたは証明書の値を使用するには、[保存済みのローカル環境に追加](https://code.claude.com/docs/ja/desktop.md#set-environment-variables-for-local-sessions)してください。[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)はどこから開始しても上記のクラウドセッションルールに従います。
 
 ## 設定を確認する
 

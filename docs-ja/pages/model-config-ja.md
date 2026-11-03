@@ -933,7 +933,7 @@ Claude Code は `ANTHROPIC_CUSTOM_MODEL_OPTION` に設定されたモデル ID �
 | `ANTHROPIC_DEFAULT_FABLE_MODEL` | `fable` に使用するモデル。また、サードパーティプロバイダーでの[自動モデルフォールバック](#automatic-model-fallback)において Claude Code が Fable モデルとして認識するモデル ID |
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | `opus` に使用するモデル、または Plan Mode がアクティブな場合の `opusplan` に使用するモデル。 |
 | `ANTHROPIC_DEFAULT_SONNET_MODEL` | `sonnet` に使用するモデル、または Plan Mode がアクティブでない場合の `opusplan` に使用するモデル。 |
-| `ANTHROPIC_DEFAULT_HAIKU_MODEL` | `haiku` または[バックグラウンド機能](https://code.claude.com/docs/ja/costs.md#background-token-usage)に使用するモデル |
+| `ANTHROPIC_DEFAULT_HAIKU_MODEL` | `haiku` またはバックグラウンド機能に使用するモデル |
 | `CLAUDE_CODE_SUBAGENT_MODEL` | 他の方法でモデルが割り当てられていない[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)、[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)のチームメイト、[ワークフロー](https://code.claude.com/docs/ja/workflows.md)エージェントのデフォルトモデル。`haiku` などのエイリアスまたは完全なモデル名を指定できます。呼び出しごとのモデル指定や、定義の `model` フィールド（`inherit` を含む）が優先されます。これを変更するには、[`CLAUDE_CODE_SUBAGENT_MODEL_FORCE`](https://code.claude.com/docs/ja/sub-agents#run-every-subagent-on-one-model) を設定します |
 
 サードパーティプロバイダーにおいて、固定したモデルの行が `/model` ピッカーにどのように表示されるかについては、[固定モデルの表示と機能のカスタマイズ](#customize-pinned-model-display-and-capabilities)を参照してください。

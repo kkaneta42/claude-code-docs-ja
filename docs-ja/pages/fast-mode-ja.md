@@ -14,6 +14,13 @@
 
 高速モードは異なるモデルではありません。Claude Opus を使用していますが、コスト効率よりも速度を優先する異なる API 構成です。同じ品質と機能が得られ、レスポンスが高速化されるだけです。高速モードは Opus 5.5、Opus 5、および Opus 4.8 でサポートされています。Sonnet、Haiku、または他のモデルでは利用できません。
 
+> [!WARNING]
+>
+> Opus 4.8 の fast mode は 2026 年 10 月 30 日に非推奨となり、2026 年 11 月 30 日に削除されます。その日以降も fast mode をオンにした状態で Opus 4.8 を使用している場合、API はリクエストを拒否します。その日までに、Opus 5.5 に切り替えるか、セッションで fast mode をオフにしてください：
+>
+> * **fast mode を維持する場合**：[`/model`](https://code.claude.com/docs/ja/model-config#setting-your-model) を使用して [Opus 5.5](https://code.claude.com/docs/ja/model-config.md#model-aliases) に切り替えます。これには Claude Code v2.1.280 以降が必要です。切り替え後も fast mode はオンのままです。新しいセッションが引き続き Opus 4.8 で開始される場合は、[選択したモデルとは異なるモデルで新しいセッションが開始される](https://code.claude.com/docs/ja/model-config.md#a-new-session-starts-on-a-different-model-than-you-picked)を参照してください。
+> * **標準速度で Opus 4.8 を使い続ける場合**：[`/fast off`](https://code.claude.com/docs/ja/commands) を実行します
+
 Opus 4.7 は高速モードをサポートしていないため、それに切り替えると高速モードがオフになります。Opus 4.7 の高速モードは 2026 年 6 月 25 日に非推奨となり、2026 年 7 月 24 日に削除されました。
 
 知っておくべきこと：
@@ -88,7 +95,7 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 
 * **Pro、Max、Ultra**：使用クレジットから fast mode の料金を支払います。claude.ai の [**設定 > 使用状況**](https://claude.ai/settings/usage)に移動します。ここで、**使用クレジット**セクションに今月の使用クレジットの支出額が表示されます。この数字には fast mode が含まれていますが、別途に分類されていません。
 * **Team と Enterprise**：組織が使用クレジットから高速モード使用の料金を支払います。自分の使用クレジット支出を確認するには、[`/usage`](https://code.claude.com/docs/ja/costs#check-your-usage-credits-spend)を実行してください。組織がその支出をどこで確認するかについては、[Claude for Teams and Enterprise](https://code.claude.com/docs/ja/costs.md#claude-for-teams-and-enterprise)を参照してください。
-* **Claude Console**：組織が API 使用の残りの部分と一緒に高速モードの料金を支払います。Console の [使用状況](https://platform.claude.com/usage)ページと [コスト](https://platform.claude.com/cost)ページで、**グループ化**メニューの \*\*速度（Research Preview）\*\*を選択して、高速モードを標準速度の使用から分離します。選択した日付範囲に高速モード使用が含まれている場合にのみ、このオプションが表示されます。
+* **Claude Console**：組織が API 使用の残りの部分と一緒に fast mode の料金を支払います。Console の[使用状況](https://platform.claude.com/usage)ページと[コスト](https://platform.claude.com/cost)ページで、**グループ化**メニューの **速度（リサーチプレビュー）** を選択して、fast mode を標準速度の使用から分離します。選択した日付範囲に fast mode の使用が含まれている場合にのみ、このオプションが表示されます。
 
 ## 高速モードの使用時期を判断する
 

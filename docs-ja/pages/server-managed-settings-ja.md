@@ -157,6 +157,15 @@ Team または Enterprise の組織で、このページにアクセス権がな
 * **ファーストパーティのサインインキー**: [`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid) と、[`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) の `"claudeai"` および `"console"` 値です。MDM ポリシーまたは管理設定ファイルもデプロイしている場合は、すべてのクライアントが v2.1.299 以降を実行するまで、そこと claude.ai のサーバー管理設定の両方でこれらを設定してください。その後にキーを設定する場所と、どのソースの値が適用されるかについては、[ログインキーを提供する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#which-managed-source-supplies-login-keys)を参照してください。
 * **ゲートウェイのサインインキー**: Claude Code は、[`forceLoginGatewayUrl`](https://code.claude.com/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](https://code.claude.com/docs/ja/settings-reference#gatewayinternalnetworks)、または [`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値をサーバー管理設定から読み取ることはありません。そのため、サーバー管理設定にある値は適用されず、MDM ポリシーや管理設定ファイルで設定された値を隠すこともありません。マシン上のどの管理者ソースがこれらを提供するかについては、[`managedSourcesBehavior` の項目](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior)を参照してください。
 
+#### マシンの `apiKeyHelper` が有効でない場合
+
+サーバー管理設定が選択されたソースである場合、マシンの管理設定ファイルまたは MDM ポリシーにある `apiKeyHelper` は有効になりません。その場合、次の両方の条件が満たされていれば、Claude Code は保存された claude.ai ログインを使用するセッションで[プロンプトを拒否します](https://code.claude.com/docs/ja/errors.md#claude-code-didnt-send-your-claude-ai-login)。
+
+* ファイルまたはポリシーがクラウドプロバイダーを有効にしている、またはいずれかのソースが Anthropic 以外の API アドレスを設定している
+* サーバー管理設定がヘルパーを設定しておらず、Anthropic の API アドレスも指定していない
+
+拒否を解消するには、ヘルパーとその API アドレスを有効なままにするか、サーバー管理設定で Anthropic の API アドレスを指定するか、マシンのポリシーからヘルパーを削除します。この拒否には Claude Code v2.1.314 以降が必要です。
+
 ### フェッチとキャッシュの動作
 
 Claude Code は起動時に Anthropic のサーバーから設定をフェッチし、アクティブなセッション中は 1 時間ごとに更新をポーリングします。

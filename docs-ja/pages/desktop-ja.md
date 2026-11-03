@@ -131,6 +131,8 @@ Browser ペインから、以下を実行できます：
 * Browser ペインのヘッダーにある **Dev servers** メニューから、サーバーを開始または停止する、またはすべてのサーバーを一度に停止する
 * Browser ペインの **⋮** メニューにある **Keep cookies** で、アプリを終了した後も Browser がクッキーを保持するかどうかを選択し、開発中に再度サインインする必要がないようにする
 
+SSH セッションでは、Desktop を終了するとペインのクッキーは失われます。これは **Keep cookies** で変更することはできません。
+
 Claude はプロジェクトに基づいて初期サーバー設定を作成します。アプリがカスタム dev コマンドを使用する場合、`.claude/launch.json`を編集してセットアップに合わせます。完全なリファレンスについては、[プレビューサーバーを設定する](#configure-preview-servers)を参照してください。
 
 Browser の保存データをクリアするには、Browser ペインの **⋮** メニューで **Clear browsing data** を選択します。Browser を完全にオフにするには、**Settings > Code** または **Settings > Claude Code** で **Browser tools** をオフにします。
@@ -312,7 +314,7 @@ macOS で\*\*Cmd+/**を、Windows で**Ctrl+/\*\*を押して、Code タブで�
 
 どちらのレイアウトでも、プロンプトボックスに`/context`と入力すると、このセッションのコンテキストウィンドウのカテゴリ別の内訳がチャットに出力されます。
 
-どちらのレイアウトにも、モデルピッカーの横に使用状況リングがあります。これをクリックするとプランの使用状況が表示されます。プランの使用状況はすべての Claude Code サーフェス全体で共有されます。
+どちらのレイアウトでも、使用状況リングはプロンプトボックスの下の行にあります。これをクリックするとプランの使用状況が表示されます。プランの使用状況はすべての Claude Code サーフェス全体で共有されます。
 
 ## Claude にコンピューターを使わせる
 
@@ -409,9 +411,9 @@ Settings で[コンピューター操作をオンにした](#enable-computer-use
 
 #### セッションを独自の worktree で実行する
 
-Git リポジトリであるプロジェクトでは、セッションを開始する前に **Worktree** をオンにすると、プロジェクトの分離されたコピーである独自の [Git worktree](https://code.claude.com/docs/ja/worktrees.md) でセッションを実行できます。デフォルトでは **Worktree** はオフで、Claude はプロジェクトフォルダ自体で作業します。[現在のレイアウト](#check-which-layout-you-have)では、[プロンプトボックスの下の行](#start-a-session)にある **Worktree** ボタンをオンにします。
+Git リポジトリであるプロジェクトでは、セッションを開始する前に **Worktree** をオンにすると、プロジェクトの分離されたコピーである独自の [Git worktree](https://code.claude.com/docs/ja/worktrees.md) でセッションを実行できます。デフォルトでは **Worktree** はオフで、Claude はプロジェクトフォルダ自体で作業します。[現在のレイアウト](#check-which-layout-you-have)では、[プロンプトボックスの下の行](#start-a-session)で **Worktree** をオンにします。
 
-* **[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合**：プロンプトボックスの下の行にプロジェクトフォルダのコントロールが表示されていて **Worktree** ボタンがない場合は、そのコントロールをクリックして **Worktree** をオンにします
+* **[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合**：プロンプトボックスの下の行にプロジェクトフォルダのコントロールが表示されていて **Worktree** がない場合は、そのコントロールをクリックして **Worktree** をオンにします
 * **[保存済みのローカル環境または SSH 環境](#create-a-saved-environment)のデフォルトとして設定する場合**：環境を作成または編集するときに **Worktree** を設定します
 * **[以前のレイアウト](#check-which-layout-you-have)**：プロンプトボックスの上にあるブランチ名の横の **worktree** チェックボックスを選択します
 
@@ -1094,11 +1096,11 @@ OpenSSH クライアントを使用する場合は、**SSH host** フィール�
 
 ##### OpenSSH クライアントを使用せずに Windows で接続する
 
-Windows では、コンピューターが [OpenSSH クライアントの要件](#use-your-ssh-configuration)を満たしていない場合、Desktop の組み込み SSH クライアント経由で接続します。サードパーティプロバイダーでは、デフォルトで組み込みクライアント経由で接続しますが、管理者がこれを変更できます。この設定については、[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
+Windows では、コンピューターが [OpenSSH クライアントの要件](#use-your-ssh-configuration)を満たしていない場合、Desktop の組み込み SSH クライアント経由で接続します。サードパーティプロバイダーの場合、どのクライアント経由で接続するかは、Desktop のバージョンと管理者の設定にも依存します。[SSH remote sessions in Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/ssh-remote-sessions) を参照してください。
 
 組み込みクライアントでも、`PATH` に `ssh` コマンドがあれば、**SSH host** フィールドに SSH 設定の `Host` 名を入力できます。ただし、次の制限があります。
 
-* **エントリからの設定**: Desktop は `HostName`、`User`、`Port`、`IdentityFile` を使用します。`PATH` に `sh` シェルがある場合は `ProxyCommand` も使用します。
+* **エントリの設定**: Desktop は `HostName`、`User`、`Port`、`IdentityFile`、`ConnectTimeout` を使用します。`PATH` に `sh` シェルがある場合は `ProxyCommand` も使用します。
 * **SSH key (optional)**: ここで選択した鍵ファイルは `IdentityFile` を置き換えるため、エントリの `IdentityFile` を使い続けるにはこのフィールドを空欄のままにします
 * **`CertificateFile` と `ProxyJump`**: Desktop は `CertificateFile` を無視し、エントリで `ProxyJump` が設定されていると接続は失敗します。いずれかの設定を使用するには、[OpenSSH クライアント経由で接続してください](#use-your-ssh-configuration)。
 
@@ -1198,7 +1200,7 @@ Host i-*
 
 ##### SSH 接続のタイムアウトを延長する
 
-SSH 設定でホストに `ConnectTimeout` が設定されていない場合、Desktop は `ssh` に接続のための 30 秒を与えます。ジャンプホストまたは `ProxyCommand` を経由する場合、この時間にはルートの接続にかかる時間が含まれます。ルートにそれ以上の時間が必要な場合は、エントリにより大きな値を追加します：
+ジャンプホストまたは `ProxyCommand` 経由での接続中にセッションがタイムアウトする場合は、`~/.ssh/config` のリモートマシンのエントリで `ConnectTimeout` を引き上げます。90 秒より長い値を使用してください。ログインプロンプトや電話へのプッシュ通知など、ジャンプホストまたは `ProxyCommand` がユーザーを待つ時間も加算します。
 
 ```text ~/.ssh/config theme={null}
 Host devbox
@@ -1210,7 +1212,15 @@ Host devbox
 
 `ssh` はホストに対して最初に見つかった値を使用するため、このエントリは `ConnectTimeout` を設定する `Host *` エントリよりも上に配置してください。確認するには、コンピューターのターミナルで `ssh -G devbox` を実行します。その出力には `connecttimeout 120` が含まれます。値を変更した後は、Desktop を終了して再度開いてください。
 
-リモートマシン自体がスマートフォンでの承認を待つ場合は、`ConnectTimeout` の設定にかかわらず、45 秒以内に承認してください。Desktop が `ServerAliveInterval` と `ServerAliveCountMax` を独自に設定し、リモートマシンがその間何も送信しないログインを `ssh` が閉じるため、この制限は延長できません。代わりにジャンプホストまたは `ProxyCommand` がユーザーを待つ場合は、リモートマシンのエントリの `ConnectTimeout` を延長して、その時間をカバーしてください。
+SSH 設定でホストに `ConnectTimeout` が設定されていない場合、Desktop は `ssh` に接続のための 30 秒を与えます。ジャンプホストまたは `ProxyCommand` 経由の場合、その時間には経路の接続にかかる時間も含まれます。
+
+| `ConnectTimeout` | 接続 | 使える時間 |
+| - | - | - |
+| 未設定 | macOS または Linux 上の Claude Desktop v4.4212.0 以降で、ジャンプホストまたは `ProxyCommand` 経由でセッションを開始する場合 | 30 秒、その後 90 秒での 2 回目の試行。1 回目の試行中に Desktop がプロンプトを表示した場合、2 回目の試行はありません。`ProxyJump` ホストに対して Desktop が表示するログインプロンプトでの時間はカウントされません。経路上のその他の待ち時間はカウントされます。 |
+| 未設定 | Windows 上の Desktop または以前のバージョン、`MaxSessions 1` を設定したリモートマシン、または Desktop が自動で開始する再接続 | 30 秒。経路上のすべての待ち時間がカウントされます。 |
+| 設定済み | すべての接続と再接続 | 設定した値。経路上のすべての待ち時間がカウントされます。 |
+
+リモートマシン自体が電話での承認を待つ場合は、設定した `ConnectTimeout` にかかわらず、45 秒以内に承認してください。Desktop が `ServerAliveInterval` と `ServerAliveCountMax` を自身で設定しており、リモートマシンがその時間何も送信しないログインを `ssh` が閉じるため、この制限は引き上げられません。
 
 ##### Desktop だけが適用する `Match host` ブロックを修正する
 
@@ -1334,7 +1344,7 @@ Claude Code は、Desktop がリモートマシンにインストールするバ
 >
 > 次のような場合には、編集は引き続き失敗します：
 >
-> * **組み込みの SSH クライアント**：Desktop がそれを使用している場合。たとえば、Microsoft Store からのインストール、Microsoft の OpenSSH 9.4 以降がない Windows コンピューター、またはサードパーティプロバイダーを使用する Windows でのデフォルトの場合です
+> * **組み込み SSH クライアント**: Microsoft Store 版のインストールや、Microsoft の OpenSSH 9.4 以降がない Windows コンピューターなどで、Desktop が組み込み SSH クライアントを使用している場合
 > * **リポジトリの場所**：リポジトリがホームディレクトリ、その上位のフォルダ、または `~/.claude` である
 > * **macOS のパス**：macOS のリモートマシンで、リポジトリが `/Volumes` の下にある、またはリポジトリもしくは worktree のパス内のフォルダ名に `~` または非 ASCII 文字が含まれている
 > * **フォルダの制限**：組織がセッションで使用できるフォルダを制限している
@@ -1369,11 +1379,12 @@ Claude Code は、Bypass permissions を含むどの権限モードでも、[い
 * **記憶されたパスワード**：Desktop に記憶させたパスワードもプロンプトなしで機能しますが、長期間不在にする場合は SSH エージェントが保持する鍵を使用することをお勧めします。そのパスワードでのサインインが途中で切れたり応答しなくなったりする場合、Desktop は再接続を停止してユーザーを待つことがあります。
 * **その他のプロンプト**：リモートマシンがワンタイムコードなど、その他の入力を求める場合、コンピューターに通知が届くことがあります。通知をクリックするか、セッションでメッセージを送信すると、Desktop にプロンプトが表示されます。
 
-> [accordion] ジャンプホストがサインインを求める場合、停止が長い場合、出力が欠落している場合、またはプロセスが存在しない場合
+> [accordion] ジャンプホストがサインインを求める場合、切断が長時間に及ぶ場合、メッセージが送信されない場合、出力が欠落している場合、またはプロセスがなくなっている場合
 >
 > * **ジャンプホスト、不在中にプッシュ通知が止まる**：これは、ジャンプホストのサインイン（スマートフォンへのプッシュ通知など）に誰も応答しない場合に、macOS または Linux の Desktop で発生することがあります。その場合、Desktop はコンピューターの前に誰もいない間は再接続を停止します。コンピューターのロックを解除するか使用すると、Desktop が再試行できるため、別のプッシュ通知が届くことがあります。応答のない試行が 3 回続くと、ユーザーが再試行するかメッセージを送信するまで待機します。
 > * **ジャンプホスト、プッシュ通知が届き続ける**：Windows の Desktop のように、Desktop が誰も応答していないことを判別できない場合、再参加するプロセスがある間は、そのプロセスがまだ実行中かどうかにかかわらず試行を続けます。試行のたびに別のプッシュ通知が届くことがあります。試行を終了するには Desktop を終了しますが、その場合は[実行中のタスクが失われる可能性があります](#reopen-a-session-after-you-quit-desktop)。
-> * **長時間の停止**：Desktop は約 5 分ごとに 1 回の試行にペースを落とします。早く再接続するには、セッションで再試行するか、メッセージを送信します。メッセージは接続後に Desktop が配信します。
+> * **長時間の切断**: Desktop は約 5 分に 1 回の試行まで頻度を下げます。より早く再接続するには、セッションで再試行するかメッセージを送信します。Desktop は接続するとすぐにメッセージの配信を試みます。
+> * **メッセージが送信されない**: メッセージの下に `Your organization's settings haven't loaded, so your message to <host> wasn't sent. Retry to send it.` という行が表示される場合、Desktop は再接続しましたが、組織の設定がまだ読み込まれていなかったためメッセージを保留したことを意味します。**Retry** を選択すると、今すぐメッセージを送信します。何もしない場合、Desktop は設定が読み込まれた時点で再試行します。
 > * **出力の欠落**：Desktop が切断されている間、ヘルパーは各セッションの最新の Claude Code 出力を 16 MiB のバッファに保持し、それより古い出力は破棄します。Desktop が再接続した後、セッションに `Loading recent output from <host>…` と表示されることがあります。Desktop がすべての出力を読み込めない場合は、`Some output produced while you were disconnected may be missing here.` という行が表示されます。この行はタスクが停止したことを意味するものではありません。
 > * **プロセスがなくなった**: リモートマシンの再起動時など、Desktop が切断されている間にプロセスが終了した状態です。その場合、Desktop は会話の保存された履歴から新しいプロセスを開始し、Claude にタスクを続行するよう指示できます。タスクが停止したままの場合は、メッセージを送信してください。サードパーティプロバイダーの場合は、それより前のバージョンでは自動的にタスクが続行されることはないため、Claude Desktop v2.42304.0 以降に更新してください。
 
@@ -2290,6 +2301,8 @@ OpenSSH クライアントがない Windows では、Desktop は正しいホス�
 | `<host> is out of disk space` | `[ENOSPC]` または `[EDQUOT]` | リモートマシンのホームディレクトリまたは `/tmp` で空き容量またはクォータを確保します |
 | `Free up disk space on this computer` | `[ENOSPC]` または `[EDQUOT]`（`Couldn't prepare the deploy locally` で始まるメッセージ内） | コンピューターの空き容量を確保します |
 | `Claude Code won't start on <host>` | `[CLI_UNRESPONSIVE]` | 1 分待ってから、もう一度試してください。失敗が続く場合は、メッセージに示されているコマンドをリモートマシンで実行し、そこで Claude Code が応答するかどうかを確認します。 |
+| `Ask <host>'s administrator to let Claude's server run` | `[SERVER_NOT_RUNNABLE]` または `[SETUP_DIR_NOEXEC]` | [要件](#remote-machine-requirements-for-ssh-sessions)に記載されているとおり、リモートマシン上の `~/.claude/remote/` からプログラムを実行できるようにするよう、そのマシンの管理者に依頼します |
+| `Try again in a few minutes` | `[DOWNLOAD_BUSY]` | 数分待ってから、もう一度試してください。Anthropic のダウンロードサーバー、またはコンピューターのネットワーク上のプロキシが、ビジー状態であると報告しました。カードが繰り返し表示される場合は、プロキシがダウンロードを制限していないか、そのネットワークの管理者に確認してください。 |
 
 その他のメッセージについては、[リモートマシンの要件](#remote-machine-requirements-for-ssh-sessions)を確認してください。
 

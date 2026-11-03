@@ -1048,7 +1048,7 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 
 分離されたサブエージェントのコンテキストではなく、メインの会話のコンテキストで実行される再利用可能なプロンプトやワークフローが必要な場合は、代わりに[スキル](https://code.claude.com/docs/ja/skills.md)を検討してください。
 
-会話内にすでにある事柄についての質問には、サブエージェントではなく [`/btw`](https://code.claude.com/docs/ja/interactive-mode#side-questions-with-%2Fbtw) を使います。これは完全なコンテキストを参照できますが、ツールへのアクセスはなく、回答は履歴に追加されません。
+会話内にすでにある事柄についての質問には、サブエージェントではなく [`/btw`](https://code.claude.com/docs/ja/interactive-mode#side-questions-with-%2Fbtw) を使います。ツールへのアクセスはなく、回答は履歴に追加されません。
 
 ### サブエージェントに独自のサブエージェントを生成させる
 
@@ -1242,7 +1242,7 @@ autoCompactWindow: 200000
 | `x` | 実行中の場合は選択したフォークを停止するか、実行中でなくなった場合はその行を閉じます。メインセッション行またはトランスクリプトを `Enter` で開いたフォークの行では、`x` はプロンプトに入力します |
 | `Esc` | フォーカスをプロンプト入力に戻す |
 
-フォークまたはサブエージェントのトランスクリプトが開いている場合、フォローアップメッセージと[スキル](https://code.claude.com/docs/ja/skills.md)はそのエージェントに送信され、組み込みコマンドはメイン会話に送信されます。ただし、次の安全策があります：
+フォークまたはサブエージェントのトランスクリプトが開いている場合、フォローアップメッセージと[スキル](https://code.claude.com/docs/ja/skills.md)はそのエージェントに送信されます。Claude Code v2.1.314 以降では、[`/btw`](https://code.claude.com/docs/ja/interactive-mode#ask-btw-about-a-subagent) は開いているトランスクリプトに基づいて回答します。その他の組み込みコマンドはメイン会話に送信されます。ただし、次の安全策があります：
 
 * `/compact`、`/clear`、`/rewind` はメイン会話に対して動作するため、このビューからこれらのいずれかを実行する前に、Claude Code は確認を求めます。
 * `/model` と `/fast` は、表示しているエージェントではなくメイン会話のモデルと fast mode を設定するため、このビューからは実行されません。その理由は通知で表示されます。

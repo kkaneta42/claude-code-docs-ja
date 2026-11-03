@@ -6,7 +6,7 @@
 
 > Claude Code が使用できるツールの完全なリファレンス。権限要件とツール別の動作を含みます。
 
-Claude Code は、コードベースを理解および変更するのに役立つ組み込みツールのセットにアクセスできます。ツール名は、[権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)、[サブエージェントツールリスト](https://code.claude.com/docs/ja/sub-agents.md)、および[フックマッチャー](https://code.claude.com/docs/ja/hooks.md)で使用する正確な文字列です。
+Claude Code は、コードベースを理解および変更するのに役立つ組み込みツールのセットにアクセスできます。ツール名は、[権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)、[サブエージェントツールリスト](https://code.claude.com/docs/ja/sub-agents.md)、および[フック matcher](https://code.claude.com/docs/ja/hooks.md)で使用する正確な文字列です。
 
 Claude が使用できるツールと、いつ最初に確認するかを制御するには、設定、[フック](https://code.claude.com/docs/ja/hooks.md)、または[サブエージェントのツールリスト](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields)で[権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)を設定します。ツール名を受け入れる各場所については、[権限ルールとフックでツールを設定する](#configure-tools-with-permission-rules-and-hooks)を参照してください。
 
@@ -14,7 +14,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 
 > [!NOTE]
 >
-> [オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器がほとんどの権限プロンプトを決定します。`Permission required` 列は、ツールが[マニュアルモード](https://code.claude.com/docs/ja/permission-modes.md)でワーキングディレクトリ内のパスに対してプロンプトを表示するかどうかを示します。`Read`、`Grep`、`Glob` を含むファイルアクセスツールは「いいえ」とマークされていますが、[ワーキングディレクトリと追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスに対してはプロンプトを表示します。`Bash` は「はい」とマークされていますが、プロンプトなしで組み込みの[読み取り専用コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)セットを実行します。
+> [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器がほとんどの権限プロンプトを決定します。`Permission required` 列は、ツールが[マニュアルモード](https://code.claude.com/docs/ja/permission-modes.md)で作業ディレクトリ内のパスに対してプロンプトを表示するかどうかを示します。`Read`、`Grep`、`Glob` を含むファイルアクセスツールは「いいえ」とマークされていますが、[作業ディレクトリと追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスに対してはプロンプトを表示します。`Bash` は「はい」とマークされていますが、プロンプトなしで組み込みの[読み取り専用コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)セットを実行します。
 
 | ツール | 説明 | 権限が必要 |
 | :- | :- | :- |
@@ -27,13 +27,13 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `CronList` | セッションスコープのすべてのスケジュールタスクをリストします | いいえ |
 | `Edit` | 特定のファイルに対して対象を絞った編集を行います。[Edit ツールの動作](#edit-tool-behavior)を参照してください | はい |
 | `EndConversation` | セッションを終了します。持続的な不正使用入力の稀なケースまたは Claude にツールのデモンストレーションを求める場合に使用します。[EndConversation ツールの動作](#endconversation-tool-behavior)を参照してください | いいえ |
-| `EnterPlanMode` | プランモードに切り替えて、コーディング前にアプローチを設計します | いいえ |
-| `EnterWorktree` | 分離された[git worktree](https://code.claude.com/docs/ja/worktrees.md)を作成し、それに切り替えます。新しいものを作成する代わりに、既存の worktree に切り替えるには `path` を渡します。最初のエントリでは、ターゲットは現在のリポジトリの worktree、またはマルチリポジトリワークスペースでは、その中にネストされたリポジトリの worktree である可能性があります。v2.1.203 より前では、ネストされたリポジトリの worktree は拒否されていました。`.claude/worktrees/` の外の `path` は、セッションのワーキングディレクトリと書き込みアクセスをその場所に移動するため、承認を求めるプロンプトが表示されます。新しい worktree の作成と `.claude/worktrees/` の下のパスはプロンプトを表示しません。v2.1.206 より前では、Claude は `.claude/worktrees/` の外のパスにプロンプトなしで入りました。worktree セッション内から、または [`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) などのピン留めされたワーキングディレクトリを持つサブエージェントから、`path` フォームのみが利用可能で、ターゲットはセッションのリポジトリの `.claude/worktrees/` の下にある必要があります | はい |
-| `ExitPlanMode` | 承認のためのプランを提示し、プランモードを終了します | はい |
-| `ExitWorktree` | worktree セッションを終了し、元のディレクトリに戻ります。[`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) などのように既に独自のワーキングディレクトリで実行されているサブエージェントは利用できません | いいえ |
+| `EnterPlanMode` | plan モードに切り替えて、コーディング前にアプローチを設計します | いいえ |
+| `EnterWorktree` | 分離された[git worktree](https://code.claude.com/docs/ja/worktrees.md)を作成してそれに切り替えるか、既存の worktree に切り替えます。[EnterWorktree ツールの動作](#enterworktree-tool-behavior)を参照してください | はい |
+| `ExitPlanMode` | 承認のためのプランを提示し、plan モードを終了します | はい |
+| `ExitWorktree` | worktree セッションを終了し、元のディレクトリに戻ります。[`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) などのように既に独自の作業ディレクトリで実行されているサブエージェントは利用できません。[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効になると、削除されるか拒否されます | いいえ |
 | `Glob` | パターンマッチングに基づいてファイルを検索します。macOS、Linux、WSL ではデフォルトで存在しません。[Glob ツールの動作](#glob-tool-behavior)を参照してください | いいえ |
 | `Grep` | ファイルコンテンツ内のパターンを検索します。macOS、Linux、WSL ではデフォルトで存在しません。[Grep ツールの動作](#grep-tool-behavior)を参照してください | いいえ |
-| `ListAgents` | Claude が `SendMessage` でメッセージを送信できるエージェントをリストします。セッション内のサブエージェント、[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、その他のローカル Claude Code セッション、およびこのセッションが[リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)に接続されている間、[ウェブ上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)セッションと他のマシン上のリモートコントロールセッション。`/list-agents` コマンドをサポートします。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)を参照してください。Claude Code v2.1.224 以降が必要で、[クロスセッションメッセージングが有効](https://code.claude.com/docs/ja/cross-session-messaging.md#availability)なセッションにのみ表示されます。チームメイト行とこのセッション独自の名前を示す最初の行には v2.1.239 以降が必要です | いいえ |
+| `ListAgents` | Claude が `SendMessage` でメッセージを送信できるエージェントをリストします。セッション内のサブエージェント、[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、その他のローカル Claude Code セッション、およびこのセッションが [Remote Control](https://code.claude.com/docs/ja/remote-control.md) に接続されている間、[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)と他のマシン上の Remote Control セッション。`/list-agents` コマンドをサポートします。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)を参照してください。Claude Code v2.1.224 以降が必要で、[クロスセッションメッセージングが有効](https://code.claude.com/docs/ja/cross-session-messaging.md#availability)なセッションにのみ表示されます。チームメイト行とこのセッション独自の名前を示す最初の行には v2.1.239 以降が必要です | いいえ |
 | `ListMcpResourcesTool` | 接続された[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)によって公開されたリソースをリストします。[MCP Apps UI リソース](https://code.claude.com/docs/ja/mcp.md#reference-mcp-resources)は除外されます。これらはホストアプリケーションがレンダリングするためのページです | いいえ |
 | `LSP` | 言語サーバー経由のコードインテリジェンス。定義にジャンプ、参照を検索、型エラーと警告をレポートします。[LSP ツールの動作](#lsp-tool-behavior)を参照してください | いいえ |
 | `Monitor` | コマンドをバックグラウンドで実行し、各出力行を Claude にフィードバックして、ログエントリ、ファイル変更、またはポーリングされたステータスに対応できるようにします。WebSocket を開いて、各受信メッセージをイベントとして扱うこともできます。[Monitor ツール](#monitor-tool)を参照してください | はい |
@@ -45,18 +45,18 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `RemoteTrigger` | claude.ai で[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（旧ルーティン）を作成、更新、実行、リストします。`/schedule` コマンドをサポートします。[`RemoteTrigger` 入力リファレンス](https://code.claude.com/docs/ja/agent-sdk/typescript#remotetrigger)は、すべてのアクションと、ツールを削除する組織ポリシーを文書化しています。クラウドスケジュールタスクは claude.ai に存在し、Pro、Max、Ultra、Team、または Enterprise プランが必要です。そのため、このツールは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
 | `ReportFindings` | コードレビューの検出結果を構造化リストとしてレポートします。検出結果ごとにファイル、概要、失敗シナリオがあり、Claude Code はテキストとして出力する代わりにレンダリングできます。Claude はアクティブなコードレビュー指示がこれを呼び出すように指示する場合に呼び出します。検出結果には、`correctness` や `test-coverage` などのオプションの `category` スラッグを含めることもでき、レンダリングされたリストのファイルの場所の横に表示されます | いいえ |
 | `ScheduleWakeup` | [自分のペースで進む `/loop`](https://code.claude.com/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の次の反復をスケジュールし直します。Claude は各反復の終了時にこれを呼び出して、次の反復をいつ実行するかを 1 分後から 1 時間後の間で選択します。ユーザーが直接呼び出すことはありません。代わりにループを終了するには、Claude はこれを `stop: true` で呼び出します。これは保留中のウェイクアップをキャンセルします。保留中のウェイクアップは[Stop フックの入力](https://code.claude.com/docs/ja/hooks.md#stop-input)の `session_crons` に表示されます | いいえ |
-| `SendFeedback` | Claude Code に関するフィードバックレポートを作成します。製品の問題または Claude Code セッション内での Claude 自身の動作をカバーします。ユーザーがレビューできるよう、お使いのマシン上のキューに入れます。Claude Code は、ドラフトを送信することを選択するまで何も送信しません。[SendFeedback ツールの動作](#sendfeedback-tool-behavior)を参照してください。Claude Code v2.1.238 以降が必要です | いいえ |
+| `SendFeedback` | Claude Code に関するフィードバックレポートを作成します。製品の問題またはセッション内での Claude 自身の動作をカバーします。ユーザーがレビューできるよう、お使いのマシン上のキューに入れます。Claude Code は、ドラフトを送信することを選択するまで何も送信しません。[SendFeedback ツールの動作](#sendfeedback-tool-behavior)を参照してください。Claude Code v2.1.238 以降が必要です | いいえ |
 | `SendMessage` | 別のエージェントにメッセージを送信します。[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、[エージェント ID または名前で再開するサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)、またはこのマシン上またはその外にある他の Claude Code セッションのいずれか。他のセッションへのメッセージングには Claude Code v2.1.224 以降が必要です。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)は、Claude が到達できるセッション、[メッセージが到着したときの外観](https://code.claude.com/docs/ja/cross-session-messaging.md#what-a-message-looks-like)、および[別のセッションがアイドル状態になったときに Claude が通知を受け取る方法](https://code.claude.com/docs/ja/cross-session-messaging.md#get-a-notice-when-another-session-goes-idle)をカバーしています。Claude はオプションの `summary` 入力を含めることができます。通常は 5～10 語で、Claude Code は 1 行のプレビューとして表示します。Claude が[プレーンテキストメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md#limitations)で省略した場合、Claude Code はメッセージの最初の行を概要として使用します。Claude Code は 200 文字を超える概要を省略記号で切り詰めます | いいえ |
 | `SendUserFile` | セッションからファイルをオプションのキャプション付きでユーザーに送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトで言及されるだけでなく、デバイスに届くようにします。オプションの `display` 入力は表示方法を制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) クライアントが接続されている場合、または[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
 | `ShareOnboardingGuide` | `ONBOARDING.md` をアップロードし、チームメイトが Claude Code で開くことができる共有リンクを返します。ガイドが作成された後、`/team-onboarding` から呼び出されます。Team および Enterprise プランの claude.ai サブスクライバーが利用できます | はい |
 | `Skill` | メイン会話内で[スキル](https://code.claude.com/docs/ja/skills.md#control-who-invokes-a-skill)を実行します | はい |
-| `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
-| `TaskCreate` | タスクリストに新しいタスクを作成します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
-| `TaskGet` | 特定のタスクの完全な詳細を取得します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
-| `TaskList` | すべてのタスクを現在のステータスでリストします。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
+| `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
+| `TaskCreate` | タスクリストに新しいタスクを作成します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
+| `TaskGet` | 特定のタスクの完全な詳細を取得します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
+| `TaskList` | すべてのタスクを現在のステータスでリストします。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskOutput` | v2.1.277 で削除されました。以前はバックグラウンドタスクから出力を取得していました。現在、Claude はバックグラウンドタスクの[出力ファイル](https://code.claude.com/docs/ja/interactive-mode.md#how-backgrounding-works)を `Read` で読み取ります | いいえ |
 | `TaskStop` | 実行中のバックグラウンドタスクを ID で停止します。[エージェントチームのチームメイト](https://code.claude.com/docs/ja/agent-teams.md)や名前付きバックグラウンドエージェントも、エージェント ID または名前で受け付けます。ID に一致するタスクがない場合、エラーは実行中のバックグラウンドエージェントを ID と説明でリストします。別のエージェントが生成したエージェントも含まれます | いいえ |
-| `TaskUpdate` | タスクステータス、依存関係、詳細を更新するか、タスクを削除します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
+| `TaskUpdate` | タスクステータス、依存関係、詳細を更新するか、タスクを削除します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TodoWrite` | セッションタスクチェックリストを管理します。`TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate` を優先して、デフォルトで無効になっています。[タスク追跡ツールを持つセッション](#task-tool-availability)で再度有効にするには、`CLAUDE_CODE_ENABLE_TASKS=0` を設定します | いいえ |
 | `ToolSearch` | [ツール検索](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)が有効な場合、遅延ツールを検索してロードします | いいえ |
 | `WaitForMcpServers` | バックグラウンドでまだ接続中の 1 つ以上の[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)を待機して、セッションを再開しなくてもリクエストがそのツールを使用できるようにします。必要なサーバーがまだ接続されていない場合、Claude はこれを呼び出します。[ツール検索](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)が無効な場合にのみ表示されます。有効な場合は `ToolSearch` が待機を処理します | いいえ |
@@ -298,6 +298,15 @@ Claude がインタラクティブセッションを終了した後、セッシ�
   * [Claude Code on the web](https://code.claude.com/docs/ja/claude-code-on-the-web.md)
 * **スタートアップモード**: [`--bare`](https://code.claude.com/docs/ja/headless#start-faster-with-bare-mode) セッションではありません。ベアモードはシェルとファイルツールのみをロードするため、このツールはそこに登録されません。
 * **プロバイダー**: [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) では利用できません。また、[クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)を通じてサインインしたセッションでも利用できません。
+
+## EnterWorktree ツールの動作
+
+EnterWorktree ツールは、分離された [git worktree](https://code.claude.com/docs/ja/worktrees.md) を作成し、その中に切り替えます。`path` を指定すると、新しい worktree を作成する代わりに既存の worktree に切り替えます。
+
+* **`path` で指定できる worktree**: 初回の切り替えでは、対象は現在のリポジトリの worktree にできます。他のリポジトリを含むリポジトリでは、その中にネストされたリポジトリの worktree も指定できます。
+* **承認を求められる場合**: `.claude/worktrees/` の外にある `path` は、セッションの作業ディレクトリと書き込みアクセスをその場所に移すため、切り替える前に承認を求めます。新しい worktree の作成と `.claude/worktrees/` 配下のパスでは承認を求められません。v2.1.206 より前は、Claude は `.claude/worktrees/` の外にあるパスに承認を求めずに切り替えていました。
+* **worktree 内から**: worktree セッション内からは `path` 形式のみが使用でき、対象はセッションのリポジトリの `.claude/worktrees/` 配下にある必要があります。[`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) など、作業ディレクトリが固定されたサブエージェントにも同じことが当てはまります。
+* **ツールがない場合**: [`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効になると、Claude Code は `EnterWorktree` と `ExitWorktree` を削除するか、それらの呼び出しを拒否します。worktree での作業を続けるには、[Claude に `EnterWorktree` ツールがない](https://code.claude.com/docs/ja/worktrees#claude-has-no-enterworktree-tool)を参照してください。
 
 ## Glob ツールの動作
 

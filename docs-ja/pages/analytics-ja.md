@@ -77,7 +77,7 @@ GitHub 認証フローを完了し、分析に含める GitHub 組織を選択�
 * **Lines of code with CC**：Claude Code 支援で記述されたすべてのマージされた PR 全体のコード行数。「有効な行」のみがカウントされます。正規化後に 3 文字以上の行で、空行と括弧またはトリビアルな句読点のみの行を除きます。
 * **PRs with Claude Code（%）**：Claude Code 支援コードを含むすべてのマージされた PR のパーセンテージ
 * **Suggestion accept rate**：ユーザーが Claude Code のコード編集提案を受け入れる回数のパーセンテージ。Edit、Write、NotebookEdit ツール使用を含みます。
-* **Lines of code accepted**：ユーザーがセッション内で受け入れた Claude Code で記述されたコード行の総数。これは拒否された提案を除外し、その後の削除を追跡しません。
+* **Lines of code accepted**：受け入れられた編集において Claude Code の Edit ツールと Write ツールが追加または削除したコード行の総数。拒否された提案は除外され、後で削除された行によって合計が減ることはありません。
 
 ### チャートを探索する
 
@@ -192,7 +192,7 @@ GitHub を通じてこのデータをクエリするには、`claude-code-assist
 
 ## API カスタマー向けの分析にアクセスする
 
-Claude Console を使用している API カスタマーは、[platform.claude.com/claude-code](https://platform.claude.com/claude-code) で分析にアクセスできます。ダッシュボードにアクセスするには UsageView 権限が必要です。これは Developer、Billing、Admin、Owner、Primary Owner ロールに付与されます。同じ日次ユーザーごとのメトリクスをプログラムで取得するには、Admin API キーを使用して [Claude Code Analytics API](https://platform.claude.com/docs/ja/build-with-claude/claude-code-analytics-api) を使用してください。
+Claude Console を使用している API カスタマーは、[platform.claude.com/claude-code](https://platform.claude.com/claude-code) で分析にアクセスできます。ダッシュボードにアクセスするには UsageView 権限が必要です。これは Developer、Billing、Admin、Owner、Primary Owner ロールに付与されます。日次のユーザーごとのメトリクスをプログラムで取得するには、Admin API キーを使用して [Claude Code Analytics API](https://platform.claude.com/docs/ja/build-with-claude/claude-code-analytics-api) を使用してください。
 
 > [!NOTE]
 >
@@ -200,22 +200,22 @@ Claude Console を使用している API カスタマーは、[platform.claude.c
 
 Console ダッシュボードは以下を表示します。
 
-* **Lines of code accepted**：ユーザーがセッション内で受け入れた Claude Code で記述されたコード行の総数。これは拒否された提案を除外し、その後の削除を追跡しません。
+* **Lines of code accepted**：受け入れられた編集において、Claude Code の Edit ツールと Write ツールが追加または削除したコード行の総数。拒否された提案は除外され、後から削除された行によって合計が減ることはありません。
 * **Suggestion accept rate**：ユーザーがコード編集ツール使用を受け入れる回数のパーセンテージ。Edit、Write、NotebookEdit ツールを含みます。
-* **Activity**：チャートに表示される日次アクティブユーザーとセッション。
-* **Spend**：ユーザー数と並んでドルでの日次 API コスト。
+* **Active users** と **Sessions**：アクティブユーザー数と Claude Code セッション数の日次カウント。
+* **Spend**：ドルでの日次 API コスト。
 
 ### チームインサイトを表示する
 
-チームインサイトテーブルはユーザーごとのメトリクスを表示します。
+チームインサイトテーブルは、ダッシュボード上部で選択した期間（デフォルトは過去 30 日間）について、以下のユーザーごとの列を表示します。
 
-* **Members**：Claude Code に認証されたすべてのユーザー。API キーユーザーはキー識別子で表示され、OAuth ユーザーはメールアドレスで表示されます。
-* **Spend this month**：ユーザーごとの現在の月の API コストの合計。
-* **Lines this month**：ユーザーごとの現在の月の受け入れられたコード行の合計。
+* **Members**：その期間に Claude Code の使用が報告されたユーザーと API キー。API キーユーザーはキー名で表示され、OAuth ユーザーはメールアドレスで表示されます。
+* **Spend**：ユーザーごとの API コストの合計。
+* **Lines accepted**：受け入れられた編集において、Edit ツールと Write ツールが追加または削除した行のユーザーごとの合計。
 
 > [!NOTE]
 >
-> Console ダッシュボードの支出数値は分析目的の推定値です。実際のコストについては、請求ページを参照してください。
+> Console ダッシュボードの支出数値は分析目的の推定値です。実際のコストについては、[Cost ページ](https://platform.claude.com/cost)を参照してください。
 
 ## 関連リソース
 

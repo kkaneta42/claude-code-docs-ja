@@ -105,7 +105,7 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 **5. 環境を選択する**
 
-リポジトリを選択すると、その下に **Cloud environment** が表示されます。タスク用の[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)を選択します。環境は、クラウドセッションがアクセスできるものを制御します。
+リポジトリを選択すると、その下に **Cloud environment** が表示されます。タスク用の[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)を選択します。環境がすでに選択されている場合は、そのままにすることも、別の環境を選択することもできます。環境は、クラウドセッションがアクセスできるものを制御します。
 
 * **Network access**: 各実行中に利用可能なインターネットアクセスのレベルを設定します
 * **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)ため、Anthropic がホストする環境では、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](https://code.claude.com/docs/ja/cloud-environments.md#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています

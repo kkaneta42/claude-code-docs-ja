@@ -171,7 +171,9 @@ WSL では `/etc/claude-code` もユーザーが書き込み可能です。Windo
 * サンドボックスのバイナリパス `sandbox.bwrapPath` と `sandbox.socatPath`
 * サンドボックスの `ripgrep` バイナリ、[`sandbox.ripgrep`](https://code.claude.com/docs/ja/settings-reference#sandbox-ripgrep)
 * `sandbox.filesystem.disabled` と `sandbox.network.strictAllowlist`
-* [`useAutoModeDuringPlan`](https://code.claude.com/docs/ja/settings-reference#useautomodeduringplan)、[`syncClaudeAiSkills`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiskills)、[`syncClaudeAiPlugins`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiplugins)。いずれかの管理ソースからの `false` でその動作がオフになります。開発者のユーザー設定またはローカル設定の `false` でもオフになります。各キーは拒否することしかできません
+* [`useAutoModeDuringPlan`](https://code.claude.com/docs/ja/settings-reference#useautomodeduringplan)、[`syncClaudeAiSkills`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiskills)、[`syncClaudeAiPlugins`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiplugins)。いずれかの管理ソースからの `false` でその動作がオフになります。各キーは拒否することしかできません。
+  * 開発者のユーザー設定またはローカル設定の `false` でもオフになります
+  * `useAutoModeDuringPlan` については、開発者が [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) などのオプションで除外したユーザーファイルまたはローカルファイルの `false` はカウントされません。除外されたファイルを無視するには Claude Code v2.1.314 以降が必要です
 * [`enableArtifact`](https://code.claude.com/docs/ja/settings-reference#enableartifact)。いずれかの管理ソースからの `false` で [Artifact ツール](https://code.claude.com/docs/ja/artifacts.md)がオフになります。開発者のユーザー設定、プロジェクト設定、またはローカル設定の `false` でもオフになり、どのソースからも再びオンにすることはできません。[下位レベルのどの値が引き続き有効か](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を参照してください。Claude Code v2.1.242 以降が必要です
 * [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel)。いずれかの管理ソースにある最も低い上限が適用されます。開発者が自身の設定または `--settings` でより低い上限を設定した場合は、Claude Code はそちらを適用します。どのソースも上限を引き上げることはできません。Claude Code v2.1.267 以降が必要です
 * 任意の階層からの、`attribution` または非推奨の `includeCoAuthoredBy` におけるコミットトレーラーのオプトアウト

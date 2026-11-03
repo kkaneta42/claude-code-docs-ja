@@ -144,6 +144,7 @@
 | [`permissions.allow`](#permissions-allow) | 列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)をプロンプトなしで承認します | 権限設定 | Any file |
 | [`permissions.ask`](#permissions-ask) | 列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)の前に常にプロンプトを表示します | 権限設定 | Any file |
 | [`permissions.blockReadsOutsideWorkingDirectories`](#permissions-blockreadsoutsideworkingdirectories) | すべての権限モードで、ファイルツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外の読み取りを拒否するようにします | 権限設定 | Any file |
+| [`permissions.blockWritesOutsideWorkingDirectories`](#permissions-blockwritesoutsideworkingdirectories) | すべての権限モードで、`Write`、`Edit`、`NotebookEdit` ツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスを拒否するようにします。ただし、[Claude Code 自身の一部のファイル](#what-the-write-block-refuses-and-what-stays-writable)は除きます | 権限設定 | Any file |
 | [`permissions.defaultMode`](#permissions-defaultmode) | 新しいセッションの開始時の[権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を設定します | 権限設定 | Any file |
 | [`permissions.deny`](#permissions-deny) | シークレットを保持するファイルの読み取りを含め、列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)をブロックします | 権限設定 | Any file |
 | [`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode) | 誰も [bypassPermissions モード](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)に入れないようにします | 権限設定 | Any file |
@@ -901,7 +902,7 @@ auto モードがアクティブな間、すべての Bash および PowerShell 
 Claude が確認なしで使用できるツール、常にプロンプトを表示するツール、ブロックされるツールを制御し、セッションが開始する[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します。以下のすべての `permissions.*` キーはこのオブジェクトの下にネストされます。
 
 * **スコープ**: [`Any file`](#scopes)
-* **タイプ**: `allow`、`ask`、`deny`、`additionalDirectories`、`blockReadsOutsideWorkingDirectories`、`defaultMode`、`disableBypassPermissionsMode`、`disableAutoMode` を含むオブジェクト
+* **タイプ**: `allow`、`ask`、`deny`、`additionalDirectories`、`blockReadsOutsideWorkingDirectories`、`blockWritesOutsideWorkingDirectories`、`defaultMode`、`disableBypassPermissionsMode`、`disableAutoMode` を含むオブジェクト
 * **デフォルト**: 未設定
 
 この例は `npm run` コマンドを確認なしで承認し、`git push` の前にプロンプトを表示し、`.env` の読み取りをブロックし、セッションを `acceptEdits` で開始します。
@@ -924,8 +925,9 @@ Claude が確認なしで使用できるツール、常にプロンプトを表�
 Claude Code が plan モード中にシェルコマンドを確認するために auto モードの分類器を使用するかどうかを選択します。デフォルトの `true` では、auto モードが利用可能な場合、分類器は計画中に各コマンドを確認し、プロンプトは表示されません。ただし、[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-paths)を除きます。`false` に設定すると、組み込みの読み取り専用セット外のすべてのコマンドに対して権限プロンプトが表示されます。`/config` に **Use auto mode during plan** として表示されます。
 
 * **スコープ**: [`User, local, or managed`](#scopes)。リポジトリがこれをオフにすることはできません。
+  * これらのファイルのいずれか、または `--settings` で `false` が設定されていると、オフになります。ただし、[`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) などのオプションでそのユーザーまたはローカルファイルを除外した場合は除きます。除外されたファイルを無視するには Claude Code v2.1.314 以降が必要です
 * **タイプ**: ブール値
-  * `true`: 未設定と同じです。auto モードが利用可能な場合、分類器は計画中に各シェルコマンドを確認し、プロンプトを表示しません。ただし、[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-paths)を除きます。これらのファイルのいずれかで `false` が設定されていれば、引き続きオフになります
+  * `true`: 未設定と同じです。auto モードが利用可能な場合、分類器は計画中にシェルコマンドを確認します
   * `false`: 組み込みの読み取り専用セット外のすべてのコマンドに対して権限プロンプトが表示されます
 * **デフォルト**: `true`
 
@@ -1062,11 +1064,11 @@ Claude Code はシェルコマンドを同じ方法では拒否しません。
 }
 ```
 
+ブロックを解除するには、それを設定しているすべての設定ファイルからキーを削除し、実行中の各セッションを再起動します。
+
 `--add-dir`、`/add-dir`、またはユーザー設定や管理設定の `additionalDirectories` で追加したディレクトリは、ブロックにおいて作業ディレクトリとしてカウントされます。リポジトリ設定でのみ追加されたディレクトリはカウントされません。該当するのは `.claude/settings.json` のディレクトリと、git がそのファイルを未追跡として報告する場合を除く `.claude/settings.local.json` のディレクトリです。git リポジトリではないディレクトリ、または git がそのファイルを追跡している場合、Claude Code は `.claude/settings.local.json` をリポジトリ設定として扱うため、読み取り可能にしておきたいディレクトリは代わりにユーザー設定に配置してください。
 
 [`autoMemoryDirectory`](#automemorydirectory)がプロジェクトの `.claude/settings.json` から、または[リポジトリ提供として扱われる](https://code.claude.com/docs/ja/permissions.md#when-your-local-settings-file-needs-trust)`.claude/settings.local.json` から来る場合、Claude Code はそのディレクトリから[自動メモリ](https://code.claude.com/docs/ja/memory.md#storage-location)を読み込まず、そこに保存もしません。
-
-ブロックを解除するには、それを設定しているすべての設定ファイルからキーを削除し、新しいセッションを開始します。
 
 #### ブロック下のサンドボックス化されたコマンド
 
@@ -1091,6 +1093,47 @@ Claude Code は各ファイルを個別に判断します。ファイルが、�
 Linux および WSL2 では、シンボリックリンクである設定ファイルはそれ自身のパスで読み取り不可のままになることがあり、その場合 `git` はそのファイルなしで実行されます。`~/.git-credentials` および `$XDG_CONFIG_HOME/git/credentials` はブロックされたままです。
 
 再度開いたファイルがシークレット（`http.extraHeader` トークンなど）を保持する場合、そのパスを [`sandbox.filesystem.denyRead`](#sandbox-filesystem-denyread) に追加してください。ファイルをカバーする `denyRead` エントリは、常にこの再度開く処理より優先されます。
+
+### `permissions.blockWritesOutsideWorkingDirectories`
+
+`bypassPermissions` を含むすべての権限モードで、`Write`、`Edit`、`NotebookEdit` ツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスを拒否するようにします。ただし、[Claude Code 自身の一部のファイル](#what-the-write-block-refuses-and-what-stays-writable)は除きます。このキーは、シェルコマンド、MCP ツール、またはフックが実行するプログラムを制限しません。シェルコマンドの書き込み先を制限するには、[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)をオンにしてください。Claude Code v2.1.314 以降が必要です。
+
+このキーがオンになると、Claude Code は `EnterWorktree` および `ExitWorktree` ツールも削除するか、それらへの呼び出しを拒否します。worktree での作業を続けるには、[Claude に `EnterWorktree` ツールがない](https://code.claude.com/docs/ja/worktrees#claude-has-no-enterworktree-tool)の手順に従ってください。
+
+* **スコープ**: [`Any file`](#scopes)。セッションが読み込むいずれかのファイルの `true` が適用されるため、リポジトリは自身に対してブロックをオンにできますが、ユーザーが設定したブロックを解除することはできません。[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、ファイルツールがそれ自体が境界となるコンテナ内で実行されるため、Claude Code がこのキーを適用しない場合があります。
+* **タイプ**: ブール値
+  * `true`: ブロックをオンにします
+  * `false`: 未設定と同じです。別のファイルが `true` を設定している場合、ブロックは引き続き適用されます
+* **デフォルト**: 未設定。作業ディレクトリ外への書き込みは[権限モード](https://code.claude.com/docs/ja/permission-modes.md)に従います。Claude Code が[管理設定](https://code.claude.com/docs/ja/managed-settings.md#keys-that-fail-closed)の `permissions` オブジェクトを読み取れない間も、ブロックはオンになります。
+
+```json settings.json theme={null}
+{
+  "permissions": {
+    "blockWritesOutsideWorkingDirectories": true
+  }
+}
+```
+
+ブロックをテストするには、作業ディレクトリ外にファイルを作成するために Write ツールを使用するよう Claude に依頼します（ホームディレクトリが作業ディレクトリに含まれていない場合は `~/block-test.txt` など）。Claude Code はその呼び出しを拒否し、拒否メッセージには[設定によって作業ディレクトリ外への書き込みがブロックされている](https://code.claude.com/docs/ja/errors.md#setting-blocks-writes-outside-the-working-directories)ことが示されます。
+
+ブロックを解除するには、それを設定しているすべての設定ファイルからキーを削除し、Claude Code を再起動します。
+
+#### 書き込みブロックが拒否するものと書き込み可能なままのもの
+
+Claude Code 自身の一部のファイルは書き込み可能なままです。たとえば、プランファイル、[スクラッチパッド](https://code.claude.com/docs/ja/claude-directory.md#session-scratchpad-directory)、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)の `tmp` ディレクトリ、このプロジェクトの[自動メモリ](https://code.claude.com/docs/ja/memory.md#storage-location)内の `.md` ファイルなどです。
+
+作業ディレクトリ外にあるユーザー自身のファイルに加えて、ブロックは次への書き込みを拒否します。
+
+* **Claude Code の設定ファイル**: 設定ファイルはブロックを解除できるため、Claude Code は作業ディレクトリ内でも[これらの書き込みを拒否します](https://code.claude.com/docs/ja/errors.md#writes-to-claude-code-settings-files-are-blocked)。設定ファイルはユーザー自身で編集してください。
+* **リポジトリ設定のみが追加するディレクトリ**: [`additionalDirectories`](#permissions-additionaldirectories) が `.claude/settings.json` のみ、または git がそのファイルを未追跡として報告する場合を除き `.claude/settings.local.json` のみでリストしているディレクトリ
+* **サブエージェントの worktree**: [`isolation: worktree`](https://code.claude.com/docs/ja/worktrees#isolate-subagents-with-worktrees) サブエージェントの worktree が作業ディレクトリ外にある場合、そのファイル編集は拒否されます
+* **リポジトリが選択したディレクトリ内の自動メモリ**: リポジトリ設定で [`autoMemoryDirectory`](#automemorydirectory) が指定するディレクトリ
+
+何を追加しても、設定ファイルへの書き込みは拒否されたままです。それ以外のいずれかのケースで書き込みを通すには、[作業ディレクトリを追加](#let-one-directory-through-the-read-or-write-block)します。`/add-dir` には存在するディレクトリが必要なため、サブエージェントの worktree については、リポジトリルートの `.claude/worktrees` ディレクトリを指定してください。
+
+#### 読み取りまたは書き込みのブロックに 1 つのディレクトリを通す
+
+`blockReadsOutsideWorkingDirectories` または `blockWritesOutsideWorkingDirectories` が `true` の間に Claude がプロジェクト外の 1 つのディレクトリにアクセスできるようにするには、そのディレクトリを作業ディレクトリとして追加します。セッション内で `/add-dir <directory>` を実行するか、Claude Code の開始時に `--add-dir <directory>` を渡すか、ユーザー設定または管理設定の `additionalDirectories` にリストしてください。どちらのブロックについても、Claude のファイルツールを通過させる[許可ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)はありません。
 
 ### `permissions.defaultMode`
 
@@ -2031,7 +2074,7 @@ macOS でサンドボックス化されたコマンドがネットワークポ�
 
 ### `sandbox.network.allowMachLookup`
 
-macOS サンドボックスが検索できる追加の XPC および Mach サービス名をリストします。iOS Simulator や Playwright などの XPC を通じて通信するツールは、ここにサービスをリストする必要があります。
+macOS のサンドボックスが参照できる追加の XPC および Mach サービス名を記載します。iOS Simulator や Playwright など、XPC で通信するツールは、そのサービスをここに記載する必要があります。サンドボックス化されたコマンドは、記載した各サービスにサンドボックスの外からアクセスでき、サンドボックスは[それらのサービスがコマンドのために行う処理を制限しません](https://code.claude.com/docs/ja/sandboxing.md#security-limitations)。
 
 * **Scope**: [`Any file`](#scopes)（[プロジェクト設定とローカル設定には制限あり](https://code.claude.com/docs/ja/sandboxing.md#repository-settings-under-an-admin-required-sandbox)）
 * **Type**: 文字列の配列。各サービス名。単一の末尾 `*` はプレフィックスと一致し、`"*"` だけはすべてのサービスと一致します
@@ -2380,6 +2423,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 
     プロジェクト設定とローカル設定でこのグループを無視する動作には、Claude Code v2.1.282 以降が必要です。
   * Claude Code の起動方法や同期方法を変更する変数（`CLAUDE_CODE_PROCESS_WRAPPER`、`CLAUDE_CODE_SYNC_SKILLS`、`CLAUDE_CODE_SYNC_PLUGINS`、`CLAUDE_CODE_PLUGIN_CACHE_DIR`、`CLAUDE_CODE_PLUGIN_SEED_DIR` など）。
+  * claude.ai のサインインを設定する変数（[`CLAUDE_CODE_OAUTH_TOKEN`、`CLAUDE_CODE_OAUTH_REFRESH_TOKEN`、`CLAUDE_CODE_OAUTH_SCOPES`](https://code.claude.com/docs/ja/env-vars#variables) など）。
   * [スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)の変数 `CLAUDE_AX_SCREEN_READER`、および名前が `CLAUDE_AX_` で始まるその他の変数（[`CLAUDE_AX_STARTUP_QUIET_MS`](https://code.claude.com/docs/ja/env-vars#variables) など）。
   * 応答のないダイアログのタイマーを設定する [`CLAUDE_CODE_USER_DIALOG_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars#variables)。
   * 添付ファイルの処理をオフにする [`CLAUDE_CODE_DISABLE_ATTACHMENTS`](https://code.claude.com/docs/ja/env-vars#variables)。
@@ -2427,7 +2471,6 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 * **セッション**: 対話型のターミナルセッション、VS Code 拡張機能のチャットパネル、またはデスクトップアプリの Code タブ（セッションがローカルマシン上または SSH 経由で実行される場合）を使用している
 * **自動圧縮**: [`autoCompactEnabled`](#autocompactenabled) がオンになっている
 * **プロンプトキャッシュ**: 会話が [1 時間のプロンプトキャッシュ TTL](https://code.claude.com/docs/ja/prompt-caching.md#which-ttl-each-request-gets) を使用している
-* **機能フラグ**: Claude Code が [Anthropic から機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)できる
 * **サイズ**: 会話のコンテキストがトークンのしきい値に達している。しきい値はデフォルトの 200,000 から[変更](#change-the-idle-compaction-threshold)できます
 * **アイドル時間**: 最後のリクエストから約 1 時間が経過しており、その時点までコンピューターがスリープしていない
 
@@ -2449,7 +2492,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 ターミナルセッション内からアイドル時のコンテキスト圧縮をオフまたはオンにするには、`/config` を実行して **Idle compaction** の行を変更します。選択内容はユーザー設定に保存され、すぐに適用されます。この行には Claude Code v2.1.302 以降が必要です。これらのバージョンを実行していて `/config` にこの行が表示されない場合は、次の原因を確認してください。
 
 * **別の設定ソースがキーを設定している**: 管理設定、`--settings` フラグ、またはプロジェクトやローカルの設定ファイルの値がユーザー設定を上書きしています。代わりにそのソースでキーを変更してください
-* **機能フラグが利用できない**: Claude Code が [Anthropic から機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)できない場合、アイドル時のコンテキスト圧縮は実行されないため、オフにする対象がありません
+* **v2.1.314 より前のバージョンで機能フラグが利用できない**: Claude Code が [Anthropic から機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)できない場合、アイドル時のコンテキスト圧縮は実行されないため、オフにする対象がありません
 
 このキーには Claude Code v2.1.290 以降が必要です。このキーを無視する以前のバージョンでは、[`autoCompactEnabled`](#autocompactenabled) をオフにしてアイドル時のコンテキスト圧縮を停止してください。
 
