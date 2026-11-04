@@ -613,7 +613,7 @@ Claude Code は、次の順序でセッションの effort レベルを解決し
 4. 設定：モデルに対して保存したレベルまたは [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) キー。これらの間および設定ファイル間の優先順位は [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) に記載されています
 5. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります
 
-自動モデルフォールバックの後に適用されるレベルについては、[フォールバック後の effort レベル](#effort-level-after-a-fallback)を参照してください。
+自動モデルフォールバックの後に適用されるレベルについては、[フォールバック後の effort レベル](#effort-level-after-a-fallback)を参照してください。サブエージェントとチームメイトについては、[サブエージェントとチームメイトの effort レベル](#effort-level-of-subagents-and-teammates)を参照してください。
 
 Opus 5.5 は、上記のいずれかのソースでレベルが設定されていない限り `medium` で開始され、ユーザー設定ファイルのトップレベルの `effortLevel` は Opus 5.5 には適用されません。このキーは、Claude Code がモデルごとにレベルを保存するようになる前に `/effort` が書き込んでいた古い形式です。Opus 5、Fable 5.1、およびそれ以前のモデルでは以前と同様に適用され続けますが、Opus 5.5 とそれ以降にリリースされたモデルは、`/effort` または `/model` ピッカーでレベルを選ぶまで、それぞれのデフォルトで開始されます。プロジェクト設定、ローカル設定、管理設定のトップレベルの `effortLevel`、または `--settings` で渡されたものは、すべてのモデルに適用されます。
 
@@ -699,6 +699,10 @@ effort は次のいずれかの方法で変更できます。
 スキルの `effort` は、そのスキルが実行されたターンの終了まで適用されます。`context: fork` の場合は、フォークされたサブエージェントの実行中に適用されます。サブエージェントの `effort` は、[呼び出し時に上書きされない](https://code.claude.com/docs/ja/sub-agents.md#choose-an-effort-level)限り、サブエージェントの実行中に適用されます。いずれかが適用されている間、スキルまたはサブエージェントは、起動時に指定したレベル、保存したレベル、選択したレベルにかかわらず、そのレベルで実行されます。`CLAUDE_CODE_EFFORT_LEVEL` が設定されている場合は、代わりにそのレベルが適用されます。
 
 [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) または[組織の effort 上限](#organization-effort-limits)は、スキルやサブエージェントが実行されるレベルを引き続き制限します。[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `effortLevel` を設定した場合、Claude Code は[effort の解決順序](#adjust-effort-level)の設定のステップでそれを適用し、ユーザーは引き続き `/effort` や `--effort` でレベルを変更できます。ユーザーを特定のレベル以下に制限するには、[`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を設定します。
+
+#### サブエージェントとチームメイトの effort レベル
+
+メインの会話と同じモデルでは、独自の `effort` を持たない[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-an-effort-level)または[チームメイト](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)は、セッション内で選んだレベル、または `--effort` で設定したレベルで実行されます。別のモデルでは、そのレベルは適用されません。サブエージェントのレベルを選ぶには、その定義で `effort` を設定します。
 
 #### 設定した effort レベルを確認する
 

@@ -901,7 +901,7 @@ Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or
 
 #### フックが失敗したときにアクションをブロックする
 
-ほとんどのイベントでは、フックが失敗またはタイムアウトしても Claude Code はアクションを実行するため、パスが間違っていたりスクリプトがクラッシュしたりするポリシー フックはすべてを通過させてしまいます。代わりにアクションをブロックするには、`command` または `http` フックに `"onFailure": "block"` を設定します。Claude Code v2.1.295 以降が必要です。
+ほとんどのイベントでは、フックが失敗またはタイムアウトしても Claude Code はアクションを実行するため、パスが間違っていたりスクリプトがクラッシュしたりするポリシー フックはすべてを通過させてしまいます。代わりにアクションをブロックするには、`command` または `http` フックに `"onFailure": "block"` を設定します。Claude Code v2.1.295 以降が必要です。Agent SDK のコールバック フックについては、[コールバックが失敗したときにアクションをブロックする](https://code.claude.com/docs/ja/agent-sdk/hooks.md#block-the-action-when-a-callback-fails)を参照してください。
 
 > [!NOTE]
 >
@@ -1960,7 +1960,7 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](https://cod
 | :- | :- |
 | `permissionDecision` | `"allow"` は権限プロンプトをスキップします。ただし、[どのモードでも自動承認されないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)と[ネットワークパスからの読み取り](https://code.claude.com/docs/ja/permissions.md#network-paths)は除きます。また、[権限モードがその呼び出しを承認する](https://code.claude.com/docs/ja/agent-sdk/typescript.md#permission-modes-that-can-approve-an-always_ask-call)場合を除き、[Agent SDK アプリが `always_ask` とマークしたツール](https://code.claude.com/docs/ja/agent-sdk/custom-tools#require-approval-for-specific-tools)の呼び出しに対する承認もスキップしません。`AskUserQuestion` と `ExitPlanMode` には [`"allow"` と組み合わせた `updatedInput`](#allow-with-updatedinput) が必要です。plan モードについては、[plan モードでのフックによる承認](https://code.claude.com/docs/ja/permissions.md#hook-approvals-in-plan-mode)を参照してください。`"deny"` はツール呼び出しを防ぎます。`"ask"` はユーザーに確認を求めます。`"defer"` はツールを後で再開できるようにターンを終了し、`-p` フラグを使った[非対話モード](#defer-a-tool-call-for-later)が必要です。フックが何を返すかにかかわらず、[拒否ルールと確認ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)は引き続き評価されます |
 | `permissionDecisionReason` | `"ask"` の場合、権限プロンプトでユーザーに表示されます。そのプロンプトに誰も応答できない `-p` の実行で Claude Code が[呼び出しを拒否する](https://code.claude.com/docs/ja/headless.md#turn-off-permission-prompts-in-unattended-runs)場合は、代わりに Claude がツールの結果でその理由を読み取ります。`"deny"` の場合、Claude に表示されます。`"allow"` と `"defer"` の場合、[デバッグログ](#debug-hooks)にのみ書き込まれます |
-| `updatedInput` | 実行前にツールの入力パラメータを変更します。入力オブジェクト全体を置き換えるため、変更したフィールドとともに変更していないフィールドも含めてください。Claude Code は、権限ルールと Bash コマンドの[自動バックグラウンド化の適格性](https://code.claude.com/docs/ja/tools-reference.md#foreground-commands-that-move-to-the-background)を、Claude が送信した入力ではなく、フックが返した入力に対して評価します。自動承認するには `"allow"` と、変更した入力をユーザーに表示するには `"ask"` と組み合わせます。`"defer"` の場合は無視されます |
+| `updatedInput` | 実行前にツールの入力パラメーターを変更します。入力オブジェクト全体を置き換えるため、変更したフィールドとともに変更していないフィールドも含めてください。Claude Code は、Claude が送信した入力ではなく、フックが返した入力に対して権限ルールと Bash コマンドの[自動バックグラウンド化の適格性](https://code.claude.com/docs/ja/tools-reference.md#foreground-commands-that-move-to-the-background)を評価します。自動承認するには `"allow"` と、変更した入力をユーザーに表示するには `"ask"` と組み合わせてください。`"defer"` の場合は無視されます。`permissionDecision` がない場合、[auto モードが変更された呼び出しを拒否する](#pretooluse-updatedinput-in-auto-mode)ことがあります |
 | `additionalContext` | ツールの結果とともに Claude のコンテキストに追加される文字列。`permissionDecision` が `"defer"` の場合は無視されます。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
 
 複数の PreToolUse フックが異なる決定を返した場合、優先順位は `deny` > `defer` > `ask` > `allow` です。
@@ -1986,6 +1986,23 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](https://cod
 > [!NOTE]
 >
 > PreToolUse は以前はトップレベルの `decision` と `reason` フィールドを使用していましたが、このイベントではこれらは非推奨です。代わりに `hookSpecificOutput.permissionDecision` と `hookSpecificOutput.permissionDecisionReason` を使用してください。非推奨の値 `"approve"` と `"block"` は、それぞれ `"allow"` と `"deny"` に対応します。PostToolUse や Stop などの他のイベントは、引き続きトップレベルの `decision` と `reason` を現在の形式として使用します。
+
+#### auto モードでの PreToolUse の `updatedInput`
+
+[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でフックが `permissionDecision` なしで `updatedInput` を返すと、Claude Code は変更された呼び出しを拒否することがあります。[サーバーがレビューした](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)のは Claude が書いた入力であり、フックが返した入力ではないためです。Anthropic API に直接接続している対話ターミナルセッションと VS Code セッションでは、拒否に次のテキストが含まれます。
+
+```text theme={null}
+a hook changed this call's input after auto mode reviewed it
+```
+
+このテキストを含む拒否の後、Claude は変更された呼び出しを再度発行して、サーバーにレビューさせることができます。Claude が次の応答で変更された入力をそのまま繰り返した場合でも、フックは引き続き実行されます。
+
+* フックは呼び出しを拒否したり、権限プロンプトに送ったりできます
+* フックが返す `updatedInput` は破棄されるため、実行されるのはサーバーがレビューした内容です
+
+[auto モードが呼び出しをチェックできなかったと Claude が応答で伝えた](https://code.claude.com/docs/ja/errors.md#hook-changed-input-after-review)場合を除き、この拒否のためにフックを変更する必要はありません。
+
+このテキストが表示されるセッションでは、設定内またはプラグインのフックファイル内の [`command` フック](#command-hook-fields)は、この拒否を受けずに Bash、PowerShell、Monitor、Edit、Write、NotebookEdit の呼び出しを変更できます。ただし、同じ Claude の応答内の前の呼び出しをいずれかのフックが変更した場合や、Bash コマンドがサンドボックス外での実行を求める場合などには、拒否が表示されることがあります。
 
 #### auto モードでの PreToolUse の `ask` 決定
 

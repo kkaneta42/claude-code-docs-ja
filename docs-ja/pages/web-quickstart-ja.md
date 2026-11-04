@@ -69,7 +69,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
 
 この接続により、セッションは任意のパブリックリポジトリをクローンできますが、プライベートリポジトリで機能するのは Claude GitHub App がインストールされている場合のみです。[Claude GitHub App をインストール](https://github.com/apps/claude/installations/new) してください。使用したいプライベートリポジトリを持つ各 GitHub アカウントまたは Organization に対してインストールします。GitHub Organization では、Organization オーナーがインストールを承認する必要がある場合があります。App をインストールすると、[Auto-fix](https://code.claude.com/docs/ja/claude-code-on-the-web.md#auto-fix-pull-requests) も有効になります。これにより、Claude はこれらのリポジトリの pull request の CI 失敗とレビューコメントに応答できます。
 
-接続すると、Claude は、自分が所有する GitHub アカウントのうち Claude GitHub App がインストールされているものを Claude 組織にもリンクします。Team および Enterprise プランでは、管理者は [接続済み GitHub アカウントのリスト](https://code.claude.com/docs/ja/admin-setup.md#connected-github-accounts) でそれらのアカウントを確認できます。
+接続すると、Claude は、自分が所有する GitHub アカウントのうち Claude GitHub App がインストールされているものを Claude 組織にもリンクします。Team および Enterprise プランでは、Claude 組織の Owner は [接続済み GitHub アカウントのリスト](https://code.claude.com/docs/ja/admin-setup.md#connected-github-accounts) でそれらのアカウントを確認できます。
 
 オンボーディングがこの時点で Claude GitHub App をインストールするよう促し、後で実行したい場合は、**Skip** をクリックします。
 

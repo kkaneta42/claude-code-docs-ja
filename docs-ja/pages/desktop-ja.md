@@ -1602,7 +1602,7 @@ Desktop はリンクを開いたときに、未送信のテキストを置き換
 
 > [!NOTE]
 >
-> コマンドからの接続には、macOS または Linux 上の Claude Desktop v3.6556.0 以降と、Claude アカウントでのサインインが必要です。管理者は[コマンドをチームに配布](#distribute-commands-to-your-team)できます。
+> コマンドからの接続には、Claude アカウントでサインインした状態で、macOS または Linux では Claude Desktop v3.6556.0 以降、Windows では v4.16336.0 以降が必要です。Windows では、Desktop が [OpenSSH クライアント経由で接続する](#use-your-ssh-configuration)必要もあります。管理者は[チームにコマンドを配布](#distribute-commands-to-your-team)できます。
 
 Desktop がコマンドを実行するのは、接続の作成時、または[別のマシンを作成](#create-another-machine)するときのみで、接続のたびに実行するわけではありません。各エントリは 1 つの接続であり、その接続は、エントリのコマンドから Desktop が最後に保存したホストを指します。
 
@@ -1632,6 +1632,8 @@ Desktop がコマンドを実行するのは、接続の作成時、または[�
 }
 ```
 
+Windows では、`acme-dev` のような名前のみの指定は機能しないため、[プログラムのフルパスでコマンドを始めて](#write-the-command-on-windows)ください。
+
 各エントリーは次のフィールドを受け付けます。`id`、`name`、`command` は必須です。
 
 | フィールド | 値 |
@@ -1646,11 +1648,14 @@ Desktop がコマンドを実行するのは、接続の作成時、または[�
 
 ##### コマンドを記述する
 
-Desktop はシェルやターミナルを介さずにプログラムを直接起動します。
+Windows では、まず [Windows でコマンドを記述する](#write-the-command-on-windows)を参照してください。そこでは、以下のルールのうちどれが Windows に適用されるかを説明しています。
 
-* **プログラム**: 名前、または `/` から始まるフルパスをスペースなしで記述します。名前のみの場合、Desktop はログインシェルがエクスポートする `PATH` から検索します。`./acme-dev` のような相対パス、`~` で始まるパス、シェルのエイリアスや関数は機能しません。
-* **引数**: 通常の引数はスペースで区切ります。コマンドに含められるのはスペース、ASCII の英字、数字、および文字 `+,-./:=@_~` のみで、どの単語も `~` で始めることはできません。
-* **スクリプト**: 引用符、パイプ、変数、`?` や `&` を含む URL など、それ以外のものが必要な場合は、スクリプトに記述します。スクリプトを実行可能にし、`#!` 行で始め、`command` をそのフルパス（`/Users/you/bin/make-devbox` など）に設定します。macOS では、macOS がブロックする可能性があるため、スクリプトを書類、デスクトップ、ダウンロードの各フォルダーに置かないでください。
+macOS と Linux では、Desktop はシェルもターミナルも使わずに、プログラムを直接起動します。
+
+* **プログラム**: 名前、または `/` から始まるフルパスを記述します。Desktop は名前のみの指定を、ログインシェルがエクスポートする `PATH` 上で探します。`./acme-dev` のような相対パス、`~` で始まるパス、シェルのエイリアスや関数は機能しません。
+* **パス内のスペース**: `'/Users/you/My Tools/make-devbox' create` のように、プログラムのフルパスを単一引用符で囲みます。引用符（単一引用符または二重引用符）には Claude Desktop v4.16336.0 以降が必要で、プログラムのパスを囲む場合にのみ機能します。
+* **引数**: 引数はスペースで区切ります。引用符の外では、コマンドに含められるのはスペース、ASCII 英字、数字、および文字 `+,-./:=@_~` のみで、どの単語も `~` で始めることはできません。引用符で囲んだパスには、`(`、`)`、`&` など、他のいくつかの文字も含められます。
+* **スクリプト**: 引用符で囲んだ引数、パイプ、変数、`?` や `&` を含む URL など、それ以外のものがコマンドに必要な場合は、スクリプトに記述します。スクリプトを実行可能にし、`#!` 行で始め、`command` に `/Users/you/bin/make-devbox` のようなフルパスを設定します。macOS では、macOS がブロックする可能性があるため、スクリプトを書類、デスクトップ、ダウンロードフォルダーに置かないでください。
 * **入力**: プログラムには入力もターミナルも与えられないため、そこでユーザーに入力を求めることはできません。ツールがブラウザーやプロンプトを通じてサインインする場合は、事前にターミナルからサインインし、そのサインインが期限切れになるたびに再度サインインしてください。
 * **環境**: プログラムはホームディレクトリで、ログインシェルがエクスポートする変数を使って実行されます。Desktop は [`ProxyCommand`](#use-variables-from-your-shell-in-a-proxycommand) の場合と同様に起動時にこれらの変数を読み込むため、変数を変更した後は Desktop を終了して再度開いてください。
 * **制限時間**: Desktop は 10 分経過してもまだ実行中のプログラムを停止します。Desktop の進行状況メッセージにはプログラムの出力は表示されません。プログラムをより早く停止するには、そのメッセージの横にある **Cancel** を選択します。
@@ -1680,11 +1685,60 @@ tail -n 1 "$out"
 
 コマンドが失敗した場合、Desktop のメッセージにある **View details** に、コマンドが標準エラーに書き込んだ最後の行があれば表示されます。
 
+##### Windows でコマンドを記述する
+
+Windows では、`command` を、ドライブ文字から始まる `.exe`、`.cmd`、または `.bat` ファイルのフルパスで始めます。Desktop は名前のみの指定を `PATH` 上で探さないため、`command` が `acme-dev create` のエントリは[グレー表示](#if-a-command-is-missing-or-gray)になります。
+
+`%USERPROFILE%\.claude\settings.json` の次のエントリは、引数 `create` を指定して `C:\Program Files\Acme\acme-dev.exe` を実行します。JSON では、各バックスラッシュを 2 回記述するか、代わりに `/` を記述します。パスにスペースが含まれているため、単一引用符で囲んでいます。
+
+```json settings.json theme={null}
+{
+  "sshHostCommands": [
+    {
+      "id": "devbox",
+      "name": "Dev box",
+      "command": "'C:\\Program Files\\Acme\\acme-dev.exe' create"
+    }
+  ]
+}
+```
+
+パス内のスペース、入力、時間制限、プログラムが出力する内容については、[コマンドを記述する](#write-the-command)のルールに従ってください。その他のルールの代わりに、次のルールに従います。
+
+* **プログラム**: `\\server\share` のようなネットワークパス、`%USERPROFILE%` のような変数、ASCII 以外の文字を使用しないでください。パスにこれらのいずれかが含まれていると、エントリはグレー表示になります。ユーザーフォルダーの名前にそのような文字が含まれている場合は、プログラムをそのフォルダーの外に置いてください。
+* **引数**: 「コマンドを記述する」の「引数」のルールに従います。コマンドには `\` も含められますが、どの単語も `\` で終えることはできません。
+* **スクリプト**: `.cmd` または `.bat` ファイルを使用します。Desktop はこれを `cmd.exe` 経由で実行します。引用符で囲んでいても、ファイルのパスに `&`、`^`、`;` を含めることはできません。自分で作成するファイルでは、引数を `%*` で読み取ってください。`%1` から `%9` は、引数を `,` と `=` で分割するためです。
+* **環境**: プログラムには、シェルプロファイルの環境変数ではなく、Desktop アプリの環境変数が渡されます。変数を変更した後は、Desktop を終了して再度開いてください。
+* **テスト**: Desktop が読み取る出力を確認するには、コマンドプロンプトでコマンドを実行します。`"C:\Program Files\Acme\acme-dev.exe" create < NUL > host.txt` のように、スペースを含むパスは二重引用符で囲み、入力なしには `NUL` を使用します。ファイルにはホストのみが含まれている必要があります。このテストでもマシンが作成されるため、後でツールを使って削除してください。
+
+##### 他の行を出力する Windows ツールをラップする
+
+ツールが進行状況メッセージなど、ホストの前に他の行を出力する場合は、ホストのみを出力するバッチファイルでツールをラップします。次のファイルは、ツールの出力の最終行を出力し、ツールが失敗した場合はツールのコードで終了します。
+
+```batch make-devbox.cmd theme={null}
+@echo off
+setlocal
+set "host="
+set "out=%TEMP%\acme-dev-%RANDOM%.txt"
+call "C:\Program Files\Acme\acme-dev.exe" create > "%out%"
+set "code=%ERRORLEVEL%"
+for /f "usebackq delims=" %%L in ("%out%") do set "host=%%L"
+del "%out%"
+if not "%code%"=="0" exit /b %code%
+setlocal EnableDelayedExpansion
+echo(!host!
+```
+
+`command` には、JSON で `C:\\tools\\make-devbox.cmd` のように、ファイルのフルパスを設定します。最後の 2 行は、ホストをコマンドとして実行せずに出力するためのものなので、そのまま残してください。
+
 ##### 新しいホストに接続する
 
 新しいホストに初めて接続するときは、2 つの質問に答えます。
 
-* **ホストキー**: OpenSSH のデフォルトのホストキー検証では、キーのフィンガープリントを確認してから、接続するかどうかを選択します。この質問を省略するには、ツールがマシンを作成したときに取得したキーを使い、ホストを出力する前にコマンドでそのキーを `~/.ssh/known_hosts` に追加させます。ポートが 22 以外の場合、その行は `[host]:port` で始まります。ツールがホスト名を再利用する場合は、古いキーの行も削除してください。
+* **ホストキー**: OpenSSH のデフォルトのホストキーチェックでは、キーのフィンガープリントを確認してから、接続するかどうかを選択します。この質問を省略するには、ホストを出力する前に、コマンドでキーを `~/.ssh/known_hosts`（Windows では `%USERPROFILE%\.ssh\known_hosts`）に追加させます。
+  * ツールがマシン作成時に取得したキーを使用します
+  * 22 以外のポートの場合は、行を `[host]:port` で始めます
+  * ツールがホスト名を再利用する場合は、古いキーの行も削除します
 * **フォルダー**: そのホストで開くフォルダーを信頼するかどうかを選択します。
 
 これらのホストではホストキー検証をオンのままにし、`known_hosts` ファイルを保持してください。`StrictHostKeyChecking` が `no` または `accept-new` で、かつ `UserKnownHostsFile` が `/dev/null` または `none` の場合、キーはどこにも記録されません。その状態でツールが名前を再利用すると、警告なしに別のマシンに接続してしまう可能性があります。
@@ -1746,7 +1800,8 @@ Desktop はこれらのホストに自動的に接続するため、コンピュ
 
 * **キーの配置場所**: Claude Code 用の MDM ポリシーですでに[ポリシーキー](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を設定している場合は、そこに配置します。そうでない場合は、管理設定ファイルに配置します。デフォルトでは、そのようなポリシーはファイルより優先され、その場合 Desktop はファイル内のエントリーを無視します。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)が適用される環境でも、コンピューター上で設定してください。Desktop はサーバー管理設定、およびプロジェクト設定とローカル設定にあるこのキーを無視します。
 * **`id`**: ユーザーの `sshHostCommands` エントリが管理者の `id` を持っている場合、管理者のエントリのみが機能します。ユーザーの `sshConfigs` にあるものなど、他の SSH 接続がその ID を持っている場合、管理者のエントリはグレー表示になります。ユーザーが選びそうにない `id` を選んでください。
-* **プログラム**: Desktop は名前のみの場合に各ユーザー自身の `PATH` から検索するため、フルパスを指定してください。プログラムはそのユーザーとして、ユーザーのログインシェルがエクスポートする変数を使って実行されます。
+* **プログラム**: フルパスを指定します。macOS と Linux では Desktop は名前のみの指定を各ユーザーの `PATH` 上で探し、Windows では名前のみの指定のエントリはグレー表示になるためです。プログラムは、[そのユーザーの変数](#write-the-command)を使用して、そのユーザーとして実行されます。
+* **各プラットフォーム**: Windows コンピューターと、macOS および Linux コンピューターに、それぞれ別のエントリをデプロイします。[Windows のパス](#write-the-command-on-windows)を含むエントリは macOS と Linux ではグレー表示になり、macOS または Linux のパスを含むエントリは Windows ではグレー表示になります。
 * **ユーザー独自のエントリー**: どちらもコンピューター上でプログラムを実行するため、Desktop はユーザーのエントリーを[フック](https://code.claude.com/docs/ja/hooks.md)と同様に扱います。管理者のエントリーのみを許可するには、[`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization) を `["hooks"]` に設定するか、そのリストに `"hooks"` を追加します。これにより、ユーザー設定、プロジェクト設定、ローカル設定の Claude Code フックも停止され、それらを維持する方法はありません。代わりにこのキーまたは [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) を `true` に設定すると、各キーの項目に記載されているとおり、より多くのものがブロックされます。
 * **すべてのエントリ**: 管理者のエントリもオフにするには、管理設定で [`disableAllHooks`](https://code.claude.com/docs/ja/settings-reference#disableallhooks) を設定します。[`disableDesktopLocalSessions`](https://code.claude.com/docs/ja/settings-reference#disabledesktoplocalsessions)、またはどのホストも許可しない `sshHostAllowlist` を設定した場合、セレクターには **Create** や **Create another** の項目は表示されません。
 * **ロックが有効になる場所**: これらのエントリーについて、Desktop は `allowManagedHooksOnly`、`strictPluginOnlyCustomization`、`disableAllHooks` をサーバー管理設定とコンピューター自身のファイルまたはポリシーから読み取り、より厳しい結果を適用します。組織にサーバー管理設定がない場合でも、Desktop が claude.ai でサーバー管理設定を確認するまで、すべてのエントリーはグレー表示のままです。
@@ -1759,13 +1814,14 @@ Desktop はこれらのホストに自動的に接続するため、コンピュ
 次の場合、環境セレクターには **Create** や **Create another** の項目が表示されません。
 
 * **ファイル**: `~/.claude/settings.json` に[無効な JSON またはスキーマで拒否される値](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)がある、キーのスペルを間違えている、またはプロジェクトの設定にキーを記述している。ファイルを修正してください。
-* **プラットフォームとアカウント**: Windows を使用している、または Claude アカウントではなく[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用している。各ホストを自分で [SSH 接続](#ssh-sessions)として追加してください。
+* **アカウント**: Claude アカウントではなく[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用している。各ホストを自分で [SSH 接続](#ssh-sessions)として追加してください。
+* **Windows**: Desktop が v4.16336.0 より古い、または OpenSSH クライアント経由で接続していない。Desktop を更新し、[OpenSSH クライアントの要件](#use-your-ssh-configuration)を満たしてから、Desktop を終了して再度開いてください。
 * **組織の設定**: 管理者がローカルセッションをオフにしている、または SSH セッションをオフにしている。コマンドを使用できるかどうか管理者に確認してください。
 * **`ssh` プログラムがない**: Desktop がコンピューター上の OpenSSH クライアントを起動できなかった。インストールするか、管理者に許可を依頼してから、Desktop を再起動してください。
 
 選択できないエントリーはグレー表示になります。ホバーすると理由が表示されます。
 
-* **エントリの誤り**: メッセージに示されたフィールドまたはコマンドを修正します。`id` が使用中の場合は、エントリに別の ID を付けます。
+* **エントリの誤り**: メッセージが示すフィールドまたはコマンドを修正します。`id` が使用中の場合は、エントリに別の `id` を付けます。Windows では、コマンドを[プログラムのフルパスで始める](#write-the-command-on-windows)必要があります。
 * **壊れた設定ファイル**: 自分の設定ファイルが壊れている間、管理者のエントリーが、ファイル名を示すメッセージとともにグレー表示になることがあります。[ファイルを修正](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)してください。
 * **新しいホスト**: Desktop がホストを保存してから 1 分間、[**Create another**](#create-another-machine) はグレー表示になります。1 分経過後に選択してください。Claude Desktop v4.4212.0 より前では、**Replace Dev box's host** が 10 分間グレー表示になります。
 * **フックがオフまたは制限されている**: 自分のエントリーは、自分のフックが実行できる場合にのみ機能します。設定から `disableAllHooks` を削除するか、管理者に相談してください。
@@ -1940,7 +1996,7 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](https://code.claude.com/docs/ja/desktop-ios-simulator.md#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `sshConfigs` | 環境セレクタに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を削除できず、自分の **Worktree folder** 以外は編集できません。 |
-| `sshHostCommands` | ユーザー自身の接続に加えて、[ホストがコマンドから取得される SSH 接続](#distribute-commands-to-your-team)をユーザーに提供します。Desktop はこれをコンピューター上の管理設定ファイルまたは MDM ポリシーから読み取り、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)では無視します。macOS または Linux 上の Claude Desktop v3.6556.0 以降で、Claude アカウントでサインインしている必要があります。 |
+| `sshHostCommands` | ユーザー自身の接続に加えて、[ホストがコマンドから取得される SSH 接続](#distribute-commands-to-your-team)をユーザーに提供します。Desktop はこれをコンピューター上の管理設定ファイルまたは MDM ポリシーから読み取り、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)では無視します。macOS または Linux では Claude Desktop v3.6556.0 以降、Windows では v4.16336.0 以降が必要で、Claude アカウントでサインインしている必要があります。Windows では、Desktop が[OpenSSH クライアントを通じて接続する](#use-your-ssh-configuration)必要もあります。 |
 | `sshHostAllowlist` | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。管理設定からのみ読み取られます。 |
 | `disableDesktopLocalSessions` | [デバイスで実行されるコードセッション](#local-sessions-on-managed-devices)をオフにするには`true`に設定します。他のホストへの SSH セッションとクラウドセッションは利用可能なままです。値は JSON ブール値`true`である必要があります。管理設定からのみ読み取られます。Claude Desktop v1.37937.0 以降が必要です。 |
 | `disableSshSavedPasswords` | Desktop が SSH パスワードの保存を提案したり、以前に保存したパスワードを使用または表示したりしないようにするには`true`に設定します。オンにしても、保存済みのパスワードは削除されません。管理設定からのみ読み取られます。Claude Desktop v1.49585.0 以降が必要です。 |

@@ -176,7 +176,7 @@ Claude Code は起動時に Anthropic のサーバーから設定をフェッチ
 
 * 初回実行時や `/logout` の後など、開発者が起動時にサインインする場合、Claude Code はセッションを開く前に最大 5 秒間フェッチを待機します。ポリシーが時間内に届いた場合、Claude Code は最初の画面からそれを適用し、その画面に [`companyAnnouncements`](https://code.claude.com/docs/ja/settings-reference#companyannouncements) を表示します。ペイロードが[セキュリティ承認](#security-approval-dialogs)を必要とする場合、Claude Code は待機を終了し、開発者が承認した時点でペイロードを適用します
 * その他の起動時、およびこの 5 秒間の待機がタイムアウトした場合、Claude Code はフェッチを続行したままセッションを開くため、設定が読み込まれて制限が有効になるまでに短い時間が生じます
-* フェッチが失敗した場合、Claude Code はサーバー管理設定なしで続行し、対話型セッションではリモートポリシーが適用されていないことを警告します。エンドポイント管理設定は引き続き適用されます。管理ソースが [`forceRemoteSettingsRefresh`](#enforce-fail-closed-startup) を設定している場合、Claude Code は代わりに終了します
+* フェッチが失敗した場合、Claude Code はサーバー管理設定なしで続行し、対話型セッションと [Claude Desktop の Code タブ](https://code.claude.com/docs/ja/desktop.md)で、リモートポリシーが適用されていないことを警告します。エンドポイント管理設定は引き続き適用されます。管理ソースが [`forceRemoteSettingsRefresh`](#enforce-fail-closed-startup) を設定している場合、Claude Code は代わりに終了します
 
 **キャッシュされた設定がある 2 回目以降の起動時:**
 
@@ -186,7 +186,7 @@ Claude Code は起動時に Anthropic のサーバーから設定をフェッチ
 * キャッシュされた [`prependPlugins`](https://code.claude.com/docs/ja/settings-reference#prependplugins)、[`appendPlugins`](https://code.claude.com/docs/ja/settings-reference#appendplugins)、または [`enabledPlugins`](https://code.claude.com/docs/ja/settings-reference#enabledplugins) の値は、セッションのフェッチがペイロードを確認するまで、組み込みガードを削除したり、その位置を変更したり、オフにしたりすることはできません
 * [エンドポイント管理ソース](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism)が独自にプラグインを列挙または有効化しているマシンでは、キャッシュされたリストのみが有効化しているプラグインは、フェッチがペイロードを確認するまで、組織のものではなく[ユーザーのもの](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)として扱われます
 * Claude Code はバックグラウンドで最新の設定をフェッチします
-* キャッシュされた設定はネットワーク障害が発生しても維持されます。起動時のフェッチが失敗した場合、Claude Code は対話型セッションで、キャッシュされたポリシーが有効であることを警告します
+* キャッシュされた設定はネットワーク障害が発生しても維持されます。起動時のフェッチが失敗した場合、Claude Code は対話型セッションと Code タブで、キャッシュされたポリシーが有効であることを警告します
 * フェッチが成功するまで、起動時に保留された値は保留されたままです
 
 Claude Code は、サーバーがセッションのペイロードを確認するまで、キャッシュされた `env` ブロック内のいくつかのカテゴリの変数を保留します。これにより、キャッシュされたプロキシ、認証局、エンドポイント、または認証情報の値によって、ペイロードを確認する設定フェッチがリダイレクト、傍受、または再認証されることを防ぎます。この強化策はサーバーからフェッチされた設定のキャッシュにのみ適用されます。MDM や `managed-settings.json` を通じてデプロイされた[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は影響を受けません。保留されるカテゴリには以下が含まれます。

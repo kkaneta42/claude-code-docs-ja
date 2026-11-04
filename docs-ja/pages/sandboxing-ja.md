@@ -71,7 +71,7 @@ Claude Code のセッションを開始し、`/sandbox` コマンドを実行し
 * **Overrides**：サンドボックス内で失敗したコマンドを、サンドボックス外での実行にフォールバックできるかどうかを選択します。これは [`allowUnsandboxedCommands`](https://code.claude.com/docs/ja/settings-reference#sandbox-allowunsandboxedcommands) 設定です
 * **Config**：解決済みのサンドボックス設定を表示します
 
-パネルに Dependencies タブしか表示されない場合は、必須パッケージが不足しています。[Linux と WSL2 のセットアップ](#set-up-linux-and-wsl2)の説明に従ってインストールし、Claude Code を再起動してから、もう一度 `/sandbox` を実行してください。
+パネルに Dependencies タブしか表示されない場合、サンドボックスはまだ起動できません。[Linux と WSL2 のセットアップ](#set-up-linux-and-wsl2)の説明に従ってタブに報告された問題を解決し、Claude Code を再起動してから、もう一度 `/sandbox` を実行してください。
 
 **2. モードを選択する**
 
@@ -97,7 +97,7 @@ claude --settings '{"sandbox": {"enabled": true, "allowUnsandboxedCommands": fal
 
 > [!WARNING]
 >
-> デフォルトでは、依存関係が不足している、またはプラットフォームがサポートされていないためにサンドボックスを起動できない場合、Claude Code はサンドボックス化せずにコマンドを実行します。代わりに起動時に Claude Code を終了させるには、[`sandbox.failIfUnavailable`](https://code.claude.com/docs/ja/settings-reference#sandbox-failifunavailable) を `true` に設定します。サンドボックス化をセキュリティゲートとして必須とする管理されたデプロイでは、この設定を使用できます。
+> デフォルトでは、プラットフォームがサンドボックスをサポートしていない場合、または起動時の依存関係チェックが失敗した場合、Claude Code はサンドボックス化せずにコマンドを実行します。代わりに起動時に Claude Code を終了させるには、[`sandbox.failIfUnavailable`](https://code.claude.com/docs/ja/settings-reference#sandbox-failifunavailable) を `true` に設定します。サンドボックス化をセキュリティゲートとして必須とする管理されたデプロイでは、この設定を使用できます。
 
 ### コマンドがサンドボックス内で実行されることを確認する
 
@@ -135,37 +135,47 @@ Linux と WSL2 では、サンドボックスは次のパッケージに依存�
 
 Ripgrep はネイティブの Claude Code バイナリに同梱されています。seccomp フィルターはオプションで、Unix ドメインソケットのブロックを追加します。不足している場合は `npm install -g @anthropic-ai/sandbox-runtime` でインストールしてください。
 
-必須の依存関係が不足している場合、インストールするまで Dependencies タブだけが表示されます。オプションの seccomp フィルターだけが不足している場合は、Dependencies タブが他のタブと並んで表示されます。依存関係のチェックは起動時に実行されるため、`/sandbox` にパッケージを検出させるには、インストール後に Claude Code を再起動してください。
+* **Dependencies タブしか表示されない**：サンドボックスは起動できません。タブに不足と表示されているものをインストールするか、Ubuntu の AppArmor 制限が報告されている場合は [bubblewrap 用の AppArmor プロファイルを追加](#add-an-apparmor-profile-for-bubblewrap)してください
+* **Dependencies タブが他のタブと並んで表示される**：タブには、seccomp フィルターなど、不足しているオプションの項目が一覧表示されます。サンドボックスはそれがなくても起動できるため、それが追加する機能が必要な場合にのみインストールしてください
 
-> [accordion] Ubuntu 24.04 以降：bubblewrap によるユーザー名前空間の作成を許可する
->
-> Ubuntu 24.04 以降では、デフォルトの AppArmor ポリシーにより、bubblewrap が分離に必要なユーザー名前空間を作成できません。
->
-> WSL2 内も含め、環境がこの制限を強制しているかどうかを確認するには、`sysctl kernel.apparmor_restrict_unprivileged_userns` を実行します。コマンドが `0` を返す場合は、このステップをスキップしてください。`No such file or directory` エラーが表示される場合は、キーが存在しないため、このステップをスキップできます。`1` を返す場合は、`bwrap` にこの機能を付与する AppArmor プロファイルを追加します。
->
-> ```bash theme={null}
-> sudo tee /etc/apparmor.d/bwrap > /dev/null <<'EOF'
-> abi <abi/4.0>,
-> include <tunables/global>
->
-> profile bwrap /usr/bin/bwrap flags=(unconfined) {
->   userns,
->   include if exists <local/bwrap>
-> }
-> EOF
-> ```
->
-> このプロファイルは `bwrap` 自体にのみ適用され、サンドボックス内で `bwrap` が実行するコマンドには適用されません。適用するには AppArmor を再読み込みします。
->
-> ```bash theme={null}
-> sudo systemctl reload apparmor
-> ```
+依存関係のチェックは起動時に実行されるため、`/sandbox` にパッケージを検出させるには、インストール後に Claude Code を再起動してください。
 
 > [accordion] WSL2 に関する注意事項
 >
 > PowerShell から `wsl -l -v` を実行して WSL のバージョンを確認します。`Sandboxing requires WSL2` と表示される場合、ディストリビューションは WSL1 で実行されています。WSL2 にアップグレードするか、サンドボックス化せずに Claude Code を実行してください。
 >
 > WSL2 では、`cmd.exe`、`powershell.exe`、または `/mnt/c/` 配下のものなど Windows バイナリの起動を、WSL が Unix ソケット経由で Windows ホストに引き渡します。そのため、サンドボックス化されたコマンドがそれらを起動できるかどうかは、サンドボックスの [Unix ソケット設定](https://code.claude.com/docs/ja/settings-reference.md#sandbox-network-allowunixsockets)に従います。そもそもソケットをブロックするには、オプションの seccomp フィルターがインストールされている必要があります。これらの起動を許可するには、`allowAllUnixSockets` を設定します。これにより、サンドボックス化されたコマンドにすべての Unix ソケットが開放されます。
+
+#### bubblewrap 用の AppArmor プロファイルを追加する
+
+Claude Code が `/usr/bin/bwrap` を実行していて、次のいずれかが発生する場合は、プロファイルを追加します。
+
+* Claude Code が[ユーザー名前空間に対する Ubuntu の AppArmor 制限を報告する](#apparmor-restriction-stops-bubblewrap)
+* [その制限がオンになっている](#bwrap-uid-map-permission-denied)間に、サンドボックス化されたコマンドが `bwrap: setting up uid map: Permission denied` または `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` で失敗する
+
+Claude Code は、管理設定の [`sandbox.bwrapPath`](https://code.claude.com/docs/ja/settings-reference#sandbox-bwrappath) で指定されていない限り、`PATH` 上の最初の `bwrap` を実行します。どの `bwrap` が最初になるかを確認するには、Claude Code を起動するシェルで `which bwrap` を実行します。Claude Code が `/usr/bin/bwrap` 以外のパスを実行する場合は、代わりに [`sysctl` で制限を解除](#apparmor-restriction-stops-bubblewrap)してください。
+
+`/usr/bin/bwrap` 用のプロファイルを追加するには、次のコマンドを実行します。
+
+```bash theme={null}
+sudo tee /etc/apparmor.d/bwrap > /dev/null <<'EOF'
+abi <abi/4.0>,
+include <tunables/global>
+
+profile bwrap /usr/bin/bwrap flags=(unconfined) {
+  userns,
+  include if exists <local/bwrap>
+}
+EOF
+```
+
+AppArmor を再読み込みして適用します。
+
+```bash theme={null}
+sudo systemctl reload apparmor
+```
+
+その後、Claude Code を再起動し、[サンドボックスが機能することを確認](#confirm-commands-run-inside-the-sandbox)します。
 
 ### サンドボックスモード
 
@@ -716,7 +726,7 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 
 `enabled` 以外の 2 つのキーは、サンドボックスがコマンドを実行できない場合に何が起こるかを制御します。
 
-* **`failIfUnavailable`**：Linux の bubblewrap などの依存関係が不足している場合、サンドボックス化されていない実行にフォールバックするのではなく、Claude Code の起動をブロックします
+* **`failIfUnavailable`**：プラットフォームがサンドボックスをサポートしていない場合や、起動時の依存関係チェックが失敗した場合、サンドボックス化されていない実行にフォールバックするのではなく、Claude Code は起動を拒否します
 * **`allowUnsandboxedCommands: false`**：Claude Code は `dangerouslyDisableSandbox` エスケープハッチを無視するため、サンドボックス内でコマンドが失敗しても、Claude はそれをサンドボックス外で再試行できません
 
 これらと併せて、次の追加を検討してください。
@@ -901,6 +911,28 @@ v2.1.307 より前では、フォルダに何かが入っていて `HEAD` がな
 ### Bubblewrap がコンテナ内で起動に失敗する
 
 非特権コンテナでは、[bubblewrap](#os-level-enforcement) は新しい `/proc` ファイルシステムをマウントできないため、サンドボックス化されたコマンドは `bwrap` エラー（`Can't mount proc on /newroot/proc: Operation not permitted` など）で失敗します。[`enableWeakerNestedSandbox`](https://code.claude.com/docs/ja/settings-reference#sandbox-enableweakernestedsandbox) を `true` に設定して、サンドボックスが代わりにコンテナの既存の `/proc` をバインドマウントするようにしてください。この設定は、外部コンテナが既に必要な分離境界を提供する場合にのみ使用してください。新しい `/proc` マウントであれば隠されるプロセス情報を、この設定はサンドボックス化されたコマンドに公開するためです。
+
+### Ubuntu の AppArmor 制限により bubblewrap が停止する
+
+Linux と WSL2 では、`Ubuntu's AppArmor restriction on user namespaces stops bubblewrap here` というメッセージは、Ubuntu の AppArmor 制限によってサンドボックスが起動できないことを意味します。
+
+サンドボックスを起動するには、次の 2 つの方法のいずれかで制限を解除してください：
+
+* Claude Code が `/usr/bin/bwrap` を実行する場合は、[bubblewrap 用の AppArmor プロファイルを追加](#add-an-apparmor-profile-for-bubblewrap)します
+* シェルで `sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0` を実行します。これにより、マシン上のすべてのプログラムに対して制限が解除され、再起動するまで有効です
+
+その後、Claude Code を再起動し、[サンドボックスが機能することを確認](#confirm-commands-run-inside-the-sandbox)してください。
+
+制限を解除するまでは、コマンドはサンドボックスなしで通常の権限フローのもとで実行されます。[`sandbox.failIfUnavailable`](https://code.claude.com/docs/ja/settings-reference#sandbox-failifunavailable) が `true` の場合は、Claude Code の起動が拒否されます。
+
+### サンドボックス化されたコマンドが `bwrap: setting up uid map: Permission denied` で失敗する
+
+Linux と WSL2 では、このエラーまたは `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` は、ユーザー名前空間に対する Ubuntu の AppArmor 制限が bubblewrap を停止していることを示している可能性があります。確認するには、シェルで `sysctl kernel.apparmor_restrict_unprivileged_userns` を実行してください：
+
+* `kernel.apparmor_restrict_unprivileged_userns = 1`：制限がオンになっています。Claude Code が `/usr/bin/bwrap` を実行する場合は [AppArmor プロファイルを追加](#add-an-apparmor-profile-for-bubblewrap)するか、`sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0` を実行します。これにより、再起動するまですべてのプログラムに対して制限が解除されます。その後、Claude Code を再起動し、[サンドボックスが機能することを確認](#confirm-commands-run-inside-the-sandbox)してください
+* その他の出力：この制限は原因ではありません。失敗を報告するには、Claude Code のプロンプトで [`/feedback`](https://code.claude.com/docs/ja/commands#all-commands) を実行してください
+
+v2.1.310 より前では、Claude Code は起動時にこの制限を確認していなかったため、`/sandbox` はこれを報告しませんでした。
 
 ### 0 バイトの読み取り専用ファイルが `.claude` 設定パスに表示され、「はい、今後は聞かない」が保存されない
 

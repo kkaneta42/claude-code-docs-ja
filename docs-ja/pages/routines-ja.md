@@ -31,7 +31,7 @@
 >
 > クラウドではなくマシン上で作業をスケジュールする機能が他に 2 つあります。[Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md)と [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) です。3 つの中から選ぶには、[スケジューリングオプションを比較する](https://code.claude.com/docs/ja/scheduled-tasks.md#compare-scheduling-options)を参照してください。
 
-Team および Enterprise の Owner は、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** トグルを使用して、すべてのメンバーのスケジュールタスクをオフにできます。トグルがオフの場合、既存のスケジュールタスクは実行を停止し、メンバーは新しいスケジュールタスクを作成できません。
+Team および Enterprise の Owner は、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** または **Routines** トグルを使用して、すべてのメンバーのスケジュールタスクをオフにできます。トグルがオフの場合、既存のスケジュールタスクは実行を停止し、メンバーは新しいスケジュールタスクを作成できません。
 
 Enterprise 組織が[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスを管理している場合は、スケジュールタスクの権限を含むロールも必要です。Owner は [**Organization settings > Roles**](https://claude.ai/admin-settings/roles) でロールの **Remote sessions** セクションにこの権限を追加できます。
 
@@ -485,7 +485,7 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 * **Web アドレス**: `claude.ai/code/routines`
 * **CLI**: `/schedule` のエイリアス `/routines`、コマンドの説明、タスクのセットアップ中の Claude の返答
 * **API**: `/fire` エンドポイントのパス、そのベータヘッダー、レスポンスの `type`、`<routine-fire-payload>` タグ、および [API 経由でルーティンをトリガーする](https://platform.claude.com/docs/en/api/claude-code/routines-fire)リファレンスページ
-* **組織設定**: **Scheduled tasks (Was Routines)** トグル
+* **組織設定**: **Scheduled tasks (Was Routines)** または **Routines** トグル
 
 ## トラブルシューティング
 
@@ -504,9 +504,9 @@ CLI は `/schedule` の要件の 1 つが満たされていない場合、この
 
 原因が CLI のサインインやクラウドセッション内にいることである場合でも、[claude.ai/code/routines](https://claude.ai/code/routines) でスケジュールタスクを作成・管理できます。そのためには Pro、Max、Ultra、Team、または Enterprise アカウントが必要です。組織でスケジュールタスクまたはクラウドセッションがオフになっている場合や、ロールにそれらが含まれていない場合は、Web でも作成できません。
 
-### "Routines are disabled by your organization's policy"
+### 組織でスケジュールタスクがオフになっている
 
-Team または Enterprise 組織の Owner が、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** トグルをオフにしている可能性があります。Claude Code v2.1.227 以降では、同じトグルで CLI の `/schedule` も非表示になります。これはサーバー側の組織設定であるため、ローカルの設定から上書きすることはできません。組織のスケジュールタスクを再びオンにするよう Owner に依頼してください。
+組織でクラウドのスケジュールタスクがオフになっており、これはローカルの設定から変更することはできません。[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** または **Routines** トグルをオンにできるかどうか、Team または Enterprise の Owner に問い合わせてください。
 
 ### "The last run" の警告
 

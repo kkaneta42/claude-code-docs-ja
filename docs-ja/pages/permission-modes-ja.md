@@ -383,6 +383,8 @@ auto モードでは、Claude Code は独自の分類器リクエストを送信
 * **サーバーがセッションをレビューしない**: レスポンスがレビュー結果なしで完了するか、サーバーがこのセッションをレビューしないと応答します。最も一般的な原因は、レビューの依頼や結果を破棄する LLM ゲートウェイまたはプロキシと、まだサーバー側チェックに対応していないプラットフォーム、リージョン、または認証情報です。Claude Code は独自の分類器リクエストにフォールバックします。そのフォールバックがセッションの残りの期間にわたって維持されることになると、分類器リクエストが課金対象となるアカウントでは、[分類器リクエストの料金に関する通知](https://code.claude.com/docs/ja/auto-mode-classifier-billing.md)が表示されます。
 * **サーバーがアクションの判定を返さない**: Claude Code は、レビューなしで実行するのではなく、アクションを拒否します。どの接続でも、レビュー結果が届く前にレスポンスが終了した場合や、結果が Claude Code の読み取れない形式で届いた場合に発生します。レスポンスを途中で切ったり結果を書き換えたりする LLM ゲートウェイやプロキシは、どちらの原因にもなり得ます。Anthropic API への直接接続では、タイムアウトなどでサーバーのチェックがそのアクションについて失敗した場合にも発生します。拒否メッセージ、拒否が繰り返された場合の動作、および対処方法については、[サーバーが安全性の判定を返さなかった](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)を参照してください。
 
+  サーバーのレビュー後に[フック](https://code.claude.com/docs/ja/hooks.md#pretooluse-updatedinput-in-auto-mode)または [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) がアクションの入力を変更した場合、Claude Code は判定なしでそのアクションを拒否することがあります。Anthropic API への直接接続でのインタラクティブなターミナルセッションと VS Code セッションでは、拒否のテキストに `a hook changed this call's input after auto mode reviewed it` が含まれます。対処方法については、[該当するエラー項目](https://code.claude.com/docs/ja/errors.md#hook-changed-input-after-review)を参照してください。
+
 サーバーへの依頼をスキップして常に Claude Code 独自の分類器リクエストを使用するには、[`CLAUDE_CODE_AUTO_MODE_SERVER=0`](https://code.claude.com/docs/ja/env-vars) を設定します。Anthropic API への直接接続では、この変数には Claude Code v2.1.281 以降が必要です。そこで `1` に設定すると、`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` も設定していない限り、まだサーバーレビューが有効になっていないセッションでサーバーレビューがオンになります。`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1` を設定して `CLAUDE_CODE_AUTO_MODE_SERVER` を未設定のままにすると、[プレリリース機能を無効にする](https://code.claude.com/docs/ja/llm-gateway-protocol.md#disable-pre-release-capabilities)で説明されている場合を除き、Claude Code はサーバーへの依頼も停止します。
 
 ### デフォルトの分類器モデル
@@ -557,7 +559,7 @@ auto モードがセッションのアクションを承認できない場合、
 * **アクションがブロックされた場合**: Claude Code は通知を表示し、そのアクションを `/permissions` の **Recently blocked** タブに表示します。そこで[アクションを承認して Claude が再試行できるようにする](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)ことができます。
 * **ブロックが繰り返された場合**: 分類器がアクションを 3 回連続、または合計 20 回ブロックすると、auto モードは一時停止し、Claude Code はプロンプトの表示を再開します。プロンプトで示されたアクションを承認すると auto モードが再開します。ブロックの数え方については、[繰り返しブロックのしきい値](#repeated-block-thresholds)を参照してください。
 * **分類器から判定が得られない場合**: auto モードとは別の安全チェックが分類器自体のリクエストを拒否した場合、または分類器の応答を解析できない場合、Claude Code は通知も **Recently blocked** のエントリもなしにアクションをブロックします。各ケースで表示されるメッセージと対処方法については、[auto モードがアクションの安全性を判断できない](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)を参照してください。
-* **サーバーから判定が得られない場合**: [サーバー側の分類器レビュー](#server-side-classifier-review)では、Claude Code はサーバーが判定を返さないアクションを拒否し、判定のないレスポンスが 10 回連続するとターンを停止します。[サーバーが安全性の判定を返さなかった](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)を参照してください。
+* **サーバーからの判定がない場合**：[サーバー側の分類器によるレビュー](#server-side-classifier-review)では、サーバーから判定が返されないアクションを Claude Code は拒否し、判定のない応答が 10 回連続するとターンを停止することがあります。[The server returned no safety verdict](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict) を参照してください。
 * **チェック中にモードを切り替えた場合**: 分類器のチェックが保留中に権限モードを切り替えると、Claude Code は新しいモードでは要求されなかったはずの判定を破棄します。代わりに承認を求めるプロンプトが表示されるか、[`dontAsk` モード](#allow-only-pre-approved-tools-with-dontask-mode)ではアクションが自動的に拒否されます。
 
 #### 繰り返しブロックのしきい値

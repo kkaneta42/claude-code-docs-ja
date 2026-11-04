@@ -39,6 +39,10 @@ Claude Code プラグインは、以下を含むほとんどの JetBrains IDEs �
 
 JetBrains マーケットプレイスから [Claude Code プラグイン](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) をインストールし、IDE を再起動します。
 
+> [!NOTE]
+>
+> JetBrains マーケットプレイスはサードパーティ製のソフトウェアであり、Anthropic はこれを推奨、保守、または監査していません。Anthropic は Claude Code プラグインを JetBrains マーケットプレイスでの公開のために提出しています。
+
 `claude` が IDE が見つけられない場所にインストールされている場合は、プラグインの [Claude コマンド設定](#general-settings) でフルパスを設定してください。
 
 Claude Code は、任意の有料 Claude サブスクリプション（Pro、Max、Ultra、Team、または Enterprise）または Claude Console アカウントで動作し、API キーは不要です。`claude` を初めて実行するときに [ログイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) するよう求められます。

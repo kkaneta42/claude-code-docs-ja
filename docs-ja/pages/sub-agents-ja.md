@@ -416,6 +416,10 @@ v2.1.198 以降、サブエージェントはメインの会話の[拡張思考]
 
 フォーク以外のサブエージェントを特定の effort レベルで実行するよう Claude に依頼すると、Claude はその呼び出しに `effort` パラメータを渡すこともできます。このパラメータは `effort` フィールドを上書きし、サブエージェントが[再開](#resume-subagents)されたときも有効なままです。[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数は、その両方よりも優先されます。呼び出しごとのパラメータには Claude Code v2.1.292 以降が必要です。
 
+#### サブエージェントに `effort` フィールドもパラメータもない場合
+
+メインの会話のモデルで実行される場合、サブエージェントは `/effort` などでセッション内で選択したレベル、または `--effort` で設定したレベルで実行されます。別のモデルでは、[そのレベルは適用されません](https://code.claude.com/docs/ja/model-config.md#effort-level-of-subagents-and-teammates)。レベルを選択するには、`effort` フィールドを設定します。
+
 ### サブエージェントの機能を制御する
 
 ツールへのアクセス、権限モード、条件付きルールによって、サブエージェントができることを制御できます。

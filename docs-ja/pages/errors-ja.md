@@ -66,7 +66,8 @@
 | `This organization has been disabled` | [認証](#this-organization-has-been-disabled) |
 | `Your organization has disabled API key authentication` | [認証](#your-organization-has-disabled-api-key-authentication) |
 | `Your organization has disabled Claude subscription access` | [認証](#your-organization-has-disabled-claude-subscription-access) |
-| `Routines are disabled by your organization's policy` | [認証](#routines-are-disabled-by-your-organizations-policy) |
+| `Scheduled tasks are off for your organization` | [認証](#routines-are-disabled-by-your-organizations-policy) |
+| `Routines are off for your organization` | [認証](#routines-are-disabled-by-your-organizations-policy) |
 | `Remote Control is only available when using Claude via api.anthropic.com` | [認証](#remote-control-requires-the-anthropic-api) |
 | `OAuth token refresh failed — run /login to re-authenticate` | [認証](#remote-control-couldnt-refresh-your-login) |
 | `JWT refresh failed: no OAuth token — run /login` | [認証](#remote-control-couldnt-refresh-your-login) |
@@ -421,6 +422,9 @@
 | `Ignoring N permissions.allow entries from ... this workspace has not been trusted` | [設定の警告](#workspace-has-not-been-trusted) |
 | `is a network path, which cannot be added as a working directory` | [設定の警告](#working-directory-is-a-network-path) |
 | `Remote managed settings failed to load (<cause>)` | [設定の警告](#remote-managed-settings-failed-to-load) |
+| `Your organization requires remote managed settings to load, but they could not be loaded` | [フェイルクローズ起動を強制する](https://code.claude.com/docs/ja/server-managed-settings.md#enforce-fail-closed-startup) |
+| `Remote managed settings are still loading` | [設定の警告](#remote-managed-settings-failed-to-load) |
+| `Remote managed settings did not load` | [設定の警告](#remote-managed-settings-failed-to-load) |
 | `Managed settings were not approved; exiting without applying them.` | [設定の警告](#managed-settings-were-not-approved) |
 | `Your organization's managed settings need your approval, which couldn't be asked for here.` | [設定の警告](#managed-settings-need-your-approval) |
 | `Claude Code can't start: your organization's managed settings block the default model` / `Claude Code can't start: your organization allows only the models listed in "availableModels"` | [設定の警告](#managed-settings-block-the-default-model) |
@@ -453,6 +457,8 @@
 | `is ignored — managed settings set allowManagedReadPathsOnly` / `is ignored — managed settings set allowManagedDomainsOnly` | [設定の警告](#sandbox-allow-entries-are-ignored-under-a-managed-lock) |
 | `Sandbox mask files left behind at write-deny paths` | [設定の警告](#stale-sandbox-mask-files-left-by-a-killed-session) |
 | `Stale sandbox mask files left by a killed session` | [設定の警告](#stale-sandbox-mask-files-left-by-a-killed-session) |
+| `Ubuntu's AppArmor restriction on user namespaces stops bubblewrap here` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#apparmor-restriction-stops-bubblewrap) |
+| `bwrap: setting up uid map: Permission denied` / `bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#bwrap-uid-map-permission-denied) |
 | Responses seem lower quality than usual | [応答品質](#responses-seem-lower-quality-than-usual) |
 
 ## 自動再試行
@@ -755,6 +761,8 @@ The server-side auto mode classifier gave no verdict (timed out), so auto mode c
 Auto mode is unavailable — the server returned no safety verdict for the last 10 responses, so Claude stopped. Send a message to try again, or switch out of auto mode.
 ```
 
+[フックまたは mod による変更に起因する拒否](#hook-changed-input-after-review) を含め、一部の拒否はこの 10 回にカウントされません。
+
 停止メッセージは、セッションの種類ごとに異なる場所に表示されます。
 
 * 対話セッションでは、メッセージはトランスクリプトに警告として表示され、ターンが終了します
@@ -773,6 +781,21 @@ Auto mode is unavailable — the server returned no safety verdict for the last 
 v2.1.280 より前では、Claude Code は判定のないレスポンスからの各アクションを直ちに拒否し、ターンを停止することはありませんでした。
 
 v2.1.302 より前では、Anthropic API への直接接続において、Claude Code はサーバーのチェックには長くなりすぎた会話を圧縮しませんでした。
+
+#### `a hook changed this call's input after auto mode reviewed it`
+
+この拒否は、サーバーがレビューした後にフックまたは mod が [呼び出しの入力を変更した](https://code.claude.com/docs/ja/hooks.md#pretooluse-updatedinput-in-auto-mode) ため、実際に実行される内容がレビューの対象外になっていることを意味します。アクションが安全でないという判断ではありません。
+
+同じ Claude の応答内の後続の呼び出しも、次の理由で拒否されることがあります。
+
+```text theme={null}
+another call in this response was changed by a hook after auto mode reviewed it, or could not be confirmed unchanged
+```
+
+その後 Claude は、拒否された各呼び出しを再度発行して、サーバーにレビューさせることができます。権限プロンプトが開いた場合は、それに応答してください。Claude が応答の中で auto モードが呼び出しをチェックできなかったと述べない限り、他に何もする必要はありません。そう述べた場合は、変更を止めるか呼び出しを自分で承認してから、Claude にその呼び出しを再試行するよう依頼してください。
+
+* **変更を止める**: その呼び出し、または同じ Claude の応答内のそれより前の呼び出しを変更した [フック](https://code.claude.com/docs/ja/hooks.md#disable-or-remove-hooks) または [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md#turn-mods-on-or-off) をオフにするか、管理者にオフにするよう依頼してください。フックを探すには、Claude Code のプロンプトで [`/hooks`](https://code.claude.com/docs/ja/hooks#the-%2Fhooks-menu) を実行します。ターミナルセッションでは、`/plugin` を実行してアクティブな mod を確認できます。
+* **呼び出しを自分で承認する**: [Manual モードに切り替えてください](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)
 
 ### Was not reviewed and did not run
 
@@ -1188,19 +1211,20 @@ Agent SDK と `-p` 非対話モードでは、これは `oauth_org_not_allowed` 
 * サブスクリプションではなく Console API キーで認証します。設定方法については、[Claude Console 認証](https://code.claude.com/docs/ja/authentication.md#claude-console-authentication)を参照してください。
 * 管理者であってもアクセスを有効にするオプションが表示されない場合は、[Anthropic サポート](https://support.claude.com)に問い合わせてください
 
-### ルーティンが組織のポリシーにより無効化されています
+### Scheduled tasks are off for your organization
 
-Team または Enterprise 組織の Owner が、組織レベルで[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（旧ルーティン）をオフにしています。このエラーは、[claude.ai/code/routines](https://claude.ai/code/routines) などでタスクを作成または実行しようとしたときに表示されます。Claude Code v2.1.227 以降では、同じ設定により CLI の [`/schedule` も非表示になります](https://code.claude.com/docs/ja/routines#troubleshooting)。
+組織で[クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)がオフになっているため、作成も実行もできません。claude.ai からのメッセージでは、これらをスケジュールタスクまたはルーティンと呼び、続けて管理者に関する一文が表示されます：
 
 ```text theme={null}
-Routines are disabled by your organization's policy.
+Scheduled tasks are off for your organization. …
+Routines are off for your organization. …
 ```
 
-これはサーバー側の設定であるため、ローカル設定、環境変数、CLI フラグから上書きすることはできません。
+ローカル設定、環境変数、CLI フラグでオンにすることはできません。
 
 **対処方法：**
 
-* 組織の Owner に、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) で **Scheduled tasks (Was Routines)** トグルをオンにするよう依頼します
+* Team または Enterprise の Owner に、[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) で **Scheduled tasks (Was Routines)** または **Routines** というラベルのトグルをオンにできるか確認します
 
 ### Remote Control には Anthropic API が必要です
 
@@ -5799,7 +5823,7 @@ v2.1.257 より前では、Claude Code は到達可能なネットワークパ�
 
 ### Remote managed settings failed to load
 
-セッションは[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)の対象ですが、Claude Code がそれらを取得できなかったか、サーバーから返された内容を適用できなかったため、対話セッションでこの警告が表示されます。
+セッションは[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)の対象ですが、Claude Code がそれらを取得できなかったか、サーバーから返された内容を適用できなかったため、対話セッションと Claude Desktop の Code タブでこの警告が表示されます。
 
 括弧内の原因には、`network error`、`request timed out`、`authentication rejected (401)` など、失敗した内容が示されます。原因が `no setting in the server response could be applied as written` の場合は、サーバーは応答したものの、返された設定のいずれも[検証](https://code.claude.com/docs/ja/server-managed-settings.md#invalid-entries-in-delivered-settings)に合格しなかったことを意味します。v2.1.282 より前では、この原因は `server returned invalid settings` と表示されていました。
 
@@ -5807,6 +5831,12 @@ v2.1.257 より前では、Claude Code は到達可能なネットワークパ�
 
 * **以前の取得成功時にキャッシュされた設定がある場合**: Claude Code は、[保留される環境変数](https://code.claude.com/docs/ja/server-managed-settings.md#fetch-and-caching-behavior)を除き、そのキャッシュされたポリシーでセッションを実行し、行には `using cached policy` と表示されます。
 * **キャッシュがない場合**: Claude Code はサーバー管理設定なしでセッションを実行し、行には `no remote policy applied` と表示されます。
+
+Code タブでは、メッセージを送信すると警告が会話内の行として表示され、取得の状態が変わると新しい行が表示されます。関連する 3 つのメッセージも同じように表示されます。
+
+* `Remote managed settings are still loading`: セッションが先に進んだ時点で、取得がまだ実行中だった
+* `Remote managed settings did not load`: 応答がないまま取得が終了した
+* `Remote managed settings have now loaded`: これらの警告のいずれかの後に設定が読み込まれた。行の残りの部分には、リモートポリシーが適用されるかどうかが示されます
 
 **対処方法:**
 

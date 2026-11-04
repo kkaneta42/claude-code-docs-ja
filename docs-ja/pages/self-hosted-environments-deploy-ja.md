@@ -827,7 +827,7 @@ Anthropic は、コネクタのツールをランナーからではなく、Anth
 
 ### 一部のセッションはアイドルとみなされない
 
-終了しないバックグラウンドタスクを保持しているセッションはアイドルとみなされないため、`--release-idle-session-min` はそのセッションのスロットを解放しません。実行中のツール呼び出しの内部から要求された承認を待っているセッションも、アイドルとみなされません。どのセッションもスロットを無期限に保持できないように、厳格な安全策として必ず `--kill-session-after-min` を併せて設定してください。
+実行し続けるバックグラウンドタスクを保持しているセッションはアイドルとみなされないため、`--release-idle-session-min` はそのセッションのスロットを解放しません。実行中のツール呼び出しの内部から要求された承認を待っているセッションも、アイドルとみなされません。厳格な安全策として、`--kill-session-after-min` を併せて設定してください。
 
 `--kill-session-after-min` は、暴走したセッションに対する安全策です。v2.1.260 以降のランナーでは、上限に達したセッションはただちに終了されません。ランナーはそのセッションに猶予期間（デフォルトは 15 分）を与えます。この期間は [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](https://code.claude.com/docs/ja/self-hosted-environments-reference#environment-variable-only-settings) で変更できます。
 
