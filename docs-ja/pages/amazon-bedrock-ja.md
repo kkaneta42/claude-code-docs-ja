@@ -460,7 +460,9 @@ v2.1.287 より前は、Fable モデルと Opus 4.7 以降は Invoke API では�
 export ANTHROPIC_BEDROCK_SERVICE_TIER=priority
 ```
 
-Claude Code は、各リクエストで `X-Amzn-Bedrock-Service-Tier` ヘッダーとしてこれを送信します。ティアの可用性はモデルとリージョンによって異なります。予約容量は、この設定の代わりに[プロビジョニングされたスループット](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html) ARN をモデル ID として使用します。
+Claude Code は、この変数が設定されたセッションからのすべての [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) リクエストで、これを `X-Amzn-Bedrock-Service-Tier` ヘッダーとして送信します。ただし、[モデルアクセスチェック](#startup-model-checks)は除きます。この設定は、[Mantle エンドポイント](#use-the-mantle-endpoint)へのリクエストや [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)を経由するリクエストには影響しません。ティアの可用性はモデルとリージョンによって異なります。予約容量は、この設定の代わりに[プロビジョニングされたスループット](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html) ARN をモデル ID として使用します。
+
+ターミナルから開始する[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#settings-and-provider)にも適用するには、設定の [`env`](https://code.claude.com/docs/ja/settings-reference#env) ブロックで `ANTHROPIC_BEDROCK_SERVICE_TIER` を設定します。これらのセッションがエクスポートした値を受け取るのは、[スーパーバイザー](https://code.claude.com/docs/ja/agent-view.md#the-supervisor-process)を開始したシェルがその値をエクスポートしていた場合のみです。
 
 ## AWS Guardrails
 
@@ -488,7 +490,7 @@ Mantle は `bedrock-mantle:` プレフィックスの下に独自の IAM アク�
 
 ### Mantle を有効にする
 
-AWS 認証情報が既に設定されている場合、`CLAUDE_CODE_USE_MANTLE` を設定して、リクエストを Mantle エンドポイントにルーティングします。
+AWS 認証情報が既に設定されている場合、`CLAUDE_CODE_USE_MANTLE` と AWS リージョンを設定します。
 
 ```bash theme={null}
 export CLAUDE_CODE_USE_MANTLE=1
@@ -518,7 +520,7 @@ export CLAUDE_CODE_USE_BEDROCK=1
 export CLAUDE_CODE_USE_MANTLE=1
 ```
 
-Mantle モデルを `/model` ピッカーに表示するには、[settings file](https://code.claude.com/docs/ja/settings.md) の `availableModels` にその ID をリストします。この設定はピッカーをリストされたエントリに制限するため、保持したいバージョンのバージョンプレフィックスまたは完全な ID もリストします。Mantle ID と `haiku` エイリアスは同じモデルファミリーに解決されるため、マージはより具体的なエントリのみを保持します。[Merge behavior](https://code.claude.com/docs/ja/model-config.md#merge-behavior) を参照してください。
+Mantle モデルを `/model` ピッカーに表示するには、[settings file](https://code.claude.com/docs/ja/settings.md) の `availableModels` にその ID をリストします。この設定は、ピッカーをリストされたエントリに制限する働きもあります。`anthropic.claude-haiku-4-5` をリストすると、単独の `haiku` エイリアスがピッカーから削除されるため、引き続き選択可能にしておきたいバージョンについては、バージョンプレフィックスまたは完全な ID もリストしてください。Mantle ID と `haiku` エイリアスは同じモデルファミリーに解決されるため、マージはより具体的なエントリのみを保持します。[Merge behavior](https://code.claude.com/docs/ja/model-config.md#merge-behavior) を参照してください。
 
 ```json theme={null}
 {
@@ -588,8 +590,6 @@ v2.1.261 より前では、**Use credentials already in my environment** オプ�
 
 * モデルを [inference profile](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html) ID として指定します
 
-Claude Code は Amazon Bedrock [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) を使用し、Converse API はサポートしていません。
-
 ### ゲートウェイまたはプロキシの背後でのストリーミングエラー
 
 Amazon Bedrock は `InvokeModelWithResponseStream` レスポンスをバイナリイベントストリーム形式でストリーミングし、ヘッダー `Content-Type: application/vnd.amazon.eventstream` を含みます。Claude Code と Amazon Bedrock の間のゲートウェイまたはプロキシは、Amazon Bedrock が送信したレスポンスボディとそのヘッダー（`Content-Type` を含む）を変更されずに転送する必要があります。
@@ -612,14 +612,14 @@ v2.1.196 以降に更新してください。
 
 ### Mantle エンドポイントエラー
 
-`CLAUDE_CODE_USE_MANTLE` を設定した後、`/status` が `Amazon Bedrock (Mantle)` を表示しない場合、変数がプロセスに到達していません。Claude Code を起動したシェルでエクスポートされているか、[settings file](https://code.claude.com/docs/ja/settings.md) の `env` ブロックで設定されていることを確認してください。
+`CLAUDE_CODE_USE_MANTLE` を設定した後、`/status` が `Amazon Bedrock (Mantle)` を表示しない場合、変数がプロセスに到達していません。`claude` を起動したシェルでエクスポートされているか確認するか、[設定ファイル](https://code.claude.com/docs/ja/settings.md)の `env` ブロックで設定してください。
 
 Mantle エンドポイントからの `403` が何を意味するかは、エラーが IAM アクションを名前付けるかどうかによって異なります：
 
 * エラーが `bedrock-mantle:` アクションを名前付ける場合は、IAM アイデンティティにそのアクションを付与してください。
 * エラーがアクションを名前付けず、認証情報が有効な場合は、AWS アカウントがリクエストしたモデルへのアクセスを許可されていません。AWS アカウントチームに連絡してアクセスをリクエストしてください。
 
-モデル ID を名前付ける `400` は、そのモデルが Mantle で提供されていないことを意味します。Mantle は標準 Amazon Bedrock カタログとは別の独自のモデルラインアップを持っているため、`us.anthropic.claude-sonnet-4-6` などの推論プロファイル ID は機能しません。Mantle 形式の ID を使用するか、[両方のエンドポイントを有効にして](#run-mantle-alongside-the-invoke-api)、Claude Code が各リクエストをモデルが利用可能なエンドポイントにルーティングするようにしてください。
+モデル ID を示す `400` は、そのモデルが Mantle で提供されていないことを意味します。Mantle は標準の Amazon Bedrock カタログとは別の独自のモデルラインアップを持っているため、`us.anthropic.claude-sonnet-4-6` などの推論プロファイル ID は機能しません。Mantle 形式の ID を使用するか、[両方のエンドポイント](#run-mantle-alongside-the-invoke-api)を有効にして、Claude Code が推論プロファイル ID を Invoke API に送信するようにしてください。
 
 ## 追加リソース
 

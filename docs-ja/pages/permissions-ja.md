@@ -69,7 +69,7 @@ Deny ルールは、ツール名を指定するか、ツール内のパターン
 
 ## 権限モード
 
-Claude Code は、ツール呼び出しの承認方法を制御するいくつかの権限モードをサポートしています。[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を参照して、各モードをいつ使用するかを確認してください。セッションが開始される際のモードを変更するには、[設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `defaultMode` を設定してください。[セッションが開始されるモード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)では、各プランの組み込みデフォルトと VS Code 拡張機能が読み込む内容について説明しています。
+Claude Code は、ツール呼び出しの承認方法を制御するいくつかの権限モードをサポートしています。[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を参照して、各モードをいつ使用するかを確認してください。新しいセッションのデフォルトの権限モードを変更するには、[設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `defaultMode` を設定してください。[セッションが開始されるモード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)では、各プランの組み込みデフォルトと VS Code 拡張機能が読み込む内容について説明しています。
 
 | モード | 説明 |
 | :- | :- |

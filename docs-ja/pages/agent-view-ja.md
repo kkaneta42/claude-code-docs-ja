@@ -1020,7 +1020,7 @@ claude daemon stop --any --keep-workers
 
 macOS では、バックグラウンドセッションホストは独自のプロセスとして実行され、ターミナルとは別に保護されたフォルダへのアクセスをリクエストします。バックグラウンドセッションが `~/Desktop`、`~/Documents`、`~/Downloads`、または別の保護された場所を読み取るときに `Operation not permitted` を報告する場合、System Settings の Privacy & Security > Files and Folders でアクセスを許可するか、エントリの Full Disk Access を有効にしてください。
 
-ネイティブインストーラーを使用すると、エントリは Claude Code として表示され、許可は更新全体で保持されます。Homebrew または npm などの他のインストール方法を使用すると、エントリはバイナリパスを表示し、更新後に再度許可が必要になる場合があります。
+どちらのリストでも、Claude Code という名前のエントリ、または `claude` バイナリのパスやファイル名が付いたエントリを探してください。このファイル名は `2.1.316` のようなバージョン番号の場合があります。Claude Code の更新後に `Operation not permitted` が再び発生する場合は、新しいバージョン名が付いたエントリなど、新しいエントリを探してください。見つかった場合は、そのエントリにアクセスを許可してください。
 
 ### macOS でバックグラウンドセッションがローカルネットワークホストに到達できない
 
@@ -1067,7 +1067,7 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 | v2.1.296 | [セッションがバックグラウンドに移動する際](#switch-sessions-without-leaving-the-terminal)に入力したプロンプトや `!` シェルコマンドは、停止されるか未送信のままになり、そのテキストはプロンプト履歴に保持されます。このリリースより前は、応答やコマンドが見えない場所で実行され続け、`←` の直後に送信したプロンプトが見えないまま 2 回実行されることがありました。また、`SessionStart` フックの実行中に入力したプロンプトは失われ、送信されず、プロンプト履歴にも残りませんでした。 |
 | v2.1.295 | [アタッチ中のバックグラウンドセッション](#attach-to-a-session)のアイドル状態のプロンプトで `Ctrl+C` を押しても、[自己ペースの `/loop`](https://code.claude.com/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の保留中のウェイクアップには影響しないため、2 回押すとデタッチされ、ループは実行を続けます。そのプロンプトで `Esc` を押すと[自己ペースのループが停止し](https://code.claude.com/docs/ja/scheduled-tasks.md#stop-a-loop)、`Pending wakeup cancelled` という通知が表示されます。このリリースより前は、最初の `Ctrl+C` で自己ペースのループが何の表示もなく終了することがあり、セッションとともにバックグラウンドに移動したループは `Esc` で停止しませんでした。 |
 | v2.1.295 | macOS と Linux では、[スーパーバイザー](#keep-sessions-running-after-the-supervisor-stops)が実行されていない状態で `claude agents` が終了する場合、新しいスーパーバイザーを自動的に起動しません。その場合、`claude agents` を再度実行しない限り、実行中のセッションは約 1 分後に停止し、agent view は終了時にその旨の通知を表示することがあります。このリリースより前は、終了する `claude agents` が新しいスーパーバイザーを起動していました。 |
-| v2.1.295 | ネイティブインストーラーを使用した macOS では、更新後にまとめて再起動されるバックグラウンドセッションは、付与した[保護フォルダへのアクセス](#background-sessions-can’t-read-desktop-documents-or-downloads-on-macos)を持つ同じ Claude Code エントリの下で実行されます。このリリースより前は、これらのセッションが代わりにバイナリ自身のパスの下で実行されることがありました。macOS はそのパスを別のエントリとして扱うため、更新後にフォルダアクセスのプロンプトが再び表示されることがありました。 |
+| v2.1.295 | ネイティブインストーラーを使用した macOS では、更新後にまとめて再起動されるバックグラウンドセッションは、同じ `~/.local/share/claude/ClaudeCode.app` フォルダからホストプロセスを実行します。このリリースより前は、これらのプロセスが代わりにバイナリ自身のパスから実行されることがありました。macOS はそのパスを別のエントリとして一覧表示することがあるため、更新後に[フォルダアクセスのプロンプト](#background-sessions-can’t-read-desktop-documents-or-downloads-on-macos)が再び表示されることがありました。 |
 | v2.1.290 | [`claude attach` と `claude logs`](#manage-sessions-from-the-shell) は、ID の代わりにセッションの名前の一部を受け付けます。 |
 | v2.1.290 | `/model`、`/effort`、`/rename`、`/usage` を作業中のセッションへの[ピーク返信](#peek-and-reply)として送信すると、すぐに実行されます。 |
 | v2.1.290 | 配信できない[ピーク返信](#peek-and-reply)は、`/` で始まる場合、またはセッションのプロセスの実行中に事前定義された選択肢のある質問に回答する場合、次回の再起動に向けて保存されなくなりました。 |

@@ -245,7 +245,7 @@ Claude Code v2.1.285 以降が必要です。これは [HIPAA 設定の最小バ
 >
 > **デフォルトとして**：[設定](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `defaultMode` を設定します。デスクトップアプリは CLI と同じ設定ファイルを読み取り、新しいローカルセッションに権限モードを適用します。
 >
-> モードセレクターで選択したモードはフォルダごとに記憶され、そのフォルダの `defaultMode` より優先されます。Plan は例外です。それを選択すると現在のセッションのみに適用されます。
+> ローカルセッションでモードセレクターから選択したモードはフォルダごとに記憶され、プロジェクトの `.claude/` 設定にある `defaultMode` より優先されます。ただし、新しいローカルセッションが `~/.claude/settings.json` または管理設定の `defaultMode` で開始する場合もあるため、最初のメッセージを送信する前にセレクターを確認してください。Plan を選択した場合は、このセッションのみに適用されます。
 >
 > `defaultMode` が設定ファイルのどこに行くかについては、[異なる権限モードで開始する](#start-in-a-different-mode)の例を参照してください。
 
@@ -372,7 +372,8 @@ auto モードでは、Claude Code は独自の分類器リクエストを送信
 
 * **Anthropic API への直接接続**: インタラクティブなターミナルセッション、および `-p`、Agent SDK、[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)のセッションで、プランやアカウントの種類を問わず、Anthropic の段階的な展開に応じて。セッションの種類を、以下の Claude Code の最小バージョンと照らし合わせて確認してください。
   * インタラクティブなターミナルセッションでは、サーバーへの依頼に、Pro、Max、Ultra、Team プランでは Claude Code v2.1.271 以降が必要です。Enterprise プランと Claude API アカウントでは、これらのセッションに v2.1.278 以降が必要です。
-  * `-p`、Agent SDK、VS Code 拡張機能、デスクトップアプリのセッションでは、サーバーへの依頼に Claude Code v2.1.281 以降が必要です
+  * `-p` と VS Code 拡張機能のセッションでは、サーバーへの依頼に Claude Code v2.1.278 以降が必要です
+  * Agent SDK とデスクトップアプリのセッションでは、サーバーへの依頼に Claude Code v2.1.281 以降が必要です
   * v2.1.282 以降、テレメトリをオフにしたなどの理由で[機能フラグを取得しない](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)セッションは、どの種類のセッションでもデフォルトでサーバーに依頼します
 * **クラウドプロバイダー、または LLM ゲートウェイやプロキシ**: [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry で、また `ANTHROPIC_BASE_URL` を [LLM ゲートウェイまたはプロキシ](https://code.claude.com/docs/ja/llm-gateway)に向けている場合は常に、プランを問わず。デフォルトで依頼するには Claude Code v2.1.278 以降が必要です。
 * **サインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッション**: Claude Code v2.1.280 以降が必要です

@@ -172,6 +172,15 @@ Claude Code は起動時に Anthropic のサーバーから設定をフェッチ
 
 [Claude apps ゲートウェイ](#platform-availability)経由でサインインしたクライアントは、ゲートウェイから設定をフェッチし、セッション開始前にそのフェッチを待機するため、以下のリストのフェッチは適用されません。そのフェッチが失敗した場合の動作については、[フェイルクローズ起動を強制する](#enforce-fail-closed-startup)を参照してください。
 
+> [!NOTE]
+>
+> マシンに保存された Team または Enterprise の claude.ai ログインでは、Anthropic がセッション開始前に組織の設定を必須とすることがあります。その場合、以下のリストの記載にかかわらず、次のようなケースでは開発者は[セッションを開始できません](https://code.claude.com/docs/ja/errors.md#couldnt-load-your-organizations-settings)。
+>
+> * サインインの有効期限が切れている場合（`claude auth login` を実行するまで）
+> * Claude Code が設定も最近のキャッシュコピーも持っていない場合。マシンが `api.anthropic.com` に到達できることを確認してください
+>
+> `before a session can start` または `Your Claude session has expired` を含む起動時のメッセージは、この要件が適用されていることを意味します。
+
 **キャッシュされた設定がない初回起動時:**
 
 * 初回実行時や `/logout` の後など、開発者が起動時にサインインする場合、Claude Code はセッションを開く前に最大 5 秒間フェッチを待機します。ポリシーが時間内に届いた場合、Claude Code は最初の画面からそれを適用し、その画面に [`companyAnnouncements`](https://code.claude.com/docs/ja/settings-reference#companyannouncements) を表示します。ペイロードが[セキュリティ承認](#security-approval-dialogs)を必要とする場合、Claude Code は待機を終了し、開発者が承認した時点でペイロードを適用します
@@ -221,14 +230,14 @@ Claude Code は、ほとんどの設定の更新を再起動なしで実行中�
   * いずれの設定もより厳格な値にフォールバックしない。
   * ペイロードに、上記 2 つの保持期間キー以外のキーが含まれている。
 
-  この場合、起動時の通知、`/status`、`claude doctor` は、原因 `no setting in the server response could be applied as written` とともに[読み込みの失敗](https://code.claude.com/docs/ja/errors.md#remote-managed-settings-failed-to-load)を報告し、その項目にはセッションがどのポリシーで実行されるかが記載されます。[フェイルクローズ起動を強制する](#enforce-fail-closed-startup)クライアントは、代わりに起動時に終了します。
+  この場合、起動時の通知、`/status`、`claude doctor` は、原因 `no setting in the server response could be applied as written` とともに[読み込みの失敗](https://code.claude.com/docs/ja/errors.md#remote-managed-settings-failed-to-load)を報告し、その項目にはセッションがどのポリシーで実行されるかが記載されます。[フェイルクローズ起動を強制する](#enforce-fail-closed-startup)クライアントは、代わりに起動時に終了します。組織が `before a session can start` 設定を必要としているというメッセージで起動が停止した場合は、[Claude Code が組織の設定を読み込めなかった](https://code.claude.com/docs/ja/errors.md#couldnt-load-your-organizations-settings)を参照してください。
 * [セキュリティ承認ダイアログ](#security-approval-dialogs)は、無効なエントリを除去した後のペイロードを評価するため、除去された無効なエントリが承認を求めて表示されたり、実行されたりすることはありません。
 
 配信の問題をデバッグするには、`claude --debug-file <path>` を実行し、ログで `Remote settings` を検索します。組織に展開する前に、テストマシン上で `claude doctor` を使用してペイロードの変更を検証してください。
 
 ### フェイルクローズ起動を強制する
 
-デフォルトでは、起動時にリモート設定のフェッチが失敗した場合、CLI は最後に成功したフェッチでキャッシュされた設定で続行します。ただし、フェッチが成功するまで [Claude Code が保留する値](#fetch-and-caching-behavior)は除きます。一度もフェッチしたことがないマシンでは、CLI はサーバー管理設定なしで続行し、デバイス上の[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は引き続き適用します。
+デフォルトでは、起動時にリモート設定のフェッチが失敗した場合、CLI は最後に成功したフェッチでキャッシュされた設定で続行します。[Claude Code が保留する値](#fetch-and-caching-behavior)は、フェッチが成功するまで保留されたままです。一度もフェッチしたことがないマシンでは、CLI はサーバー管理設定なしで続行し、デバイス上の[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は引き続き適用します。ただし、代わりに [Anthropic が設定を必須とする](#fetch-and-caching-behavior)場合もあります。
 
 クライアントがキャッシュされたサーバー管理設定で、またはサーバー管理設定がない状態で起動しないようにするには、管理設定で `forceRemoteSettingsRefresh: true` を設定します。
 
@@ -370,7 +379,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および
 | ユーザーがキャッシュされた設定ファイルを削除する | [初回起動動作](#fetch-and-caching-behavior)が発生します |
 | ユーザーが変更された Claude Code バイナリを実行する | 変更されたクライアントを実行できるユーザーは、クライアント側の制御をバイパスできます |
 | ユーザーが古い Claude Code バージョンを実行する | サーバー管理設定より前のバージョンは、これらをフェッチまたは適用しません |
-| API が利用不可 | キャッシュされた設定が利用可能な場合は適用されます。ただし、[フェッチが成功するまで Claude Code が保留する値](#fetch-and-caching-behavior)を除きます。キャッシュがない場合、Claude Code は次の成功したフェッチまでサーバー管理設定を適用しません。また、デバイス上の[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は引き続き適用されます。`forceRemoteSettingsRefresh: true` の場合、CLI は続行するのではなく終了します。ただし、[`claude auth` サブコマンド](#enforce-fail-closed-startup)を除きます。[Claude apps gateway](#platform-availability)を通じてサインインしているクライアントは、その設定がない場合、起動時に終了します。同じ `claude auth` 除外があります |
+| API が利用不可 | キャッシュされた設定が利用可能な場合は適用されます。キャッシュがない場合、Claude Code は次の成功したフェッチまでサーバー管理設定を適用しません。Anthropic が設定を必須とする場合を含む例外については、[フェッチとキャッシュの動作](#fetch-and-caching-behavior)に記載されています。`forceRemoteSettingsRefresh: true` の場合、CLI は続行するのではなく終了します。ただし、[`claude auth` サブコマンド](#enforce-fail-closed-startup)を除きます。[Claude apps gateway](#platform-availability)を通じてサインインしているクライアントは、その設定がない場合でも起動時に終了します。同じ `claude auth` 除外があります |
 | ユーザーが別の組織で認証する | 管理対象組織外のアカウントには設定が配信されません。これには [Console API キー](#platform-availability)で認証するセッションも含まれます |
 | ユーザーが[サードパーティモデルプロバイダー](#platform-availability)を構成する | サーバー管理設定はバイパスされます。これには `CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_MANTLE`、`CLAUDE_CODE_USE_VERTEX`、`CLAUDE_CODE_USE_FOUNDRY`、`CLAUDE_CODE_USE_ANTHROPIC_AWS`、またはデフォルト以外の `ANTHROPIC_BASE_URL` の設定が含まれます |
 | ネットワークトラフィックが傍受またはリダイレクトされる | TLS 検証が無効化されたか、傍受されたトラフィックは、クライアントが受け取る設定を変更できます |

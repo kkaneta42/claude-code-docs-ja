@@ -55,6 +55,8 @@
 | `spend limit reached` / `spend limit unavailable` | [使用制限](#spend-limit-reached) |
 | `Not logged in · Please run /login` | [認証](#not-logged-in) |
 | `Couldn't save your login` | [認証](#couldnt-save-your-login) |
+| `Sign in again to take your previous account or API key off the config file.` | [認証](#sign-in-again-to-take-your-previous-account-or-api-key-off-the-config-file) |
+| `Your account or API key may still be in the config file. Run claude auth logout.` | [認証](#your-account-or-api-key-may-still-be-in-the-config-file) |
 | `Authentication required · Sign in again to continue` | [認証](#not-logged-in) |
 | `Could not resolve authentication method` | [認証](#could-not-resolve-authentication-method) |
 | `Invalid API key` | [認証](#invalid-api-key) |
@@ -82,6 +84,9 @@
 | `Couldn't verify your organization's policy for remote control` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#couldnt-verify-your-organizations-policy-for-remote-control) |
 | `Remote Control is disabled by your organization's policy` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#remote-control-is-disabled-by-your-organizations-policy) |
 | `Remote Control was turned off by your organization's policy` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#remote-control-was-turned-off-by-your-organizations-policy) |
+| `Session failed: working folder not found:` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#working-folder-not-found) |
+| `The program file this Remote Control started from is gone` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#program-file-is-gone) |
+| `Session failed: spawn error:` の後に `ENOENT` メッセージが続くもの | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#program-file-is-gone) |
 | `OAuth token revoked` / `OAuth token has expired` | [認証](#oauth-token-revoked-or-expired) |
 | `Failed to authenticate: OAuth token revoked` | [認証](#oauth-token-revoked-or-expired) |
 | `Your account does not have access to Claude. Please login again or contact your administrator.` | [認証](#oauth-token-revoked-or-expired) |
@@ -165,6 +170,7 @@
 | `Request too large for the API's 32MB request limit` | [リクエストエラー](#request-too-large) |
 | `Image was too large` | [リクエストエラー](#image-was-too-large) |
 | `API Error: an image in the conversation could not be processed and was removed` | [リクエストエラー](#image-was-too-large) |
+| `An image in the conversation exceeds the dimension limit for many-image requests` | [リクエストエラー](#image-was-too-large) |
 | `Unable to resize image` | [リクエストエラー](#unable-to-resize-image) |
 | `Request rejected as unprocessable by the model` | [リクエストエラー](#request-rejected-as-unprocessable-by-the-model) |
 | `PDF too large` / `PDF is password protected` / `pdftoppm is not installed` | [リクエストエラー](#pdf-errors) |
@@ -229,6 +235,8 @@
 | `Error: --agents takes a JSON object, or a file path only with --print (-p)` | [コマンドラインエラー](#invalid-agents-configuration) |
 | `Error: --agents file not found` | [コマンドラインエラー](#invalid-agents-configuration) |
 | `Error: Settings file exceeds the 2MiB limit` | [コマンドラインエラー](#settings-file-exceeds-the-2mib-limit) |
+| `Configuration error in` | [コマンドラインエラー](#configuration-error-in-claude-json) |
+| `Claude configuration file at <path> was empty and no backup holds anything: starting with defaults.` | [コマンドラインエラー](#claude-configuration-file-was-empty) |
 | `The current directory no longer exists (it was deleted or moved)` / `Can't read the current directory` | [コマンドラインエラー](#the-current-directory-no-longer-exists) |
 | `Temp directory <dir> ... Refusing to use it` / `Claude Code's temporary directory <dir> could not be created` | [コマンドラインエラー](#temp-directory-refused-or-cannot-be-created) |
 | `ENOSPC: no space left on device, mkdir '<dir>'` | [コマンドラインエラー](#temp-directory-refused-or-cannot-be-created) |
@@ -334,6 +342,7 @@
 | `cannot contain null bytes (\0)` | [ツールエラー](#path-cannot-contain-null-bytes) |
 | `Path contains null bytes` | [ツールエラー](#path-cannot-contain-null-bytes) |
 | `command contains the invisible character U+FEFF (byte order mark) or U+180E (Mongolian vowel separator), and was not run` | [ツールエラー](#command-contains-an-invisible-character) |
+| `This call was not run. The command was approved before Claude Code restarted` | [ツールエラー](#command-approved-before-a-restart-was-not-run) |
 | `File is too large to read as an image (the limit is 128MB)` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
 | `Cannot read this as an image: <path> is a pipe or a device` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
 | `subagent_type is required: the general-purpose agent is not available in this session` | [ツールエラー](#subagent-type-is-required) |
@@ -420,11 +429,15 @@
 | `Not loaded: rename <path>, then restart — its name uses "<name>", a name reserved for the skills synced from your claude.ai account` | [設定の警告](#a-skill-command-or-workflow-wasnt-loaded-because-its-name-is-reserved) |
 | `N skill or command names refused: run with --debug to see which ([names]), rename, then restart` | [設定の警告](#skill-or-command-name-refused) |
 | `Ignoring N permissions.allow entries from ... this workspace has not been trusted` | [設定の警告](#workspace-has-not-been-trusted) |
+| `Make this change again later: <path> could not be updated, so it applies to this session only` | [設定の警告](#make-this-change-again-later) |
 | `is a network path, which cannot be added as a working directory` | [設定の警告](#working-directory-is-a-network-path) |
 | `Remote managed settings failed to load (<cause>)` | [設定の警告](#remote-managed-settings-failed-to-load) |
 | `Your organization requires remote managed settings to load, but they could not be loaded` | [フェイルクローズ起動を強制する](https://code.claude.com/docs/ja/server-managed-settings.md#enforce-fail-closed-startup) |
 | `Remote managed settings are still loading` | [設定の警告](#remote-managed-settings-failed-to-load) |
 | `Remote managed settings did not load` | [設定の警告](#remote-managed-settings-failed-to-load) |
+| `Claude Code couldn't load your organization's settings` / `Claude Code couldn't reach Anthropic to load your organization's settings` / `requires them before a session can start` | [設定の警告](#couldnt-load-your-organizations-settings) |
+| `Claude Code can't start this session yet` | [設定の警告](#couldnt-load-your-organizations-settings) |
+| `Your Claude session has expired. Sign in again to continue (claude auth login).` | [設定の警告](#couldnt-load-your-organizations-settings) |
 | `Managed settings were not approved; exiting without applying them.` | [設定の警告](#managed-settings-were-not-approved) |
 | `Your organization's managed settings need your approval, which couldn't be asked for here.` | [設定の警告](#managed-settings-need-your-approval) |
 | `Claude Code can't start: your organization's managed settings block the default model` / `Claude Code can't start: your organization allows only the models listed in "availableModels"` | [設定の警告](#managed-settings-block-the-default-model) |
@@ -1036,6 +1049,7 @@ macOS の v2.1.286 より前では、別のウィンドウからサインイン�
 * `/login` を実行して、Claude サブスクリプションまたは Console アカウントで認証します
 * 環境変数で認証されることを想定していた場合は、`claude` を起動したシェルで `ANTHROPIC_API_KEY` が設定され、エクスポートされていることを確認します
 * 対話的なログインができない CI や自動化では、起動時にキーを取得する [`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) スクリプトを設定します
+* 誰かが同じ claude.ai アカウントと組織に再度サインインしたときに `claude -p` ジョブがこのメッセージで終了する場合は、そのサインインが実行される環境の Claude Code を更新します。v2.1.318 より前では、Claude Code はそのサインイン中に、新しいログインを保存する前に保存済みのログインを削除していました。
 * 複数の認証情報が存在する場合に Claude Code がどれを使用するかについては、[認証の優先順位](https://code.claude.com/docs/ja/authentication.md#authentication-precedence)を参照してください
 
 繰り返しログインを求められる場合は、システムクロックの確認と macOS の認証情報ストレージの復旧手順について、[ログインしていない、またはトークンの有効期限切れ](https://code.claude.com/docs/ja/troubleshoot-install.md#not-logged-in-or-token-expired)を参照してください。
@@ -1445,6 +1459,34 @@ Couldn't save your login. Try logging in again.
 * macOS では、ログインキーチェーンのロックを解除してから、再度 `/login` を実行します
 * その他のプラットフォームでは、再度 `/login` を実行します
 * それでもログインが保存されない場合は、キーチェーンのロック解除コマンドやその他の認証情報ストレージの復旧手順について、[ログインしていない、またはトークンの有効期限切れ](https://code.claude.com/docs/ja/troubleshoot-install.md#not-logged-in-or-token-expired)を参照してください
+
+### Sign in again to take your previous account or API key off the config file
+
+サインイン後にこの警告が表示される場合、以前にサインインしていたアカウントが [`~/.claude.json`](https://code.claude.com/docs/ja/claude-directory#ce-claude-json) にまだ保存されている可能性があります。
+
+```text theme={null}
+Sign in again to take your previous account or API key off the config file.
+```
+
+Linux または Windows で Console ログインによって API キーが作成された場合、API キーも `~/.claude.json` にまだ残っている可能性があります。
+
+**対処方法:**
+
+* シェルで `claude auth login` を実行して再度サインインします。Claude Code は、置き換えられたアカウントまたは API キーをファイルから削除する保存処理を再試行します。
+
+### Your account or API key may still be in the config file
+
+`/logout` または `claude auth logout` を実行し、Claude Code はこのプロセスをサインアウトさせましたが、[`~/.claude.json`](https://code.claude.com/docs/ja/claude-directory#ce-claude-json) にアカウントが保持されていないことを確認できませんでした。保存が反映されなかったか、確認のためにファイルを読み戻せなかったかのいずれかです。
+
+```text theme={null}
+Your account or API key may still be in the config file. Run claude auth logout.
+```
+
+Linux または Windows で Console ログインによって API キーが作成された場合、API キーも `~/.claude.json` にまだ残っている可能性があります。
+
+**対処方法:**
+
+* シェルで `claude auth logout` を実行して保存を再試行します。保存が成功すると、コマンドは `Successfully logged out from your Anthropic account.` と出力します。
 
 ### Couldn't start the local listener that receives the browser sign-in
 
@@ -2425,6 +2467,7 @@ v2.1.212 より前では、十分に蓄積された画像を持つ会話は、�
 Image was too large. Double press esc to go back and try again with a smaller image.
 API Error: 400 ... image dimensions exceed max allowed size
 API Error: an image in the conversation could not be processed and was removed.
+An image in the conversation exceeds the dimension limit for many-image requests (3000px). Run /compact to remove old images from context, or start a new session.
 ```
 
 `could not be processed and was removed` の行は、サイズや寸法の上限を超えた画像など、会話内の画像を API が拒否したことを意味します。
@@ -2439,6 +2482,9 @@ API Error: an image in the conversation could not be processed and was removed.
 
 * 貼り付ける前に画像をリサイズしてください。API は単一の画像で最長辺 8000 ピクセルまで、コンテキストに 20 枚を超える画像がある場合は 3000 ピクセルまでの画像を受け入れます。
 * 全画面ではなく、関連する領域に絞ったスクリーンショットを撮ってください
+* `dimension limit for many-image requests` メッセージの場合、メッセージで示されていれば Claude Code のプロンプトで `/compact` を実行するか、画像の数を減らして新しいセッションを開始します
+
+`dimension limit for many-image requests` メッセージには、API のエラーで示されたピクセルの上限が表示されます。
 
 ### Unable to resize image
 
@@ -3228,6 +3274,43 @@ Claude Code は、通常のファイルではない `--settings` のパスも同
 
 * `--settings` には 2 MiB 未満の通常の JSON 設定ファイルを指定します。形式については[設定](https://code.claude.com/docs/ja/settings.md)を参照してください。
 
+### Configuration error in \~/.claude.json
+
+Claude Code は、アカウント情報、MCP サーバー、プロジェクトごとの状態を保持するファイルである `~/.claude.json` を解析できませんでした。ファイルは変更されていません。`claude -p` などの[非対話](https://code.claude.com/docs/ja/headless.md)での起動は、ファイルを修復するまで毎回終了コード 1 で終了します。
+
+Claude Code が[バックアップ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)を見つけた場合、出力にはそのバックアップが示され、それをコピーして元に戻す `cp` 行が出力されます：
+
+```text wrap theme={null}
+Claude configuration file at /home/user/.claude.json is corrupted: <JSON parser's message>
+The corrupted file has been backed up to: /home/user/.claude/backups/.claude.json.corrupted.1793664000000
+A backup file exists at: /home/user/.claude/backups/.claude.json.backup.1793660400000
+You can manually restore it by running: cp -f "/home/user/.claude/backups/.claude.json.backup.1793660400000" "/home/user/.claude.json"
+
+Configuration error in /home/user/.claude.json: <JSON parser's message>
+```
+
+**対処方法：**
+
+* **出力に `cp` 行がある場合**：その行をターミナルで実行します。Windows では PowerShell で実行します。これにより、壊れたファイルが、`~/.claude.json` の以前のバージョンであるバックアップに置き換えられます。
+* **出力に `cp` 行がない場合、または実行後もエラーが再発する場合**：`~/.claude.json` の JSON を修正するか、[`~/.claude/backups/`](https://code.claude.com/docs/ja/claude-directory#cleaned-up-automatically) に別の `.claude.json.backup.<timestamp>` ファイルがあればそれで上書きコピーするか、ファイルの名前を変更します。`~/.claude.json` にファイルがない場合、Claude Code はデフォルト設定で起動し、ファイルが保持していた内容は一切引き継がれません。
+
+v2.1.318 より前は、非対話での起動でこのエラーが出力された後、`~/.claude.json` がデフォルトの状態になっていたため、次回の起動は設定なしで実行されていました。
+
+### Claude configuration file was empty and no backup holds anything
+
+起動時にこのメッセージが表示された場合、示されたファイルが空で、そのファイルの [`.backup` コピー](https://code.claude.com/docs/ja/claude-directory#cleaned-up-automatically)にも何も含まれていないことを意味します。Claude Code は、そのファイルが保持する内容についてはデフォルトで起動しました。`settings.json` ファイルと `.mcp.json` は別のファイルです。
+
+```text wrap theme={null}
+Claude configuration file at /home/user/.claude.json was empty and no backup holds anything: starting with defaults.
+```
+
+**対処方法：**
+
+* そのファイルで設定していた内容を再度設定します。たとえば、ターミナルから `claude mcp add` を使用して、`user` スコープと `local` スコープの [MCP サーバー](https://code.claude.com/docs/ja/mcp.md#mcp-installation-scopes)を追加します。
+* Claude Code から求められた場合は、再度サインインします
+
+v2.1.318 より前は、Claude Code はバックアップのない空のファイルを[破損](#configuration-error-in-claude-json)として報告していました。
+
 ### The current directory no longer exists
 
 シェルが移動した後に削除または移動されたディレクトリ（たとえば、別のシェルが削除した worktree や一時ディレクトリ）から `claude` を起動しました。Claude Code は作業ディレクトリを読み取れないため、対話モードでも[非対話](https://code.claude.com/docs/ja/headless.md)モードでも、セッションを開始する前に終了コード 1 で終了します。v2.1.239 より前は、このメッセージの代わりに、Claude Code はミニファイされたバンドルのソースと生の `ENOENT ... uv_cwd` スタックを stderr に出力してクラッシュしていました。
@@ -3339,7 +3422,7 @@ Error: Workspace not trusted. Please run `claude` in /Users/you/project first to
 * **`Error: Workspace not trusted. <folder> is your home directory`**: ホームディレクトリに対する信頼は保存されないため、先にそこで `claude` を実行しても解決しません。代わりに、プロジェクトディレクトリで一度 `claude` を実行して信頼ダイアログを承認した後、そこから `claude ultrareview` を実行するか、`--trust-workspace` を追加します。
 * **`No answer in time.` に続いて `Error: Workspace not trusted`**: `Trust <folder>? [y/N]` の質問に 5 分間回答がありませんでした。`claude ultrareview` を再実行して回答してください。
 * **`Ultrareview did not start: <folder> is not trusted`**: `n` と答えるか Enter を押すなどして、`Trust <folder>? [y/N]` の質問で拒否しました。レビューを開始するには、`claude ultrareview` を再実行して `y` と答えます。
-* **``Ultrareview did not start: `--trust-workspace` takes no value``**: PR 番号や `false` など、フラグ以外のものが `--trust-workspace` の後に続いています。フォルダを信頼しない場合は、フラグを省略します。この実行に限り信頼するには、PR 番号またはベースブランチをフラグの前に置きます：`claude ultrareview 1234 --trust-workspace`。
+* **``Ultrareview did not start: `--trust-workspace` takes no value``**：PR 番号や `false` など、フラグ以外のものが `--trust-workspace` の後に続いています。フォルダーを信頼しない場合は、フラグを省略します。この実行に限り信頼する場合は、PR 番号またはベースブランチをフラグの前に置きます：`claude ultrareview 1234 --trust-workspace`。
 
 v2.1.309 より前は、`claude ultrareview` は `--trust-workspace` を受け付けませんでした。
 
@@ -3631,8 +3714,8 @@ Claude Code は、[動的コンテキストを挿入する](https://code.claude.
 
 関連するメッセージは、コマンドが実行される前に発生します:
 
-* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法を説明しています
-* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: スキルのフロントマターが、bash のないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
+* `Shell command permission check failed for pattern "..."`：コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法を説明しています
+* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``：スキルのフロントマターが、bash のないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
 
 **対処方法:**
 
@@ -3785,7 +3868,7 @@ Could not find merge-base with main. Pass the base branch explicitly (e.g. `/cod
 
 * **ベースブランチを渡さなかった場合**：Claude Code はリポジトリのデフォルトブランチと比較しており、上記の例のようにベースを明示的に渡すよう提案します
 * **クローン内にすでに存在するベースブランチを渡した場合**：ヒントは ``Make sure <branch> exists locally or on origin (try `git fetch origin <branch>`)`` となります
-* **クローンに存在しないベースブランチを渡した場合**：Claude Code は比較の前にそのブランチを origin からフェッチしています。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたすべてのベースブランチに対して `git fetch --unshallow origin` が提案されており、完全なクローンではこのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗していました。
+* **クローンに存在しないベースブランチを渡した場合**：Claude Code は比較の前に origin からそれをフェッチしました。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたすべてのベースブランチに対して `git fetch --unshallow origin` が提案されており、完全なクローンではこのコマンドが `fatal: --unshallow on a complete repository does not make sense` で失敗していました。
 
 **対処方法：**
 
@@ -4670,6 +4753,20 @@ Error: command contains the invisible character U+FEFF (byte order mark) or U+18
 
 * **Claude が書いたコマンドの場合**: 修正する必要はありません。メッセージが Claude にコマンドの書き直し方を伝えます。
 * **スキルまたはコマンドファイルの場合**: メッセージは `No shell command in <name> was run` の後に続きます。[文字の場所と削除方法](#no-shell-command-was-run) を参照してください。
+
+### Command approved before Claude Code restarted was not run
+
+承認したシェルコマンドが実行されず、Claude はこのメッセージをコマンドの結果として受け取ります。
+
+```text wrap theme={null}
+This call was not run. The command was approved before Claude Code restarted, and Claude Code could not confirm that the shell is back in the directory where it was approved. That directory may be gone or replaced, lie outside the directory where the session started, or be one that Claude Code needs approval to enter or is not allowed to examine. The shell's directory is <directory>. If the command still makes sense, cd to the directory it was meant for and make the call again; it may need approval again.
+```
+
+メッセージの 3 番目の文は、代わりに `It does not keep track of that directory across a restart in a session that has been in a worktree.` となる場合もあります。
+
+**What to do:**
+
+* Claude に処理を続行させ、コマンドの再承認を求められた場合はプロンプトに応答します。
 
 ### File is too large to read as an image
 
@@ -5846,6 +5943,26 @@ Code タブでは、メッセージを送信すると警告が会話内の行と
 
 v2.1.248 より前では、Claude Code は設定の取得失敗をデバッグログにのみ報告していました。
 
+### Claude Code が組織の設定を読み込めなかった
+
+組織の設定（[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を含む）は最初に読み込まれる必要がありますが、Claude Code がそれらを読み込めなかったため、セッションは開始されていません。例:
+
+```text theme={null}
+Claude Code couldn't reach Anthropic to load your organization's settings (could not connect). <Organization name> requires them before a session can start.
+```
+
+メッセージが `Claude Code can't start this session yet` というタイトルのダイアログに表示されている場合、設定が読み込まれるとすぐにダイアログが閉じてセッションが開始されます。
+
+[非対話モード](https://code.claude.com/docs/ja/headless.md)と[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)では、Claude Code は代わりにメッセージを出力し、ステータス 1 で終了します。
+
+**対処方法:**
+
+* **`could not connect`、または `the reply came from a network proxy, not Anthropic`**: ネットワーク接続を確認し、企業ネットワークの場合は `api.anthropic.com/api/claude_code/policy_limits` と `api.anthropic.com/api/claude_code/settings` への HTTPS を許可するよう IT 部門に依頼します。その後、**Retry now** を選択するか、コマンドを再度実行します。
+* **`timed out`、`Anthropic returned an error`、または `Anthropic asked it to retry shortly`**: ダイアログに再試行させるか、後でコマンドを再度実行します。繰り返し発生する場合は [status.anthropic.com](https://status.anthropic.com) を確認してください。
+* **`still loading`、または `couldn't verify your sign-in with Anthropic yet`**: ダイアログに再試行させるか、コマンドを再度実行します。サインインに関するメッセージが繰り返し表示される場合は、シェルで `claude auth login` を実行して再度サインインします。
+* **`Your Claude session has expired`**: このマシンに保存されているサインインは有効ではなくなったため、再試行しても解決しません。ダイアログで **Sign in again** を選択して Claude Code を閉じてから、シェルで `claude auth login` を実行します。このコマンドはセッションを開始できない間も動作します。
+* **`none of the settings the server returned could be applied as written`**: 組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#invalid-entries-in-delivered-settings)の修正を管理者に依頼してから、再試行します。
+
 ### Managed settings were not approved
 
 組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)に承認が必要な設定が含まれており、[セキュリティ承認ダイアログ](https://code.claude.com/docs/ja/server-managed-settings.md#security-approval-dialogs)を拒否したため、Claude Code はそれらを適用せずに終了します。
@@ -6304,6 +6421,18 @@ sandbox.filesystem.allowRead is ignored — managed settings set allowManagedRea
 v2.1.309 より前では、警告は `Stale sandbox mask files left by a killed session` と表示されていました。
 
 v2.1.257 より前では、`claude doctor` はこれらのファイルを警告しませんでした。それ以前のバージョンでも、セッションが強制終了されると同じプレースホルダーが残ります。
+
+### Make this change again later: \~/.claude.json could not be updated
+
+stderr に表示されるこの通知は、サインインや信頼プロンプトへの回答など、[`~/.claude.json`](https://code.claude.com/docs/ja/claude-directory#ce-claude-json) への変更がファイルに保存されなかったことを意味します。
+
+```text theme={null}
+Make this change again later: /home/user/.claude.json could not be updated, so it applies to this session only.
+```
+
+**対処方法:**
+
+* 後のセッションで同じ変更を再度行います。たとえば、`/login` を再度実行するか、信頼プロンプトに再度回答します。
 
 ## 応答の品質がいつもより低いように見える
 

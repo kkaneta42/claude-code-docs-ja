@@ -139,13 +139,13 @@
 | [`outputStyle`](#outputstyle) | [出力スタイル](https://code.claude.com/docs/ja/output-styles.md)で Claude の役割、トーン、出力形式を変更します | モデルと応答 | Any file |
 | [`parentSettingsBehavior`](#parentsettingsbehavior) | [管理設定](https://code.claude.com/docs/ja/managed-settings.md)をデプロイしている場合に、[SDK または IDE ホスト](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy)が渡す制限を適用するか破棄するかを指定します | エンタープライズと管理設定 | Managed |
 | [`permissionExplainerEnabled`](#permissionexplainerenabled) | v2.1.257 で削除されました。シェルの権限プロンプトでの `Ctrl+E` によるコマンドの説明も同時に削除されています | グローバル設定 | Global config |
-| [`permissions`](#permissions) | 許可ルール、確認ルール、拒否ルールと、開始時の[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します | 権限設定 | Any file |
+| [`permissions`](#permissions) | 許可（allow）、確認（ask）、拒否（deny）のルールとデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します | 権限設定 | 任意のファイル |
 | [`permissions.additionalDirectories`](#permissions-additionaldirectories) | [現在のディレクトリ以外のディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)へのファイルアクセスを Claude に許可します | 権限設定 | Any file |
 | [`permissions.allow`](#permissions-allow) | 列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)を確認なしで承認します | 権限設定 | Any file |
 | [`permissions.ask`](#permissions-ask) | 列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)の前に常に確認を求めます | 権限設定 | Any file |
 | [`permissions.blockReadsOutsideWorkingDirectories`](#permissions-blockreadsoutsideworkingdirectories) | すべての権限モードで、ファイルツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外の読み取りを拒否するようにします | 権限設定 | Any file |
 | [`permissions.blockWritesOutsideWorkingDirectories`](#permissions-blockwritesoutsideworkingdirectories) | [Claude Code 自身の一部のファイル](#what-the-write-block-refuses-and-what-stays-writable)を除き、すべての権限モードで `Write`、`Edit`、`NotebookEdit` ツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスを拒否するようにします | 権限設定 | Any file |
-| [`permissions.defaultMode`](#permissions-defaultmode) | 新しいセッションを開始するときの[権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を設定します | 権限設定 | Any file |
+| [`permissions.defaultMode`](#permissions-defaultmode) | 新しいセッションのデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を設定します | 権限設定 | 任意のファイル |
 | [`permissions.deny`](#permissions-deny) | シークレットを含むファイルの読み取りなど、列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)をブロックします | 権限設定 | Any file |
 | [`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode) | 誰も [bypassPermissions モード](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)に入れないようにします | 権限設定 | Any file |
 | [`plansDirectory`](#plansdirectory) | [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)がプランファイルを書き込む場所を選択します | メモリとコンテキスト | Any file |
@@ -804,7 +804,7 @@ Claude Code がメインの会話の外で行うリクエストを[プロンプ�
 
 ## 権限設定
 
-Claude が何を確認なしで実行できるか、セッションがどの権限モードで開始するか、auto モードの分類器が何を許可するかを決定します。ルール構文と権限モデルについては、[権限を設定する](https://code.claude.com/docs/ja/permissions.md)を参照してください。
+Claude が何を確認なしで実行できるか、新しいセッションのデフォルトの権限モード、auto モードの分類器が何を許可するかを決定します。ルール構文と権限モデルについては、[権限を設定する](https://code.claude.com/docs/ja/permissions.md)を参照してください。
 
 ### `allowManagedPermissionRulesOnly`
 
@@ -899,7 +899,7 @@ auto モードがアクティブな間、すべての Bash および PowerShell 
 
 ### `permissions`
 
-Claude が確認なしで使用できるツール、常にプロンプトを表示するツール、ブロックされるツールを制御し、セッションが開始する[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します。以下のすべての `permissions.*` キーはこのオブジェクトの下にネストされます。
+Claude が確認なしで使用できるツール、プロンプトを表示するツール、ブロックされるツールを制御します。また、新しいセッションのデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md)も設定します。以下のすべての `permissions.*` キーはこのオブジェクトの下にネストされます。
 
 * **スコープ**: [`Any file`](#scopes)
 * **タイプ**: `allow`、`ask`、`deny`、`additionalDirectories`、`blockReadsOutsideWorkingDirectories`、`blockWritesOutsideWorkingDirectories`、`defaultMode`、`disableBypassPermissionsMode`、`disableAutoMode` を含むオブジェクト
@@ -1137,7 +1137,7 @@ Claude Code 自身の一部のファイルは書き込み可能なままです�
 
 ### `permissions.defaultMode`
 
-新しいセッションが開始する[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します。未設定のままにすると、セッションは使用しているサーフェスの[組み込みデフォルト](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)で開始します。
+新しいセッションのデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します。未設定のままにすると、使用しているサーフェスの[組み込みデフォルト](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)が適用されます。
 
 * **スコープ**: [`Any file`](#scopes)。`auto` および `bypassPermissions` はプロジェクトまたはローカル設定からは有効にならないため、代わりに `~/.claude/settings.json` で設定してください。v2.1.257 より前では、`bypassPermissions` は任意のファイルから有効になりました。VS Code 拡張機能が開始する会話の場合、Claude Code はユーザー、管理、および `--settings` の値のみを読み取ります。
 * **タイプ**: 文字列。次のいずれか：
@@ -5587,12 +5587,12 @@ Claude Desktop または Cowork で開始または最後に続行したセッシ
 
 Claude Code が[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を新たに取得するまで CLI の起動をブロックします。取得に失敗した場合、Claude Code はキャッシュされた設定や設定なしで続行せずに終了します。セッションが管理ポリシーなしで実行される時間がわずかでも許容できない環境で設定してください。
 
-このキーが未設定の場合、Claude Code は取得のために起動をブロックしませんが、開発者が起動時にサインインする場合は取得を最大 5 秒待ちます。Cloud ゲートウェイセッションは常に待機し、ゲートウェイに到達できない場合は終了します。
+このキーが未設定の場合、Claude Code は取得のために起動をブロックしませんが、開発者が起動時にサインインする場合は取得を最大 5 秒待ちます。[Anthropic は設定を必須にできます](https://code.claude.com/docs/ja/server-managed-settings.md#fetch-and-caching-behavior)。その場合、設定なしでの起動はブロックされます。Cloud gateway セッションは待機し、ゲートウェイに到達できない場合は終了します。
 
 * **スコープ**: [`Managed`](#scopes)。Claude Code は、管理者が制御する任意の管理ソースからの `true` を、最も優先度の高いソースでなくても尊重します。
 * **型**: Boolean
   * `true`: Claude Code はサーバー管理設定を新たに取得するまで起動をブロックし、取得に失敗した場合は終了します
-  * `false`: Claude Code は取得のために起動をブロックしませんが、サインインを伴う起動では取得を最大 5 秒待ちます
+  * `false`: Anthropic が設定を必須にしていない限り、Claude Code は取得のために起動をブロックしませんが、サインインを伴う起動では取得を最大 5 秒待ちます
 * **デフォルト**: `false`
 
 ```json managed-settings.json theme={null}

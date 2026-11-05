@@ -502,6 +502,21 @@ claude remote-control --verbose
 * ネットワークまたはプロキシの問題：ファイアウォールまたはプロキシが送信 HTTPS リクエストをブロックしている可能性があります。Remote Control には、ポート 443 の Anthropic API へのアクセスが必要です。
 * セッション作成失敗：`Session creation failed — see debug log` も表示される場合、失敗はセットアップの前の段階で発生しました。サブスクリプションがアクティブであることを確認してください。
 
+### "working folder not found"
+
+[`claude remote-control`](#start-a-remote-control-session) を実行しているターミナルで、`Session failed: working folder not found:` の後に引用符で囲まれたパスが表示される場合、そのパスにフォルダーが存在しないため、セッションを開始できなかったことを意味します。
+
+* **サーバーがまだ実行中の場合**：フォルダーを復元してセッションを再度開始するか、サーバーを停止してください
+* **サーバーが終了している場合**：存在するフォルダーから `claude remote-control` を再度実行してください
+
+v2.1.318 より前では、このように失敗したセッションには `Session failed: spawn error:` と、見つからないフォルダーではなくプログラムファイルを名前に挙げる `ENOENT` メッセージが表示されていました。
+
+### "The program file this Remote Control started from is gone"
+
+[`claude remote-control`](#start-a-remote-control-session) を実行しているターミナルに表示されるこの警告は、サーバーの起動元となったプログラムファイルが見つからず、新しいセッションはそれを置き換えた新しいバージョンで実行されることを意味します。サーバーもそのバージョンに移行するには、サーバーを停止して `claude remote-control` を再度実行してください。Claude Code がネットワークストレージにインストールされている場合は、今すぐサーバーを再起動し、[ネットワークストレージへのインストール](https://code.claude.com/docs/ja/setup.md#install-on-network-storage)の手順に従ってください。それ以外の場合、新しいセッションは再起動なしで開始されます。
+
+プログラムファイルが見つからず、Claude Code が実行できる新しいバージョンも見つからない場合、新しいセッションは失敗します。ターミナルには、`Session failed: spawn error:` の後に `ENOENT` メッセージが続くようなエラーが表示されます。サーバーを停止し、シェルで `claude` が実行できない場合は [Claude Code を再度インストール](https://code.claude.com/docs/ja/setup.md#install-claude-code)してから、`claude remote-control` を再度実行してください。v2.1.318 より前では、新しいバージョンがインストールされていても、新しいセッションはこのように失敗していました。
+
 ### "Couldn't reconnect to your Remote Control session"
 
 `claude --resume` または `claude --continue` で会話を再開すると、Claude Code はその会話に記録された Remote Control セッションに再接続します。このメッセージは、ネットワーク中断やサーバーエラーなど、一時的である可能性がある理由で再接続が失敗したことを意味するため、Claude Code はリモートセッションがまだ存在するかどうかを確認できません。

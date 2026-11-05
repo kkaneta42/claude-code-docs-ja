@@ -1264,6 +1264,20 @@ Keychain Access を開き、`login` キーチェーンを選択して、**編集
 
 Keychain が再び書き込み可能になったら、Claude Code は次回認証情報を書き込むときに認証情報を Keychain に戻します。今すぐ強制するには、`/logout` を実行してから `/login` を実行してください。ログアウトすると、プレーンテキストファイルの内容、保存された MCP サーバーログイン、プラグイン機密値を含むすべての保存された認証情報が削除されるため、その後 MCP サーバーを再度認可し、プラグインシークレットを再度入力することを期待してください。再度ログインすると、ログインが Keychain に保存されます。
 
+#### ネットワーク上のホームディレクトリでログインが失敗する
+
+リクエストが `API Error: 401` で失敗し、[設定ディレクトリ](https://code.claude.com/docs/ja/claude-directory.md) がネットワークファイルシステム上にある場合は、そのファイルシステム、またはそのファイルシステム上のクォータがいっぱいになっていないか確認してください。空き容量がないと、Claude Code は新規または更新されたログインをプレーンテキストの [`.credentials.json` ファイル](https://code.claude.com/docs/ja/authentication#credential-management) に保存できませんが、それでも `claude auth login` は `Login successful.` と出力することがあります。
+
+**1. ファイルシステムの空き容量を確保する**
+
+`~/.claude`、または [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) で設定したディレクトリを含むファイルシステム上の不要なファイルを削除してください。
+
+**2. 再度サインインする**
+
+Claude Code のプロンプトで `/login` を実行するか、シェルで `claude auth login` を実行してください。
+
+v2.1.318 より前では、Claude Code が満杯のネットワークファイルシステムにログインファイルを保存すると、まだ有効な保存済みのログインが空のファイルで置き換えられる可能性がありました。その結果、後続のコマンドで `Not logged in` と報告されていました。
+
 ### Bedrock、Agent Platform、または Foundry 認証情報が読み込まれない
 
 Claude Code をクラウドプロバイダーを使用するように設定し、Amazon Bedrock で `Could not load credentials from any providers`、Google Cloud の Agent Platform で `Could not load the default credentials`、または Microsoft Foundry で `ChainedTokenCredential authentication failed` が表示される場合、クラウドプロバイダー CLI は現在のシェルで認証されていない可能性があります。

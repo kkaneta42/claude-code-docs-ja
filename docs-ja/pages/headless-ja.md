@@ -48,7 +48,7 @@ claude --bare -p "Summarize README.md" --allowedTools "Read"
 
 bare モードでは、Claude Code は OAuth 認証情報またはシステムキーチェーンを読み込みません。Anthropic API の場合、環境で `ANTHROPIC_API_KEY` を設定します。[Claude Console](https://platform.claude.com) で作成されたキーを使用するか、`--settings` JSON で `apiKeyHelper` を指定します。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry は、通常どおり独自のプロバイダー認証情報を読み込み続けます。
 
-bare モードでは、Claude は Bash、ファイル読み取り、ファイル編集ツールにアクセスできます。フラグで必要なコンテキストを渡します。
+bare モードでは、Claude は Bash、ファイル読み取り、ファイル編集のツールにアクセスできます。必要なコンテキストはフラグで渡します：
 
 | 読み込むもの | 使用 |
 | - | - |
@@ -57,6 +57,8 @@ bare モードでは、Claude は Bash、ファイル読み取り、ファイル
 | MCP サーバー | `--mcp-config <file-or-json>` |
 | [カスタムエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-the-subagent-scope) | `--agents <file-or-json>` |
 | プラグイン | `--plugin-dir <path>`、`--plugin-url <url>` |
+
+bare モードでは、`--settings` で渡したフックや、フラグで読み込んだプラグインの [`hooks/hooks.json`](https://code.claude.com/docs/ja/plugins/components#hooks) または [`hooks` マニフェストキー](https://code.claude.com/docs/ja/plugins/manifest-reference#hooks) にあるフックも実行されません。フックが必要な実行には bare モードを使用しないでください。
 
 bare モードでは、セッションの実行中に行われる処理も制限されます。
 

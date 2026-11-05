@@ -472,6 +472,29 @@ trap 'rc=$?; [ "$rc" -eq 0 ] || [ -n "${PERMANENT:-}" ] || exit 1' EXIT
 
 trap が機能することを確認するには、`trap` 行の直下に、`no-such-command` などの存在しないコマンドを呼び出す行を追加します。シェルからフックファイルを実行し、`echo $?` が `1` を出力することを確認してから、その行を削除します。
 
+#### スポーン要求が送信された理由を確認する
+
+フックは各スポーン要求の理由を `CLAUDE_RUNNER_SPAWN_REASON` で受け取るため、`CLAUDE_RUNNER_SESSION_UUID` とあわせて、フックが実行された理由をログに記録できます。オーケストレーターに Claude Code v2.1.318 以降が必要です。未設定の場合があるため `"${CLAUDE_RUNNER_SPAWN_REASON:-}"` として読み取り、値にかかわらずランナーを起動してください。フックがこの値で分岐する場合は、Anthropic が値を追加する可能性があるため、デフォルトの分岐を残してください。
+
+以前の要求の理由を確認するには、すべてのオーケストレーターレプリカのログで、`session=` と、セッションの `session_...` ID ではなく `CLAUDE_RUNNER_SESSION_UUID` を検索します。`ok session=` 行と `nack session=` 行には、`reason=` の後に `CLAUDE_RUNNER_SPAWN_REASON` の値が表示されます。未設定だった場合は `reason=-` と表示されます。
+
+* **`[runner:orchestrator] ok session=`**：フックが 0 で終了した
+* **`[runner:orchestrator] nack session=`**：オーケストレーターが失敗したスポーン要求を Anthropic に報告している
+
+各値は、Anthropic がそのセッションについて最後に記録した原因のみを示し、履歴は示しません。
+
+| 値 | 発生した内容 | 確認する内容 |
+| :- | :- | :- |
+| `session_created` | 新しいセッションに対する最初のスポーン要求です | 特にありません。セッションの最初の要求を見分けるためにこの値に頼らないでください。固定フリートランナーまたはスタンバイランナーがセッションを保持していた後は、フックが最初に受け取る要求が `runner_lost` を持つことがあるためです。 |
+| `no_runner_registered` | 前の要求に対して `--expected-spawn-seconds` 以内にランナーが登録されず、Anthropic はその要求に対する失敗報告を記録しませんでした | セッションの以前の行に `stop: no nack for session=` または `nack failed session=` がある場合、失敗報告が記録されなかったことを意味します。その前にあるフックのエラーを読み、オーケストレーターが停止中だった場合は[オーケストレーターを停止または再起動する](#stop-or-restart-the-orchestrator)を参照してください。`ok session=` 行の後であれば、そのランナーが起動し、`--expected-spawn-seconds` 以内に登録されたかを確認してください。どのレプリカもその要求をログに記録していない場合は、オーケストレーターの再起動と `poll failed` 行を確認してください。 |
+| `hook_failed` | オーケストレーターが、前の要求が失敗し再試行可能であることを報告しました。たとえば、フックが 1 で終了した場合や、`--hook-timeout` の終了時点でまだ実行中だった場合です。オーケストレーターがフックを実行せずに要求を Anthropic に返した場合（オーケストレーターの停止中など）も、値は同じです。 | この要求より前の、セッションの最後の `[runner:orchestrator] nack session=` 行または `stop: handing back session=` 行を探します。オーケストレーターが送信したスポーンエラーは `reason=` の値の後に続き、後続の行にまたがる場合があります。`handing back session=` 行は、オーケストレーターが停止中でフックを実行しなかったことを意味するため、フック側で修正すべき点はありません。 |
+| `runner_lost` | セッションを保持していたランナーが Anthropic への報告を停止した、登録解除された、または削除されました | ノードの退避、メモリ不足による強制終了、スポットインスタンスの回収、独自のロールアウトやスケールダウンなど、ランナーを停止させた原因や Anthropic から切断した原因を特定してください |
+| `runner_reported_failure` | 前のランナーが、そのランナー上でセッションが失敗したことを報告しました（チェックアウト中など） | 前のランナーのログを読んでください。多くのセッションがこの値を受け取る場合は、イメージとリポジトリのセットアップを確認してください。 |
+| `resumed` | セッションが一時停止されていて、再びランナーが必要になりました。たとえば、ランナーが [`--release-idle-session-min`](#make-on-demand-runners-exit-when-idle) に基づいてセッションを解放し、その後セッションが新しいメッセージを受け取った場合です。 | 特にありません |
+| `requeued` | セッションがキューに戻されました。たとえば、Owner が **Retry** を選択した場合や、ブロックされたセッションが新しいメッセージを受け取った場合です | 同じセッションがこの値を受け取り続ける場合は、その `nack session=` 行のエラーを読んでください。フックが 0 で終了した場合は、ランナーのログを読んでください。 |
+| `server_retry` | Anthropic が前の要求、またはランナー上でのセッションの開始を断念し、再試行しています。フックは失敗していません。 | 1 回の要求であれば対処は不要です。この値が 1 つのセッションまたは多くのセッションにわたって繰り返し現れる場合は、[Anthropic のアカウントチーム](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#report-an-issue)に報告してください。 |
+| `prewarm` | 事前ウォーミング要求で、まだセッションはありません | 特にありません |
+
 ### オーケストレーターを停止または再起動する
 
 実行中の `spawn-runner` フックを中断せずにオーケストレーターを停止または再起動するには、[`--shutdown-drain-sec`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) を指定して起動します。これにより、オーケストレーターは `SIGTERM` を受け取ると、実行中のフックに対して、設定した秒数まで完了するための猶予を与えます。値の選び方と、それに合わせたプロセススーパーバイザーの設定方法については、[`--shutdown-drain-sec` とオーケストレーターの停止タイムアウトのサイズ設定](#size-shutdown-drain-sec-and-the-supervisors-stop-timeout-for-the-orchestrator)を参照してください。
