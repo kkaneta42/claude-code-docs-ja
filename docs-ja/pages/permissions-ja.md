@@ -338,7 +338,7 @@ Claude のファイルツールによるファイルやディレクトリの読�
 
 #### `Read` ルールと `Edit` ルールの対象
 
-`Edit` ルールは、ファイルを編集するすべての組み込みツールに適用されます。Claude は、Grep や Glob のようなファイルを読み取るすべての組み込みツール、プロンプト内の `@file` メンション、および接続された [IDE](https://code.claude.com/docs/ja/vs-code.md#the-built-in-ide-mcp-server) が Claude と共有する選択範囲や開いているファイルのコンテキストに対して、`Read` ルールをベストエフォートで適用しようとします。
+`Edit` ルールは、ファイルを編集するすべての組み込みツールに適用されます。Claude は、Grep や Glob のようなファイルを読み取るすべての組み込みツールに対して、`Read(path)` 拒否ルールをベストエフォートで適用しようとします。同様に、プロンプト内の `@file` メンション、および接続された [IDE](https://code.claude.com/docs/ja/vs-code.md#the-built-in-ide-mcp-server) が Claude と共有する選択範囲や開いているファイルのコンテキストに対しても、`Read(path)` 拒否ルールの適用を試みます。
 
 `Read(path)` 拒否ルールは、プロンプトに貼り付けた画像パスや @ メンションしたディレクトリにも適用されます。
 
@@ -353,11 +353,14 @@ Claude Code は v2.1.290 以降で、貼り付けられた画像パスとディ�
 >
 > Read と Edit の拒否ルールは、Claude の組み込みファイルツール、`cat`、`head`、`tail`、`sed`、`tee` など Claude Code が Bash 内で認識するファイルコマンド、および `> file` や `< file` のような Bash [リダイレクト](#redirections)の対象に適用されます。ファイルを含むディレクトリから実行される `grep -r pattern .` のようにファイル名を指定せずにファイルを読み取るコマンドや、ファイル自体を開く Python や Node のスクリプトのように間接的にファイルを読み書きする任意のサブプロセスには適用されません。すべてのプロセスによるパスへのアクセスをブロックする OS レベルの強制には、[サンドボックスを有効にしてください](https://code.claude.com/docs/ja/sandboxing.md)。
 
-#### `Write(path)`、`NotebookEdit(path)`、`Glob(path)` ルールはマッチしない
+#### `Write(path)`、`Glob(path)`、`Grep(path)` ルールはマッチしない
 
-Claude Code は、ファイル権限を `Edit(path)` ルールと `Read(path)` ルールに対してのみチェックします。`Write`、`NotebookEdit`、`Glob`、または従来の `MultiEdit` に対するパスルールを書いた場合、Claude Code はそのルールを受け入れますが、読み取りや編集をそのルールにマッチさせることはありません。
+Claude Code は、ファイル権限を `Edit(path)` ルールと `Read(path)` ルールに対してチェックします。以下のいずれかのツールに対して `*` 以外のパスを持つルールを書くと、Claude Code はそのルールを受け入れますが、読み取り、検索、編集をそのルールにマッチさせることはありません。`Grep(docs/**)` 拒否ルールでは、Grep による `docs` の検索は止まりません。代わりに `Edit` ルールまたは `Read` ルールを書いてください。
 
-`Write(docs/**)`、`NotebookEdit(docs/**)`、`MultiEdit(docs/**)` の代わりに `Edit(docs/**)` を、`Glob(docs/**)` の代わりに `Read(docs/**)` を使用してください。パスに関係なく Write、NotebookEdit、Glob ツールのすべての使用にマッチさせるには、ツール名のみを書いてください。
+* **`Write`、`NotebookEdit`、または従来の `MultiEdit`**: `Write(docs/**)` の代わりに `Edit(docs/**)` を使用します。
+* **`Glob` または `Grep`**: `Grep(docs/**)` の代わりに `Read(docs/**)` を使用します。確認ルールとしての `Read(docs/**)` は、Claude がマッチするパスに対して Grep または Glob を呼び出したときに確認を求めますが、その上位にある作業ディレクトリの検索がマッチするファイルを返した場合には確認を求めません。
+
+パスに関係なくこれらのツールのいずれかのすべての使用にマッチさせるには、[ツール名のみを書いてください](#match-all-uses-of-a-tool)。
 
 #### パスパターンのマッチ方法
 

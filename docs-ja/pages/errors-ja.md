@@ -61,7 +61,9 @@
 | `Could not resolve authentication method` | [認証](#could-not-resolve-authentication-method) |
 | `Invalid API key` | [認証](#invalid-api-key) |
 | `Your apiKeyHelper script is failing` | [認証](#your-apikeyhelper-script-is-failing) |
-| `Claude Code didn't send your claude.ai login, because the API key helper your administrator set isn't in effect` | [認証](#claude-code-didnt-send-your-claude-ai-login) |
+| `Your organization's settings need an update` | [認証](#claude-code-didnt-send-your-claude-ai-login) |
+| `Couldn't load your organization's settings. Check your connection` | [認証](#claude-code-didnt-send-your-claude-ai-login) |
+| `Restart Claude Code to finish signing in` | [認証](#claude-code-didnt-send-your-claude-ai-login) |
 | `Invalid auth token · Fix external auth token` | [認証](#invalid-request-header-value) |
 | `Invalid ANTHROPIC_CUSTOM_HEADERS · Fix the environment variable` | [認証](#invalid-request-header-value) |
 | `Invalid request header from the environment · Fix the environment variable` | [認証](#invalid-request-header-value) |
@@ -1117,16 +1119,23 @@ Claude Code はこのメッセージを表示する前に、スクリプトを�
 
 ### Claude Code didn't send your claude.ai login
 
-このメッセージ全文を管理者に送ってください。メッセージには管理者が行える変更が記載されています。このメッセージは、Claude Code がプロンプトを拒否したことを意味します。claude.ai ログインを使用している間、Claude Code は再起動後もプロンプトを拒否し続けます。
+次のメッセージは、Claude Code がリクエストを拒否し、claude.ai のログインを送信しなかったことを意味します。
 
 ```text theme={null}
-Claude Code didn't send your claude.ai login, because the API key helper your administrator set isn't in effect. Your organization's managed settings may be overriding it. Ask your administrator to keep the key helper and its API address in effect, to name Anthropic's API address in those managed settings, or to remove the key helper. Run /status to see your setting sources.
+Your organization's settings need an update. Ask your administrator to fix the API key helper configuration.
+Couldn't load your organization's settings. Check your connection, then restart Claude Code.
+Restart Claude Code to finish signing in.
 ```
 
 **対処方法:**
 
-* マシンにどの管理ソースがあるかを管理者に伝えるには、Claude Code のプロンプトで `/status` を実行し、[`Setting sources` 行](https://code.claude.com/docs/ja/managed-settings#read-the-source-in-/status)をコピーします。`Skipped sources` 行が表示される場合は、それもコピーします
-* 設定を管理している場合は、[マシンのキーヘルパーが有効にならない理由](https://code.claude.com/docs/ja/server-managed-settings.md#machine-apikeyhelper-not-in-effect)を参照してください
+* `Your organization's settings need an update`: 管理者に API キーヘルパーの設定を修正するよう依頼します
+  * マシンにどの管理ソースがあるかを管理者に伝えるには、Claude Code のプロンプトで `/status` を実行し、[`Setting sources` の行](https://code.claude.com/docs/ja/managed-settings#read-the-source-in-/status)をコピーします。`Skipped sources` の行が表示されている場合は、それもコピーします
+  * 設定を管理していて、ヘルパーがマシンの管理設定ファイルまたは MDM ポリシーにある場合は、[マシンの `apiKeyHelper` が有効になっていない場合](https://code.claude.com/docs/ja/server-managed-settings#machine-apikeyhelper-not-in-effect)を参照してください
+* `Couldn't load your organization's settings`: 接続を確認してから、Claude Code を再起動します。再起動後もメッセージが再び表示される場合は、管理者に伝えます
+* `Restart Claude Code to finish signing in`: Claude Code を再起動します
+
+v2.1.315 より前では、拒否されたプロンプトやファイルアップロードは、`Claude Code didn't send your claude.ai login` で始まる 1 つのメッセージを出力していました。
 
 ### 無効なリクエストヘッダー値
 

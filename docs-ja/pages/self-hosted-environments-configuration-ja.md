@@ -46,7 +46,7 @@ claude self-hosted-runner --environment-secret-file /etc/claude/environment-secr
 | `CLAUDE_CODE_REMOTE_SLACK_CHANNEL_ID` | Claude Tag セッションの場合、セッションが対応する、またはそのスレッドが属する Slack チャンネルまたはダイレクトメッセージの ID（`C0123ABCDE` など）。Slack タイムスタンプは 1 つのチャンネル内のメッセージを識別するため、この ID は `CLAUDE_CODE_REMOTE_SLACK_THREAD_TS` と一緒に記録してください。他のセッションでは設定されず、Claude Tag セッションでも設定されない場合があります。 |
 | `CLAUDE_SESSION_INGRESS_TOKEN_FILE` | 現在のセッション JWT を保持する、セッションごとのファイルへの絶対パス。トークン更新全体で最新に保たれます。シェルサブプロセスは、ユーザーがセッションに追加した添付ファイルをダウンロードするときに、その `Authorization` ヘッダーに対して読み取ります。`exec` は変数を自動的に保持します。子の環境を再構築するラッパーは変数を引き継ぐ必要があります。そうしないと、添付ファイルのダウンロードが静かに停止します。 |
 | `CLAUDE_CONFIG_DIR` | セッションごとの Claude 設定ディレクトリ。ランナーが起動時にキャプチャするランナーホストの設定のスナップショットからセッション開始時に書き込まれます。[権限とツール承認](#permissions-and-tool-approval) を参照してください。このディレクトリへの書き込みはこのセッションに分離されます。ディレクトリはセッション終了後、ランナーを [`--remove-session-state`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) で起動しない限り `<base-dir>/_sessions/` の下に留まります。[事前ウォーミングされたチェックアウトを再利用する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#reuse-a-pre-warmed-checkout) を参照してください。 |
-| `CLAUDE_CODE_REMOTE_MCP_CONFIG` | Anthropic のコントロールプレーンがこのセッション用に配信した MCP サーバー定義を保持する、`CLAUDE_CONFIG_DIR` 内のファイルへのパス。ラッパーが子の環境を再構築する場合は、この変数を引き継いでください。この変数がないと、コントロールプレーンが配信するサーバーを更新したときに、ラッパーが [`--mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で追加した stdio、HTTP、SSE サーバーのうち更新に含まれないものを子がシャットダウンします。Claude Code v2.1.299 以降が必要です。 |
+| `CLAUDE_CODE_REMOTE_MCP_CONFIG` | コントロールプレーンが配信した MCP サーバーを保持する、`CLAUDE_CONFIG_DIR` 内のファイルへのパス。ラッパーが子の環境を再構築する場合は、この変数、[`CLAUDE_CODE_REMOTE`](https://code.claude.com/docs/ja/env-vars#variables)、`CLAUDE_CODE_ENVIRONMENT_KIND` を変更せずに引き継いでください。ランナーはこの 3 つすべてを設定します。`CLAUDE_CODE_REMOTE` が届いても、この変数または `CLAUDE_CODE_ENVIRONMENT_KIND` が届かない場合、配信されたサーバーの更新に含まれない stdio、HTTP、SSE サーバーのうち、ラッパーが [`--mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で追加したものを子が停止します。Claude Code v2.1.299 以降が必要です。 |
 | `ANTHROPIC_BASE_URL` | こどもが使用する API ベース URL。コントロールプレーンによってセッションごとに配信され、通常は `https://api.anthropic.com` です。上書きしないでください。セッションの推論認証情報は Anthropic が発行した OAuth トークンであり、他のプロバイダーはこれを受け入れません。 |
 | `CLAUDE_CODE_OAUTH_TOKEN` | 子がモデル推論に使用する短期 OAuth アクセストークン。約 30 分の有効期限があります。ランナーは有効期限前に再発行し、子の stdin を介して更新を配信するため、[stdin を接続したままにしない](#keep-stdin-and-file-descriptor-3-attached) ラッパーは初期値のみを見ます。組織の IP 許可リストに依存してこのトークンの使用を制限しないでください。リークした場合に約 30 分間使用可能なままのベアラー認証情報として扱い、ログに記録したり、ディスクに書き込んだり、セッションコンテナの外に転送したりしないでください。 |
 | `CLAUDE_RUNNER_ALIVE_EVERY_MS` | [子の初期化前にターンが開始した](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#session-startup-timeout)場合に、子が生存を報告する間隔（ミリ秒）をランナーが設定します。ラッパーが子の環境を再構築する場合は、この変数を引き継いでください。引き継がないと、ランナーがそのターン中にセッションを解放し、`no child output for <n> — releasing` をログに記録する可能性があります。ランナーと子の両方で v2.1.309 以降が必要です。 |
@@ -833,18 +833,26 @@ Stop フックは、各サブモジュールがどのコミットにあるかを
 
 セルフホストセッションには接続されたターミナルがないため、未回答の権限プロンプトはユーザーが UI で応答するまでターンを停止します。Anthropic のコントロールプレーンは各セッションのツールリストと権限ルールをワークペイロードで送信します。デフォルト設定は `Bash` を含むルーチンツール呼び出しを事前承認し、クラウドセッションは [モードに関係なくファイル編集を事前承認](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes) します。何も事前承認しない呼び出しはセッション UI を通じてプロンプトします。
 
+### ラッパーから権限モードを固定する
+
 > [!NOTE]
 >
 > [デフォルト拒否ネットワーク出力](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) を実行するセッションコンテナと [強化セクション](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment) の残りを備えた環境でのみ、オートモードをピン留めします。ルーチンツール呼び出し（`Bash` ネットワークリクエストを含む）は、デフォルト事前承認ツールセットとオートモードの両方で人間のループなしで実行されるため、ネットワーク境界がそれらの呼び出しが到達できる場所を制限するものです。
 
-コントロールプレーンが送信するものに関係なくプロンプトを最小限に保つには、ラッパースクリプトまたは [`command` フック](#command) から [オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) をピン留めします。オートモードはセッションがルーチン権限プロンプトなしで実行されるようにします。別の分類器モデルは実行前にアクションをレビューし、拒否するものをブロックし、明示的な ask ルールはまだプロンプトを強制します。権限モードページは分類器がチェックするものをカバーしています。ランナーはラッパーを呼び出す前にサーバー計算フラグを追加し、`--permission-mode` などの単一値フラグの場合、パーサーは最後の出現を尊重するため、`"$@"` の後に追加するフラグはサーバー送信値をオーバーライドします。
+claude.ai/code または別のクライアントがセッションの権限モードを設定するまでセッションを [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) で開始するには、ラッパースクリプトまたは [`command` フック](#command) から auto モードを固定します。ランナーは自身のフラグを引数としてラッパーを呼び出し、Claude Code はコマンドラインの最後の `--permission-mode` を適用するため、`"$@"` の後に自分のフラグを追加します。
 
 ```bash theme={null}
 #!/bin/bash
 exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@" --permission-mode auto
 ```
 
-代わりに特定のツールを事前承認するには、`--allowed-tools` をルールで追加します。例えば `--allowed-tools "Bash(bazel *) Bash(yarn *) mcp__internal__*"`。`--allowed-tools` と `--disallowed-tools` などのリストフラグは出現全体で蓄積され、オーバーライドされないため、ルールはコントロールプレーンが送信するルールの上に適用されます。絞り込むには、`--disallowed-tools` を追加します。これは別のルールがそれらを許可しても、ツールを拒否します。
+クライアントがモードを設定すると、追加したモードは適用されなくなります。これはランナー上でセッションが再起動した後も同様です。たとえば claude.ai/code は、モードのドロップダウンに Auto が表示されている場合、または誰かがそこでモードを選択した場合に、セッションの最初のメッセージでモードを設定します。
+
+auto モードでは、別の分類器モデルがアクションの実行前にレビューを行い、拒否したものをブロックします。明示的な確認ルールがある場合は、引き続き権限プロンプトが表示されます。[拒否ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) がブロックする呼び出しは、どのモードでもブロックされたままです。
+
+### 特定のツールを事前承認する
+
+特定のツールを事前承認するには、ラッパースクリプトで `"$@"` の後にルールを指定した `--allowed-tools` を追加します。例えば `--allowed-tools "Bash(bazel *) Bash(yarn *) mcp__internal__*"` です。`--allowed-tools` や `--disallowed-tools` などのリストフラグは、上書きされるのではなく出現ごとに蓄積されるため、追加したルールはコントロールプレーンが送信するルールに加えて適用されます。絞り込むには `--disallowed-tools` を追加します。これは別のルールで許可されている場合でもツールを拒否します。
 
 ### 各セッションの設定がどのように組み立てられるか
 

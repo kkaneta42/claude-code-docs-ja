@@ -103,7 +103,7 @@ v2.1.260 より前では、API キーまたは Claude サブスクリプショ�
 [fast mode](https://code.claude.com/docs/ja/fast-mode.md) と標準速度はそれぞれ別のキャッシュを保持するため、fast mode をオンまたはオフにした後の次のリクエストは、もう一方の速度でキャッシュされた内容を使用できません。会話で初めて fast mode をオンにすると、次のリクエストはそれまでの会話全体をキャッシュなしで [fast mode の料金](https://code.claude.com/docs/ja/fast-mode.md#understand-the-cost-tradeoff) で読み込みます。このコストを小さく抑えるには、セッションの開始時にオンにしてください。
 
 * Claude が作業中にオンにした場合、そのターンは標準速度で完了し、キャッシュされていない読み込みのコストは次のターンの最初のリクエストで支払います。
-* 現在のモデルが fast mode をサポートしていない場合、fast mode を有効にすると [Opus にも切り替わります](https://code.claude.com/docs/ja/fast-mode.md#toggle-fast-mode)。その [モデルスイッチ](#switching-models) 自体が、実行中のターンの次のリクエストから新しいキャッシュを開始します。
+* 現在のモデルが fast mode をサポートしていない場合、`/fast` を実行すると [Opus にも切り替わります](https://code.claude.com/docs/ja/fast-mode.md#toggle-fast-mode)。その [モデルスイッチ](#switching-models) 自体が、実行中のターンの次のリクエストから新しいキャッシュを開始します。
 
 以降の各切り替えでは、切り替え先の速度にキャッシュされていない内容がキャッシュなしで読み込まれます。レート制限後の [標準速度へのフォールバック](https://code.claude.com/docs/ja/fast-mode.md#handle-rate-limits) や、その後の fast mode への復帰など、Claude Code が自動的に行う速度変更も切り替えとしてカウントされます。
 

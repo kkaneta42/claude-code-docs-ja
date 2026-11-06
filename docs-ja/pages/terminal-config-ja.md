@@ -74,7 +74,7 @@ Claude がタスクを完了するか権限プロンプトで一時停止し、�
 
 デフォルトでは、Claude Code は一部のターミナルではデスクトップ通知を送信し、それ以外のターミナルではベル文字を送信するか、何も送信しません：
 
-* **Ghostty、Kitty、および iTerm2**：デスクトップ通知を送信します。iTerm2 では、アラート設定をオンにした後にのみ表示されます。
+* **Ghostty、Kitty、および iTerm2（Claude Code がこれらを検出した場合）**：デスクトップ通知を送信します。iTerm2 では、アラート設定をオンにした後にのみ表示されます。
 * **Apple Terminal**：音は鳴りません。Claude Code が最前面の Terminal ウィンドウのプロファイルで「Audible bell」がオフになっていることを検出した場合は無音のベル文字を送信し、それ以外の場合は何も送信しません。このベル文字は、そのプロファイルの「Visual bell」または Dock のバウンスオプションがオンになっている場合、ウィンドウのフラッシュとして、または Terminal がバックグラウンドにあるときは Dock アイコンのバウンスとして表示されます。
 * **その他のターミナル**：何も送信しません。
 
@@ -86,7 +86,7 @@ Claude がタスクを完了するか権限プロンプトで一時停止し、�
 }
 ```
 
-デスクトップ通知は SSH 経由でローカルマシンに到達するため、リモートセッションでもアラートを受け取ることができます。Ghostty と Kitty はさらなるセットアップなしで OS 通知センターに転送します。iTerm2 では転送を有効にする必要があります：
+tmux の外で実行しているターミナルから SSH 経由で接続している場合は、Claude Code を実行しているマシンで [`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) をローカルターミナルに対応する値（`"iterm2"`、`"kitty"`、または `"ghostty"`）に設定します。これにより、デスクトップ通知がローカルマシンに届きます。Ghostty と Kitty はさらなるセットアップなしで OS 通知センターに転送します。iTerm2 では転送を有効にする必要があります：
 
 **1. Open iTerm2 notification settings**
 
@@ -131,7 +131,7 @@ Check "Notification Center Alerts", then click "Filter Alerts" and enable "Send 
 
 ## tmux を設定する
 
-Claude Code が tmux 内で実行される場合、デフォルトでは Shift+Enter が改行を挿入する代わりに送信してしまい、デスクトップ通知と[プログレスバー](https://code.claude.com/docs/ja/settings-reference.md#terminalprogressbarenabled)が外側のターミナルに到達しません。これらの行を `~/.tmux.conf` に追加してから、`tmux source-file ~/.tmux.conf` を実行して、実行中のサーバーに適用してください。
+Claude Code が tmux 内で実行される場合、デフォルトでは Shift+Enter が改行を挿入する代わりに送信してしまい、デスクトップ通知が外側のターミナルに到達しません。これらの行を `~/.tmux.conf` に追加してから、`tmux source-file ~/.tmux.conf` を実行して、実行中のサーバーに適用してください。
 
 ```bash ~/.tmux.conf theme={null}
 set -g allow-passthrough on
@@ -140,7 +140,7 @@ set -s extended-keys on
 set -as terminal-features 'xterm*:extkeys'
 ```
 
-`allow-passthrough` 行により、通知とプログレス更新が tmux に飲み込まれるのではなく、外側のターミナルに到達できるようになります。`extended-keys` 行により、tmux が Shift+Enter と通常の Enter を区別できるようになり、改行ショートカットが機能するようになります。
+表示中のペインから外側のターミナルに通知を送るには、`allow-passthrough` 行を残したまま、[`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) を `"iterm2"`、`"kitty"`、または `"ghostty"` に設定してください。このサンプルでは、表示していないウィンドウ内のペインからは通知が送られません。`extended-keys` 行により、tmux が Shift+Enter と通常の Enter を区別できるようになり、改行ショートカットが機能するようになります。
 
 [mod の `Image`](https://code.claude.com/docs/ja/plugins/mods/reference#elements) には、`allow-passthrough` 行と `focus-events` 行に加えて、その他の [tmux 内で描画するための要件](https://code.claude.com/docs/ja/plugins/mods/gallery.md#draw-an-image-inside-tmux)が必要です。これらの行を追加した後は、tmux からデタッチして再度アタッチし、Claude Code を再起動してください。
 

@@ -104,7 +104,7 @@ Enter キーを押して送信する前にプロンプトを編集できます�
 3. Post initial findings in #incident.
 ```
 
-独自のランブックでこれを使用するには、`acme/web-gateway` をサービスのリポジトリスラッグに置き換えます。エンジニアがステップ 2 をクリックする前に、自分のマシンで[インタラクティブな Claude Code セッションでプロンプトを送信](#registration-and-supported-platforms)し、ローカルクローンで Claude Code を開いておく必要があります。
+独自のランブックでこれを使用するには、`acme/web-gateway` をサービスのリポジトリスラッグに置き換えます。エンジニアがステップ 2 をクリックする前に、そのマシンに [`claude-cli://` ハンドラーが登録](#registration-and-supported-platforms)されている必要があり、またローカルクローンまたは worktree で `claude` を実行しておく必要があります。
 
 ### シェルからリンクを開く
 

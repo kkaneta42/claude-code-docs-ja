@@ -253,7 +253,7 @@ Claude Code v2.1.285 以降が必要です。これは [HIPAA 設定の最小バ
 >
 > [claude.ai/code](https://claude.ai/code) では、プロンプトボックスの下の行にあるモードドロップダウンを使用します。モバイルアプリでは、プロンプトボックスの **+** ボタンをタップし、次に **Permission** をタップします。クラウドセッションと Remote Control セッションでは、提供される権限モードが異なります。
 >
-> * **[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)**：Accept edits、Plan、Auto。Accept edits は `default` モードに対応します。クラウドセッションはモードに関係なくファイル編集を事前承認するため、ドロップダウンは Manual の代わりに Accept edits を表示します。クラウドセッションは設定からの `defaultMode: "acceptEdits"` を引き続き尊重します。Auto モードは組織がそれを許可し、選択されたモデルがそれをサポートする場合にのみ表示されます。Bypass permissions は利用できません。
+> * **[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)**：Accept edits、Plan、Auto。Accept edits は `default` モードに対応します。クラウドセッションはモードに関係なくファイル編集を事前承認するため、ドロップダウンは Manual の代わりに Accept edits を表示します。クラウドセッションは設定からの `defaultMode: "acceptEdits"` を引き続き尊重します。Auto モードは組織がオフにしていない限り表示され、claude.ai/code では、選択されたモデルが [それをサポート](#eliminate-prompts-with-auto-mode)していない場合はグレー表示になります。Bypass permissions は利用できません。
 > * **ローカルマシンの [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッション**：自分で開始したセッションの場合は Manual、Accept edits、Plan、Auto を使用でき、アプリから Bypass permissions を選択することはできません。Auto を使用するには、セッションが auto モードの[利用要件](#eliminate-prompts-with-auto-mode)を満たしている必要があります。コンピューター上で実行されるプロジェクトスレッドについては、[スレッドを自分のコンピューター上で実行する](https://code.claude.com/docs/ja/claude-projects.md#run-a-thread-on-your-own-computer)を参照してください。
 >   * Bypass permissions を除き、ドロップダウンはローカルセッションの現在の権限モードを表示します。これにはターミナルから設定された権限モードも含まれます。アプリまたはターミナルで権限モードが変更されると、表示が更新されます。
 >   * [デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)または [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)でホストされるセッションは、ターミナルでホストされるセッションと同様に、権限モードの変更を発生時に claude.ai に報告します。

@@ -139,13 +139,13 @@
 | [`outputStyle`](#outputstyle) | [出力スタイル](https://code.claude.com/docs/ja/output-styles.md)で Claude の役割、トーン、出力形式を変更します | モデルと応答 | Any file |
 | [`parentSettingsBehavior`](#parentsettingsbehavior) | [管理設定](https://code.claude.com/docs/ja/managed-settings.md)をデプロイしている場合に、[SDK または IDE ホスト](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy)が渡す制限を適用するか破棄するかを指定します | エンタープライズと管理設定 | Managed |
 | [`permissionExplainerEnabled`](#permissionexplainerenabled) | v2.1.257 で削除されました。シェルの権限プロンプトでの `Ctrl+E` によるコマンドの説明も同時に削除されています | グローバル設定 | Global config |
-| [`permissions`](#permissions) | 許可（allow）、確認（ask）、拒否（deny）のルールとデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します | 権限設定 | 任意のファイル |
+| [`permissions`](#permissions) | 許可（allow）、確認（ask）、拒否（deny）のルールとデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を設定します | 権限設定 | Any file |
 | [`permissions.additionalDirectories`](#permissions-additionaldirectories) | [現在のディレクトリ以外のディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)へのファイルアクセスを Claude に許可します | 権限設定 | Any file |
 | [`permissions.allow`](#permissions-allow) | 列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)を確認なしで承認します | 権限設定 | Any file |
 | [`permissions.ask`](#permissions-ask) | 列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)の前に常に確認を求めます | 権限設定 | Any file |
 | [`permissions.blockReadsOutsideWorkingDirectories`](#permissions-blockreadsoutsideworkingdirectories) | すべての権限モードで、ファイルツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外の読み取りを拒否するようにします | 権限設定 | Any file |
 | [`permissions.blockWritesOutsideWorkingDirectories`](#permissions-blockwritesoutsideworkingdirectories) | [Claude Code 自身の一部のファイル](#what-the-write-block-refuses-and-what-stays-writable)を除き、すべての権限モードで `Write`、`Edit`、`NotebookEdit` ツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスを拒否するようにします | 権限設定 | Any file |
-| [`permissions.defaultMode`](#permissions-defaultmode) | 新しいセッションのデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を設定します | 権限設定 | 任意のファイル |
+| [`permissions.defaultMode`](#permissions-defaultmode) | 新しいセッションのデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を設定します | 権限設定 | Any file |
 | [`permissions.deny`](#permissions-deny) | シークレットを含むファイルの読み取りなど、列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)をブロックします | 権限設定 | Any file |
 | [`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode) | 誰も [bypassPermissions モード](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)に入れないようにします | 権限設定 | Any file |
 | [`plansDirectory`](#plansdirectory) | [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)がプランファイルを書き込む場所を選択します | メモリとコンテキスト | Any file |
@@ -446,7 +446,9 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 
 ### `fastMode`
 
-利用可能なセッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) をオンにします。トークンあたりのコストが高くても速度を優先したい、迅速な反復作業やライブデバッグなどの対話的な作業向けです。通常、このキーを手動で編集することはありません。`/fast` を実行すると `~/.claude/settings.json` に `fastMode: true` が書き込まれ、もう一度実行して fast mode をオフにするとキーが削除されます。fast mode は Opus 5.5、Opus 5、Opus 4.8 でのみ動作します。他のモデルからオンにすると Opus に切り替わり、サポートされていないモデルに切り替えるとオフになります。[fast mode がオンの状態でモデルを切り替える](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。
+利用可能なセッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) をオンにします。トークンあたりのコストが高くても速度を優先したい、迅速な反復作業やライブデバッグなどの対話的な作業向けです。通常、このキーを手動で編集することはありません。`/fast` を実行すると `~/.claude/settings.json` に `fastMode: true` が書き込まれ、もう一度実行して fast mode をオフにするとキーが削除されます。
+
+fast mode をサポートしているのは Opus 5.5、Opus 5、Opus 4.8 のみです。他のモデルで `/fast` を実行すると Opus に切り替わり、サポートされていないモデルに切り替えると fast mode はオフになります。[fast mode がオンの状態でモデルを切り替える](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。
 
 * **スコープ**: [`Any file`](#scopes)
 * **型**: Boolean
@@ -463,14 +465,14 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 
 ### `fastModePerSessionOptIn`
 
-通常、`/fast` を実行すると [`fastMode`](#fastmode) がユーザー設定に保存されるため、以降のすべてのセッションの開始時に fast mode がオンになります。このキーを `true` に設定するとこれを止められます。保存された `fastMode: true` はセッション開始時に fast mode をオンにしなくなり、各ユーザーは fast mode を使いたいセッションごとに `/fast` を実行する必要があります。Claude Code はユーザーのファイル内の `fastMode` キーを残すため、このキーをオフにすると以前の動作に戻ります。
+通常、`/fast` を実行すると [`fastMode`](#fastmode) がユーザー設定に保存されるため、サポートされているモデルでの新しいセッションは fast mode がオンの状態で開始します。このキーを `true` に設定するとこれを止められます。保存された `fastMode: true` はセッション開始時に fast mode をオンにしなくなり、各ユーザーは fast mode を使いたいセッションごとに `/fast` を実行する必要があります。Claude Code はユーザーのファイル内の `fastMode` キーを残すため、このキーをオフにすると以前の動作に戻ります。
 
 Team プランまたは Enterprise プランのオーナーは、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて組織全体にデプロイできます。管理設定でこのキーが設定されている場合、対話型ターミナルセッション以外では `/fast on` が拒否され、組織によって fast mode が無効化されていることが通知されます。これには、[非対話モード](https://code.claude.com/docs/ja/headless.md)、[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)が含まれます。
 
 * **スコープ**: [`Any file`](#scopes)
 * **型**: Boolean
   * `true`: 保存された `fastMode: true` はセッション開始時に fast mode をオンにしなくなるため、各ユーザーは fast mode を使いたいセッションごとに `/fast` を実行します。`--settings` で渡された `fastMode: true` は、管理設定でこのキーが設定されていない限り、そのセッションでは引き続き有効です
-  * `false`: 保存された `fastMode: true` は、以降のすべてのセッションの開始時に fast mode をオンにします
+  * `false`: 保存された `fastMode: true` は、サポートされているモデルでの新しいセッションごとに、開始時に fast mode をオンにします
 * **デフォルト**: `false`
 
 ```json settings.json theme={null}
@@ -4986,7 +4988,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 
 * **Scope**: [`Any file`](#scopes)。Claude Code は古いバージョンによって `~/.claude.json` に残された値も読み取ります。
 * **Type**: 文字列、以下のいずれか：
-  * `"auto"`: Claude Code は iTerm2、Ghostty、Kitty でデスクトップ通知を送信し、Terminal.app でのみ可聴ベルがオフの場合にベルを鳴らし、他の場所では何もしません
+  * `"auto"`: Claude Code は iTerm2、Ghostty、Kitty を検出した場合にデスクトップ通知を送信し、Terminal.app では可聴ベルがオフの場合にのみベルを鳴らし、他の場所では何もしません
   * `"terminal_bell"`: Claude Code は任意のターミナルでベル文字を鳴らします
   * `"iterm2"`: Claude Code は iTerm2 デスクトップ通知を送信します
   * `"iterm2_with_bell"`: Claude Code は iTerm2 デスクトップ通知を送信し、ベルを鳴らします
@@ -5001,7 +5003,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 }
 ```
 
-`"auto"` では、Claude Code は iTerm2、Ghostty、Kitty でデスクトップ通知を送信します。Terminal.app では、Terminal の可聴ベルをオフにした場合のみベル文字を鳴らし、他のターミナルでは何もしません。任意のターミナルでベル文字を鳴らすには `"terminal_bell"` を設定します。[Get a terminal bell or notification](https://code.claude.com/docs/ja/terminal-config.md#get-a-terminal-bell-or-notification) を参照してください。
+`"auto"` では、Claude Code は iTerm2、Ghostty、Kitty を検出した場合にデスクトップ通知を送信します。Terminal.app では、Terminal の可聴ベルをオフにした場合のみベル文字を鳴らし、他のターミナルでは何もしません。任意のターミナルでベル文字を鳴らすには `"terminal_bell"` を設定します。[Get a terminal bell or notification](https://code.claude.com/docs/ja/terminal-config.md#get-a-terminal-bell-or-notification) を参照してください。
 
 ### `remote.defaultEnvironmentId`
 

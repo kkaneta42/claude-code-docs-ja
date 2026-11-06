@@ -31,7 +31,7 @@ Claude Code で「How is Claude doing this session?」というプロンプト�
 
 評価プロンプトの後に、「Can Anthropic look at your session transcript to help us improve Claude Code?」と尋ねる別のフォローアップが表示される場合があります。これは評価とは別の、任意の 2 番目のステップです。
 
-* **Yes**：会話のトランスクリプト、すべてのサブエージェントのトランスクリプト、およびディスク上の生のセッションログファイルを Anthropic にアップロードします。既知の API キーおよびトークンのパターンはアップロード前に編集されます。ソースコード、ファイルの内容、その他の会話内容はそのままアップロードされます。共有されたトランスクリプトは最大 6 か月間保持されます。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは、Yes を選択するとアップロードする代わりに同じペイロードが `~/.claude/feedback-bundles/` 配下のローカルアーカイブに書き込まれます。そのファイルを転送するまで、マシンから何も送信されません。
+* **Yes**：会話のトランスクリプト、すべてのサブエージェントのトランスクリプト、およびディスク上の生のセッションログファイルを Anthropic にアップロードします。既知の API キーおよびトークンのパターンはアップロード前にマスクされます。ソースコード、ファイルの内容、その他の会話内容はそのままアップロードされます。共有されたトランスクリプトは最大 6 か月間保持されます。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは、Yes を選択するとアップロードする代わりに同じペイロードが `~/.claude/feedback-bundles/` 配下のローカルアーカイブに書き込まれます。そのファイルを転送するまで、マシンから何も送信されません。
 * **No**：何も送信せずに辞退します
 * **Don't ask again**：辞退し、今後のセッションでこのフォローアップが表示されないようにします
 
