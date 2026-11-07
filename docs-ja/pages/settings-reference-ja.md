@@ -111,7 +111,7 @@
 | [`footerLinksRegexes`](#footerlinksregexes) | 出力内の issue ID やレビュー ID を、入力ボックスの下に[クリック可能なリンク](https://code.claude.com/docs/ja/statusline.md#clickable-links)として表示します | インターフェースとターミナル | User or managed |
 | [`forceLoginGatewayUrl`](#forcelogingatewayurl) | ログイン画面の接続先となる[ゲートウェイ URL](https://code.claude.com/docs/ja/claude-apps-gateway#set-the-gateway-url) を設定します | 認証とプロバイダー | User or managed |
 | [`forceLoginMethod`](#forceloginmethod) | [ログイン方法を制限](https://code.claude.com/docs/ja/authentication.md#restrict-login-to-your-organization)し、claude.ai、Claude Console、または[クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)のみにします | 認証とプロバイダー | Any file |
-| [`forceLoginOrgUUID`](#forceloginorguuid) | [claude.ai のログインを組織に固定](https://code.claude.com/docs/ja/authentication.md#restrict-login-to-your-organization)します。これを強制できるのは管理ソースのみです | 認証とプロバイダー | Any file |
+| [`forceLoginOrgUUID`](#forceloginorguuid) | [claude.ai のログインを組織に固定](https://code.claude.com/docs/ja/authentication.md#restrict-login-to-your-organization)します。これを強制するのは管理設定のみです | 認証とプロバイダー | Any file |
 | [`forceRemoteSettingsRefresh`](#forceremotesettingsrefresh) | [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)が新たに取得されるまで起動をブロックします | エンタープライズと管理設定 | Managed |
 | [`gatewayInternalNetworks`](#gatewayinternalnetworks) | 組織が内部で使用しているパブリック IPv4 アドレス空間上の[クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway#allow-a-gateway-on-public-address-space-you-own)に `/login` が到達できるようにします | 認証とプロバイダー | Managed |
 | [`gcpAuthRefresh`](#gcpauthrefresh) | 独自のコマンドで [Google Cloud 認証情報](https://code.claude.com/docs/ja/google-vertex-ai.md#advanced-credential-configuration)を更新します | 認証とプロバイダー | Any file |
@@ -4829,7 +4829,7 @@ Remote Control、クラウド環境、デスクトップアプリ、および Cl
 
 ### `agentPushNotifEnabled`
 
-Claude が送信する価値があると判断した場合（たとえば、長いタスクが完了した場合など）に、電話にプッシュ通知を送信することを Claude に許可します。Claude は [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間に通知を送信できます。`/config` では **Push when Claude decides** として表示されます。そこで変更すると、Claude Code はその値をアカウントにも保存します。
+Claude が送信する価値があると判断した場合（たとえば、長いタスクが完了した場合など）に、電話にプッシュ通知を送信することを Claude に許可します。ローカルセッションでは、Claude は [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間に通知を送信できます。`/config` では **Push when Claude decides** として表示されます。そこで変更すると、Claude Code はその値をアカウントにも保存します。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code は古いバージョンによって `~/.claude.json` に残された値も読み取ります。
 * **Type**: Boolean
@@ -4966,12 +4966,10 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 
 ### `inputNeededNotifEnabled`
 
-権限プロンプトまたは質問が入力を待っているときに、電話にプッシュ通知を取得します。Claude Code はこれらを [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間のみ送信します。`/config` では **Push when actions required** として表示されます。
+権限プロンプトまたは質問が入力を待っているときに、電話にプッシュ通知を取得します。ローカルセッションでは、Claude Code はこれらを [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間のみ送信します。`/config` では **Push when actions required** として表示されます。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code は古いバージョンによって `~/.claude.json` に残された値も読み取ります。
 * **Type**: Boolean
-  * `true`: Remote Control が接続されている間、権限プロンプトまたは質問が入力を待っているときに、電話にプッシュ通知が届きます
-  * `false`: Claude Code はそのような通知を送信しません
 * **Default**: `false`
 
 ```json settings.json theme={null}
@@ -5178,9 +5176,10 @@ Claude Code はこれらの場合に値をキャッシュし、コマンドを�
 
 * キャッシュの有効期限後。デフォルトは 5 分、または [`CLAUDE_CODE_API_KEY_HELPER_TTL_MS`](https://code.claude.com/docs/ja/env-vars) で設定した間隔
 * Anthropic API へのリクエスト（直接または [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由）が `401` または `403` で失敗した場合
+* Google Cloud の Agent Platform 用に [`CLAUDE_CODE_SKIP_VERTEX_AUTH`](https://code.claude.com/docs/ja/env-vars)、AWS 上の Claude Platform 用に `CLAUDE_CODE_SKIP_ANTHROPIC_AWS_AUTH`、または Amazon Bedrock Mantle 用に `CLAUDE_CODE_SKIP_MANTLE_AUTH` を設定している状態で、LLM ゲートウェイ経由のリクエストが `401` で失敗した場合（`403` の場合は除く）。Claude Code v2.1.318 以降が必要です。
 * Anthropic API へのリクエスト（直接または LLM ゲートウェイ経由）を送信する前に、キャッシュされた出力がヘルパーが生成した後に期限切れになった JWT である場合。Claude Code v2.1.246 以降が必要です。
 
-最後の 2 つのケースは、ヘルパーの出力が Claude Code が送信する認証情報であり、`ANTHROPIC_AUTH_TOKEN` が設定されていない場合にのみ適用されます。
+最後の 3 つのケースは、ヘルパーの出力が Claude Code が送信する認証情報であり、`ANTHROPIC_AUTH_TOKEN` が設定されていない場合にのみ適用されます。
 
 インタラクティブセッションでは、コマンドがプロジェクトまたはローカル設定から来ている場合、Claude Code はワークスペーストラストプロンプトを受け入れるまでコマンドを実行しません。[認証情報管理](https://code.claude.com/docs/ja/authentication.md#credential-management)を参照してください。
 
@@ -5263,7 +5262,7 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 管理ソースから、claude.ai アカウントログインが 1 つの Anthropic 組織（単一の UUID として指定）または複数の組織（配列として指定）に属することを要求します。任意の設定ファイルから、Claude Code は単一の UUID を使用して claude.ai または Claude Console ログイン中にその組織を事前選択し、配列の場合は何も事前選択しません。任意の設定ファイルでキーを設定する場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)の提供も停止し、代わりに API キーを作成します。
 
-* **スコープ**: [`Any file`](#scopes)。管理ソースのみが制限を強制します。他の設定ファイルの単一の UUID は、制限なしにログイン中に組織を事前選択します。
+* **スコープ**: [`Any file`](#scopes)。管理ソースではない設定ファイルでは、Claude Code はログインがどの組織に属するかをチェックせず、単一の UUID はログイン中にその組織を事前選択します。
 * **タイプ**: 文字列、1 つの UUID、または文字列の配列、複数の UUID
 * **デフォルト**: 未設定。任意の組織がログインできます
 
@@ -5829,7 +5828,9 @@ Claude Code は `settings.json` でこのキーを無視します。
 
 ### `autoInstallIdeExtension`
 
-外部ターミナルから [`/ide`](https://code.claude.com/docs/ja/commands) コマンドを実行したときに、実行中の VS Code、Cursor、または Devin Desktop に Claude Code IDE 拡張機能をインストールできるようにします。Claude Code は起動時には拡張機能をインストールしません。VS Code または JetBrains ターミナル内で Claude Code を実行する場合、`/config` に **Auto-install IDE extension** として表示されます。
+外部ターミナルから [`/ide`](https://code.claude.com/docs/ja/commands) コマンドを実行したときに、実行中の VS Code、Cursor、または Devin Desktop に Claude Code IDE 拡張機能をインストールできるようにします。Claude Code は `claude` の起動時に拡張機能をインストールまたは更新しません。v2.1.318 より前では、これらのエディタのいずれかのターミナルで `claude` を起動すると、このキーが `false` でない限り、Claude Code は拡張機能をインストールまたは更新します。
+
+VS Code または JetBrains ターミナル内で Claude Code を実行する場合、`/config` に **Auto-install IDE extension** として表示されます。
 
 * **スコープ**: [`グローバル設定`](#scopes)
 * **タイプ**: ブール値

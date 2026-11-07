@@ -12,7 +12,7 @@
 
 クラウドセッションは、あなたのマシンではなく Anthropic が管理するクラウドインフラストラクチャで Claude Code を実行します。このクイックスタートでは、ブラウザから [claude.ai/code](https://claude.ai/code) で開始します。Claude モバイルアプリ、Desktop アプリ、またはターミナルから `claude --cloud` で開始することもできます。
 
-[始めるには](#connect-github) GitHub リポジトリが必要です。Claude はそれを分離された仮想マシンにクローンし、変更を加え、レビュー用のブランチをプッシュします。セッションはデバイス間で永続化されるため、ラップトップで開始したタスクは後でスマートフォンからレビューする準備ができています。各セッションは、Claude および Claude Code のその他の使用量とあわせてプランの使用制限にカウントされます。クラウド VM に対する別途の料金は発生しません。
+Claude は、選択した [GitHub リポジトリ](#connect-github)を分離された仮想マシンにクローンし、変更を加え、レビュー用のブランチをプッシュします。セッションはデバイス間で永続化されるため、ラップトップで開始したタスクは後でスマートフォンからレビューする準備ができています。各セッションは、Claude および Claude Code のその他の使用量とあわせてプランの使用制限にカウントされます。クラウド VM に対する別途の料金は発生しません。
 
 クラウドセッションは以下に適しています：
 
@@ -44,7 +44,7 @@ Claude Code はどこでも同じように動作します。変わるのは、�
 | **セッションを開始する場所** | claude.ai/code、Claude モバイルアプリ、**Cloud** が選択された Desktop app、または `claude --cloud` | お客様のターミナル、お客様の IDE、または **Local** が選択された Desktop app | お客様のターミナル、VS Code 拡張機能、または Desktop app |
 | **チャットを行う場所** | claude.ai、モバイルアプリ、または Desktop app | セッションを開始した場所 | claude.ai またはモバイルアプリ、およびセッションを開始した場所 |
 | **ローカル設定を使用** | いいえ、リポジトリのみ | はい | はい |
-| **GitHub が必要** | はい、または `--cloud` 経由で[ローカルリポジトリをバンドル](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github) | いいえ | いいえ |
+| **GitHub が必要** | GitHub リポジトリの場合ははい（`--cloud` で[ローカルリポジトリをバンドル](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)する場合を除く） | いいえ | いいえ |
 | **切断時に実行を継続** | はい | いいえ | セッションがお客様のマシンで開いている間 |
 | **[権限モード](https://code.claude.com/docs/ja/permission-modes.md)** | 編集を受け入れる、Plan、Auto | ターミナルのすべてのモード。IDE と Desktop app については[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください | claude.ai とモバイルアプリから Manual、編集を受け入れる、Plan、または Auto |
 | **ネットワークアクセス** | 環境ごとに設定可能 | お客様のマシンのネットワーク | お客様のマシンのネットワーク |
@@ -209,7 +209,7 @@ PR が作成された後もセッションはライブのままです。CI 失�
 
 ### ページに GitHub ログインボタンのみが表示される
 
-クラウドセッションには接続された GitHub アカウントが必要です。上記のブラウザフローで接続するか、GitHub CLI を使用する場合はターミナルから `/web-setup` を実行してください。GitHub をまったく接続したくない場合は、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) を参照して、自分のマシンで Claude Code を実行し、ブラウザまたは電話から監視してください。
+クラウドセッションで GitHub リポジトリを操作するには、[GitHub アカウントを接続](#connect-github)するか、GitHub CLI を使用する場合はターミナルから `/web-setup` を実行してください。GitHub をまったく接続したくない場合は、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) を参照して、自分のマシンで Claude Code を実行し、ブラウザまたは電話から監視してください。
 
 ### 「Claude Code はアカウントで利用できません」
 

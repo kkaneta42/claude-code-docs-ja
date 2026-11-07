@@ -66,7 +66,7 @@ Claude アプリで添付ファイルを追加すると、ローカルセッシ�
 
 ### プッシュ通知を取得する
 
-リモートコントロールがアクティブな場合、Claude はスマートフォンにプッシュ通知を送信できます。通常は、長時間実行されるタスクが完了したときまたは決定が必要なときです。プロンプトで 1 つをリクエストすることもできます。例えば、`notify me when the tests finish` のようにです。2 つの `/config` トグルと配信トラブルシューティングについては、[モバイルプッシュ通知](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications)を参照してください。
+Remote Control がアクティブな場合、長時間実行されるタスクが完了したときや決定が必要なときに、Claude はスマートフォンにプッシュ通知を送信できます。`notify me when the tests finish` のように、プロンプトで通知を求めることもできます。2 つの `/config` トグルと配信トラブルシューティングについては、[モバイルプッシュ通知](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications)を参照してください。
 
 Dispatch は、生成した Code セッションが完了したときまたは承認が必要なときに独自の通知を送信します。これについては [Dispatch からのセッション](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)で説明されています。
 

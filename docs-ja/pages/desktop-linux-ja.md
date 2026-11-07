@@ -53,7 +53,7 @@ sudo curl -fsSLo /usr/share/keyrings/claude-desktop-archive-keyring.asc https://
 gpg --show-keys /usr/share/keyrings/claude-desktop-archive-keyring.asc
 ```
 
-gpg が出力するフィンガープリントは `31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE` である必要があります。gpg がファイルを開けない、または有効な OpenPGP データが含まれていないと報告する場合は、ダウンロードが失敗したか、間違ったコンテンツが返されました。ネットワークが `downloads.claude.ai` に到達できることを確認してから、ダウンロードコマンドを再度実行してください。
+gpg が出力するフィンガープリントは `31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE` のみである必要があります。gpg がファイルを開けない、または有効な OpenPGP データが含まれていないと報告する場合は、ダウンロードが失敗したか、間違ったコンテンツが返されました。ネットワークが `downloads.claude.ai` に到達できることを確認してから、ダウンロードコマンドを再度実行してください。
 
 リポジトリを登録します。
 

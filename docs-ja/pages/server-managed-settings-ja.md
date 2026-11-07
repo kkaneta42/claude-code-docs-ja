@@ -195,6 +195,7 @@ Claude Code は起動時に Anthropic のサーバーから設定をフェッチ
 * キャッシュされた [`prependPlugins`](https://code.claude.com/docs/ja/settings-reference#prependplugins)、[`appendPlugins`](https://code.claude.com/docs/ja/settings-reference#appendplugins)、または [`enabledPlugins`](https://code.claude.com/docs/ja/settings-reference#enabledplugins) の値は、セッションのフェッチがペイロードを確認するまで、組み込みガードを削除したり、その位置を変更したり、オフにしたりすることはできません
 * [エンドポイント管理ソース](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism)が独自にプラグインを列挙または有効化しているマシンでは、キャッシュされたリストのみが有効化しているプラグインは、フェッチがペイロードを確認するまで、組織のものではなく[ユーザーのもの](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)として扱われます
 * Claude Code はバックグラウンドで最新の設定をフェッチします
+* セッションのプロバイダーがキャッシュされた [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) リストにない場合、Claude Code は拒否する前にそのフェッチを待機して再度確認することがあります。フェッチが失敗した場合、セッションは拒否されます
 * キャッシュされた設定はネットワーク障害が発生しても維持されます。起動時のフェッチが失敗した場合、Claude Code は対話型セッションと Code タブで、キャッシュされたポリシーが有効であることを警告します
 * フェッチが成功するまで、起動時に保留された値は保留されたままです
 

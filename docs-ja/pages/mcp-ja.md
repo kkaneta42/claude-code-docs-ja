@@ -252,7 +252,7 @@ claude mcp remove notion
 
 このリストのステータスは接続試行ではなく設定決定を報告するため、Claude Code はサーバーに接続せずにそれらを出力します。
 
-* ``⏸ Pending approval (run `claude` to approve)``: まだ承認していない `.mcp.json` のプロジェクトスコープのサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方にこれを表示します。`claude` を対話的に実行して確認し、承認してください。
+* ``⏸ Pending approval (run `claude` to approve)``: まだ承認していない、`.mcp.json` のプロジェクトスコープのサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方でこれを表示します。`claude` を対話的に実行して内容を確認し、承認してください。
 * `✘ Rejected (see disabledMcpjsonServers in settings)`: [`disabledMcpjsonServers`](https://code.claude.com/docs/ja/settings-reference#disabledmcpjsonservers) エントリが拒否する `.mcp.json` サーバー。Claude Code はそれを `claude mcp get <name>` にのみ表示します。
 * `⊘ Disabled for this project (re-enable via /mcp)`: プロジェクトの [`disabledMcpServers`](#disable-a-server-without-removing-it) リストが名前を付けるサーバー。Claude Code はそれを `claude mcp list` と `claude mcp get <name>` の両方に表示します。`/mcp` パネルからサーバーをオンに戻してください。
 * `✘ Blocked by enterprise managed policy`: 組織のポリシーのいずれかによって拒否されたサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方にこれを表示します。[管理 MCP 設定](https://code.claude.com/docs/ja/managed-mcp.md#how-restrictions-appear-to-users)の許可リスト、拒否リスト、またはその他の制限によってブロックされたサーバーは、このステータスで表示されるのではなく、両方のコマンドから非表示になります。どのポリシーがサーバーをブロックしているかは管理者に確認してください。
@@ -306,6 +306,16 @@ Claude Code は以下の設定の問題について警告します。各エン�
 
 `/mcp` パネルは各接続されたサーバーの横にツール数を表示し、ツール機能をアドバタイズするがツールを公開しないサーバーについて警告します。
 
+##### クラウドセッションでのツール数
+
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で `3 of 13 tools available` のような数が表示される場合、Claude は残りの 10 個のツールを使用できません。次のような原因を確認してください。
+
+* **リポジトリの `.claude/settings.json` の拒否ルールがツールまたはそのサーバー全体を指定している**: [セッションがそのファイルを読み取る場合](https://code.claude.com/docs/ja/settings.md#settings-in-cloud-sessions)は、その[ルール](https://code.claude.com/docs/ja/permissions.md#mcp)を削除します
+* **ツールの完全な名前が 128 文字を超えている**: [名前が長すぎる場合の手順](https://code.claude.com/docs/ja/errors.md#mcp-tool-name-over-128-characters)に従います
+* **サーバーがツールを Claude 向けではなく自身のインターフェース向けに公開している**: サーバーを管理している場合は、ツールの `_meta.ui.visibility` に `model` を追加して Claude にツールを提供します。それ以外の場合は、修正すべきものはありません。
+
+##### まだ接続中のサーバーのツール
+
 リクエストがバックグラウンドでまだ接続中のサーバーからのツールを必要とする場合、Claude はそのサーバーが接続するまで待機します。待機の方法は設定によって異なります。
 
 * **[ツール検索](#scale-with-mcp-tool-search)（デフォルト）を使用**: 待機は `ToolSearch` 呼び出し内で発生します。
@@ -349,9 +359,9 @@ v2 では、Claude Code も：
 * 予期しない発行者を示す認可応答の [MCP OAuth サインイン](#authenticate-with-remote-mcp-servers) を失敗させます。
 * [MCP OAuth](#authenticate-with-remote-mcp-servers) 認証情報を HTTPS でサービスされるトークンエンドポイント、または `localhost`、`127.0.0.1`、`::1` でのみ送信します。別の場所（ローカルネットワーク上のデバイスなど）で平文 `http://` のトークンエンドポイントを持つサーバーのサインインは失敗します。[Refusing to send credentials to non-https token endpoint](https://code.claude.com/docs/ja/errors.md#refusing-to-send-credentials-to-non-https-token-endpoint) を参照してください。
 
-Anthropic は特定のサーバーを以前のプロトコルに保つか、Claude Code が取得するフィーチャーフラグでそのストリームをオフにすることができます。
+Anthropic は、Claude Code が取得する機能フラグによって、特定のサーバーを以前のプロトコルに留めたり、そのストリームを使わないようにしたりできます。ランタイムを自分で選択するには、[`MCP_SDK_GENERATION`](https://code.claude.com/docs/ja/env-vars) を `v1` または `v2` に設定します。
 
-ランタイムを自分で選択するには、[`MCP_SDK_GENERATION`](https://code.claude.com/docs/ja/env-vars) を `v1` または `v2` に設定してください。Claude Code が尋ねるかどうかを決定するには、[`MCP_PROTOCOL_NEGOTIATION`](https://code.claude.com/docs/ja/env-vars) を `auto` または `legacy` に設定してください。
+Claude Code がサーバーに新しいリビジョンについて尋ねるかどうかを指定するには、[`MCP_PROTOCOL_NEGOTIATION`](https://code.claude.com/docs/ja/env-vars) を `auto` または `legacy` に設定します。この変数が未設定の場合、Claude Code は、たとえば問い合わせた際にサーバーが終了した後などに、stdio サーバーへの問い合わせを 7 日間スキップすることがあります。アップグレードしたサーバーにより早く問い合わせるようにするには、`auto` を設定してください。
 
 ### 動的ツール更新
 

@@ -35,9 +35,9 @@ Opus 4.7 は高速モードをサポートしていないため、それに切�
 CLI では、次のいずれかの方法で高速モードを切り替えます：
 
 * `/fast` を実行して、Space キーを押してオンまたはオフに切り替えてから、Enter キーを押して確認します
-* [ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)で `"fastMode": true` を設定する
+* fast mode をサポートしているモデルで、[ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)に `"fastMode": true` を設定します。それ以外のモデルで設定した場合、そのモデルのまま fast mode はオフになります。
 
-デフォルトでは、インタラクティブセッションで有効にした高速モードはセッション全体で保持されます。高速モードを各セッションでリセットするように構成できます。詳細は[セッションごとのオプトインが必要](#require-per-session-opt-in)を参照してください。
+デフォルトでは、対話セッションで有効にした fast mode は、サポートされているモデルであればセッションをまたいで保持されます。fast mode を各セッションでリセットするように構成できます。詳細は[セッションごとのオプトインが必要](#require-per-session-opt-in)を参照してください。
 
 [クラウドセッション](#use-fast-mode-in-cloud-sessions)の外では、[非インタラクティブモード](https://code.claude.com/docs/ja/headless.md)で `-p` フラグを使用する場合、`/fast` は [`--settings`](https://code.claude.com/docs/ja/cli-reference#cli-flags) 値で高速モードを使用して起動されたセッションでのみ機能します。例えば `claude -p --settings '{"fastMode": true}'` のように使用します。その場合、切り替えはそのセッションにのみ適用され、デフォルトとして保存されません。`-p` 形式には Claude Code v2.1.205 以降が必要です。非インタラクティブモードの他の場所では、コマンドが高速モードが利用できないことを報告します。
 
@@ -45,7 +45,7 @@ Claude が処理中に `/fast` を実行でき、Claude Code は処理の終了�
 
 最高のコスト効率を得るには、会話の途中で切り替えるのではなく、セッションの開始時に高速モードを有効にします。詳細は[コストのトレードオフを理解する](#understand-the-cost-tradeoff)を参照してください。
 
-高速モードを有効にすると：
+`/fast` で fast mode を有効にすると：
 
 * 現在のモデルが高速モードをサポートしていない場合、Claude Code は Opus に切り替わります
 * 確認メッセージが表示されます：「Fast mode ON」
@@ -196,7 +196,7 @@ fast mode を復元するには、`api.anthropic.com` への直接エグレス�
 
 ### セッションごとのオプトインが必要
 
-デフォルトでは、ユーザーがインタラクティブセッションで有効にした高速モードはセッション全体で保持されます。これを変更するには、任意の[設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `fastModePerSessionOptIn` を `true` に設定します。これにより、各セッションは高速モードがオフで開始され、ユーザーが `/fast` で明示的に有効にする必要があります。[Team](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_teams#team-&-enterprise) または [Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_enterprise) プランの所有者は、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて組織全体にこれをデプロイできます。
+デフォルトでは、ユーザーが対話セッションでオンにした fast mode は、サポートされているモデル上でセッションをまたいで保持されます。これを変更するには、任意の[設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `fastModePerSessionOptIn` を `true` に設定します。これにより、各セッションは fast mode がオフで開始され、ユーザーが `/fast` で明示的に有効にする必要があります。[Team](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_teams#team-&-enterprise) または [Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_enterprise) プランの Owner は、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて組織全体にこれをデプロイできます。
 
 ```json theme={null}
 {
@@ -221,7 +221,7 @@ fast mode には標準の Opus とは別のレート制限があります。Cons
 
 セッション中に使用量クレジットが不足した場合、Claude Code は拒否された各高速モードリクエストを標準速度と価格で再試行するため、作業を続けることができ、クールダウンはありません。拒否の表示方法はセッションタイプによって異なります：
 
-* インタラクティブセッションでは、Claude Code は「Fast mode disabled · usage credits exhausted」通知を表示し、セッションの残りの期間、高速モードをオフにします。保存された高速モード設定は変わりません。`/fast` を実行して高速モードを再度オンにします。
+* 対話セッションでは、Claude Code は「Fast mode disabled · Out of usage credits」通知を表示し、fast mode をオフにします。保存された fast mode 設定は変わりません。`/fast` を実行して fast mode を再度オンにします。
 * [非インタラクティブモード](https://code.claude.com/docs/ja/headless.md)で `--output-format stream-json` を使用する場合、および Agent SDK を通じて、Claude Code はメッセージストリーム上で同じテキストを `system` メッセージとして、サブタイプ `notification` で、使用量クレジットが不足している間、ターンごとに 1 回発行します。高速モードはオンのままです。Claude Code v2.1.221 以降が必要です。
 
 ## リサーチプレビュー

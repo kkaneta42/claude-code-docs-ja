@@ -818,11 +818,11 @@ Claude Code は、VS Code 拡張機能（グラフィカルパネル）と CLI�
 
 ### VS Code で CLI を実行する
 
-VS Code から離れずに CLI を使用するには、Windows/Linux では `` Ctrl+` ``、Mac では `` Cmd+` `` を押して統合ターミナルを開き、`claude` を実行します。`claude` を起動しても拡張機能はインストールされません。拡張機能がない場合、統合ターミナルで `/ide` を実行すると「No available IDEs detected」と表示され、`/status` では IDE が「Not connected」と表示されます。
+VS Code から離れずに CLI を使用するには、Windows/Linux では `` Ctrl+` ``、Mac では `` Cmd+` `` を押して統合ターミナルを開き、`claude` を実行します。
 
 差分の表示や診断情報の共有などの機能を利用するには、統合ターミナルまたは外部ターミナルから CLI を拡張機能に接続します。
 
-* **統合ターミナル**：[拡張機能をインストール](#install-the-extension)してから `claude` を起動します。CLI は自動的に接続されます。
+* **統合ターミナル**：[拡張機能をインストール](#install-the-extension)してから `claude` を起動します。CLI は自動的に接続されます。Claude Code v2.1.318 以降では拡張機能が自動的にインストールされないため、インストールするまでは `/ide` で「No available IDEs detected」と表示され、`/status` では IDE が「Not connected」と表示されます。
 * **外部ターミナル**：Claude Code 内で `/ide` を実行して VS Code に接続します。拡張機能なしで VS Code が実行されている場合、[`autoInstallIdeExtension`](https://code.claude.com/docs/ja/settings-reference#autoinstallideextension) をオフにしていない限り、`/ide` によって拡張機能がインストールされます。
 
 拡張機能をインストールしても、`claude` はシェルの PATH に追加されません。拡張機能はチャットパネル用に CLI の専用コピーを同梱していますが、ターミナルで `claude` と入力するには [スタンドアロン CLI のインストール](https://code.claude.com/docs/ja/setup.md) が必要です。一度インストールすれば、`claude mcp add` や `claude --resume` を含むこのページのコマンドが任意のターミナルで動作します。インストール後も `claude` が見つからない場合は、[PATH を確認してください](https://code.claude.com/docs/ja/troubleshoot-install.md#verify-your-path)。
@@ -1091,7 +1091,16 @@ Claude Code 拡張機能をアンインストールするには：
 2. 「Claude Code」を検索します
 3. **Uninstall** をクリックします
 
-`claude` を起動しても、拡張機能はアンインストールされたままです。VS Code の実行中に外部ターミナルから `/ide` を実行すると、Claude Code は拡張機能を再インストールします。これを防ぐには、`~/.claude.json` で [`autoInstallIdeExtension`](https://code.claude.com/docs/ja/settings-reference#autoinstallideextension) を `false` に設定するか、統合ターミナルから `/config` で **Auto-install IDE extension** をオフにします。また、[`CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`](https://code.claude.com/docs/ja/env-vars) 環境変数を `1` に設定することもできます。
+アンインストール後に次のいずれかを行うと、拡張機能が再びインストールされます：
+
+* VS Code の実行中に外部ターミナルから `/ide` を実行する
+* v2.1.318 より前の Claude Code バージョンで、統合ターミナルから `claude` を起動する
+
+拡張機能が再びインストールされないようにするには、次のいずれかを行ってください。すでに再インストールされている場合は、その後にもう一度アンインストールします：
+
+* `~/.claude.json` で [`autoInstallIdeExtension`](https://code.claude.com/docs/ja/settings-reference#autoinstallideextension) を `false` に設定する
+* [設定ファイル](https://code.claude.com/docs/ja/env-vars.md#in-settings-files)の `env` で [`CLAUDE_CODE_IDE_SKIP_AUTO_INSTALL`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定する
+* 統合ターミナルから `/config` で **Auto-install IDE extension** をオフにする
 
 拡張機能のデータも削除してすべての設定をリセットするには、使用しているプラットフォームに応じて拡張機能のストレージディレクトリを削除します。
 

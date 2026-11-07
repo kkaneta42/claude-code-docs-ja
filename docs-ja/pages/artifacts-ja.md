@@ -141,7 +141,7 @@ Claude は他の人が書いたページを、[WebFetch](https://code.claude.com
 
 * **ネットワークアクセスのないクラウドセッション**：[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md#access-levels) の場合、**None** レベルがこれに該当します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では代わりに分類器が承認できますが、[Cowork](https://claude.com/product/cowork) セッションでは、承認できるのはユーザー本人だけです。
 * **別の組織の公開アーティファクト**：Claude Code は auto モードであっても、まずユーザーに確認します。`bypassPermissions` モードなど、Claude Code がユーザーに確認できない場合、Claude はそのアーティファクトを読むことができません。Claude がこれらのアーティファクトを読めるのは、[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) がオンになっている間だけです。
-* **所有者またはネットワーク設定が未確認**：Claude Code がアーティファクトの作成者を確認できない場合、またはクラウドセッションのネットワーク設定を確認できない場合は確認を求めます。ユーザーの承認はその 1 回のリクエストにのみ適用されます。
+* **所有者またはネットワーク設定が未確認**：Claude Code がアーティファクトの作成者を確認できない場合、またはクラウドセッションのネットワーク設定を確認できない場合は確認を求めます。ユーザーの承認はその 1 回のリクエストにのみ適用されます。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では、ユーザーに確認する代わりに、分類器が読み取りを承認またはブロックできます。
 * **plan モード**：[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode) では、Claude Code は、組織内の他の人が作成したアーティファクトを Artifact ツールが読む前に確認を求めます。
 
 Claude が WebFetch でアーティファクトを読む場合も、WebFetch 自体の [プロンプトのルール](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior) は引き続き適用されます。

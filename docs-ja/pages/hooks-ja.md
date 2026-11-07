@@ -70,7 +70,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 
 > [tab] macOS/Linux
 >
-> `matcher` は Bash ツール呼び出しに絞り込み、`if` 条件は `rm *` にマッチする Bash サブコマンドにさらに絞り込むため、`block-rm.sh` は両方のフィルターがマッチするときのみ生成されます。
+> `matcher` は Bash ツール呼び出しと [Monitor コマンド](#match-monitor-commands)に絞り込み、`if` 条件は `rm *` にマッチする Bash サブコマンドにさらに絞り込むため、`block-rm.sh` は両方のフィルターがマッチするときのみ生成されます。
 >
 > ```json theme={null}
 > {
@@ -116,7 +116,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 
 > [tab] Windows (PowerShell)
 >
-> matcher `Bash|PowerShell` は、Bash に加えて [PowerShell ツール](#powershell)も対象にします。1 つの `if` ルールは 1 つのツールの呼び出しにしかマッチしないため、ツールごとに個別のハンドラーを用意します。1 つ目は `rm *` にマッチする Bash サブコマンドに、2 つ目は `Remove-Item *` にマッチする PowerShell コマンドに絞り込みます。どちらも `powershell.exe` を通じて同じスクリプトを実行します。
+> matcher `Bash|PowerShell` は、Bash に加えて [PowerShell ツール](#powershell)も対象にします。1 つの `if` ルールで指定できるツールは 1 つだけなので、ツールごとに個別のハンドラーを用意します。1 つ目は `rm *` にマッチする Bash サブコマンドに、2 つ目は `Remove-Item *` にマッチする PowerShell コマンドに絞り込みます。どちらも `powershell.exe` を通じて同じスクリプトを実行します。
 >
 > ```json theme={null}
 > {
@@ -225,7 +225,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 フックは JSON 設定ファイルで定義されます。設定には 3 つのネストレベルがあります。
 
 1. 応答する[フック イベント](#hook-events)を選択します（`PreToolUse` や `Stop` など）
-2. 発火するタイミングをフィルタリングする [matcher グループ](#matcher-patterns)を追加します（「Bash ツールのみ」など）
+2. [matcher グループ](#matcher-patterns)を追加して、「Bash ツールの場合」のように、発火するタイミングを絞り込みます
 3. マッチしたときに実行する 1 つ以上の[フック ハンドラー](#hook-handler-fields)を定義します
 
 完全なウォークスルーと注釈付きの例については、上記の[フックがどのように解決されるか](#how-a-hook-resolves)を参照してください。
@@ -277,7 +277,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 | matcher 値 | 評価方法 | 例 |
 | :- | :- | :- |
 | `"*"`、`""`、または省略 | すべてにマッチ | イベントのすべての出現で発火 |
-| 文字、数字、`_`、`-`、スペース、`,`、`\|` のみ | 完全一致、または `\|` または `,` で区切られた完全一致のリスト（オプションで周囲の空白を含む） | `Bash` は Bash ツールのみにマッチ。`Edit\|Write` と `Edit, Write` はいずれかのツールに完全にマッチ。`code-reviewer` はそのエージェント タイプのみにマッチ |
+| 文字、数字、`_`、`-`、スペース、`,`、`\|` のみ | 完全一致、または `\|` または `,` で区切られた完全一致のリスト（オプションで周囲の空白を含む） | `Bash` は Bash ツールにマッチし、`PreToolUse` と `PermissionRequest` では [Monitor コマンド](#match-monitor-commands)にもマッチ。`Edit\|Write` と `Edit, Write` はいずれかのツールに完全にマッチ。`code-reviewer` はそのエージェント タイプのみにマッチ |
 | その他の文字を含む | JavaScript 正規表現、アンカーなし | `^Notebook` は名前が `Notebook` で始まるツールにマッチ。`mcp__memory__.*` は `memory` サーバーのすべてのツールにマッチ |
 
 正規表現パス上の matcher は JavaScript の `RegExp.prototype.test` でテストされます。これは値内のどこかでマッチすると成功します。`Edit.*` は `Edit` と `NotebookEdit` の両方にマッチします。完全文字列マッチが必要な場合は、`^Edit$` のようにパターンを `^` と `$` でラップしてください。
@@ -294,7 +294,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 | `SessionStart` | セッションの開始方法 | `startup`、`resume`、`clear`、`compact`、`fork` |
 | `Setup` | セットアップをトリガーした CLI フラグ | `init`、`maintenance` |
 | `SessionEnd` | セッションが終了した理由 | `clear`、`resume`、`logout`、`prompt_input_exit`、`other` |
-| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
+| `Notification` | 通知タイプ | `permission_prompt`、`idle_prompt`、`auth_success`、`auth_storage_failure`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
 | `SubagentStart` | エージェント タイプ | `general-purpose`、`Explore`、`Plan`、カスタム エージェント名、またはプラグイン スコープ付き名前（`^my-plugin:reviewer$` など） |
 | `PreCompact`、`PostCompact` | コンテキスト圧縮をトリガーしたもの | `manual`、`auto` |
 | `PreModelSwitch`、`PostModelSwitch` | セッションの切り替え先モデルの正規名（[PreModelSwitch](#premodelswitch) で説明） | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*` |
@@ -384,6 +384,15 @@ MCP ツールは `mcp__<server>__<tool>` という命名パターンに従いま
   }
 }
 ```
+
+#### Monitor コマンドをマッチ
+
+`Bash` matcher を持つ [`PreToolUse`](#pretooluse) または [`PermissionRequest`](#permissionrequest) フックは、Claude が [Monitor ツール](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool)で開始するシェルコマンドに対しても実行されますが、その `allow` と [`updatedInput`](#pretooluse-decision-control) はそれらのコマンドには効果がありません。Claude Code v2.1.314 以降が必要です。`Bash|PowerShell`、`^Bash$`、`Bash.*` などの matcher も `Bash` matcher です。`Bash` matcher を持つフックは [WebSocket 監視](https://code.claude.com/docs/ja/tools-reference.md#websocket-source)では実行されず、`Bash` matcher を持つ `PostToolUse` フックは Monitor では実行されません。
+
+Monitor コマンドに対して実行されるフックは、そのコマンドを拒否したり、Claude Code にそのコマンドについてユーザーへ確認させたりできます。コマンドを許可または書き換えるには、`Bash` matcher から Monitor を含む matcher に切り替えます。
+
+* **Monitor を含む matcher**: `Bash|Monitor` や `.*` などの matcher を使う場合、または matcher を指定しない場合、フックは Monitor 呼び出し自体の入力を受け取り、`allow` と `updatedInput` が適用されます。[`if`](#common-fields) では、`Monitor(tail *)` のように Monitor を指定します。これは [`Bash(tail *)` が従うルール](#bash-if-matching)でマッチします。`if` で Bash を指定した場合でも、フックは Monitor 呼び出しの入力を受け取りますが、`allow` と `updatedInput` は効果がありません
+* **`Bash` matcher**: フックは Bash 呼び出しを受け取ります。`if` では、`Bash(tail *)` のように Bash を指定します。`if` で Monitor を指定している場合、フックは実行されません
 
 ### フック ハンドラー フィールド
 
@@ -811,7 +820,10 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 * **それぞれが単独で JSON として解析できる 2 行以上の出力で、最初の行が `{` で始まり最後の行が `}` で終わるもの**: フィールドを設定する JSON 出力オブジェクトである行がない場合はプレーン テキストになります。そのような行がある場合、出力は解析失敗になるため、そのオブジェクトだけを stdout に出力してください。
 * **`{` で始まり `}` で終わるが有効な JSON ではないその他の出力**: 解析失敗になります。
 
-ほとんどのイベントでは、Claude Code は stdout をデバッグ ログに書き込み、トランスクリプトには表示しません。例外は `UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch` で、Claude Code はプレーン テキストの stdout を Claude が見て行動できるコンテキストとして追加します。これらのイベントでは、Claude Code は解析に失敗した stdout を追加しません。
+ほとんどのイベントでは、Claude Code は stdout をデバッグ ログに書き込み、トランスクリプトには表示しません。次のイベントでは、stdout は Claude またはコンテキスト圧縮の要約に届きます。
+
+* **`UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch`**: Claude Code はプレーン テキストの stdout を Claude が見て行動できるコンテキストとして追加します。解析に失敗した stdout は追加しません。
+* **`PreCompact`**: stdout は[コンテキスト圧縮の要約に対する指示](#precompact-output)になります
 
 終了 0 のフックからの stderr を Claude が見ることはありません。`PreToolUse` などのイベントで自分で読むには、[デバッグ ログ](#debug-hooks)を有効にしてください。`PostToolUse` または `PostToolUseFailure` フックから Claude に警告を表示するには、代わりに終了 2 を使用してください。そうすれば、ツールがすでに実行されていても [Claude は stderr を確認できます](#exit-code-2-behavior-per-event)。
 
@@ -1050,7 +1062,7 @@ stdout には JSON オブジェクト以外何も出力しないでください�
 フックの `additionalContext`、`systemMessage`、`initialUserMessage` の文字列、およびプレーン stdout は 10,000 文字に制限されています。
 
 * **スコープ**: 同じイベントに対して複数のフックが実行される場合でも、Claude Code は各文字列を個別に計測します。JSON 出力の場合、各フィールドは個別に計測されます。プレーン stdout は全体として計測されます。
-* **制限を超えた場合**: Claude Code は出力をセッション ディレクトリ内のファイルに保存し、ファイル パスと最初の最大 2,000 文字のプレビューに置き換えます。大きな有効な Bash 結果も同じ方法で処理されます（[出力制限](https://code.claude.com/docs/ja/tools-reference.md#output-limits)で説明）。その Bash の上限とは異なり、この上限を引き上げる設定や環境変数はありません。
+* **制限を超えた場合**: [PreCompact の stdout](#precompact-output) を除き、Claude Code は出力をセッション ディレクトリ内のファイルに保存し、ファイル パスと最初の最大 2,000 文字のプレビューに置き換えます。大きな有効な Bash 結果も同じ方法で処理されます（[出力制限](https://code.claude.com/docs/ja/tools-reference.md#output-limits)で説明）。その Bash の上限とは異なり、この上限を引き上げる設定や環境変数はありません。
 * **ファイルの読み取り**: Claude Code は Claude にファイルを読むよう求めないため、Claude が常に確認する必要があるものは上限内に収めてください。
 
 JSON オブジェクトは 3 種類のフィールドをサポートしています。
@@ -1954,7 +1966,7 @@ Claude Code v2.1.271 以降では、Claude Code が [auto モード](https://cod
 
 #### PreToolUse の決定制御
 
-`PreToolUse` フックは、ツール呼び出しを続行するかどうかを制御できます。トップレベルの `decision` フィールドを使用する他のフックとは異なり、PreToolUse は `hookSpecificOutput` オブジェクト内で決定を返します。これにより、4 つの結果（allow、deny、ask、defer）に加えて、実行前にツールの入力を変更する機能という、より豊富な制御が可能になります。
+`PreToolUse` フックは、ツール呼び出しを続行するかどうかを制御できます。トップレベルの `decision` フィールドを使用する他のフックとは異なり、PreToolUse は `hookSpecificOutput` オブジェクト内で判定を返します。これにより、4 つの結果（allow、deny、ask、defer）に加えて、実行前にツールの入力を変更する機能という、より豊富な制御が可能になります。Monitor コマンドを許可または書き換えるには、[Monitor コマンドをマッチさせる](#match-monitor-commands)を参照してください。
 
 | フィールド | 説明 |
 | :- | :- |
@@ -2051,7 +2063,12 @@ a hook changed this call's input after auto mode reviewed it
 
 #### ツール呼び出しを後回しにする
 
-`"defer"` は、Agent SDK アプリや Claude Code 上に構築したカスタム UI など、`claude -p` をサブプロセスとして実行し、その JSON 出力を読み取る統合向けです。これにより、呼び出し側のプロセスは、ツール呼び出しの時点で Claude を一時停止し、独自のインターフェースで入力を収集して、中断したところから再開できます。Claude Code がこの値を尊重するのは、`-p` フラグを使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)の場合のみです。対話セッションでは警告をログに記録し、フックの結果を無視します。
+`"defer"` は、`claude -p` をサブプロセスとして実行し、その JSON 出力を読み取るインテグレーション（Agent SDK アプリや Claude Code 上に構築したカスタム UI など）向けです。これにより、呼び出し元のプロセスはツール呼び出しの時点で Claude を一時停止し、独自のインターフェースで入力を収集して、中断したところから再開できます。
+
+Claude Code が `"defer"` に従うのは、`-p` フラグを指定した[非対話モード](https://code.claude.com/docs/ja/headless.md)で、かつ Claude がそのターンで単一のツール呼び出しを行う場合のみです。
+
+* **対話セッションの場合**: 警告をログに記録し、フックの結果を無視します
+* **複数のツール呼び出しを同時に行う場合**: `"defer"` は警告とともに無視され、ツールは通常の権限フローに進みます
 
 典型的な例は `AskUserQuestion` ツールです。Claude はユーザーに何かを尋ねたいのですが、回答するためのターミナルがありません。`-p` の実行では、`--permission-prompt-tool` で渡す MCP ツールなどの[権限ホスト](https://code.claude.com/docs/ja/headless.md#turn-off-permission-prompts-in-unattended-runs)がある場合にのみ `AskUserQuestion` が提供されるため、権限ホストを指定して実行を開始してください。往復の流れは次のとおりです：
 
@@ -2061,7 +2078,7 @@ a hook changed this call's input after auto mode reviewed it
 4. 呼び出し側のプロセスが、同じ権限ホストを指定して `claude -p --resume <session-id>` を実行します。同じツール呼び出しが再び `PreToolUse` を発火させます。
 5. フックが `updatedInput` に回答を含めて `permissionDecision: "allow"` を返します。ツールが実行され、Claude が続行します。
 
-`deferred_tool_use` フィールドには、ツールの `id`、`name`、`input` が含まれます。`input` は Claude がツール呼び出しのために生成したパラメータで、実行前に取得されたものです：
+`deferred_tool_use` フィールドには、ツールの `id`、`name`、`input` が含まれます。
 
 ```json theme={null}
 {
@@ -2077,22 +2094,28 @@ a hook changed this call's input after auto mode reviewed it
 }
 ```
 
-タイムアウトや再試行の上限はありません。セッションは再開するまでディスク上に残りますが、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) の保持期間によるクリーンアップの対象となります。このクリーンアップは、[保持期間によるクリーンアップのルール](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)に従い、デフォルトでは 30 日後にセッションファイルを削除します。
+タイムアウトや再試行回数の上限はありません。セッションは、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) の[保持期間による一掃](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)で削除されるまで（デフォルトでは 30 日後）ディスク上に残ります。
 
-再開時に保留されたツールが利用できなくなっている場合、再開の最初の結果は `stop_reason: "tool_deferred_unavailable"` と `is_error: true` になり、フックは発生しません。これは、ツールを提供していた MCP サーバーが再開されたセッションで接続されていない場合に発生します。どのツールが失われたかを特定できるように、`deferred_tool_use` ペイロードは引き続き含まれます。
-
-* **再開時またはその後にプロンプトを送信しなかった場合**、呼び出しはまだ保留中です。ツールが利用できる状態で再度再開すると、最初にそれが実行されます。
-* **再開時またはその後にプロンプトを送信した場合**、Claude Code はツールの結果なしでプロンプトに応答し、保留された呼び出しを破棄します。引き続きツールを呼び出す必要がある場合は、ツールが利用可能になった時点で新しいプロンプトを送信してください。
-
-プロンプトなしで再開したときに待っている回答がまだ準備できていない場合、フックは再び `"defer"` を返すことができます。プロンプトを送信した状態でフックが再び保留した場合、Claude Code はプロンプトを同じように扱います。つまり、ツールの結果なしで応答し、呼び出しを破棄します。フックが `"allow"` または `"deny"` を返すまでプロンプトなしで再開してください。これが、呼び出し元のプロセスがループを抜ける方法です。
-
-`"defer"` は、Claude がそのターンで単一のツール呼び出しを行う場合にのみ機能します。Claude が一度に複数のツール呼び出しを行う場合、`"defer"` は警告とともに無視され、ツールは通常の権限フローで処理されます。この制約は、再開時に再実行できるツールが 1 つだけであるために存在します。バッチから 1 つの呼び出しだけを遅延させると、他の呼び出しが未解決のまま残ってしまいます。
+再開時に回答の準備ができていない場合、フックは再度 `"defer"` を返せます。その再開時にプロンプトを送信した場合、Claude はツールの結果なしでそのプロンプトに応答し、呼び出しは実行しません。フックが `"allow"` または `"deny"` を返すまで、プロンプトなしで再開してください。
 
 > [!NOTE]
 >
 > 遅延されたセッションを plan モードで再開するには、Claude Code が計画を提示して承認を求められるように、`--resume` とともに [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を渡してください。その他の条件については、[`-p` で plan モードのまま再開する](https://code.claude.com/docs/ja/sessions#resume-in-plan-mode-with-p)を参照してください。Claude Code v2.1.246 以降が必要です。
 >
-> `-p` で再開する場合、Claude Code はそれ以外の保存された権限モードを復元しません。新しい `claude -p` の実行が開始するのと同じ権限モードで実行を開始するため、遅延されたセッションで `--permission-mode` または `--dangerously-skip-permissions` を使用していた場合は、再度渡してください。`-p` を付けずに `claude --resume <session-id>` で再開する場合、Claude Code は保存された権限モードを復元します。例外は[再開時の権限モード](https://code.claude.com/docs/ja/sessions.md#permission-mode-on-resume)に記載されています。
+> `-p` で再開する場合、Claude Code はそれ以外に保存されている権限モードを復元しません。新しい `claude -p` の実行が開始されるのと同じ権限モードで実行を開始するため、後回しにしたセッションで `--permission-mode` または `--dangerously-skip-permissions` を使用していた場合は、再度渡してください。
+
+##### 後回しにしたツールが利用できない場合の再開
+
+`stop_reason: "tool_deferred_unavailable"` を含む結果は、後回しにした呼び出しのツールが、再開したセッションで利用できないことを意味します。たとえば、その MCP サーバーが接続されていない場合です。`PreToolUse` フックは発火せず、結果の `deferred_tool_use` フィールドにそのツールの名前が示されます。
+
+呼び出しが保留中の間は、送信したプロンプトは Claude に届かず、実行は終了コード 1 で終了します。`result` フィールドは `<tool> isn't available, so its deferred call didn't run.` で始まります。呼び出しを実行するか、実行しないよう破棄してください。
+
+* **呼び出しを実行するには**: ツールを利用可能にしてから、再度再開します。
+* **呼び出しを破棄するには**: [`CLAUDE_CODE_DROP_UNAVAILABLE_DEFERRED_TOOL`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定し、プロンプトを指定して再開します。Claude は呼び出しの結果としてエラーを受け取り、プロンプトに応答します。後で再開したときには、保留中の呼び出しはありません。
+
+呼び出しを破棄すると、実行は空の `result` フィールドを持つ `tool_deferred_unavailable` の結果を書き出し、続いて 2 つ目の結果に Claude の応答を書き出します。その応答がエラーでない限り、終了コード 0 で終了します。変数を設定してプロンプトを送信しなかった場合も、実行は呼び出しを破棄し、終了コード 1 で終了します。
+
+v2.1.319 より前では、Claude Code はツールの結果なしでプロンプトに応答し、呼び出しを破棄していました。これらのバージョンでは、ツールが利用可能になってから新しいプロンプトを送信してください。
 
 ### PermissionRequest
 
@@ -2147,6 +2170,8 @@ PreToolUse フックは、権限が必要かどうかにかかわらず、すべ
 | `updatedPermissions` | `"allow"` の場合のみ：適用する[権限更新エントリ](#permission-update-entries)の配列です。許可ルールの追加やセッションの権限モードの変更などを指定します |
 | `message` | `"deny"` の場合のみ：権限が拒否された理由を Claude に伝えます |
 | `interrupt` | `"deny"` の場合のみ：`true` の場合、Claude を停止します |
+
+Monitor コマンドを許可または書き換えるには、[Monitor コマンドをマッチさせる](#match-monitor-commands)を参照してください。
 
 `decision` オブジェクトを返さずに終了コード 2 で終了するフックは権限フローを変更せず、その stderr は破棄されます。リクエストを許可または拒否するには、`decision` オブジェクトを返してください。
 
@@ -2204,6 +2229,18 @@ PreToolUse フックは、権限が必要かどうかにかかわらず、すべ
 
 * ツールが正常に完了した後に常にフックを実行するには、`matcher` を省略するか `"*"` に設定します。そのうえで、フック自身が何が変更されたかを調べます。たとえば `git status --porcelain` を実行すると、`git diff` では漏れる未追跡ファイルも一覧表示されます。失敗したツール呼び出しについては、同じフックを [PostToolUseFailure](#posttoolusefailure) に追加してください。
 * 書き込み元にかかわらず、特定のファイルがディスク上で変更されたときにフックを実行するには、[FileChanged](#filechanged) を使用します。`Bash` コマンドや Claude Code 外部のプロセスが同じファイルを書き換えた場合、Claude Code は `Edit|Write` に一致する `PostToolUse` フックを実行しません。
+
+#### 中断後の PostToolUse
+
+ツール呼び出し中にメッセージを送信したり中断したりした後に `PostToolUse` フックが早期に停止する場合は、`Ctrl+Enter`、`Enter`、`Esc` のどれを押したかを確認してください。
+
+* **`Ctrl+Enter`**: ツールの実行中にこのキーを押して[ターンが終了](https://code.claude.com/docs/ja/interactive-mode.md#when-claude-code-sends-what-you-queued)し、ツールが完了した場合、`PostToolUse` フックはその結果に対して実行され、完了までに 10 秒の猶予があります。メッセージより前に `!` コマンドをキューに入れていた場合や、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars#variables) などでバックグラウンドタスクが無効になっている場合、このキーは `Esc` として動作します。
+* **`Enter`**: `Enter` でキューに入れたメッセージはターンを中断しないため、フックには通常の `timeout` が適用されます。
+* **`Esc`**: フックが即座にキャンセルされるため、フックを実行する必要がある場合は `Enter` または `Ctrl+Enter` でメッセージを送信してください。
+
+10 秒が経過すると、Claude Code は [`timeout`](#common-fields) にかかわらず、まだ実行中のコマンドフックを強制終了します。より長いコマンドフックを完了させるには、[`async: true`](#run-hooks-in-the-background) を指定して実行してください。ただしその場合、フックは結果をブロックしたり書き換えたりできません。
+
+v2.1.319 より前では、メッセージでターンを中断した後にフックは開始されず、実行中のフックは停止されていました。
 
 #### PostToolUse の入力
 
@@ -2479,6 +2516,7 @@ Claude Code が通知を送信するときに実行されます。通知タイ�
 | `permission_prompt` | Claude がツールの使用、またはサンドボックス化されたコマンドの[ネットワークリクエスト](https://code.claude.com/docs/ja/sandboxing.md#network-isolation)の承認を必要としており、プロンプトが約 6 秒間待機しているとき |
 | `idle_prompt` | Claude が約 60 秒前に応答を完了し、それ以降ユーザーが入力していないとき |
 | `auth_success` | 認証が完了したとき |
+| `auth_storage_failure` | サインインは完了したものの、Claude Code が新しい認証情報を[認証情報ストレージ](https://code.claude.com/docs/ja/authentication.md#credential-management)に保存できない場合。`auth_success` の代わりに発火します |
 | `elicitation_dialog` | MCP サーバーが elicitation フォームを開き、ユーザーが約 6 秒間入力していないとき |
 | `elicitation_url_dialog` | MCP サーバーがブラウザの URL を開くようユーザーに求め、ユーザーが約 6 秒間入力していないとき |
 | `elicitation_complete` | MCP サーバーが [URL モードの elicitation](#elicitation-input) の完了を報告したとき |
@@ -2490,7 +2528,7 @@ Claude Code が通知を送信するときに実行されます。通知タイ�
 | `quota_auto_resume_disabled` | Claude Code が claude.ai の使用制限の待機を、タスクを続行せずに終了したとき。たとえば、Claude Code が自動的に開始した待機中に [`autoContinueAtUsageLimit`](https://code.claude.com/docs/ja/settings-reference#autocontinueatusagelimit) がオフにされた場合やリセットが 24 時間以上先に移動した場合、続行したタスクが繰り返し制限に達した場合、続行がモデルに到達する前にブロックされた場合です。ユーザーが `Esc` または `Ctrl+C` を押した場合や、**Don't continue automatically** を選択した場合は発火しません |
 | `plugin_notification` | [mod](https://code.claude.com/docs/ja/plugins/mods/api.md#show-something-without-starting-a-turn) が `$.ui.notify` で通知を発行したとき。mod がタイトルを設定していない限り、フックの `title` は mod の名前になります |
 
-`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` タイプには Claude Code v2.1.234 以降が必要です。
+`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` タイプには Claude Code v2.1.234 以降が必要です。`auth_storage_failure` タイプには v2.1.288 以降が必要です。
 
 ターミナルセッションでは、サンドボックス化されたコマンドのネットワークリクエストに対する `permission_prompt` には Claude Code v2.1.246 以降が必要です。
 
@@ -3325,6 +3363,10 @@ Claude Code は、PreCompact フックの `systemMessage` フィールドと `co
   "custom_instructions": null
 }
 ```
+
+#### PreCompact の出力
+
+PreCompact フックが 0 で終了してブロックしない場合、Claude Code はその stdout を圧縮の要約に対する指示として使用します。この stdout はフックごとに 10,000 文字未満にしてください。それより長い出力は、Claude Code が上限で切り詰めてマーカーを追加します。
 
 ### PostCompact
 

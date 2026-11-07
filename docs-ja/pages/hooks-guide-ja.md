@@ -177,13 +177,14 @@ Claude が作業を終えて入力を必要とするたびにデスクトップ�
 > >
 > > WSL 内で Claude Code を実行している場合は、Windows の相互運用機能を通じて `powershell.exe` が `PATH` 上で利用可能である必要があります。
 
-空の `matcher` はすべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかの値を設定します。
+空の `matcher` はすべての通知タイプで発火します。特定のイベントでのみ発火させるには、次のいずれかのような通知タイプを設定します：
 
 | Matcher | 発火するタイミング |
 | :- | :- |
 | `permission_prompt` | Claude がツールの使用、またはサンドボックス化されたコマンドの[ネットワークリクエスト](https://code.claude.com/docs/ja/sandboxing.md#network-isolation)の承認を必要とし、プロンプトが約 6 秒間待機したとき |
 | `idle_prompt` | Claude が約 60 秒前に応答を終え、それ以降ユーザーが入力していないとき |
 | `auth_success` | 認証が完了したとき |
+| `auth_storage_failure` | サインインは完了したものの、Claude Code が新しい認証情報を[認証情報ストレージ](https://code.claude.com/docs/ja/authentication.md#credential-management)に保存できなかったとき。`auth_success` の代わりに発火します |
 | `elicitation_dialog` | MCP サーバーが elicitation フォームを開き、ユーザーが約 6 秒間入力していないとき |
 | `elicitation_url_dialog` | MCP サーバーがブラウザで URL を開くよう求め、ユーザーが約 6 秒間入力していないとき |
 | `elicitation_complete` | MCP サーバーが [URL モードの elicitation](https://code.claude.com/docs/ja/hooks.md#elicitation-input) の完了を報告したとき |
@@ -197,7 +198,7 @@ Claude が作業を終えて入力を必要とするたびにデスクトップ�
 
 Claude Code は、ターミナルと、Claude Desktop、VS Code 拡張機能、および Agent SDK を通じて権限リクエストに応答するその他のホストとで、`permission_prompt` のタイミングを異なる方法で計測します。両方のタイミングについては、[各通知タイプが発火するタイミング](https://code.claude.com/docs/ja/hooks.md#notification)を参照してください。
 
-`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` の各 matcher には Claude Code v2.1.234 以降が必要です。
+`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled` の各 matcher には Claude Code v2.1.234 以降が必要です。`auth_storage_failure` matcher には v2.1.288 以降が必要です。
 
 ターミナルセッションでは、サンドボックス化されたコマンドのネットワークリクエストに対する `permission_prompt` には Claude Code v2.1.246 以降が必要です。
 
@@ -688,7 +689,7 @@ matcher がない場合、フックはそのイベントが発生するたびに
 | `SessionStart` | セッションの開始方法 | `startup`、`resume`、`clear`、`compact`、`fork` |
 | `Setup` | セットアップをトリガーした CLI フラグ | `init`、`maintenance` |
 | `SessionEnd` | セッションが終了した理由 | `clear`、`resume`、`logout`、`prompt_input_exit`、`other` |
-| `Notification` | 通知の種類 | `permission_prompt`、`idle_prompt`、`auth_success`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
+| `Notification` | 通知の種類 | `permission_prompt`、`idle_prompt`、`auth_success`、`auth_storage_failure`、`elicitation_dialog`、`elicitation_url_dialog`、`elicitation_complete`、`elicitation_response`、`agent_needs_input`、`agent_completed`、`quota_auto_resume_fired`、`quota_auto_resume_stale`、`quota_auto_resume_disabled`、`plugin_notification` |
 | `SubagentStart` | エージェントの種類 | `general-purpose`、`Explore`、`Plan`、またはカスタムエージェント名 |
 | `PreCompact`、`PostCompact` | コンテキスト圧縮をトリガーしたもの | `manual`、`auto` |
 | `PreModelSwitch`、`PostModelSwitch` | [PreModelSwitch](https://code.claude.com/docs/ja/hooks.md#premodelswitch) で説明されている、セッションの切り替え先モデルの正規名 | `claude-opus-5`、`claude-opus-4-6\|claude-opus-5`、`.*opus.*` |

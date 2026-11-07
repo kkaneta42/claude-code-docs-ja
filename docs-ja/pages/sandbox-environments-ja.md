@@ -25,7 +25,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 | [Dev コンテナ](#dev-containers) | 完全な開発環境 | はい | 中程度 |
 | [カスタムコンテナ](#custom-container) | 完全な開発環境 | はい | 中程度から高い |
 | [仮想マシン](#virtual-machine) | 完全なオペレーティングシステム | いいえ | 高い |
-| [クラウドセッション](#cloud-sessions) | 完全なオペレーティングシステム（Anthropic がホスト） | いいえ | なし。Claude サブスクリプションが必要で、`claude --cloud` で起動する場合を除き、接続された GitHub アカウントが必要 |
+| [クラウドセッション](#cloud-sessions) | 完全なオペレーティングシステム（Anthropic がホスト） | いいえ | なし。Claude サブスクリプションが必要で、GitHub リポジトリをクローンするには接続された GitHub アカウントが必要 |
 
 [サンドボックス化された Bash ツール](https://code.claude.com/docs/ja/sandboxing.md)は Claude Code に組み込まれており、Bash コマンドのみを制限します。組み込みファイルツール、MCP サーバー、hooks はホスト上で直接実行されます。表内の他のすべてのアプローチは、Claude Code プロセス全体を分離境界内に配置するため、ファイルツール、MCP サーバー、hooks も制限されます。
 
@@ -46,7 +46,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 | Bash だけでなく MCP サーバーと hooks も分離し、Docker なしで実行する | サンドボックスランタイム |
 | 信頼できないリポジトリで作業する | 専用の仮想マシン、または Claude サブスクリプションがある場合は [Web 上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)。`claude --cloud` で起動する場合、GitHub は不要です |
 | チーム全体でサンドボックス化された環境を標準化する | 事前設定された [dev コンテナ](https://code.claude.com/docs/ja/devcontainer.md)（リポジトリにコピー） |
-| ローカルセットアップなしのデバイスから Claude Code を使用する | [Web 上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)（Claude サブスクリプションと接続された GitHub アカウントが必要） |
+| ローカルセットアップなしのデバイスから Claude Code を使用する | [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)（Claude サブスクリプションが必要。GitHub リポジトリをクローンするには接続された GitHub アカウントも必要） |
 | 組織内のすべての開発者に対して分離を要求する | [組織全体で分離を強制](#enforce-isolation-across-an-organization) |
 | ネイティブ Windows ホストで作業する | コンテナまたは VM、または WSL2 内で Bash サンドボックスを実行 |
 
@@ -165,7 +165,12 @@ Claude Code は、独自のネットワークポリシー、マウントされ�
 
 [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、分離された Anthropic 管理の仮想マシンで実行されます。ネットワークプロキシはデフォルト許可リストを強制し、別のプロキシはサンドボックス内のリポジトリアクセスのためにスコープ付き認証情報を発行しながら、GitHub トークンをサンドボックスの外に保持します。組織が[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりにユーザーがプロビジョニングするインフラストラクチャ上で実行され、分離、エグレス制御、および git 認証情報はデプロイメントの責任です。
 
-インフラストラクチャを自分でプロビジョニングせずに完全な VM 分離が必要な場合、またはローカル開発環境がないデバイスからタスクを委任する場合に、このアプローチを使用します。Claude サブスクリプションが必要です。CLI から起動しない限り、サンドボックスがリポジトリをクローンできるように、接続された GitHub アカウントも必要です。`--cloud`を使用して CLI から起動する場合、Claude Code は代わりに[ローカルリポジトリをバンドルしてアップロード](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)できます。プラン可用性と GitHub 認証オプションについては、[クラウドで Claude Code を使用する](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を参照してください。
+インフラストラクチャを自分でプロビジョニングせずに完全な VM 分離が必要な場合、またはローカル開発環境がないデバイスからタスクを委任する場合に、このアプローチを使用します。次のものが必要です。
+
+* **サブスクリプション**: Claude サブスクリプション
+* **GitHub**: GitHub リポジトリで作業するための接続された GitHub アカウント。`--cloud` を使用して CLI から起動する場合、Claude Code が[ローカルリポジトリをバンドルしてアップロード](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)するのであれば不要です
+
+プランの利用可否と GitHub 認証オプションについては、[クラウドで Claude Code を使用する](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を参照してください。
 
 ## 組織全体で分離を強制する
 

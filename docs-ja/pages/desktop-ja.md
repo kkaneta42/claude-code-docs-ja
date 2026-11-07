@@ -549,15 +549,18 @@ Claude Code はセッション間で 3 つの安全動作を適用します：
 ローカルセッションは、そのセッションで Remote Control をオンにしたとき、または開始時に自動的に接続されるときに接続されます：
 
 * **そのセッションでオンにする**：セッションの **Remote Control** スイッチを使用するか、プロンプトボックスに `/remote-control` と入力します。
-* **開始時に接続される**：**Settings > Code** または **Settings > Claude Code** で **Connect new sessions to Remote Control** がオンの間、新しいセッションは自動的に接続されます。この設定を一度も変更していない場合、Desktop はユーザー設定または管理設定の [`remoteControlAtStartup`](https://code.claude.com/docs/ja/settings-reference#remotecontrolatstartup) に従い、次に組織のデフォルトに従います。
+* **開始時に接続される**：**Settings > Code** または **Settings > Claude Code** で **Connect new sessions to Remote Control** がオンの間、新しいセッションは自動的に接続されます。ただし、管理設定で [`remoteControlAtStartup`](https://code.claude.com/docs/ja/settings-reference#remotecontrolatstartup) が `false` の場合を除きます。**Connect new sessions to Remote Control** を一度も変更していない場合、Desktop はユーザー設定または管理設定の `remoteControlAtStartup` を使用します。どちらでも設定されていない場合、Desktop は組織のデフォルトを使用し、組織のデフォルトがない場合は Desktop 自体のデフォルトを使用します。
 
 セッションが接続されているかどうかを確認するには、[セッション詳細パネル](#see-session-details)の **Environment** カードにある **Remote Control** スイッチを確認します。
 
-セッションを他のデバイスに表示しないようにするには、必要なレベルで Remote Control をオフにします：
+#### セッションを他のデバイスに表示しないようにする
+
+1 つのセッション、このコンピュータ上のセッション、または管理するコンピュータに対して Remote Control をオフにします：
 
 * **1 つのセッション**：そのセッションの **Remote Control** スイッチをオフにします。開始時に接続されたセッションで `/remote-control` と入力すると、Remote Control はオンのままとなり、`Remote Control is already on. This session connected automatically when it started.` と表示されます。切断するには、その行の **Turn off** をクリックします。
-* **このコンピュータ上の新しい Desktop セッション**：**Settings > Code** または **Settings > Claude Code** で **Connect new sessions to Remote Control** をオフにします。すでにオフと表示されている場合は、一度オンにしてからオフにすると、Desktop が選択を保存します。保存されると、`remoteControlAtStartup` およびデフォルトよりも優先されます。
+* **このコンピュータ上の新しい Desktop セッション**：**Settings > Code** または **Settings > Claude Code** で **Connect new sessions to Remote Control** をオフにします。すでにオフと表示されている場合は、一度オンにしてからオフにすると、Desktop が選択を保存します。保存されると、`remoteControlAtStartup` やデフォルトが接続を指定していても、新しいセッションは自動的に接続されなくなります。
 * **CLI を含む、このコンピュータ上のすべてのセッション**：`~/.claude/settings.json` で [`disableRemoteControl`](https://code.claude.com/docs/ja/settings-reference#disableremotecontrol) を `true` に設定すると、セッションが接続されなくなります。ファイルを保存した時点ですでに接続されていたセッションは、そのセッションで Remote Control をオフにするまで接続されたままです。
+* **管理するコンピュータ上の Desktop セッション**：コンピュータの[最も優先度の高い MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)で `remoteControlAtStartup` を `false` に設定すると、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)でこのキーが `true` であっても、そのコンピュータ上のセッションは自動的に接続されなくなります。この目的にはユーザーレベルの `HKCU` レジストリ値を使用しないでください。ユーザーは引き続き自分でセッションの Remote Control をオンにできます。これを防ぐには、[管理コンソール](#admin-console-controls)を使用してください。Claude Desktop v4.4212.0 以降が必要です。
 
 他のデバイスにすでに表示されているセッションを非表示にするには、Desktop でそのセッションをアーカイブします。Desktop はセッションの Remote Control 側のコピーもアーカイブするため、それらのデバイスのデフォルトのセッションリストから消えます。そこで表示または削除するには、[セッションをアーカイブする](https://code.claude.com/docs/ja/claude-code-on-the-web.md#archive-sessions)を参照してください。
 
@@ -2013,6 +2016,8 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `disableDesktopLocalSessions` | [デバイスで実行されるコードセッション](#local-sessions-on-managed-devices)をオフにするには`true`に設定します。他のホストへの SSH セッションとクラウドセッションは利用可能なままです。値は JSON ブール値`true`である必要があります。管理設定からのみ読み取られます。Claude Desktop v1.37937.0 以降が必要です。 |
 | `disableSshSavedPasswords` | Desktop が SSH パスワードの保存を提案したり、以前に保存したパスワードを使用または表示したりしないようにするには`true`に設定します。オンにしても、保存済みのパスワードは削除されません。管理設定からのみ読み取られます。Claude Desktop v1.49585.0 以降が必要です。 |
 | `managedMcpServers` | MCP サーバー設定をすべてのユーザーにプッシュします。サードパーティ（3P）Desktop デプロイでのみ利用可能です。各エントリで、`"http"`、`"sse"`、または`"stdio"`のトランスポート、接続詳細、およびオプションで、そのサーバーのどのツールをユーザーが呼び出せるかを制限する`toolPolicy`マップを設定します。管理設定ファイル、MDM、または Claude apps gateway ポリシーの[`desktop`ブロック](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)を通じて配信します。3P デプロイは管理コンソール設定を受け取らないためです。ゲートウェイを通じて配信するには、ゲートウェイサーバーで Claude Code v2.1.232 以降が必要です。これはデスクトップアプリ自体のキーです。Claude Code は、異なるエントリ形状を持つ、同じ名前の[管理設定](https://code.claude.com/docs/ja/managed-mcp.md#provide-servers-through-managed-settings)を読み取ります。 |
+
+コンピューターの[最上位の MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)で`browserExternalPageTools`、`disableMobileSimulatorTools`、または`disableBrowserExternalNavigation`を使用して機能をオフにすると、そのコンピューターではその機能がオフのままになります。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)でそのキーが未設定の場合や、その機能が許可されている場合でも、オフのままです。この目的でユーザーレベルの`HKCU`レジストリ値を使用しないでください。機能をオンに戻すには、値を設定した場所からその値を削除してください。Claude Desktop v4.4212.0 以降が必要です。
 
 Desktop セッションがどこで実行されるかに応じて、どの管理設定がそのセッションに到達するかが異なります。[`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection)などのモデル制限は、Desktop の Claude Code セッションでターミナル CLI と同じ方法で適用されます。[surface coverage](https://code.claude.com/docs/ja/model-config.md#surface-coverage)を参照してください。
 

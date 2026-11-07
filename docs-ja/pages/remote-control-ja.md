@@ -147,6 +147,8 @@ Remote Control セッションは、CLI、[Claude Desktop アプリ](https://cod
 * **This session was ended or archived from another device or app**：セッションを戻したい場合にのみ `/remote-control` を実行してください。Claude Code はアーカイブされたセッションを再び開きます。
 * **The server no longer reports this session**：別のデバイスまたはアプリから削除された可能性があります。
 
+`/remote-control` を実行して `Remote Control isn't connected.` と表示されるダイアログが開いた場合は、`/login` を実行する、または **Continue** を選択して再試行するなど、ダイアログに示された手順に従ってください。
+
 ### 別のデバイスから接続する
 
 Remote Control セッションがアクティブになったら、別のデバイスから接続する方法がいくつかあります。
@@ -318,7 +320,7 @@ Claude Code は、ターミナルにいない時に作業するための複数�
 
 リモートコントロールがアクティブな場合、Claude はお客様の電話にプッシュ通知を送信できます。
 
-Claude がプッシュを送信するタイミングを決定します。通常は、長時間実行されるタスクが完了したときや、続行するためにお客様の決定が必要なときに送信されます。プロンプトでプッシュをリクエストすることもできます。例えば `notify me when the tests finish` のようにです。以下の 2 つのオン/オフトグルを除いて、イベントごとの設定はありません。
+プッシュは、長時間実行されるタスクが完了したときや、Claude がユーザーの判断を必要とするときに届くことがあります。プロンプトでプッシュを求めることもできます。例えば `notify me when the tests finish` のようにです。以下の 2 つのオン/オフトグルを除いて、イベントごとの設定はありません。
 
 モバイルプッシュ通知を設定するには：
 

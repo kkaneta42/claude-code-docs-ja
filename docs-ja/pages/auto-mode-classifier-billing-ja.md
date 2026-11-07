@@ -29,7 +29,12 @@ We're changing auto mode to no longer charge for classifier requests in Claude C
 
 ## セッションを対応可能にする
 
-ゲートウェイが原因の場合、会社の管理者またはゲートウェイプロバイダーに、リクエストと返信を変更せずに通すよう依頼してください。つまり、ゲートウェイが認識しない `safeguards` リクエストフィールドなどのリクエストヘッダーとボディフィールドをそのまま転送し、`safeguard_results` フィールドなどのキーをドロップしたり、tool-use ID を書き換えたりせずにレスポンスとストリーミングイベントを返すことです。[ゲートウェイ互換性ガイド](https://code.claude.com/docs/ja/llm-gateway-protocol.md#feature-pass-through)で説明されているとおりです。このようにトラフィックを通すゲートウェイは、この機能と将来の機能で動作し続けます。その後、新しいセッションはサーバーのチェックを再度使用します。
+ゲートウェイが原因で auto モードのサーバー側チェックがセッションに届かず、そのゲートウェイを自分で運用していない場合は、以下の要件を会社の管理者またはゲートウェイプロバイダーに伝えてください。[ゲートウェイが受け取る形式をアップストリームが受け付ける](https://code.claude.com/docs/ja/llm-gateway-protocol.md#format-mismatch-with-the-upstream)場合、Claude Code は、[ゲートウェイ互換性ガイド](https://code.claude.com/docs/ja/llm-gateway-protocol.md#feature-pass-through)で説明されているとおり、ゲートウェイがリクエストとレスポンスを変更せずに通すことを想定しています。
+
+* **リクエスト**: チェックを通すために、ゲートウェイは `anthropic-beta` ヘッダーと `safeguards` ボディフィールドの両方を変更せずに転送します。[この 2 つはペアで送られる](https://code.claude.com/docs/ja/llm-gateway-protocol.md#beta-header-and-body-field-pairs)ためです。[Amazon Bedrock InvokeModel 形式](https://code.claude.com/docs/ja/llm-gateway-protocol.md#api-formats)では、ヘッダーの代わりに `anthropic_beta` ボディフィールドを転送します。
+* **レスポンス**: ゲートウェイは、フィールドをドロップしたり tool-use ID を書き換えたりせずに、レスポンスとストリーミングイベントを返します。チェックの結果を通すために、`safeguard_results` フィールドを保持します。
+
+このようにトラフィックを通すゲートウェイは、この機能と将来の機能で動作し続けます。その後、新しいセッションはサーバーのチェックを再度使用します。
 
 ゲートウェイがサーバーのチェックを提供できないことが既にわかっている場合、セッションを開始する前に、シェルまたは [`env` 設定キー](https://code.claude.com/docs/ja/settings-reference#env)で `CLAUDE_CODE_AUTO_MODE_SERVER` を `0` に設定して、Claude Code にそこでチェックを要求しないよう指示してください。
 

@@ -566,8 +566,17 @@ Claude Code がセッションをフォールバックモデルに切り替え�
 * 両方のモデルが同じリクエストを警告した場合は、プロンプトを編集して再試行するか、新しいセッションを開始できます。
 * モバイルアプリ上の[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、編集して再試行することはできません。モデルを切り替えるか、デスクトップのブラウザまたはデスクトップアプリからセッションを続行してください。
 * 確認を表示できない[非対話モード](https://code.claude.com/docs/ja/cli-reference.md#cli-flags)や SDK 統合では、警告されたリクエストは代わりに拒否でターンを終了します。
-* [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)では、Claude Code は確認を表示せず、モデルを切り替えることになる警告されたリクエストはフォールバックモデルで再実行されます。
+* Claude が [Agent ツール](https://code.claude.com/docs/ja/tools-reference.md#agent-tool-behavior)で開始するサブエージェントでは、Claude Code は確認のために一時停止せず、サブエージェントはモデルを切り替える代わりに失敗します。[サブエージェントは確認せずに切り替えるか失敗する](#subagents-switch-or-fail-without-asking)を参照してください。
 * フォールバック先が [`availableModels`](#restrict-model-selection) によってブロックされている場合、Claude Code は確認を表示しません。ターゲットがブロックされている場合の自動フォールバックと同様に、警告されたリクエストは拒否で終了します。
+
+#### サブエージェントは確認せずに切り替えるか失敗する
+
+Claude が [Agent ツール](https://code.claude.com/docs/ja/tools-reference.md#agent-tool-behavior)で開始する組み込みまたはカスタムの[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)では、Claude Code は警告されたリクエストで[一時停止して確認](#ask-before-switching)しません。フォールバックモデルが利用可能な場合、`/config` での **Switch models when a message is flagged** の選択に応じて、リクエストがそのモデルで再実行されるか、サブエージェントが失敗します。
+
+* **Switch automatically**、またはまだ選択していない場合：リクエストはフォールバックモデルで再実行され、セッションのモデルは変わりません
+* **Ask each time**：サブエージェントは [`Agent terminated early due to an API error`](https://code.claude.com/docs/ja/errors#agent-terminated-early-due-to-an-api-error) と拒否メッセージで失敗します。Claude はそのエラーを受け取り、未完了のタスクをどうするかを判断します。サブエージェントがモデルを切り替えられるようにするには、**Switch automatically** を選びます。その場合、メインの会話も確認なしで切り替わるようになります。
+
+フォールバックモデルが利用できない場合は、どちらを選んでいてもサブエージェントは同じように失敗します。v2.1.318 より前は、どちらを選んでいても、サブエージェントの警告されたリクエストは利用可能なフォールバックモデルで再実行されていました。
 
 #### Bedrock、Agent Platform、Foundry でフォールバックを有効にする
 

@@ -154,7 +154,7 @@ v2.1.302 より前は、[フィーチャーフラグを取得](https://code.clau
 
 ### HIPAA 設定での権限モード
 
-[HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md)が適用されている組織では、組み込みの `auto` デフォルトは適用されません。開始権限モードを他に選択するものがない場合、ターミナルまたは VS Code のセッションは Manual モードで開始します。ターミナルセッションでは `Auto mode isn't the default for your organization · Shift+Tab to switch` も表示され、VS Code 拡張機能では通知は表示されません。これが適用されるセッションについては、[開発者のサインイン方法と接続方法を確認する](https://code.claude.com/docs/ja/hipaa-setup.md#check-how-developers-sign-in-and-connect)に記載されています。
+[HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md)が適用されている組織では、[組み込みの `auto` デフォルト](#which-mode-a-session-starts-in)は適用されません。開始権限モードを他に選択するものがない場合、ターミナルまたは VS Code のセッションは Manual モードで開始します。ターミナルセッションでは `Auto mode isn't the default for your organization · Shift+Tab to switch` も表示され、VS Code 拡張機能では通知は表示されません。これが適用されるセッションについては、[開発者のサインイン方法と接続方法を確認する](https://code.claude.com/docs/ja/hipaa-setup.md#check-how-developers-sign-in-and-connect)に記載されています。
 
 auto モードと `bypassPermissions` は引き続き利用できます。
 
@@ -162,8 +162,6 @@ auto モードと `bypassPermissions` は引き続き利用できます。
 * **auto モードで開始する**: `--permission-mode auto` を渡すか、ユーザー設定で `permissions.defaultMode` を `auto` に設定します。組織全体に対しては管理設定で設定します。[異なる権限モードで開始する](#start-in-a-different-mode)を参照してください
 * **auto モードを削除する**: 管理設定で [`permissions.disableAutoMode`](https://code.claude.com/docs/ja/settings-reference#disableautomode) を `"disable"` に設定します
 * **`bypassPermissions` をブロックする**: 管理設定で [`permissions.disableBypassPermissionsMode`](https://code.claude.com/docs/ja/settings-reference#permissions-disablebypasspermissionsmode) を `"disable"` に設定します
-
-Claude Code v2.1.285 以降が必要です。これは [HIPAA 設定の最小バージョン](https://code.claude.com/docs/ja/hipaa-setup.md#update-claude-code-and-claude-desktop)です。
 
 ## 権限モードを切り替える
 
@@ -433,13 +431,13 @@ Claude Code v2.1.302 以降では、[`CLAUDE_CODE_AUTO_MODE_MODEL`](https://code
 claude --permission-mode auto --debug-file classifier-debug.log
 ```
 
-Claude に読み取り専用ではないシェルコマンドを実行させてから、ログで `classifier_request_started` を検索します。
+分類器にレビューさせるコマンドを与えるため、Claude に `curl https://example.com` を実行させてから、ログで `classifier_request_started` を検索します。
 
 * **`model=` の後に指定したモデルがある**: 変数が有効になっています
 * **`model=` の後に別のモデルがある**: ログで `ignoring CLAUDE_CODE_AUTO_MODE_MODEL` を検索します。理由と必要な手順が示されています
 * **該当する行がない**: Claude Code のプロンプトで `/status` の `Auto mode server` を確認します。
   * **`Enabled`**: [サーバー](#server-side-classifier-review)がこのセッションの呼び出しをレビューするよう設定されています。
-  * **`Disabled`**: [権限モード](#switch-permission-modes)が auto であることを確認してから、Claude に読み取り専用ではない別のコマンドを実行させます。
+  * **`Disabled`**: このチェックではまだ指定したモデルがテストされていません。[権限モード](#switch-permission-modes)が auto であり、`curl` に一致する[権限ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)がないことを確認してから、[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)をオフにしてもう一度チェックを実行します。
 
 ### 分類器がデフォルトでブロックするもの
 

@@ -89,6 +89,13 @@ export CLAUDE_CODE_CERT_STORE=system
 export NODE_EXTRA_CA_CERTS=/path/to/ca-cert.pem
 ```
 
+次のいずれかの警告が表示された場合、Claude Code は `NODE_EXTRA_CA_CERTS` ファイル全体を読み込むことができておらず、スキップされた証明書を必要とする接続は失敗する可能性があります。
+
+* `Claude Code used only the certificates that it could read in full from the NODE_EXTRA_CA_CERTS file`
+* `Claude Code ignored all of the NODE_EXTRA_CA_CERTS file: it holds no certificate that Claude Code can read`
+
+各警告の全文に、ファイルの修正方法が記載されています。スキップされた証明書でも、[CA 証明書ストア](#ca-certificate-store)にも含まれているものは引き続き機能します。
+
 ## mTLS 認証
 
 エンタープライズ環境でクライアント証明書認証が必要な場合：

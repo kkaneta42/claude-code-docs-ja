@@ -329,6 +329,7 @@ claude self-hosted-runner orchestrator \
 | `CLAUDE_RUNNER_REPO_SOURCES` | セッションのすべての git ソースの `{url, revision}` の JSON 配列。セカンダリリポジトリでルーティングするフック用です。ソースがない場合は空です。 |
 | `CLAUDE_RUNNER_CORRELATION_ID` | セッション作成時に提供された相関 ID。フックがこのワークオーダーをセッションを作成した要求にマップできるようにエコーバックされます。セッションに相関 ID がない場合は空です。 |
 | `CLAUDE_RUNNER_CLIENT_PLATFORM` | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios`、`scheduled_trigger` など。採用分析用です。セッションに記録または認識された表面がない場合は未設定で、事前ウォーミング要求の場合も未設定です。`[ -n "${CLAUDE_RUNNER_CLIENT_PLATFORM:-}" ]` で確認してください。これは `set -u` の下で安全なままです。 |
+| `CLAUDE_RUNNER_SPAWN_REASON` | [Anthropic がこのスポーン要求を送信した理由](#find-out-why-a-spawn-request-was-sent)。`runner_lost` や `resumed` など。要求に正しい形式の理由が含まれていない場合は未設定のため、`"${CLAUDE_RUNNER_SPAWN_REASON:-}"` として読み取ってください。オーケストレーターに Claude Code v2.1.318 以降が必要です |
 
 スポーンされたランナーは、環境シークレットの代わりにワークオーダーで登録します。
 

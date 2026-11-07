@@ -389,7 +389,7 @@ Claude Code は署名付き apt、dnf、および apk リポジトリを公開�
 > gpg --show-keys /etc/apt/keyrings/claude-code.asc
 > ```
 >
-> gpg が出力するフィンガープリントは `31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE` である必要があります。gpg がファイルを開けない、または有効な OpenPGP データが含まれていないと報告する場合、ダウンロードが失敗したか、間違ったコンテンツが返されました。ネットワークが `downloads.claude.ai` に到達できることを確認してから、ダウンロードコマンドを再実行します。
+> gpg が出力するフィンガープリントは `31DDDE24DDFAB679F42D7BD2BAA929FF1A7ECACE` のみであるはずです。ファイルを開けない、または有効な OpenPGP データが含まれていないと gpg が報告した場合は、ダウンロードが失敗したか、誤った内容が返されています。ネットワークから `downloads.claude.ai` に到達できることを確認してから、ダウンロードコマンドを再実行してください。
 >
 > `stable` チャネルでリポジトリを登録してインストールします:
 >
@@ -536,12 +536,12 @@ curl -fsSLO "$REPO/$VERSION/manifest.json.sig"
 マニフェストに対して分離された署名を検証します。
 
 ```bash theme={null}
-gpg --verify manifest.json.sig manifest.json
+gpg --with-fingerprint --verify manifest.json.sig manifest.json
 ```
 
-有効な結果は `Good signature from "Anthropic Claude Code Release Signing <security@anthropic.com>"` を報告します。
+有効な結果は `Good signature from "Anthropic Claude Code Release Signing <security@anthropic.com>"` を報告します。デフォルト設定では、`gpg` は新しくインポートされたキーに対して `WARNING: This key is not certified with a trusted signature!` も出力します。これは想定どおりの動作です。`Good signature` 行は暗号化チェックが成功したことを確認します。
 
-`gpg` は新しくインポートされたキーに対して `WARNING: This key is not certified with a trusted signature!` も出力します。これは予想されています。`Good signature` 行は暗号化チェックが成功したことを確認します。ステップ 1 のフィンガープリント比較はキー自体が本物であることを確認します。
+Anthropic のキーがマニフェストに署名したことを確認するには、出力の末尾にある `Primary key fingerprint` 行を、このページのステップ 1 に記載されているフィンガープリントと比較します。両者が一致し、出力に `BAD signature` が表示されていなければ、ステップ 4 に進みます。それ以外の場合は、このマニフェストを使用しないでください。
 
 **4. バイナリをマニフェストに対して確認**
 
