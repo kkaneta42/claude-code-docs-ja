@@ -41,6 +41,7 @@ Claude Code は、オープンソースの [`@anthropic-ai/sandbox-runtime`](htt
 
 * **組み込みのファイルツールと Web ツール**：Read、Edit、Write、WebFetch、WebSearch などのツールは、代わりに[権限ルール](https://code.claude.com/docs/ja/permissions.md)に従います。`denyRead` エントリは Read ツールを止めず、`allowedDomains` は WebFetch を制限しません
 * **Claude Code が起動するその他のプロセス**：コマンド[フック](https://code.claude.com/docs/ja/hooks.md)、ローカルの [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)、[プラグインモニター](https://code.claude.com/docs/ja/plugins/components.md#monitors)、[LSP サーバー](https://code.claude.com/docs/ja/tools-reference.md#lsp-tool-behavior)、および[ステータスライン](https://code.claude.com/docs/ja/statusline.md)コマンドや `apiKeyHelper` などのヘルパーコマンドは、ユーザーの完全なアクセス権で実行されます
+* **mod**：[mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は Claude Code の内部で独自のコードを実行するため、そのファイルアクセス、ネットワークリクエスト、および [`$.process`](https://code.claude.com/docs/ja/plugins/mods/api#reach-files-processes-and-the-network) で起動したプログラムはサンドボックス化されません。[mod がアクセスできる範囲](https://code.claude.com/docs/ja/plugins/mods/overview.md#what-a-mod-can-reach)を参照してください
 
 設定によっては、一部のシェルコマンドもサンドボックスの外で実行されます。
 
