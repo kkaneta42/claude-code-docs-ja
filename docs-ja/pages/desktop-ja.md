@@ -116,7 +116,7 @@ Desktop を Google Cloud の Agent Platform にルーティングする Enterpri
 
 Claude は dev サーバーを起動し、Browser ペインで開いて変更を確認できます。これはフロントエンド Web アプリとバックエンドサーバーの両方で機能します：Claude は API エンドポイントをテストし、サーバーログを表示し、見つけた問題を反復処理できます。ほとんどの場合、Claude はプロジェクトファイルを編集した後、サーバーを自動的に起動します。いつでも Claude にプレビューを要求することもできます。デフォルトでは、Claude は編集後に[変更を自動検証](#auto-verify-changes)します。
 
-ローカルセッションでは、チャットで HTML、PDF、またはビデオのパスをクリックすると、Browser ペインで開きます。
+ローカルセッションでは、チャットで HTML、PDF、またはビデオのパスをクリックすると、Browser ペインで開きます。SSH または WSL セッションでは、[HTML ファイルをプレビュー](#preview-html-files-in-ssh-and-wsl-sessions)できます。
 
 > [!NOTE]
 >
@@ -136,6 +136,33 @@ SSH セッションでは、Desktop を終了するとペインのクッキー�
 Claude はプロジェクトに基づいて初期サーバー設定を作成します。アプリがカスタム dev コマンドを使用する場合、`.claude/launch.json`を編集してセットアップに合わせます。完全なリファレンスについては、[プレビューサーバーを設定する](#configure-preview-servers)を参照してください。
 
 Browser の保存データをクリアするには、Browser ペインの **⋮** メニューで **Clear browsing data** を選択します。Browser を完全にオフにするには、**Settings > Code** または **Settings > Claude Code** で **Browser tools** をオフにします。
+
+#### SSH および WSL セッションで HTML ファイルをプレビューする
+
+[SSH](#ssh-sessions) または [WSL](https://code.claude.com/docs/ja/desktop-wsl.md) セッションでは、チャットで HTML ファイルのパスをクリックすると、Browser ペインでそのファイルをプレビューできます。プレビュー内のグラフや表が空のままの場合は、その上に表示される通知で理由を確認できます：
+
+* **`This preview doesn't load anything from the web`**：ファイルに記述されたスクリプトは実行されますが、ライブラリを Web から読み込むグラフは空のままです。通知に **Export** ボタンがある場合は、それを選択し、保存したファイルをブラウザで開きます。ブラウザでは Web からのコンテンツが読み込まれます。
+* **`This preview doesn't run scripts or load anything from the web`**：Claude Desktop v4.23118.0 より前のバージョンでは、これらのプレビューでスクリプトが実行されなかったため、Desktop を更新してファイルを再度開きます。Desktop が最新であっても通知が表示されたままの場合は、Desktop を再起動します。それでも表示される場合は、[組織でスクリプトがオフになっている](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)可能性があるため、管理者に問い合わせてください。
+
+通知を閉じた場合は、ファイルを再度開くと通知が再び表示されます。
+
+#### 組織の SSH および WSL プレビューでスクリプトをオフにする
+
+[SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableBrowserExternalNavigation` 管理設定](#managed-settings)を `true` に設定します。この設定を有効にすると、ユーザーは Browser ペインで[外部サイトを閲覧する](#restrict-external-browsing-for-your-organization)こともできなくなります。
+
+この設定は、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で行うか、Desktop を実行するコンピューター上の [Claude Code MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)で行います。Desktop はリモートマシンや WSL ディストリビューションからこの設定を読み取りません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合は、MDM ポリシーまたはファイルを使用します。
+
+> [!WARNING]
+>
+> Desktop を実行するコンピューターがまだ Claude Code の管理設定を受け取っていない場合は、作成する管理設定で [`parentSettingsBehavior`](https://code.claude.com/docs/ja/settings-reference#parentsettingsbehavior) も `"merge"` に設定してください。Desktop は独自のポリシーを Claude Code に渡しますが、`"merge"` がない場合、コンピューターに管理設定が存在すると Claude Code は[そのポリシーを無視します](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy)。Windows では、管理設定ファイルを作成すると、[許可する](https://code.claude.com/docs/ja/admin-setup.md#wsl-sessions-in-claude-code-desktop)までユーザーは WSL セッションも利用できなくなります。
+>
+> コンピューターがすでに Claude Code の管理設定を受け取っている場合は、その管理設定にこの設定項目を追加し、`parentSettingsBehavior` はそのままにしておきます。複数の MDM ポリシーまたは管理設定ファイルがあるコンピューターでは、[最も優先順位の高いもの](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を使用します。
+
+その後、設定が確実に適用されるようにユーザーに Desktop を再起動してもらい、次の動作について伝えます：
+
+* **ユーザーが開くファイル**：プレビューでスクリプトが実行されないため、スクリプトで描画されるグラフや表は空のままになります
+* **スクリプトを実行中のプレビュー**：再起動前に Desktop が設定を取得した場合、プレビューは閉じます。ユーザーには `This preview closed because scripts are turned off for previews. Open the file again to view it without scripts.` と表示されます
+* **ユーザーがエクスポートするファイル**：ユーザーが[ファイルをエクスポート](#preview-html-files-in-ssh-and-wsl-sessions)してブラウザで開いた場合、この設定の有無にかかわらず、そのファイルのスクリプトはブラウザで実行されます
 
 ### 外部サイトを閲覧する
 
@@ -162,7 +189,7 @@ Browser ペインは、個人用ブラウザとは別の、保存されたログ
 
 Browser は、Claude in Chrome 拡張機能と同じ[サイト許可リストとブロックリストコントロール](https://support.claude.com/en/articles/13065128-claude-in-chrome-admin-controls)に従います。組織が既に拡張機能用にこれらのリストを設定している場合、Browser は自動的にそれらを尊重します。管理者は、[`browserExternalPageTools`管理設定](#managed-settings)で外部ページの Claude のツールをオフにすることもできます。ツールが無効になっている場合、ユーザーは外部サイトに移動できます。Claude のツールはそれらを読み取ったり、アクションを実行したりできません。
 
-外部閲覧を完全に無効にするには、[`disableBrowserExternalNavigation`管理設定](#managed-settings)を`true`に設定します。これは Browser 内のすべての外部ナビゲーションをブロックします。組織の許可リストのサイトを含みます。localhost dev サーバーとファイルプレビューは機能し続けます。`browserExternalPageTools`を使用して、ユーザーが Claude のツールなしで外部サイトの閲覧を続けられるようにし、`disableBrowserExternalNavigation`を使用して、ユーザーと Claude の両方に対して外部サイトをブロックします。
+外部閲覧を完全に無効にするには、[`disableBrowserExternalNavigation`管理設定](#managed-settings)を`true`に設定します。これは Browser 内のすべての外部ナビゲーションをブロックします。組織の許可リストのサイトを含みます。localhost dev サーバーとファイルプレビューは機能し続けますが、[SSH および WSL セッションでの HTML プレビュー](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)ではスクリプトが実行されません。`browserExternalPageTools`を使用して、ユーザーが Claude のツールなしで外部サイトの閲覧を続けられるようにし、`disableBrowserExternalNavigation`を使用して、ユーザーと Claude の両方に対して外部サイトをブロックします。
 
 ### 差分ビューで変更を確認する
 
@@ -2009,7 +2036,7 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `autoMode` | 組織全体で auto モード分類器が信頼およびブロックするものをカスタマイズします。[auto モードを設定する](https://code.claude.com/docs/ja/auto-mode-config.md)を参照してください。 |
 | `browserExternalPageTools` | Claude が[Browser ペイン](#browse-external-sites)の外部ページを読み取るまたは操作するためのツールを使用するのを防ぐには`"disabled"`に設定します。ユーザーは引き続き外部サイトに自分でナビゲートできます。ローカル開発サーバープレビューは影響を受けません。 |
 | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](https://code.claude.com/docs/ja/desktop-ios-simulator.md#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
-| `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
+| `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。SSH および WSL セッションの HTML プレビューでは[スクリプトは実行されません](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `sshConfigs` | 環境セレクタに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を削除できず、自分の **Worktree folder** 以外は編集できません。 |
 | `sshHostCommands` | ユーザー自身の接続に加えて、[ホストがコマンドから取得される SSH 接続](#distribute-commands-to-your-team)をユーザーに提供します。Desktop はこれをコンピューター上の管理設定ファイルまたは MDM ポリシーから読み取り、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)では無視します。macOS または Linux では Claude Desktop v3.6556.0 以降、Windows では v4.16336.0 以降が必要で、Claude アカウントでサインインしている必要があります。Windows では、Desktop が[OpenSSH クライアントを通じて接続する](#use-your-ssh-configuration)必要もあります。 |
 | `sshHostAllowlist` | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。管理設定からのみ読み取られます。 |

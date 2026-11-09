@@ -5427,7 +5427,7 @@ Claude Code は `/config` の **Auto-update channel** で選択すると、ユ�
 
 ### `disableBrowserExternalNavigation`
 
-デスクトップアプリの[ブラウザペイン](https://code.claude.com/docs/ja/desktop.md#browse-external-sites)で、ユーザーと Claude の両方に対して外部ブラウジングをオフにします。Localhost 開発サーバープレビューは引き続き機能します。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。
+デスクトップアプリの[ブラウザペイン](https://code.claude.com/docs/ja/desktop.md#browse-external-sites)で、ユーザーと Claude の両方に対して外部ブラウジングをオフにします。Localhost 開発サーバープレビューは引き続き機能します。SSH および WSL セッションの HTML プレビューは引き続き開きますが、[スクリプトは実行されません](https://code.claude.com/docs/ja/desktop.md#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。
 
 * **スコープ**: [`Managed`](#scopes)
 * **タイプ**: ブール値。JSON ブール値`true`のみが有効です
@@ -5442,6 +5442,8 @@ Claude Code は `/config` の **Auto-update channel** で選択すると、ユ�
 ```
 
 デスクトップアプリはその他の値を無視し、文字列`"true"`や`1`などのブール値ではない値も警告をログに記録します。外部ブラウジングはオンのままにしておきたいが、Claude のツールを外部ページでオフにしたい場合は、代わりに[`browserExternalPageTools`](#browserexternalpagetools)を設定してください。[組織の外部ブラウジングを制限する](https://code.claude.com/docs/ja/desktop.md#restrict-external-browsing-for-your-organization)を参照してください。
+
+デスクトップアプリを実行するコンピューターが他の Claude Code 管理設定を受け取らない場合は、作成する管理設定で[`parentSettingsBehavior`](#parentsettingsbehavior)も`"merge"`に設定してください。Windows では、管理設定ファイルを作成すると、ユーザーは[許可する](https://code.claude.com/docs/ja/admin-setup.md#wsl-sessions-in-claude-code-desktop)まで WSL セッションも使用できなくなります。その理由については、[組織の SSH および WSL プレビューでスクリプトをオフにする](https://code.claude.com/docs/ja/desktop.md#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)を参照してください。
 
 ### `disableMobileSimulatorTools`
 

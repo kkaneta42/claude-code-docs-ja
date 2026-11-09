@@ -17,6 +17,84 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-11-09</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/desktop-ja.md            | 33 ++++++++++++++++++++++++++++++---
+ docs-ja/pages/settings-reference-ja.md |  4 +++-
+ 2 files changed, 33 insertions(+), 4 deletions(-)
+```
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index 21bf31f..d5364bb 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -117,5 +117,5 @@ Desktop を Google Cloud の Agent Platform にルーティングする Enterpri
+ Claude は dev サーバーを起動し、Browser ペインで開いて変更を確認できます。これはフロントエンド Web アプリとバックエンドサーバーの両方で機能します：Claude は API エンドポイントをテストし、サーバーログを表示し、見つけた問題を反復処理できます。ほとんどの場合、Claude はプロジェクトファイルを編集した後、サーバーを自動的に起動します。いつでも Claude にプレビューを要求することもできます。デフォルトでは、Claude は編集後に[変更を自動検証](#auto-verify-changes)します。
+ 
+-ローカルセッションでは、チャットで HTML、PDF、またはビデオのパスをクリックすると、Browser ペインで開きます。
++ローカルセッションでは、チャットで HTML、PDF、またはビデオのパスをクリックすると、Browser ペインで開きます。SSH または WSL セッションでは、[HTML ファイルをプレビュー](#preview-html-files-in-ssh-and-wsl-sessions)できます。
+ 
+ > [!NOTE]
+@@ -138,4 +138,31 @@ Claude はプロジェクトに基づいて初期サーバー設定を作成し
+ Browser の保存データをクリアするには、Browser ペインの **⋮** メニューで **Clear browsing data** を選択します。Browser を完全にオフにするには、**Settings > Code** または **Settings > Claude Code** で **Browser tools** をオフにします。
+ 
++#### SSH および WSL セッションで HTML ファイルをプレビューする
++
++[SSH](#ssh-sessions) または [WSL](https://code.claude.com/docs/ja/desktop-wsl.md) セッションでは、チャットで HTML ファイルのパスをクリックすると、Browser ペインでそのファイルをプレビューできます。プレビュー内のグラフや表が空のままの場合は、その上に表示される通知で理由を確認できます：
++
++* **`This preview doesn't load anything from the web`**：ファイルに記述されたスクリプトは実行されますが、ライブラリを Web から読み込むグラフは空のままです。通知に **Export** ボタンがある場合は、それを選択し、保存したファイルをブラウザで開きます。ブラウザでは Web からのコンテンツが読み込まれます。
++* **`This preview doesn't run scripts or load anything from the web`**：Claude Desktop v4.23118.0 より前のバージョンでは、これらのプレビューでスクリプトが実行されなかったため、Desktop を更新してファイルを再度開きます。Desktop が最新であっても通知が表示されたままの場合は、Desktop を再起動します。それでも表示される場合は、[組織でスクリプトがオフになっている](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)可能性があるため、管理者に問い合わせてください。
++
++通知を閉じた場合は、ファイルを再度開くと通知が再び表示されます。
++
++#### 組織の SSH および WSL プレビューでスクリプトをオフにする
++
++[SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableBrowserExternalNavigation` 管理設定](#managed-settings)を `true` に設定します。この設定を有効にすると、ユーザーは Browser ペインで[外部サイトを閲覧する](#restrict-external-browsing-for-your-organization)こともできなくなります。
++
++この設定は、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で行うか、Desktop を実行するコンピューター上の [Claude Code MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)で行います。Desktop はリモートマシンや WSL ディストリビューションからこの設定を読み取りません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合は、MDM ポリシーまたはファイルを使用します。
++
++> [!WARNING]
+```
+
+</details>
+
+<details>
+<summary>settings-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/settings-reference-ja.md b/docs-ja/pages/settings-reference-ja.md
+index 63aeec1..37181e2 100644
+--- a/docs-ja/pages/settings-reference-ja.md
++++ b/docs-ja/pages/settings-reference-ja.md
+@@ -5428,5 +5428,5 @@ Claude Code は `/config` の **Auto-update channel** で選択すると、ユ
+ ### `disableBrowserExternalNavigation`
+ 
+-デスクトップアプリの[ブラウザペイン](https://code.claude.com/docs/ja/desktop.md#browse-external-sites)で、ユーザーと Claude の両方に対して外部ブラウジングをオフにします。Localhost 開発サーバープレビューは引き続き機能します。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。
++デスクトップアプリの[ブラウザペイン](https://code.claude.com/docs/ja/desktop.md#browse-external-sites)で、ユーザーと Claude の両方に対して外部ブラウジングをオフにします。Localhost 開発サーバープレビューは引き続き機能します。SSH および WSL セッションの HTML プレビューは引き続き開きますが、[スクリプトは実行されません](https://code.claude.com/docs/ja/desktop.md#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。
+ 
+ * **スコープ**: [`Managed`](#scopes)
+@@ -5444,4 +5444,6 @@ Claude Code は `/config` の **Auto-update channel** で選択すると、ユ
+ デスクトップアプリはその他の値を無視し、文字列`"true"`や`1`などのブール値ではない値も警告をログに記録します。外部ブラウジングはオンのままにしておきたいが、Claude のツールを外部ページでオフにしたい場合は、代わりに[`browserExternalPageTools`](#browserexternalpagetools)を設定してください。[組織の外部ブラウジングを制限する](https://code.claude.com/docs/ja/desktop.md#restrict-external-browsing-for-your-organization)を参照してください。
+ 
++デスクトップアプリを実行するコンピューターが他の Claude Code 管理設定を受け取らない場合は、作成する管理設定で[`parentSettingsBehavior`](#parentsettingsbehavior)も`"merge"`に設定してください。Windows では、管理設定ファイルを作成すると、ユーザーは[許可する](https://code.claude.com/docs/ja/admin-setup.md#wsl-sessions-in-claude-code-desktop)まで WSL セッションも使用できなくなります。その理由については、[組織の SSH および WSL プレビューでスクリプトをオフにする](https://code.claude.com/docs/ja/desktop.md#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)を参照してください。
++
+ ### `disableMobileSimulatorTools`
+ 
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-11-08</summary>
 
 **変更ファイル:**
@@ -2722,101 +2800,6 @@ index 666f3c9..3b47cb2 100644
 -
  モデルをさらにカスタマイズするには、以下のいずれかの方法を使用してください。
  
-```
-
-</details>
-
-<details>
-<summary>artifacts-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
-index 2ffbccb..3f2c5bd 100644
---- a/docs-ja/pages/artifacts-ja.md
-+++ b/docs-ja/pages/artifacts-ja.md
-@@ -96,5 +96,5 @@ Claude Code で `/artifacts` を実行すると、所有しているアーティ
- アーティファクトを選択し、次のいずれかのキーを押します。
- 
--* **`Enter`**：現在のセッションにすでに添付されている場合はブラウザで開き、添付されていない場合は添付します。v2.1.216 より前のバージョンでは、`Enter` キーでブラウザで開きました
-+* **`Enter`**：現在のセッションにすでに添付されている場合はブラウザで開き、添付されていない場合は添付します
- * **`o`**：ブラウザで開きます
- * **`c`**：リンクをコピーします
-@@ -196,9 +196,9 @@ Claude Code が自動で開始した監視は、アーティファクトで数
- コメントを配信するサービスが利用できなくなるか、応答を停止した場合、Claude Code はしばらく再接続を試み、その後、セッションが監視していた各アーティファクトの監視を停止します。
- 
--## MCP コネクタで ライブデータを取得する
-+## MCP コネクタでライブデータを取得する
- 
--アーティファクトは、誰かがそれを表示するたびに [MCP コネクタ](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai) を呼び出すことができるため、ページはセッションから取得したスナップショットではなく、現在のデータを表示します。アーティファクトからのコネクタ呼び出しは Pro、Max、Team、Enterprise プランで利用可能であり、Claude Code v2.1.209 以降が必要です。以前のバージョンでは、Claude はセッション中に収集したデータでページを公開します。
-+アーティファクトは、誰かが閲覧するたびに [MCP コネクタ](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)を呼び出せます。そのため、ページにはそれを作成したセッション時点のスナップショットではなく、最新のデータが表示されます。アーティファクトからのコネクタ呼び出しは Pro、Max、Team、Enterprise プランで利用でき、Claude Code v2.1.209 以降が必要です。それより前のバージョンでは、Claude はページの作成中にセッションが収集したデータをそのまま使ってページを公開します。
- 
--コネクタバックアップページを作成するには、プロンプトでコネクタと必要なデータを指定します。
-+コネクタを利用するページを作成するには、プロンプトでコネクタと必要なデータを指定します。
- 
- ```text wrap theme={null}
-@@ -206,30 +206,30 @@ Build a dashboard artifact of our open pull requests that pulls the live list th
- ```
- 
--Claude はページの公開の一部として、ページが呼び出す可能性のあるコネクタを宣言し、ページはその宣言の外側のコネクタを呼び出すことはできません。claude.ai アカウントからのコネクタのみが対象となります。Claude はそれらを宣言で指定し、ページを表示するときに、各呼び出しは [表示アカウント独自の接続を通じて実行されます](#how-connector-calls-work-for-viewers)。`.mcp.json` など Claude Code で設定するローカル MCP サーバーは、Claude がページを構築している間にデータを提供できますが、公開されたページはそれらを呼び出すことはできません。
-+Claude は公開処理の一環として、ページが呼び出せるコネクタを宣言します。ページはその宣言に含まれないコネクタを呼び出せません。対象となるのは claude.ai アカウントのコネクタのみです。Claude が宣言でそれらを指定し、誰かがページを閲覧すると、各呼び出しはそのコネクタに対する[閲覧しているアカウント自身の接続を通じて実行されます](#how-connector-calls-work-for-viewers)。`.mcp.json` のサーバーなど、Claude Code で設定したローカルの MCP サーバーは、Claude がページを作成する間はデータを提供できますが、公開されたページからは呼び出せません。
- 
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 5c0dce0..6430cae 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,46 @@
- # Changelog
- 
-+## 2.1.312
-+
-+- Added `oidc.user_id_claim` to the Claude apps gateway, to identify people by an id_token claim other than `sub`, such as Microsoft Entra ID's `oid`
-+- Added click to send: in fullscreen, clicking the "to send now" hint under a queued message sends it right away, as its key does
-+- Fixed managed settings and organization policy not being fetched for the rest of the session after signing in from the VS Code extension
-+- Fixed Claude overwriting a very large CLAUDE.md, rules file or @-included file in a subdirectory after seeing only its start; Write now asks Claude to read it all or edit in place
-+- Fixed per-directory and `paths:` skills not being found after a Bash `cd` deeper into a git repository
-+- Fixed a rare case where the first reply after resuming a session in the terminal could be missing the next time the session was resumed
-+- Fixed a command with an invalid name stopping all commands from loading, which could leave `claude -p` with no output
-+- Fixed the Read tool sometimes failing on PDF pages with "pdftoppm failed: Could not write image" when the clean-up of old session files ran at the same time
-+- Fixed the spinner, OpenTelemetry `effort` values and transcripts naming a newly picked effort level during a task before the model applied it; they now show the level in force
-+- Fixed the `/model` and `/effort` cache warning saying the re-read waits for your next message; a change made while Claude is working can trigger it sooner
-+- Fixed some sessions showing as waiting on you when the last message only mentioned items waiting on you mid-sentence
-+- Fixed agent view restoring input text on the next launch after it was cleared with Ctrl+C just before exiting
-+- Fixed agent view reopening in shell mode after exiting with Ctrl+D from an empty `!` input
-+- Fixed vim mode `d`, `c` and `y` with a `gj` or `gk` count larger than the lines left deleting or copying text; like Vim, they now only move the cursor
-+- Fixed `/verify` showing a long description meant for Claude in `/help` and the `/` command menu instead of a short one
-+- Improved the prompt's effort indicator: a change made mid-task now says it may wait for your next message, and the note clears when it no longer applies
-+- Improved WebFetch errors in cloud sessions: a host that does not resolve is now explained as possibly outside the allowed network domains, so Claude names the host to allow
-+- Changed Bedrock, Vertex, Foundry and Mantle to use the shorter system prompt for model names Claude Code doesn't recognize, such as custom deployment names and inference profile ARNs, even when they front Sonnet or Haiku; set `CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0` to keep the full prompt
-+- Changed automatic model switches after a flagged message to also cover model names Claude Code doesn't recognize, such as custom deployment names; set `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK=1` to turn them off
-+- Changed usage limit messages to call the 5-hour window the "5-hour limit" instead of the "session limit"
-+- Changed cloud sessions started from the CLI to get their names and branch names from the server
-```
-
-</details>
-
-<details>
-<summary>chrome-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/chrome-ja.md b/docs-ja/pages/chrome-ja.md
-index 13e3b50..46d4883 100644
---- a/docs-ja/pages/chrome-ja.md
-+++ b/docs-ja/pages/chrome-ja.md
-@@ -44,5 +44,5 @@ Claude Code を Chrome で使用する前に、以下が必要です。
- HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
- 
--Chrome 統合を使用するには、`/login` でサインインする必要もあります。API キーまたは [`claude setup-token`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で発行した長期間有効なトークンで認証している場合、ブラウザ拡張機能はこれらの認証情報では認証できないため、`--chrome` を渡しても Claude Code は Chrome 統合を無効のままにします。v2.1.216 より前のバージョンでは、これらのセッションでも Chrome 統合を有効にできましたが、ブラウザ拡張機能への接続はすべて 403 エラーで失敗していました。
-+Chrome 統合を使用するには、`/login` でサインインする必要もあります。API キーまたは [`claude setup-token`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で発行した長期間有効なトークンで認証している場合、`--chrome` を渡しても Claude Code は Chrome 統合を無効のままにします。ブラウザ拡張機能はこれらの認証情報では認証できません。
- 
- > [!NOTE]
 ```
 
 </details>
