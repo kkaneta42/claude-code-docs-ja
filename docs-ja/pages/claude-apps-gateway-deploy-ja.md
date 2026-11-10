@@ -173,6 +173,20 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ�
   * `admin.denied` には、拒否された管理 API の認証試行が、クライアント IP、メソッド、パス、理由とともに記録されます。提示された鍵情報は記録されません。理由は、`x-api-key` が提示されたもののどの設定済みキーとも一致しなかった場合は `invalid_key`、`Authorization` ヘッダーのみが提示され、それが `admin.admin_groups` のゲートウェイセッションとして検証されなかった場合は `bearer_rejected`、どちらのヘッダーも提示されなかった場合は `no_credentials` です
 * **運用ログ**: 起動、警告、アップストリームのエラーについて、`[gateway]` というプレフィックスの付いた人間が読める形式の行を出力します。詳細度は `CLAUDE_GATEWAY_LOG_LEVEL` 環境変数で制御し、`debug`、`info`、`warn`、`error` のいずれかを指定できます。デフォルトは `info` です。`debug` では、サインインとリフレッシュのたびに id\_token に含まれるクレームの名前（値ではありません）もログに記録され、`userinfo_fallback` が何らかのクレームを提供した場合は userinfo クレームの名前も記録されます。これにより、PII をログに残さずに `email_claim` と `groups_claim` の設定を診断できます。この設定は監査イベントには影響せず、監査イベントは常に出力されます。
 
+#### 運用ログを JSON として書き出す
+
+ログコレクターが各行のレベルを JSON フィールドから読み取る場合は、ゲートウェイの環境で `CLAUDE_GATEWAY_LOG_FORMAT=json` を設定します。ゲートウェイサーバーで Claude Code v2.1.319 以降が必要です。
+
+これにより、各運用ログ行は `severity`、`time`、`message` を持つ 1 つのオブジェクトになります。
+
+```json theme={null}
+{"severity":"INFO","time":"2026-11-04T17:03:21.512Z","message":"claude gateway listening on http://0.0.0.0:8080"}
+```
+
+`severity` は大文字で表したログレベルで、`warn` は `WARNING` と書かれます。起動の失敗は `ERROR` の行になります。
+
+同じく stderr に出力される監査イベントは変わりません。監査イベントには `ts` と `evt` が含まれ、`severity` は含まれません。
+
 ### ヘルスチェック
 
 ゲートウェイは、liveness プローブとして `GET /healthz` を、readiness プローブとして `GET /readyz` を提供します。`/readyz` はストアに到達可能かどうかを検証します。[`store.readiness_grace_seconds`](https://code.claude.com/docs/ja/claude-apps-gateway-config#store) を設定した場合、ストアが応答しなくなってからその秒数が経過するまで、`/readyz` は ready を報告し続けます。

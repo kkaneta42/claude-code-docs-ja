@@ -30,7 +30,7 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 | モデルエイリアス | 動作 |
 | - | - |
 | **`default`** | モデルの上書きをすべてクリアし、[アカウントのランタイムデフォルト](#default-model-setting)に戻す特別な値。それ自体はモデルエイリアスではありません |
-| **`best`** | Fable が利用可能な場合は [`fable` エイリアスが解決されるモデル](#fable-alias-resolution)を使用し、それ以外の場合は `opus` と同じモデルを使用します |
+| **`best`** | `opus` と同じモデルを使用します |
 | **`fable`** | 最も難しく長時間実行されるタスク向けに、[プロバイダーの Fable モデル](#fable-alias-resolution)を使用します |
 | **`sonnet`** | 日常的なコーディングタスク向けに最新の Sonnet モデルを使用します |
 | **`opus`** | 複雑な推論タスク向けに最新の Opus モデルを使用します |
@@ -48,9 +48,9 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 | Amazon Bedrock、Google Cloud's Agent Platform | Opus 5.5 | Sonnet 4.5 | Haiku 4.5 |
 | Microsoft Foundry | Opus 4.6 | Sonnet 4.5 | Haiku 4.5 |
 
-`ANTHROPIC_DEFAULT_FABLE_MODEL` を設定しない限り、`fable` エイリアスは Fable 5.1 に解決されます。ただし [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは、`fable` と `best` は Fable 5 に解決されます。
+`ANTHROPIC_DEFAULT_FABLE_MODEL` を設定しない限り、`fable` エイリアスは [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは Fable 5 に、それ以外のすべての場所では Fable 5.2 に解決されます。
 
-`claude-fable-5-1` を提供するように設定されていないゲートウェイは、そのモデルへのリクエストを拒否します。Fable 5.1 を提供しているゲートウェイ経由で使用するには、`/model claude-fable-5-1` で選択してください。
+`claude-fable-5-2` を提供するように設定されていないゲートウェイは、そのモデルへのリクエストを拒否します。Fable 5.2 を提供しているゲートウェイ経由で使用するには、`/model claude-fable-5-2` で選択してください。
 
 `opus` または `sonnet` が古いモデルに解決される場合、完全なモデル名を明示的に選択するか、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` を設定することで、新しいモデルを利用できます。
 
@@ -64,14 +64,19 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 
 ### Fable を使用する
 
-[Claude Fable 5.1](https://platform.claude.com/docs/en/about-claude/models/overview) と Claude Fable 5 は Claude Code で最も高性能なモデルであり、1 回の作業時間に収まらない規模のタスクに適しています。長時間の自律的なセッションを維持し、行動する前に調査を行い、小規模なモデルよりも頻繁に自身の作業を検証します。Fable 5.1 は新しいリリースです。
+[Claude Fable モデル](https://platform.claude.com/docs/en/about-claude/models/overview)は Claude Code で最も高性能なモデルであり、1 回の作業時間に収まらない規模のタスクに適しています。長時間の自律的なセッションを維持し、行動する前に調査を行い、小規模なモデルよりも頻繁に自身の作業を検証します。
 
-どちらの Fable モデルも、いずれのプランやプロバイダーにおいてもアカウント種別のデフォルトではありません。明示的に選択してください。
+いずれの Fable モデルも、どのプランやプロバイダーにおいてもアカウント種別のデフォルトではありません。明示的に選択してください。
 
-* **Fable 5.1**: `/model fable` を実行するか、`claude --model fable` で起動します。エイリアスが Fable 5 に解決される [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは、代わりに `/model claude-fable-5-1` を実行します。
-* **Fable 5**: モデル ID で選択します。Anthropic API では、`/model claude-fable-5` を実行するか、`claude --model claude-fable-5` で起動します。その他のプロバイダーでは、プロバイダーの Fable 5 モデル ID を使用するか、`ANTHROPIC_DEFAULT_FABLE_MODEL` で[固定](#pin-models-for-third-party-deployments)します。
+* **Fable 5.2**: `/model fable` を実行するか、`claude --model fable` で起動します。[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは、代わりに `/model claude-fable-5-2` を実行します。
+* **Fable 5.1 または Fable 5**: モデル ID で選択します。Anthropic API では、`/model claude-fable-5-1` または `/model claude-fable-5` を実行するか、`claude --model claude-fable-5-1` で起動します。その他のプロバイダーでは、プロバイダーのモデル ID を使用するか、`ANTHROPIC_DEFAULT_FABLE_MODEL` で[固定](#pin-models-for-third-party-deployments)します。
 
-Anthropic API に直接接続していて、ユーザー設定にモデルとして `claude-fable-5` または `claude-fable-5[1m]` が保存されている場合（たとえば v2.1.257 より前に `/model` ピッカーで Fable を選択した場合）、v2.1.257 以降を初めて実行したときに、Claude Code はその保存値を `fable` または `fable[1m]` エイリアスに変更します。起動時のモデル行には `(auto-updated)` が一度だけ表示されます。プロジェクト設定、ローカル設定、または管理設定にある `claude-fable-5` の値はそのまま残ります。
+Pro、Max、Team、Enterprise プランでは、ユーザー設定に保存された `claude-fable-5-1` モデルは `fable` エイリアスに移行します。
+
+* **Pro または Max プラン**: 移行は v2.1.321 以降を初めて実行したときに行われます。ターミナルでは、起動時のモデル行に `(auto-updated)` が一度表示されることがあります。
+* **Team または Enterprise プラン**: 移行は組織の設定を待って行われるため、後の起動時に行われる場合もあれば、まったく行われない場合もあります。移行は次のセッションから適用され、`(auto-updated)` 行は表示されません。モデルを確認するには、`/model` を実行します。
+
+移行後、Fable 5.2 に対して[レベルを設定](#adjust-effort-level)していない限り、セッションは Fable 5.2 のデフォルトの effort で開始されます。Console アカウント、サードパーティプロバイダー、およびプロジェクト設定、ローカル設定、管理設定では `claude-fable-5-1` が維持されます。
 
 Fable モデルの安全性分類器によって警告されたリクエスト（主にサイバーセキュリティや生物学の分野）は、[自動モデルフォールバック](#automatic-model-fallback)をトリガーします。
 
@@ -84,7 +89,7 @@ Fable を最大限に活用するには:
 
 > [!NOTE]
 >
-> Fable 5.1 には Claude Code v2.1.257 以降が必要です。古いバージョンからのリクエストが失敗する場合は、[Claude Code does not support this model](https://code.claude.com/docs/ja/errors.md#claude-code-does-not-support-this-model) を参照してください。アップグレードするには `claude update` を実行します。ゼロデータ保持での利用可否については、[ZDR でのモデルの利用可否](https://code.claude.com/docs/ja/zero-data-retention.md#model-availability-under-zdr)を参照してください。
+> Fable 5.2 には Claude Code v2.1.321 以降、Fable 5.1 には v2.1.257 以降が必要です。古いバージョンからこれらのモデルへのリクエストが失敗する場合は、[Claude Code does not support this model](https://code.claude.com/docs/ja/errors.md#claude-code-does-not-support-this-model) を参照してください。アップグレードするには `claude update` を実行します。ゼロデータ保持での利用可否については、[ZDR でのモデルの利用可否](https://code.claude.com/docs/ja/zero-data-retention.md#model-availability-under-zdr)を参照してください。
 
 Anthropic API では、[`availableModels`](#restrict-model-selection) または[組織のモデル制限](#organization-model-restrictions)によって除外されない限り、Fable モデルは `/model` ピッカーに表示されます。組織が Fable をまったく使用できない場合（たとえば[ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md#model-availability-under-zdr)の下にある場合）、その行はグレーアウトされた状態でピッカーに残り、理由が注記されます。
 
@@ -92,7 +97,7 @@ Anthropic API では、[`availableModels`](#restrict-model-selection) または[
 
 プランやシート階層によっては、Fable の使用量がプランに含まれる上限から差し引かれるのではなく、[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)に課金される場合があります。その場合、`/model` ピッカーの Fable の行に「Requires usage credits」と表示されます。使用クレジットを管理するには、[サブスクリプションに使用クレジットを追加する](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)を参照してください。
 
-対話セッションでは、Claude Code が Fable の使用クレジットに関する同意プロンプトを表示することがあります。組織請求を利用している Enterprise プランのメンバーには、このプロンプトは表示されません。使用クレジットを使って Fable で続行するか、デフォルトモデルに切り替えることができます。プロンプトを閉じることもできます。
+対話セッションでは、Claude Code が Fable の使用クレジットに関する同意プロンプトを表示することがあります。使用クレジットを使って Fable で続行するか、デフォルトモデルに切り替えることができます。プロンプトを閉じることもできます。
 
 * `/model` で Fable モデルを選択した場合は、現在のモデルが維持されます。
 * セッションの途中では、Claude Code はデフォルトモデルでそのターンを続行します。
@@ -163,7 +168,7 @@ v2.1.144 から v2.1.152 では、`/model` は現在のセッションにのみ�
 
 メッセージについては、[Model is not a recognized model id](https://code.claude.com/docs/ja/errors.md#model-is-not-a-recognized-model-id) および [Model not found](https://code.claude.com/docs/ja/errors.md#model-not-found) を参照してください。
 
-`--model` フラグ、`ANTHROPIC_MODEL` 環境変数、または `model` 設定でモデルを設定した場合、Claude Code は事前に確認を行わないため、値を誤入力すると最初のリクエストで [There's an issue with the selected model](https://code.claude.com/docs/ja/errors.md#theres-an-issue-with-the-selected-model) が発生します。
+`--model` フラグ、`ANTHROPIC_MODEL` 環境変数、または `model` 設定でモデルを設定した場合、Claude Code は誤入力された値を事前に拒否しません。セッションは開始され、最初のリクエストで [There's an issue with the selected model](https://code.claude.com/docs/ja/errors.md#theres-an-issue-with-the-selected-model) が発生します。Anthropic API では、`claude-` で始まらず、モデル名またはエイリアスに近いつづりの値の場合、[正しい候補を示す起動時の警告](#fix-a-mistyped-model-name)が表示されることもあります。
 
 要求されたモデルに廃止予定日が設定されている場合、または新しいバージョンに自動的に再マッピングされる場合、Claude Code は要求されたモデル名を示す警告を表示します。対話セッションでは、起動時の通知として表示されます。v2.1.182 以降、デフォルトのテキスト出力形式を使用している場合、[非対話モード](https://code.claude.com/docs/ja/headless.md)でも同じ警告が stderr に書き込まれます。このチェックは、[サブエージェントのフロントマター](https://code.claude.com/docs/ja/sub-agents.md)で設定された `model` も対象とします。`--output-format json` および `stream-json` では stderr への警告は抑制されます。代わりに、[結果メッセージ](https://code.claude.com/docs/ja/headless.md#get-structured-output)の `modelUsage` フィールドから実際のモデルを読み取ってください。
 
@@ -225,7 +230,13 @@ Claude Code が新しいセッションをこの変数のモデルで開始す�
 
 ## モデル選択を制限する
 
-管理者は、[管理設定またはポリシー設定](https://code.claude.com/docs/ja/managed-settings.md)の `availableModels` を使用して、ユーザーが選択できるモデルを制限できます。エントリは、`sonnet` のようなモデルファミリー、`claude-sonnet-4-5` のようなバージョンプレフィックス、または `claude-sonnet-4-5-20250929` のような完全なモデル ID に一致します。バージョンプレフィックスは、それにさらにセグメントを付け加えた後続のモデル ID にも一致するため、`claude-fable-5` は Fable 5 と Fable 5.1 の両方を許可し、`claude-fable-5-1` は Fable 5.1 のみを許可します。リストが許可するモデルをブロックする方法や、各モデル ID エントリがその ID で指定されたバージョンのみを許可するようにする方法については、[特定のモデルやバージョンをブロックする](#block-specific-models-or-versions)を参照してください。
+管理者は、[管理設定またはポリシー設定](https://code.claude.com/docs/ja/managed-settings.md)の `availableModels` を使用して、ユーザーが選択できるモデルを制限できます。各エントリは次のいずれかに一致します。
+
+* `sonnet` のようなモデルファミリー
+* `claude-sonnet-4-5` のようなバージョンプレフィックス。これは、さらにセグメントを付け加えた後続のモデル ID にも一致します。たとえば、`claude-fable-5` は Fable 5、Fable 5.1、Fable 5.2 を許可し、`claude-fable-5-1` は Fable 5.1 のみを許可します
+* `claude-sonnet-4-5-20250929` のような完全なモデル ID
+
+リストが許可するモデルをブロックする方法や、各モデル ID エントリがその ID で指定されたバージョンのみを許可するようにする方法については、[特定のモデルやバージョンをブロックする](#block-specific-models-or-versions)を参照してください。
 
 Claude Code を組み込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定しているプラットフォームでは、ホストのモデル設定が管理モデル設定よりも優先されます。ただし、管理設定の `availableModels` 許可リストは、ホストが独自の許可リストを提供しない限り引き続き有効です。ホストがどのキーと変数を上書きするかについては、[管理設定の優先順位の例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を参照してください。
 
@@ -465,7 +476,9 @@ v2.1.280 より前は、`default` は Pro と Team Standard では Sonnet 5 に�
 
 アカウントに何も記録されておらず、管理設定で[Default モデルに許可リストが強制](#enforce-the-allowlist-for-the-default-model)されていて、かつアカウント種類ごとのデフォルトが `availableModels` に含まれていない場合、`default` は上記のアカウント種類ごとのデフォルトではなく、強制された Default に解決されます。組織のデフォルトと強制の両方が適用される場合は、まず組織のデフォルトがアカウント種類ごとのデフォルトを置き換え、その後に強制が適用されます。許可リストに含まれる組織のデフォルトはそのまま維持され、リスト外のものは強制された Default に解決されます。
 
-Fable モデルは、どのプランやプロバイダーでもアカウント種類ごとのデフォルトにはなりません。`/model` で Fable モデルを選ぶと、ユーザー設定に選択中のモデルとして保存されるため、以降のセッションはそのモデルで開始されます。v2.1.257 で Claude Code が保存済みの Fable 5 の選択に対して行う一度限りの変更については、[Fable を使用する](#work-with-fable)を参照してください。
+> [!NOTE]
+>
+> Fable モデルは、どのプランやプロバイダーでもアカウント種類ごとのデフォルトにはなりません。`/model` で Fable モデルを選ぶと、ユーザー設定に選択中のモデルとして保存されるため、以降のセッションはそのモデルで開始されます。ただし、[保存済みの Fable 5.1 の選択に対する一度限りの変更](#work-with-fable)は例外です。
 
 ### `opusplan` モデル設定
 
@@ -521,7 +534,7 @@ Claude Code はチェーンを[サブエージェント](https://code.claude.com
 
 Fable モデル、Opus 5.5、Sonnet 5.5、Opus 5 は安全性分類器とともに動作し、分類器が最も頻繁に警告するのはサイバーセキュリティと生物学に関するコンテンツです。この 2 つのカテゴリについて、フォールバックモデルは拒否したモデルによって異なります。
 
-* **Fable 5.1、Fable 5、Opus 5.5**：生物学で警告されたリクエストは Opus 5 で、サイバーセキュリティで警告されたリクエストは Opus 4.8 で再実行されます。
+* **Fable モデルと Opus 5.5**：生物学で警告されたリクエストは Opus 5 で、サイバーセキュリティで警告されたリクエストは Opus 4.8 で再実行されます。
 * **Sonnet 5.5**：サイバーセキュリティで警告されたリクエストは Sonnet 5 で再実行されます。Sonnet 5.5 には生物学のフォールバックモデルがないため、生物学で警告されたリクエストは代わりに拒否で終了します。
 * **Opus 5**：サイバーセキュリティで警告されたリクエストは Opus 4.8 で再実行されます。Opus 5 は独自の生物学分類器をフォールバックモデルなしで実行するため、生物学で警告されたリクエストは代わりに拒否で終了します。
 
@@ -582,7 +595,7 @@ Claude が [Agent ツール](https://code.claude.com/docs/ja/tools-reference.md#
 
 [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud's Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) では、モデル ID がプロバイダー固有であるため、自動フォールバックは Claude Code が関係する各モデルを識別できる場合にのみ動作します。
 
-* Claude Code が現在のモデルをフォールバック元として認識する必要があります。Fable 5.1 と Fable 5 は、モデル ID に `claude-fable-5` が含まれる場合、`ANTHROPIC_DEFAULT_FABLE_MODEL` の値と一致する場合、または [`modelOverrides`](#override-model-ids-per-version) でマッピングされている場合に認識されます。Opus 5.5、Sonnet 5.5、Opus 5 は、プロバイダーのモデル ID または [`modelOverrides`](#override-model-ids-per-version) のマッピングによって認識されます。
+* Claude Code が現在のモデルをフォールバック元として認識する必要があります。Fable モデルは、モデル ID に `claude-fable-5` が含まれる場合、`ANTHROPIC_DEFAULT_FABLE_MODEL` の値と一致する場合、または [`modelOverrides`](#override-model-ids-per-version) でマッピングされている場合に認識されます。Opus 5.5、Sonnet 5.5、Opus 5 は、プロバイダーのモデル ID または [`modelOverrides`](#override-model-ids-per-version) のマッピングによって認識されます。
 * どのモデルが拒否したかにかかわらず、Opus のターゲットがデプロイで解決される必要があります。`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定するか、プロバイダーのモデルリストに Opus 4.8 のエントリを残してください。どちらもない場合、Sonnet 5.5 を含むすべてのフォールバック元モデルでフォールバックはオフのままとなり、警告されたリクエストは拒否で終了します。
 * 警告されたカテゴリのフォールバックモデルがデプロイで解決される必要があります。Fable モデル、Opus 5.5、Opus 5 からの場合、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定すると、フォールバックがあるすべてのカテゴリについて、警告されたリクエストはそのモデルで再実行されます。ただし、Opus 5 での生物学の警告は引き続き拒否で終了します。設定しない場合、サイバーセキュリティで警告されたリクエストは Opus 4.8 のエントリで再実行され、Fable モデルまたは Opus 5.5 からの生物学で警告されたリクエストは Opus 5 のエントリで再実行されます。Sonnet 5.5 からの場合、サイバーセキュリティで警告されたリクエストは `ANTHROPIC_DEFAULT_SONNET_MODEL` で設定したモデルで再実行されるか、設定しない場合はプロバイダーのモデルリストにある Sonnet 5 のエントリで再実行されます。
 
@@ -596,9 +609,9 @@ Claude が [Agent ツール](https://code.claude.com/docs/ja/tools-reference.md#
 
 #### セキュリティ研究と生物学のワークロード
 
-ペネトレーションテスト、Capture the Flag（CTF）演習、生物学に関連するコードベースなど、攻撃的セキュリティや生物学のワークロードでは、フォールバックが頻繁に、多くの場合最初のリクエストで発生します。Fable 5.1、Fable 5、Opus 5.5 で本格的な生物学の作業を行う場合、モデルを切り替える最初の警告されたリクエストによってセッションが Opus 5 に移行し、Opus 5 には生物学のフォールバックがないため、その後の生物学で警告されたリクエストはそこで拒否となります。Opus 5 と Sonnet 5.5 では、最初に警告されたリクエストからその拒否が発生します。
+ペネトレーションテスト、Capture the Flag（CTF）演習、生物学に関連するコードベースなど、攻撃的セキュリティや生物学のワークロードでは、フォールバックが頻繁に、多くの場合最初のリクエストで発生します。これはこれらの分野における想定どおりのルーティングであり、アカウントに対する警告ではありません。組織がこの作業に Fable クラスの能力を必要とする場合は、Anthropic のアカウントチームに信頼済みアクセスプログラムについてお問い合わせください。
 
-これはこれらの分野における想定どおりのルーティングであり、アカウントに対する警告ではありません。組織がこの作業に Fable クラスの能力を必要とする場合は、Anthropic のアカウントチームに信頼済みアクセスプログラムについてお問い合わせください。
+Fable モデルまたは Opus 5.5 で本格的な生物学の作業を行う場合、モデルを切り替える最初の警告されたリクエストによってセッションが Opus 5 に移行します。Opus 5 には生物学のフォールバックがないため、その後の生物学で警告されたリクエストはそこで拒否となります。Opus 5 と Sonnet 5.5 では、最初に警告されたリクエストからその拒否が発生します。
 
 ### effort レベルを調整する
 
@@ -608,7 +621,7 @@ Claude が [Agent ツール](https://code.claude.com/docs/ja/tools-reference.md#
 
 | モデル | レベル |
 | :- | :- |
-| Fable 5.1 と Fable 5 | `low`、`medium`、`high`、`xhigh`、`max` |
+| Fable モデル | `low`、`medium`、`high`、`xhigh`、`max` |
 | Opus 5.5、Sonnet 5.5、Haiku 5.5、Opus 5、Sonnet 5、Opus 4.8、Opus 4.7 | `low`、`medium`、`high`、`xhigh`、`max` |
 | Opus 4.6 と Sonnet 4.6 | `low`、`medium`、`high`、`max` |
 
@@ -620,7 +633,7 @@ Claude Code は、次の順序でセッションの effort レベルを解決し
 2. `/effort`、`/model` ピッカー、[`applyFlagSettings()`](https://code.claude.com/docs/ja/agent-sdk/typescript#applyflagsettings) などでセッション内で選んだレベル
 3. `--effort` を付けた起動
 4. 設定：モデルに対して保存したレベルまたは [`effortLevel`](https://code.claude.com/docs/ja/settings-reference#effortlevel) キー。これらの間および設定ファイル間の優先順位は [`modelSettings`](https://code.claude.com/docs/ja/settings-reference#modelsettings) に記載されています
-5. モデルのデフォルトの effort：effort をサポートするすべてのモデルで `high`。ただし、Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。また、組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります
+5. モデルのデフォルトの effort：Fable 5.2、Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium`、Opus 4.7 のデフォルトは `xhigh` です。[effort レベルの表](#adjust-effort-level)にあるその他のモデルのデフォルトは `high` です。組織が[組織のデフォルトモデル](#organization-default-model)にデフォルトの effort レベルを設定している場合、そのモデルを実行するときはそのレベルがデフォルトになります
 
 自動モデルフォールバックの後に適用されるレベルについては、[フォールバック後の effort レベル](#effort-level-after-a-fallback)を参照してください。サブエージェントとチームメイトについては、[サブエージェントとチームメイトの effort レベル](#effort-level-of-subagents-and-teammates)を参照してください。
 
@@ -671,8 +684,8 @@ ultracode は次のいずれかの方法でオンにできます。
 | レベル | 使用する場面 |
 | :- | :- |
 | `low` | ブレインストーミング、最初の下書き、名前の変更のような小さな変更など、結果を 1 つずつ確認する素早いやり取り |
-| `medium` | Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトです。Opus 5.5 と Sonnet 5.5 では、新機能の実装など、範囲が明確な日常的なエンジニアリング作業に適しています。デフォルトがより高いモデルでは、ある程度の知能と引き換えにできるコスト重視の作業でトークン使用量を削減します |
-| `high` | 既存のコードベースのバグ修正など、検証が重要な作業やエッジケースが発生しやすい作業。Opus 5.5、Sonnet 5.5、Haiku 5.5、Opus 4.7 を除くすべてのモデルのデフォルト |
+| `medium` | Fable 5.2、Opus 5.5、Sonnet 5.5、Haiku 5.5 の各モデルのデフォルトです。Opus 5.5 と Sonnet 5.5 では、新機能の実装など、範囲が明確な日常的なエンジニアリング作業に適しています。デフォルトがより高いモデルでは、ある程度の知能と引き換えにできるコスト重視の作業でトークン使用量を削減します |
+| `high` | 既存のコードベースのバグ修正など、検証が重要な作業やエッジケースが発生しやすい作業。effort の表にあるその他のモデルのデフォルト |
 | `xhigh` | より多くのトークン消費でより深い推論。Opus 4.7 のデフォルト |
 | `max` | セキュリティ脆弱性の発見など、ユーザーの関与なしに Claude に取り組ませたい難しい問題。`max` は収穫逓減を示すことがあり、考えすぎる傾向があるため、広く採用する前にテストしてください |
 | `ultracode` | レベルではなく Claude Code の設定：任意の effort レベルで、本格的なタスクごとに[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)を計画します |
@@ -691,7 +704,7 @@ Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus
 
 * 引用符、括弧、パス、コマンドなどの外側に、`/` で始まらないプロンプト内で入力し直す
 * `CLAUDE_CODE_EFFORT_LEVEL` が `xhigh` 未満に設定されている場合は設定を解除する。または、自分の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を `xhigh` 以上に引き上げるか、組織の管理者に[組織の制限](#organization-effort-limits)を引き上げるよう依頼する
-* セッション内で `/model` を実行し、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.1 のいずれかのモデルに切り替える。Amazon Bedrock 上など、この単語でターンを引き上げられない場合は、代わりに [effort レベルを設定](#set-the-effort-level)してください
+* セッション内で `/model` を実行し、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.2、Fable 5.1 のいずれかのモデルに切り替える。Amazon Bedrock 上など、この単語でターンを引き上げられない場合は、代わりに [effort レベルを設定](#set-the-effort-level)してください
 
 #### effort レベルを設定する
 
@@ -767,9 +780,9 @@ Claude Code はデフォルトで思考の出力を折りたたみます。`Ctrl
 
 ### 拡張コンテキスト
 
-Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、Sonnet 4.6 は、大規模なコードベースでの長いセッション向けに [100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)をサポートしています。
+大規模なコードベースでの長いセッションでは、[100 万トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)を使用できます。Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.6 以降、Sonnet 4.6 がこれをサポートしています。
 
-Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、デフォルトで 1M ウィンドウで動作し、`[1m]` サフィックスは不要です。これには、Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry 上のセッションや、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションも含まれます。代わりに 200K ウィンドウで実行するには、[1M コンテキストをオフにする](#turn-off-1m-context)を参照してください。
+Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、デフォルトで 1M ウィンドウで動作し、`[1m]` サフィックスは不要です。これには、Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry 上のセッションや、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションも含まれます。代わりに 200K ウィンドウで実行するには、[1M コンテキストをオフにする](#turn-off-1m-context)を参照してください。
 
 Opus 4.6 と Sonnet 4.6 が 1M に到達するのは `[1m]` バリアントを通じてのみで、そのバリアントへのアクセスはプランによって異なります。Team Standard と Team Premium の両方のシートを含む Max、Ultra、Team、Enterprise プランでは、1M コンテキストの Opus 4.6 はサブスクリプションに含まれています。1M コンテキストの Sonnet 4.6 は、Max と Ultra を含むすべてのサブスクリプションプランで[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans)が必要です。
 
@@ -798,7 +811,9 @@ Anthropic API では、1M コンテキストウィンドウは標準のモデル
 
 #### LLM ゲートウェイの背後でのコンテキストウィンドウ
 
-`ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable 5.1、Fable 5、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、`[1m]` バリアントを選択しなくても 1M ウィンドウを使用でき、Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、Claude Code を起動する環境で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`](https://code.claude.com/docs/ja/env-vars) を設定して、すべてのモデルのセッションが[その境界で圧縮される](#set-the-auto-compact-window)ようにしてください。
+`ANTHROPIC_BASE_URL` を [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)やその他のプロキシに設定した場合、Claude Code は認識する各モデルに、Anthropic API 上と同じコンテキストウィンドウを割り当てます。Fable モデル、Sonnet 5 以降、Haiku 5.5、Opus 4.7 以降は、`[1m]` バリアントなしで 1M ウィンドウを使用できます。Opus 4.6 のように `[1m]` バリアントを通じてのみ 1M に到達するモデルは、バリアントなしでは 200K で動作します。
+
+Claude Code は、ゲートウェイやその背後のサーバーが強制するより低い制限を検出できません。ゲートウェイが 200K トークンを超えるリクエストを拒否する場合は、Claude Code を起動する環境で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000`](https://code.claude.com/docs/ja/env-vars) を設定して、すべてのモデルのセッションが[その境界で圧縮される](#set-the-auto-compact-window)ようにしてください。
 
 #### 1M コンテキストをオフにする
 
@@ -884,6 +899,18 @@ Claude Code は想定した 200K で会話を[自動圧縮](#default-auto-compac
 * **その他のウィンドウ**：Claude Code を起動する環境で、[`CLAUDE_CODE_MAX_CONTEXT_TOKENS`](https://code.claude.com/docs/ja/env-vars) にウィンドウサイズをトークン数で設定します（例：`CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000`）。`claude-` で始まらず `[1m]` 接尾辞もない認識できない ID の場合、この変数は単独で有効になります。それ以外の ID の場合は、まず[この変数がどの ID に適用されるか](#which-ids-claude_code_max_context_tokens-applies-to)を確認してください。
 
 Claude Code が ID を認識するか、指定したウィンドウを使用するようになると、その ID でセッションを開始しても警告は表示されなくなります。
+
+#### 入力ミスしたモデル名を修正する
+
+次の警告のいずれかが表示された場合、設定したモデル ID を Claude Code が認識しておらず、その ID が Claude Code の認識するモデル名またはエイリアスとほぼ同じ綴りであることを意味します。
+
+```text theme={null}
+⚠ Model "<model>" isn't recognized · did you mean "<suggestion>"?
+Claude Code doesn't recognize the model "<model>". Did you mean "<suggestion>"?
+```
+
+* **ID を入力ミスした場合**：[モデルを設定した箇所](#setting-your-model)で、ID を提案された値に変更します
+* **ID が意図したものである場合**：そのままにしておきます。セッションは記述どおりの ID を送信します。Claude Code がその ID に対して想定するコンテキストウィンドウが誤っている場合は、[ウィンドウを修正](#correct-the-window-for-a-gateway-or-custom-model-id)してください
 
 #### `CLAUDE_CODE_MAX_CONTEXT_TOKENS` が適用される ID
 
@@ -1100,6 +1127,8 @@ Claude Code は、パフォーマンスを最適化しコストを削減する�
 
 | バージョン | 変更内容 |
 | :- | :- |
+| v2.1.321 | Claude apps ゲートウェイのセッションを除き、`fable` が Fable 5.2 に解決されるようになりました |
+| v2.1.321 | `best` が `opus` と同じモデルに解決されるようになりました。それ以前のバージョンでは、Fable が利用可能な環境で `fable` の解決先モデルが使用されます |
 | v2.1.293 | Anthropic API で `haiku` が Haiku 5.5 に解決されるようになりました |
 | v2.1.284 | Anthropic API で `sonnet` が Sonnet 5.5 に解決されるようになりました |
 | v2.1.280 | Anthropic API、Claude Platform on AWS、Amazon Bedrock、Google Cloud の Agent Platform で `opus` が Opus 5.5 に解決されるようになりました |

@@ -26,7 +26,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `CronDelete` | セッションスコープのスケジュールタスクを ID でキャンセルします | いいえ |
 | `CronList` | セッションスコープのすべてのスケジュールタスクをリストします | いいえ |
 | `Edit` | 特定のファイルに対して対象を絞った編集を行います。[Edit ツールの動作](#edit-tool-behavior)を参照してください | はい |
-| `EndConversation` | セッションを終了します。持続的な不正使用入力の稀なケースまたは Claude にツールのデモンストレーションを求める場合に使用します。[EndConversation ツールの動作](#endconversation-tool-behavior)を参照してください | いいえ |
+| `EndConversation` | セッションを終了します。持続的な不正使用入力の稀なケース、またはユーザーが Claude にセッションの終了を求めたうえで確認した場合に使用します。[EndConversation ツールの動作](#endconversation-tool-behavior)を参照してください | いいえ |
 | `EnterPlanMode` | plan モードに切り替えて、コーディング前にアプローチを設計します | いいえ |
 | `EnterWorktree` | 分離された[git worktree](https://code.claude.com/docs/ja/worktrees.md)を作成してそれに切り替えるか、既存の worktree に切り替えます。[EnterWorktree ツールの動作](#enterworktree-tool-behavior)を参照してください | はい |
 | `ExitPlanMode` | 承認のためのプランを提示し、plan モードを終了します | はい |
@@ -274,8 +274,8 @@ Claude は、有効な UTF-8 ではないファイルに対して [NotebookEdit]
 
 EndConversation ツールは現在のセッションを終了します。Claude がこれを使用するのは 2 つの状況のみです。
 
-* 継続的な不適切な入力に対する最後の手段として、会話をリダイレクトする試みが失敗し、前のメッセージで明確な警告を出した後
-* カスタマーが明示的にツールのデモンストレーションを見たいと要求し、セッションを終了したいことを確認した場合
+* Claude が明確な警告を出し、会話の方向を変えられなかった後も、ユーザーが攻撃的なメッセージを送り続ける場合
+* ユーザーが Claude にセッションの終了を明示的に求め、続行するかどうかを Claude が尋ねた際に確認した場合
 
 一般的なフラストレーション、下品な言葉遣い、またはタスクが上手くいかないことは該当しません。有害なコンテンツのリクエストも該当しません。Claude はセッションを終了する代わりにそれらを拒否します。Claude Code は claude.ai と同じアプローチに従い、[チャットの限定的なサブセットを終了](https://www.anthropic.com/research/end-subset-conversations)することができます。
 
@@ -390,8 +390,6 @@ Monitor をキャンセルするよう Claude に依頼するか、セッショ�
 
 Monitor がコマンドを実行するとき、[Bash と同じ権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules) を使用するため、Bash に設定した `allow` および `deny` パターンがここにも適用されます。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) がアクティブな場合、Claude Code は `Monitor` 自体を名前に含む許可ルールを、[削除する他の広範な許可ルール](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions) とともに脇に置くため、分類器は Monitor コマンドを Bash コマンドと同じ方法で確認します。
 
-[WebSocket ソース](#websocket-source) には独自の承認プロンプトがあり、auto モードではこれも分類器が決定します。
-
 次の場合、Monitor には最小バージョンまたは Git Bash が必要です。
 
 * **最小バージョン**: Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、または Microsoft Foundry 上で使用する場合、あるいは `DISABLE_TELEMETRY` または `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` が設定されている場合、Monitor には Claude Code v2.1.310 以降が必要です。この要件は [フィーチャーフラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) がオフの場合に適用されます
@@ -417,9 +415,24 @@ WebSocket 監視は `command` の代わりに `ws` 入力を取り、単一の M
 
 `timeout_ms` 期限は WebSocket 監視にも適用されます。監視は期限で終了し、`TaskStop` は早期にキャンセルします。
 
-WebSocket を開くと承認を求めるプロンプトが表示されます。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では分類器が代わりに決定します。プロンプトは同じホストの将来のプロンプトをスキップするオプションを提供しません。
+`Monitor` の許可ルールがない場合、Claude が WebSocket を開く前に確認のプロンプトが表示されます。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では、[確認ルール](#bash-rules-that-deny-or-prompt-for-websocket-watches) が適用される場合を除き、代わりに分類器が決定します。プロンプトは同じホストの将来のプロンプトをスキップするオプションを提供しません。
 
-Claude Code は、プライベート、リンク ローカル、またはクラウド メタデータ アドレスを指す URL を、それらのアドレスに解決されるホスト名も含めて拒否します。また、`sandbox.network.deniedDomains` 内のホストも拒否し、管理設定で [`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、管理された許可リスト外のホストも拒否します。
+#### WebSocket 監視で拒否されるアドレスとホスト
+
+Claude Code は、プライベート、リンク ローカル、またはクラウド メタデータ アドレスを指す URL を、マシンがそれらのアドレスに解決するホスト名も含めて拒否します。[プロキシ](https://code.claude.com/docs/ja/network-config.md#proxy-configuration) を経由する場合、Claude Code はプロキシが見つけたアドレスを確認しないため、プロキシがブロックしない限り、監視はプライベート、リンク ローカル、またはクラウド メタデータ アドレスに到達できます。また、Claude Code は `sandbox.network.deniedDomains` 内のホストも拒否し、管理設定で [`allowManagedDomainsOnly`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-allowmanageddomainsonly) が設定されている場合、管理された許可リスト外のホストも拒否します。
+
+プロキシを経由する監視が `could not resolve <host>` で失敗する場合は、[`CLAUDE_CODE_PROXY_RESOLVES_HOSTS`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定して Claude Code v2.1.319 以降を再起動し、プロキシがホスト名を検索するようにしてください。
+
+#### WebSocket 監視を拒否または確認する Bash ルール
+
+Claude Code が WebSocket を開く `Monitor` 呼び出しを拒否する場合は、`Bash` または `Bash(*)` と記述された [拒否ルールまたは確認ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) がないか確認してください。`Monitor` の許可ルールがあるにもかかわらず、その呼び出しで確認のプロンプトが表示される場合も同様です。すべての Bash コマンドを対象とするルールは、これらの WebSocket 監視にも適用されます。
+
+* **拒否ルール**: セッション開始時にルールが存在する場合、Claude は Monitor ツールを持たないため、監視を開始できません。セッション中にルールを追加した場合、Claude の次の `Monitor` 呼び出しは拒否されます。拒否メッセージは `Permission to use Monitor has been denied: it runs code as Bash does, and a rule denies Bash.` です。
+* **確認ルール**: 監視の承認を求められます。許可ルール、`PreToolUse` フック、`bypassPermissions` モード、または auto モードの分類器に代わりに承認させることはできません。[`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest) から承認することはできます。`dontAsk` モードなど、誰も応答できない場合、Claude Code は監視を拒否します。
+
+これらの監視を実行できるようにするには、`Bash(rm *)` のように、ルールを意図したコマンドに絞り込んでください。
+
+確認ルール、およびセッション中に追加した拒否ルールは、Claude Code v2.1.319 以降でこれらの監視に適用されます。
 
 ## NotebookEdit ツールの動作
 
@@ -594,8 +607,10 @@ Claude Code には、Claude API を使用する独自のマシン上のインタ
 * キューを確認する画面がない非インタラクティブ `-p` 実行と [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) セッション
 * マシン上のキューに書き込むことができない [Claude Code on the web](https://code.claude.com/docs/ja/claude-code-on-the-web.md) などのクラウドセッション
 * [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) 上のセッション
+* ゲートウェイ独自のキーまたはトークンを使用して [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway) 経由で Claude にアクセスするセッション
 * [`CLAUDE_CODE_SEND_FEEDBACK=0`](https://code.claude.com/docs/ja/env-vars) または [`DISABLE_FEEDBACK_COMMAND=1`](https://code.claude.com/docs/ja/env-vars) を設定したセッション、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を空でない値に設定したセッション、または [機能フラグ取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) をオフにしたセッション
 * 製品フィードバックをオフにした組織、[ゼロデータ保持を使用する組織](https://code.claude.com/docs/ja/zero-data-retention.md#features-disabled-under-zdr)、および [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md) が適用された組織
+* Claude Code が [レポートが拒否された後にフィードバックの提供を停止した](https://code.claude.com/docs/ja/errors.md#feedback-is-disabled-by-your-organizations-policy) セッション
 
 ## Task ツールの利用可能性
 

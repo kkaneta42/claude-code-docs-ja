@@ -23,6 +23,7 @@
   * **[Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用する場合**：このような認証情報があると、Claude は Anthropic 管理の git を経由せずに GitHub に直接アクセスします。
   * **Anthropic 管理の git を使用しない場合**：[イメージに git 設定を含める](#ship-git-config-in-your-image)で説明しているとおりに厳密にスコープを限定すれば、クローン用の認証情報をイメージに残しておくことができます。
 * **環境シークレットをセッション実行ホストに置かない**：環境シークレットはランナーを登録し、環境でキューに入っているセッションを取得できます。固定フリートでは、シークレットはすべてのランナーホストに存在し、どのセッションのコードもシークレットファイルを読み取ることができます。[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を優先してください。この場合、シークレットはユーザーコードを一切実行しないオーケストレーターホストに留まり、各ランナーは正確に 1 つのランナーを登録する単一使用の作業指示を受け取ります。固定フリートでは、環境シークレットファイルをすべてのセッションで読み取り可能として扱い、セッション侵害が疑われる場合はその後にシークレットをローテーションしてください。
+  * **侵害が疑われる場合**：[Owner](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) に環境の **Configuration** タブから新しいシークレットを作成して古いシークレットを取り消してもらい、その後、新しいシークレットを配布してください。Anthropic は、古いシークレットを使用するすべてのオーケストレーターとランナー（その作業指示から起動されたオンデマンドランナーを含む）を拒否します。ランナーは終了し、実行中のセッションは中断されます。
 * **デフォルト拒否ネットワーク出力**：すべての環境でランナーとセッションコンテナのアウトバウンドトラフィックをネットワーク境界で制限してください。[デフォルト拒否出力](#default-deny-egress)では、許可する内容と理由について説明しています。
 * **最小権限ホスト IAM**：ランナーホストに接続されたコンピュート ID（インスタンスプロファイルやノードサービスアカウントなど）は、ランナー自体が必要とするもののみを付与する必要があります。セッションは、ホストの ID を継承するのではなく、ラッパースクリプトを通じて独自の認証情報を取得する必要があります。
 * **セッションからクラウドメタデータエンドポイントをブロックする**：セッションにホスト ID を使わせないようにするには、クラウドメタデータエンドポイントへのアクセスをブロックする必要があります。サブネットレベルの出力ポリシーはリンクローカルメタデータトラフィックをインターセプトしないため、コンテナ自体でブロックしてください：
@@ -203,6 +204,8 @@ git プロキシは、[オンにしない](#turn-the-anthropic-git-proxy-on)限�
 > [!WARNING]
 >
 > `--use-anthropic-git-proxy` を設定すると、ランナーは実行ユーザーのグローバル git 設定を削除して置き換え、バックアップは保持しません。これは起動時と各セッションの前に行われます。そこに保存していたログインや認証情報ヘルパーは失われます。[`--configure-git`](#let-the-runner-configure-git) が書き込む設定は保持されます。ランナーは専用ユーザーとして、またはコンテナ内で実行し、決して自分のユーザーとして実行しないでください。
+>
+> グローバル git 設定とは、`~/.gitconfig`、`GIT_CONFIG_GLOBAL` を設定している場合はそれが指定するファイル、および `$XDG_CONFIG_HOME/git` ディレクトリ全体（デフォルトでは `~/.config/git`）の 3 つすべてを指します。
 
 ID や `safe.directory` など、機密ではない git 設定はシステムの git 設定に保持してください。
 
@@ -247,7 +250,7 @@ Anthropic が提供するセッションでは、ランナーのクローンと�
 * **`remote: access denied by the git proxy` を含む行**：Anthropic が提供するセッションでも拒否される場合があります。たとえば、組織のポリシーがセッションの git アクセスを拒否する場合や、セッションがリポジトリに対して認可されていない場合です。その場合、ランナーのログに `remote: access denied by the git proxy` を含む行が表示され、その行の残りの部分に理由が示されます。
 * **`GitHub authentication required`**：セッションの作成者が claude.ai で有効な GitHub 接続を持っていない場合に表示されます。セッションのクローンは失敗し、git エラーには `GitHub authentication required. Please reconnect your GitHub account.` と表示されます。そのユーザーに、claude.ai の設定で GitHub を接続または再接続するよう依頼してください。
 
-原因を修正した後、失敗したセッションを再度開始してください。
+原因を修正した後、セッションが失敗したランナーを再起動してから、各作成者にセッションでメッセージを送信してもらうか、Owner に **Retry** を選択してもらってください。
 
 #### Anthropic git プロキシをオフにする
 
@@ -264,6 +267,8 @@ unset CLAUDE_RUNNER_USE_GIT_PROXY
 **2. ランナーに git 認証情報を与える**
 
 github.com を含め、ランナーのセッションが使用するすべての git ホストに対して、プロンプトなしで動作する認証情報を提供してください。ランナーユーザーのグローバル git 設定にあった認証情報は、`--use-anthropic-git-proxy` が設定されている間にランナーがその設定を削除したため、失われています。[イメージに認証情報を含める](#ship-git-config-in-your-image)か、[`checkout` ライフサイクルフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout)を使用してください。
+
+代わりに認証情報を[グローバル git 設定](#git-proxy-replaces-global-git-config)に保持するには、まず[ランナーを停止](#shutdown-timing)してください。フラグを指定して開始したランナーは、各セッションの前にその設定を書き換えるためです。次に、`$XDG_CONFIG_HOME/git`（デフォルトでは `~/.config/git`）を削除し、`~/.gitconfig`、または `GIT_CONFIG_GLOBAL` が指定するファイルを独自のものに置き換えてください。
 
 **3. ネットワーク経路を開く**
 
@@ -507,7 +512,9 @@ Kubernetes では、kubelet の `singleProcessOOMKill` 設定のどちらの値�
 
 ## Kubernetes
 
-ランナーはデフォルトでポート 8080 で `GET /healthz` を提供し、`--health-port` で設定可能です。Kubernetes プローブは追加セットアップなしで動作します。エンドポイントはプロセスが生きている限り `200` を返すため、以下のプローブはデッドプロセスを検出し、スタックしたプロセスは検出しません。ランナーがポーリングを停止したことをキャッチするには、[`/metrics`](https://code.claude.com/docs/ja/self-hosted-environments-reference#prometheus-metrics)から `last_poll_age_seconds` シリーズでアラートを出してください。以下の Deployment は Kubernetes Secret から環境シークレットをマウントし、liveness および readiness プローブを `/healthz` に指します。90 秒の終了猶予期間を設定します。[シャットダウンタイミング](#shutdown-timing)を参照して、猶予期間が重要な理由を確認してください。
+ランナーはデフォルトでポート 8080 で `GET /healthz` を提供し、`--health-port` で設定可能です。起動後、エンドポイントはプロセスが生きている限り `200` を返すため、以下のプローブはデッドプロセスを検出し、スタックしたプロセスは検出しません。ランナーがポーリングを停止したことをキャッチするには、[`/metrics`](https://code.claude.com/docs/ja/self-hosted-environments-reference#prometheus-metrics)から `last_poll_age_seconds` シリーズでアラートを出してください。
+
+以下の Deployment は Kubernetes Secret から環境シークレットをマウントし、liveness および readiness プローブを `/healthz` に指します。90 秒の終了猶予期間を設定します。[シャットダウンタイミング](#shutdown-timing)を参照して、猶予期間が重要な理由を確認してください。
 
 マニフェストはランナーコンテナに CPU またはメモリ `resources` を設定しません。実行する容量のサイズ設定されたブロックを追加してください。[セッションの CPU とメモリをサイズ設定する](#size-cpu-and-memory-for-sessions)で説明されています。
 
@@ -564,6 +571,10 @@ spec:
           secret:
             secretName: claude-runner-environment-secret
 ```
+
+> [!NOTE]
+>
+> Pod のイベントに起動中の liveness プローブの失敗が表示される場合は、その `initialDelaySeconds` を引き上げるか、`startupProbe` を追加してください。ランナーが登録を完了し、起動時のチェックを終えるまで、ヘルスポートでは何も応答しません。上記の設定では、Kubernetes は約 90 秒以内にサービスを提供していないランナーを再起動します。
 
 上記の Deployment は `claude-runners` 名前空間に存在します。最初に名前空間を作成してください：
 
@@ -942,6 +953,12 @@ claude self-hosted-runner doctor
   セッション開始から約 30 分後にすべての呼び出しが失敗し始める場合は、ラッパースクリプトがセッションの stdin を切断しているため、トークンのローテーションが届いていない可能性があります。[stdin とファイル記述子 3 を接続したままにする](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#keep-stdin-and-file-descriptor-3-attached)を参照してください。
 
   v2.1.274 より前は、ランナーは失敗した取得の再試行を数回で停止し、次の予定された取得を待っていました。失敗したターンでは取得がトリガーされなかったため、次の予定された取得まですべてのターンが 401 で失敗していました。
+* **セッションに `The server has refused to renew this session's access to the model` と表示される**: セッションの [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/self-hosted-environments-configuration#wrapper-scripts) の有効期限が切れており、ランナーは新しいトークンの要求に対して HTTP 400 の応答を受け取っています。ランナーは `the server has refused to renew the inference_token` をログに記録します。そのセッションのターンは失敗します。ランナーは、セッションのプロセスが実行されている間、新しいトークンの要求を続けます:
+
+  * **要求が成功した場合**: 警告を表示していたセッションに、その後 `The server renewed this session's access to the model` と表示されます
+  * **ターンが失敗し続ける場合**: プロセスは最終的に終了し、セッションに `The session process exited with code 1` などの失敗が表示されます
+
+  新しいトークンを待たずに作業を続けるには、新しいセッションを開始してください。新しいセッションも失敗する場合は、自社のプロキシまたはゲートウェイが HTTP 400 の応答を返したかどうかを確認してください。どれも返していない場合は、最初のセッションの ID を添えて [Anthropic のアカウントチームに連絡](#report-an-issue)してください。
 * **claude.ai/code でターンが `This model needs a newer version of Claude Code` で失敗する**: ランナーがセッションの開始に使用する Claude Code のバージョンが、セッションのモデルが必要とするバージョンより古いため、API が[リクエストを拒否します](https://code.claude.com/docs/ja/errors.md#claude-code-does-not-support-this-model)。[バージョンを固定する](#pin-the-version)で説明しているとおり、メッセージが求めるバージョン以降にランナーをアップグレードしてください。それまでは、セッション内で別のモデルを選択できます。
 * **ドレイン中に Pod が強制終了される**: `terminationGracePeriodSeconds` を、ランナーが起動時にログに記録する値以上に引き上げてください。[シャットダウンのタイミング](#shutdown-timing)を参照してください。
 * **ランナーが `was paused or too slow` で終わる `[runner:log]` 行をログに記録する**: ランナーは実行を続けており、再起動は不要です。行に示された stdout または stderr ストリームが再び読み取られるまで、ランナーはそのストリームの最新 256 KiB 分の行以外をすべて破棄しました。[`--log-file`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を渡していた場合は、破棄された行をそこで確認してください。

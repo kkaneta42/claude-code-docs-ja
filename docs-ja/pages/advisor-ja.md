@@ -98,10 +98,11 @@ Claude Code はアドバイザーの役割における能力に基づいてモ�
 | Opus 4.7 または Opus 4.8 | Fable、Opus 4.7 以降、Sonnet 5.5 |
 | Sonnet 5.5 | Fable、Opus 5 以降、Sonnet 5.5 |
 | Opus 5 または Opus 5.5 | Fable、Opus 5 以降 |
-| Fable 5 | Fable 5.1 または Fable 5 |
-| Fable 5.1 | Fable 5.1 |
+| Fable 5 | Fable 5.2、Fable 5.1、または Fable 5 |
+| Fable 5.1 | Fable 5.2 または Fable 5.1 |
+| Fable 5.2 | Fable 5.2 |
 
-Fable 5.1 には Claude Code v2.1.257 以降が必要です。Fable モデルには [Fable アクセス](https://code.claude.com/docs/ja/model-config.md#work-with-fable) が必要です。Opus 4.7 または Opus 4.8 のメインモデルに対して Sonnet 5.5 をアドバイザーとして使用するには、Claude Code v2.1.287 以降が必要です。Haiku 5.5 をメインモデルまたはアドバイザーとして使用するには、Claude Code v2.1.293 以降が必要です。
+Fable 5.2 には Claude Code v2.1.321 以降が必要で、Fable 5.1 には v2.1.257 以降が必要です。Fable モデルには [Fable アクセス](https://code.claude.com/docs/ja/model-config.md#work-with-fable) が必要です。Opus 4.7 または Opus 4.8 のメインモデルに対して Sonnet 5.5 をアドバイザーとして使用するには、Claude Code v2.1.287 以降が必要です。Haiku 5.5 をメインモデルまたはアドバイザーとして使用するには、Claude Code v2.1.293 以降が必要です。
 
 アドバイザーを `fable`、`opus`、または `sonnet` として設定します。これらのエイリアスは Claude Code の各モデルファミリーの[組み込みデフォルトバージョン](https://code.claude.com/docs/ja/model-config.md#model-aliases)に解決され、新しい Claude Code リリースで進化します。`claude-opus-5-5` や `claude-haiku-5-5` などの完全なモデル ID を渡すこともできます。Haiku 4.5 はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません。
 
@@ -159,7 +160,7 @@ Claude が advisor を呼び出すと、advisor モデルが会話を読むた�
 * **API 課金**: advisor トークンに対して advisor モデルの入力および出力レートで課金されます
 * **サブスクリプションプラン**: advisor 使用量はプランの使用制限にカウントされます。ただし、Fable advisor は Fable 使用量が課金される計画では[使用クレジット](https://code.claude.com/docs/ja/model-config.md#fable-and-usage-credits)に課金されます
 
-アカウントが使用クレジット同意を必要とする場合、Fable advisor は同意を与えるまで何も課金されません。Claude Code はそれまで[選択を適用しない](#fable-advisor-and-usage-credits)ためです。
+Fable advisor と使用クレジットの連携については、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
 
 Claude は各ターンではなく決定ポイントで advisor を呼び出すため、より高速なメインモデルをより強力な advisor と組み合わせることは、通常、より強力なモデルを全体で実行するよりもコストが低くなります。advisor 使用量は [`/usage`](https://code.claude.com/docs/ja/costs#track-your-costs)で表示されるセッション合計にカウントされます。
 

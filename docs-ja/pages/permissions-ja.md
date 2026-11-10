@@ -253,7 +253,7 @@ Bash ルールは、Claude Code が[複合コマンド](#compound-commands)を�
 | :- | :- | :- |
 | `Bash(curl *)` | `curl https://example.com` | `/usr/bin/curl https://example.com`、`sh -c 'curl https://example.com'` |
 | `Bash(rm *)` | `rm -rf build/` | `/bin/rm -rf build/`、`bash -c 'rm -rf build/'` |
-| `Bash(git push *)` | `git push origin main` | `git -C . push origin main`、`git -c push.default=current push origin main`、`git 'push' origin main` |
+| `Bash(git push *)` | `git push origin main` | `git -C . push origin main`、`git -c push.default=current push origin main` |
 
 最後の列のコマンドは、他のルールと権限モードによって決まります。
 
@@ -273,6 +273,7 @@ Manual モードでは、このセットのコマンドでも次の場合には�
 * **別のデーモンを指す `docker`**: `docker` の読み取り専用形式は、`-H`、`--context`、または Podman の `--url` や `--connection` など、別のデーモンを選択するフラグをコマンドが含む場合に確認を求めます。
 * **パスを開くフラグを伴う `file`**: `file` は、`-m`/`--magic-file` または `-f`/`--files-from` を渡す場合に確認を求めます。これらのフラグにより、`file` がフラグの値で指定されたパスを開くためです。
 * **環境変数を出力する可能性のある `ps`**: `ps` は、`ps auxe` や `ps aux -e` のように、引数のいずれかが `e` オプションとして機能しうる場合に確認を求めます。このオプションはプロセスの環境変数を出力するためです。`ps aux` と `ps -ef` は確認なしで実行されます。`ps aux -e` のようなダッシュ付き形式のチェックには Claude Code v2.1.290 以降が必要です。
+* **検索と表示以外のフラグを伴う `which`**: `which` は、`-i`/`--read-alias` や `--read-functions` などのフラグを渡す場合に確認を求めます。`which node` と `which -a node` は確認なしで実行されます。
 * **Windows 上のネットワークパス**: `\\server\share\file` のようなネットワーク（UNC）パスを引数に含むコマンドは確認を求めます。ネットワークパスへのアクセスにより、Windows の認証情報がそのパスで指定されたホストに送信される可能性があるためです。同じチェックが [PowerShell ツール](https://code.claude.com/docs/ja/tools-reference.md#powershell-tool)のコマンドにも適用されます。
 * **特殊なシェル変数への書き込み**: `PATH` や `IFS` など、特定の特殊なシェル変数を設定、解除、またはループするコマンドは、コマンドの残りの部分が読み取り専用であっても確認を求めます。
 * **解析できないコマンド**: Claude Code がコマンドを完全に解析できない場合、そのコマンドを読み取り専用として扱うのではなく承認を求めます。10,000 文字を超えるコマンドは、解析できる範囲を超えるため常に確認を求めます。
@@ -631,15 +632,15 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 
 PreToolUse フック決定は権限ルールをバイパスしません。Claude Code は deny ルールと ask ルールを、フックが何を返すかに関係なく評価します。マッチする deny ルールはコールをブロックし、マッチする ask ルールはフックが `"allow"` または `"ask"` を返した場合でもプロンプトを表示します。これは、[権限を管理する](#manage-permissions)で説明されている deny 優先の優先順位を保持し、管理設定で設定された deny ルールを含みます。
 
-その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が [`tool.check`](https://code.claude.com/docs/ja/plugins/mods/events#approve-or-refuse-a-tool-call-before-the-user-is-asked) イベントを処理する場合、その mod は `PreToolUse` フックの実行後に応答します。マシン上に[管理設定](https://code.claude.com/docs/ja/settings.md#check-what-your-organization-enforces)がある場合、またはセッションの認証情報が Team または Enterprise の [`/login`](https://code.claude.com/docs/ja/authentication#authentication-precedence) である場合、mod がコールを承認しても、デフォルトで次の結果は維持されます。
+その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が [`tool.check`](https://code.claude.com/docs/ja/plugins/mods/events#approve-or-refuse-a-tool-call-before-the-user-is-asked) イベントを処理する場合、その mod は `PreToolUse` フックの実行後に応答します。[管理設定](https://code.claude.com/docs/ja/settings.md#check-what-your-organization-enforces)または [`managed-mcp.json` ファイル](https://code.claude.com/docs/ja/managed-mcp#deploy-managed-mcp-json)がある場合、あるいはセッションの認証情報が Team または Enterprise の [`/login`](https://code.claude.com/docs/ja/authentication#authentication-precedence) である場合、mod がコールを承認しても、デフォルトで次の結果は維持されます。
 
-* 拒否ルールが拒否するコールは拒否されたままです。組織はこれを変更できます。
+* 拒否ルールが拒否するコールは拒否されたままです。
 * 確認ルールがプロンプトを表示するコールでは、引き続きプロンプトが表示されます。
 * `PreToolUse` フックまたは [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がプロンプトを表示するコールでは、引き続きプロンプトが表示されます。
 * `PreToolUse` フックがブロックしたコールは、フックがどの設定ファイルに由来するかにかかわらず、ブロックされたままです。
 * [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) または Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input#handle-tool-approval-requests)に確認が求められるコールは、引き続きそのツールまたはコールバックに渡されます。
 
-管理設定も、セッションの認証情報としての Team または Enterprise の `/login` もない場合、mod は拒否ルールが拒否するコールや `PreToolUse` フックがブロックしたコールを承認できます。代わりに API キーまたは長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されていても、そのログインを使用していません。
+構成によっては、管理設定、`managed-mcp.json` ファイル、セッションの認証情報としての Team または Enterprise の `/login` がいずれもない場合があります。この構成では、mod は拒否ルールが拒否するコールや `PreToolUse` フックがブロックしたコールを承認できます。代わりに API キーまたは長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されていても、そのログインを使用していません。
 
 この構成では、確認ルール、`PreToolUse` フック、または `permissions.blockReadsOutsideWorkingDirectories` がプロンプトを表示するコールを mod が承認した場合、プロンプトは表示されません。また、mod が承認したコールについて、`--permission-prompt-tool` や `canUseTool` コールバックに確認が求められることもありません。auto モード、plan モード、`dontAsk` モードは、どの構成でもそれぞれ独自の結果を追加します。
 

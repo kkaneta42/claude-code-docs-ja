@@ -154,7 +154,7 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 | :- | :- |
 | `CLAUDE_RUNNER_REPO_URL` | クローンするリポジトリ URL。`--git-host-rewrite` と `--git-ssh-rewrite` が適用された後 |
 | `CLAUDE_RUNNER_REPO_REF` | チェックアウトするリビジョン。セッションがリクエストしたとおりの値で、ブランチ、タグ、コミット SHA、または `refs/heads/<branch>` や `refs/pull/<number>/head` などの完全な参照名。空の場合はリポジトリのデフォルトブランチ |
-| `CLAUDE_RUNNER_CHECKOUT_PATH` | ワーキングツリーを配置する必要がある絶対パス |
+| `CLAUDE_RUNNER_CHECKOUT_PATH` | ワーキングツリーを配置する必要がある絶対パス。[チェックアウトフォルダー名](#checkout-folder-names)を参照 |
 | `CLAUDE_RUNNER_SESSION_ID` | ログと相関のための `session_...` 形式のセッション ID |
 | `CLAUDE_RUNNER_SESSION_UUID` | 正規 UUID 形式の同じセッション ID |
 | `CLAUDE_RUNNER_API_BASE_URL` | セッションスコープの呼び出し用の Anthropic API ベース URL |
@@ -165,6 +165,10 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 スクリプトは `CLAUDE_RUNNER_CHECKOUT_PATH` にワーキングツリーを残し、リクエストされたリビジョンでチェックアウトする必要があります。デタッチド HEAD は問題ありません。ランナーはその上にセッションのワーキングブランチを作成します。
 
 フックが返った後、ランナーは `CLAUDE_RUNNER_CHECKOUT_PATH` に `.git` が含まれていることを確認します。フックが Perforce やアンパックされたタールボールなどの非 git ソースを具体化する場合は、ランナーの環境で `CLAUDE_RUNNER_SKIP_GIT_VERIFY=1` を設定して、そのチェックをスキップしてください。ワーキングブランチの作成と結果のプッシュなどの git ベースのフローには git チェックアウトが必要なため、非 git ツリーから結果をエクスポートするには [`post-session` フック](#post-session)を使用してください。
+
+#### チェックアウトフォルダー名
+
+`CLAUDE_RUNNER_CHECKOUT_PATH` の末尾は、`acme-api` のように `<repo-owner>-<repo>` という名前のフォルダーです。セッション内の 2 つのリポジトリは、名前の違いが大文字と小文字だけであっても、同じフォルダーを共有できません。たとえば、セッションが `acme/api`、続いて `Acme/API` を列挙した場合、1 つ目は `acme-api`、2 つ目は `Acme-API-2` になります。
 
 #### フックで git 認証情報を取得する
 
@@ -231,6 +235,7 @@ Claude Code 子プロセスが終了した後、ランナーがワークスペ�
 set -u
 export GIT_ALLOW_PROTOCOL=${GIT_ALLOW_PROTOCOL:-https:http:ssh}
 IFS=':'
+rc=0  # becomes 1 when a step fails; a non-zero exit makes the runner log it
 # -c overrides beat repo-local settings, blocking session-written fsmonitor,
 # hook-path, and gpg-program config from executing code with the hook's
 # privileges. -c commit.gpgsign=false also leaves these rescue commits
@@ -241,12 +246,13 @@ IFS=':'
 g() { git -c core.fsmonitor=false -c core.hooksPath=/dev/null \
         -c commit.gpgsign=false "$@"; }
 for ws in $CLAUDE_RUNNER_WORKSPACE_PATHS; do
-  cd "$ws" 2>/dev/null || continue
-  [ -z "$(g status --porcelain 2>/dev/null)" ] && continue
-  g add -A
-  g commit -q -m "runner snapshot: $CLAUDE_RUNNER_SESSION_ID ($CLAUDE_RUNNER_EXIT_REASON)" || continue
-  g push -q origin "HEAD:refs/heads/rescue/$CLAUDE_RUNNER_SESSION_ID" || true
+  cd "$ws" || { rc=1; continue; }
+  g add -A || rc=1
+  g diff-index --cached --quiet HEAD && continue  # nothing to save
+  g commit -q -m "runner snapshot: $CLAUDE_RUNNER_SESSION_ID ($CLAUDE_RUNNER_EXIT_REASON)" || { rc=1; continue; }
+  g push -q origin "HEAD:refs/heads/rescue/$CLAUDE_RUNNER_SESSION_ID" || rc=1
 done
+exit "$rc"
 ```
 
 スクリプト内の `GIT_ALLOW_PROTOCOL` 行は、git を HTTPS、HTTP、SSH のリモートに制限します。ランナーの環境で独自の空でない `GIT_ALLOW_PROTOCOL` リストがすでに設定されている場合、スクリプトはそのリストを維持します。

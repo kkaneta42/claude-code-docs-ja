@@ -172,7 +172,7 @@ volumes: { pgdata: }
 
 成功した起動は推論パスを検証しません。Amazon Bedrock と Google Cloud の Agent Platform インスタンス認証情報は起動時ではなく最初のリクエストで解決されるためです。
 
-起動シーケンスについて stderr を監視します。ログ行は `[gateway] <timestamp> <level> <message>` 形式を使用し、監査イベントは `evt` フィールド付きの単一行 JSON であり、起動バナーは以下で省略され、マイグレーションとリッスン行の間に出力されます。新しいデータベースはスキーママイグレーションごとに 1 行の `migration N applied` を出力します。既にマイグレーションされたデータベースは出力しません。順番に以下が表示されます。
+起動シーケンスについて stderr を監視します。デフォルトでは、ログ行は `[gateway] <timestamp> <level> <message>` 形式を使用し、以下では省略されている起動バナーがマイグレーション行とリッスン行の間に出力されます。監査イベントは `evt` フィールド付きの単一行 JSON です。新しいデータベースはスキーママイグレーションごとに 1 行の `migration N applied` を出力します。既にマイグレーションされたデータベースは出力しません。順番に以下が表示されます。
 
 ```text theme={null}
 {"ts":"2026-06-10T17:03:21.114Z","evt":"config.load","path":"/etc/claude/gateway.yaml","sha256":"…"}

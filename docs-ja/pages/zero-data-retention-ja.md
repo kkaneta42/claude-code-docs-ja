@@ -70,9 +70,9 @@ Claude for Enterprise 上の Claude Code 組織に対して ZDR が有効化さ�
 
 ### ZDR の下でのモデルの利用可能性
 
-Claude Fable 5.1 と Fable 5 は、[対象モデル](https://support.claude.com/en/articles/15425695-covered-models)であり、デフォルトで[データ保持が必要](https://platform.claude.com/docs/en/manage-claude/api-and-data-retention#model-specific-data-retention-requirements)です。ZDR 組織またはワークスペースがそれらを使用できるかどうかは、Claude Code ではなく対象モデルポリシーによって管理されます。組織がそれらを使用できない場合、モデルは `/model` ピッカーに表示されないか、無効化として表示され、クライアント設定に関係なくサーバーはそれに対するリクエストを拒否します。
+Claude Fable 5.2、Fable 5.1、Fable 5 は、[対象モデル](https://support.claude.com/en/articles/15425695-covered-models)であり、デフォルトで[データ保持が必要](https://platform.claude.com/docs/en/manage-claude/api-and-data-retention#model-specific-data-retention-requirements)です。ZDR 組織またはワークスペースがそれらを使用できるかどうかは、Claude Code ではなく対象モデルポリシーによって管理されます。組織がそれらを使用できない場合、モデルは `/model` ピッカーに表示されないか、無効化として表示され、クライアント設定に関係なくサーバーはそれに対するリクエストを拒否します。
 
-その他のモデルは ZDR の下で利用可能なままです。Fable モデルはデフォルトではなく、利用可能な場所では最新の Fable モデルに解決される `best` エイリアスは、利用できない組織では Opus に解決されます。
+その他のモデルは ZDR の下で利用可能なままです。Fable モデルはデフォルトではなく、`best` エイリアスは Opus に解決されます。
 
 ## ポリシー違反のためのデータ保持
 

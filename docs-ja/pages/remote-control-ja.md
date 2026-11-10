@@ -49,6 +49,8 @@ Remote Control セッションは、CLI、[Claude Desktop アプリ](https://cod
 > claude remote-control
 > ```
 >
+> `claude rc` はこのコマンドのエイリアスです。
+>
 > Remote Control の初回確認を承諾するまでは、`claude remote-control` はサーバーを起動する前にその動作を説明し、`Enable Remote Control? (y/n)` と尋ねます。`y` と答えると承諾してサーバーを起動します。拒否した場合、Claude Code はサーバーを起動せずに終了し、次回このコマンドを実行したときに再度尋ねます。
 >
 > プロセスはサーバーモードでターミナル内で実行され続け、リモート接続を待機します。[別のデバイスから接続する](#connect-from-another-device)ために使用できる URL が表示され、スペースバーを押すとスマートフォンからすばやくアクセスするための QR コードを表示できます。リモートセッションがアクティブな間、ターミナルには接続状態とツールのアクティビティが表示されます。
@@ -462,6 +464,7 @@ Claude Code は、Remote Control がアカウントに対して有効になっ�
 * **claude.ai プランが Pro、Max、または Ultra である**：Claude Code は以前のログインから Team または Enterprise 組織の下でまだサインインしているため、その組織の Remote Control ポリシーをチェックします。`/status` を実行して、サインインが使用するプランと組織を確認してください。`claude auth logout` を実行してから `claude auth login` を実行して、現在のプランの下で再度サインインしてください。
 * **メッセージが組織管理者に連絡するよう指示していない**：組織に [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md) が適用されており、これにより Remote Control がオフになっています。確認するには、`/status` を実行し、`Organization configuration` 行に `HIPAA` があるかを確認してください。Owner には [管理設定](https://claude.ai/admin-settings/claude-code) の **Remote Control** トグルがグレーアウトして表示され、オンにすることはできません。この設定について質問がある場合は、Owner に問い合わせてください。Owner は組織の Anthropic アカウントチームに連絡できます。v2.1.267 より前では、このケースは「Remote Control isn't available for your organization due to its compliance policy」と表示されていました。
 * **組織内の他のユーザーは Remote Control を使用できるが、自分は使用できない**：Enterprise 組織が [カスタムロール](https://support.claude.com/en/articles/13930452) でアクセスを管理している場合、ロールが原因である可能性があります。Remote Control には、クラウドセッションの権限と **Claude Code remote control** 権限の両方が必要です。Owner に、ロールに両方が含まれているかを確認し、不足しているものを [**Organization settings > Roles**](https://claude.ai/admin-settings/roles) で追加するよう依頼してください。
+* **Owner に [管理設定](https://claude.ai/admin-settings/claude-code) で [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md) バナーが表示される**：組織では Remote Control を利用できず、Owner もオンにすることはできません。
 * **それ以外の場合、Owner が組織に対して有効にしていない**：Remote Control は Team および Enterprise プランではデフォルトでオフです。Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) で **Remote Control** トグルをオンにすることで有効にできます。このトグルはサーバー側の組織設定です。
 
 v2.1.281 より前では、このメッセージは Claude Code がこのマシンで組織のポリシーを読み込んでいない場合（例えば、オフラインで開始した後）にも表示されていました。後のバージョンではその状態を [`Couldn't verify your organization's policy for remote control`](#couldnt-verify-your-organizations-policy-for-remote-control) として報告します。

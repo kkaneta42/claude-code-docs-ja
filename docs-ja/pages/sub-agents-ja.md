@@ -592,6 +592,8 @@ Claude Code は、次の 2 種類のサーバーについては、エージェ�
 メインの会話の権限モードによって、Claude Code が設定した値を使用するかどうかが決まります。
 
 * メインの会話が `bypassPermissions`、`acceptEdits`、または [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の場合、サブエージェントはそれと同じモードで実行され、Claude Code は設定した `permissionMode` を無視します。auto モードでは、分類器がメインの会話のブロックルールと許可ルールを使用してサブエージェントのツール呼び出しを評価します。サブエージェントが終了すると、[auto モードでのサブエージェントの扱い](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で説明されているとおり、分類器は最終レポートが配信される前に、サブエージェントの作業と最終レポートもレビューします。
+
+  メインの会話が `bypassPermissions` の状態でサブエージェントが権限を求める場合は、そのツール呼び出しが[どのモードでも自動承認されない操作](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)のいずれかに該当するかどうかを確認してください。
 * メインの会話が `plan` モードの場合、サブエージェントが[エージェントチームのルール](https://code.claude.com/docs/ja/agent-teams.md#have-teammates-plan-before-implementing)の下で[エージェントチームのチームメイト](#subagent-names)として実行される場合を除き、設定した `permissionMode` にかかわらずサブエージェントは plan モードのままになります。`dontAsk` を設定した場合、サブエージェントはプロンプトも表示しません。plan モードで承認を求めることになる操作は、代わりに拒否されます。
 * メインの会話が `default` または `dontAsk` モードの場合、サブエージェントは設定した権限モードで実行されます。ただし、次の場合は代わりにメインの会話の権限モードを維持します。
   * `bypassPermissions` を設定した場合。`bypassPermissions` の例外には Claude Code v2.1.267 以降が必要です。

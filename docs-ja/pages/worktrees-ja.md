@@ -253,7 +253,7 @@ Claude Code はマージされたケースを git の状態のみから検出し
 
 worktree は独自のファイルとブランチを持ちますが、以下をメインチェックアウトと共有します。
 
-* **リポジトリの `.git` ディレクトリ**: worktree 内の git コマンドはメインリポジトリの共有 `.git` ディレクトリに書き込み、[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md#filesystem-isolation)はそれらの書き込みを許可するため、サンドボックスが有効な状態でも `git commit` などのコマンドは worktree 内から動作します。
+* **リポジトリの `.git` ディレクトリ**: worktree 内の git コマンドは、メインリポジトリの共有 `.git` ディレクトリに書き込みます。[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md#filesystem-isolation)が有効な場合、`git commit` などのコマンドは worktree のルートで実行されるセッションで動作します。`--worktree` はこのルートでセッションを開始します。デフォルトでは、[worktree のサブディレクトリで `claude` を実行すると、これらのコマンドは `index.lock` エラーで失敗します](https://code.claude.com/docs/ja/sandboxing#git-index-lock)。
 * **プラグイン**: メインチェックアウトから[プロジェクトスコープ](https://code.claude.com/docs/ja/plugins/loading.md#find-where-a-plugin-is-enabled)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。
 * **権限の承認**: worktree セッションで Bash コマンドに対して「はい、今後は確認しない」を選択すると、ルールはメインチェックアウトの `.claude/settings.local.json` に保存されます。このルールはメインチェックアウトとリポジトリの他のすべての worktree に適用され、worktree の削除後も残ります。
 

@@ -448,11 +448,11 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 
 利用可能なセッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) をオンにします。トークンあたりのコストが高くても速度を優先したい、迅速な反復作業やライブデバッグなどの対話的な作業向けです。通常、このキーを手動で編集することはありません。`/fast` を実行すると `~/.claude/settings.json` に `fastMode: true` が書き込まれ、もう一度実行して fast mode をオフにするとキーが削除されます。
 
-fast mode をサポートしているのは Opus 5.5、Opus 5、Opus 4.8 のみです。他のモデルで `/fast` を実行すると Opus に切り替わり、サポートされていないモデルに切り替えると fast mode はオフになります。[fast mode がオンの状態でモデルを切り替える](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。
+fast mode をサポートしているのは Fable 5.2、Opus 5.5、Opus 5、Opus 4.8 のみです。他のモデルで `/fast` を実行すると Opus に切り替わり、サポートされていないモデルに切り替えると fast mode はオフになります。[fast mode がオンの状態でモデルを切り替える](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。
 
 * **スコープ**: [`Any file`](#scopes)
 * **型**: Boolean
-  * `true`: Claude Code は、利用可能なセッションで fast mode をオンにします
+  * `true`: Claude Code は、利用可能なセッションで fast mode をオンにします。Fable 5.2 では、さらに [Fable 5.2 の使用中に `/fast` を実行する](https://code.claude.com/docs/ja/fast-mode#switch-models-while-fast-mode-is-on)必要があります
   * `false`: fast mode はオフのままです
 * **デフォルト**: 未設定。fast mode はオフです
 * **セッションごとの上書き**: [`CLAUDE_CODE_DISABLE_FAST_MODE`](https://code.claude.com/docs/ja/env-vars) は 1 つのセッションに限り fast mode をオフにし、このキーで再びオンにすることはできません
@@ -465,14 +465,14 @@ fast mode をサポートしているのは Opus 5.5、Opus 5、Opus 4.8 のみ�
 
 ### `fastModePerSessionOptIn`
 
-通常、`/fast` を実行すると [`fastMode`](#fastmode) がユーザー設定に保存されるため、サポートされているモデルでの新しいセッションは fast mode がオンの状態で開始します。このキーを `true` に設定するとこれを止められます。保存された `fastMode: true` はセッション開始時に fast mode をオンにしなくなり、各ユーザーは fast mode を使いたいセッションごとに `/fast` を実行する必要があります。Claude Code はユーザーのファイル内の `fastMode` キーを残すため、このキーをオフにすると以前の動作に戻ります。
+通常、`/fast` を実行すると [`fastMode`](#fastmode) がユーザー設定に保存されるため、サポートされているモデルでの新しいセッションは fast mode がオンの状態で開始します。Fable 5.2 では、これは [Fable 5.2 の使用中にオンにした](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)場合にのみ起こります。各ユーザーが fast mode を使いたいセッションごとに `/fast` を実行するようにするには、このキーを `true` に設定します。Claude Code はユーザーのファイル内の `fastMode` を残すため、このキーをオフにすると以前の動作に戻ります。
 
 Team プランまたは Enterprise プランのオーナーは、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて組織全体にデプロイできます。管理設定でこのキーが設定されている場合、対話型ターミナルセッション以外では `/fast on` が拒否され、組織によって fast mode が無効化されていることが通知されます。これには、[非対話モード](https://code.claude.com/docs/ja/headless.md)、[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)が含まれます。
 
 * **スコープ**: [`Any file`](#scopes)
 * **型**: Boolean
   * `true`: 保存された `fastMode: true` はセッション開始時に fast mode をオンにしなくなるため、各ユーザーは fast mode を使いたいセッションごとに `/fast` を実行します。`--settings` で渡された `fastMode: true` は、管理設定でこのキーが設定されていない限り、そのセッションでは引き続き有効です
-  * `false`: 保存された `fastMode: true` は、サポートされているモデルでの新しいセッションごとに、開始時に fast mode をオンにします
+  * `false`: 保存された `fastMode: true` は、[`fastMode`](#fastmode) で説明しているとおりに機能します
 * **デフォルト**: `false`
 
 ```json settings.json theme={null}

@@ -6,7 +6,7 @@
 
 > Claude apps gateway を通じて各開発者の支出を日単位、週単位、または月単位で制限します。Admin API で制限を設定すると、gateway はすべてのリクエストでそれらを実行します。
 
-支出制限は、各開発者が指定された日、週、または月の間に [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を通じて支出できる金額の上限を設定します。開発者が上限に達すると、gateway は次のリクエストで `429` を返し、期間がリセットされるか管理者が上限を引き上げるまで、その開発者をブロックします。支出制限を使用して、各開発者、グループ、または組織全体に対して、全員が共有する認証情報の上限を設定できます。
+支出制限は、各開発者が指定された日、週、または月の間に [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を通じて支出できる金額の上限を設定します。開発者が上限を超えると、ゲートウェイはその開発者の以降のリクエストに対して `429` を返します。これは管理者が上限を引き上げるまで、または上限が \$0 より大きい場合は上限がリセットされるまで続きます。支出制限を使用して、各開発者、グループ、または組織全体に対して、全員が共有する認証情報の上限を設定できます。
 
 デフォルトでは、Claude apps gateway はすべての推論を 1 つの共有アップストリーム認証情報を通じて転送するため、プロバイダーの請求書はすべてをその認証情報に属するものとして記録し、個々の開発者には記録しません。Amazon Bedrock では、[開発者ごとの AWS コスト属性](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#per-developer-aws-cost-attribution) がこれを変更します。開発者ごとの制限がない場合、1 つの暴走したエージェント フリートが組織全体のコミットメントを使い果たす可能性があります。支出制限は、その共有請求書の上に gateway の開発者ごとのビューとサーキット ブレーカーです。
 
@@ -51,7 +51,15 @@ curl -sS https://claude-gateway.internal.example.com/v1/organizations/spend_limi
 
 各 `/v1/messages` リクエストで、gateway は開発者の上限と期間から現在までの支出を 1 つの Postgres クエリで解決します。いずれかの上限を超えている開発者は `429` を返し、`error.type: billing_error` と `x-should-retry: false` ヘッダーが付きます。
 
-メッセージは期間とリセット時刻を示します。例えば `spend limit reached (daily; resets 2026-08-08 00:00 UTC)` のような形式で、その後に [`admin.blocked_message`](https://code.claude.com/docs/ja/claude-apps-gateway-config#admin) が設定されている場合はそれが続きます。開発者が複数の上限を同時に超えた場合、メッセージは最後にリセットされる上限を示します。レスポンスには `retry-after` ヘッダーも含まれ、そのリセットまでの残り秒数が記載されます。gateway サーバーの v2.1.225 より前では、メッセージは `spend limit reached` で、期間、リセット時刻、`retry-after` ヘッダーはありませんでした。
+`"0"` を超える上限の場合、メッセージにはその上限がリセットされる UTC の日付が示されます。[`admin.blocked_message`](https://code.claude.com/docs/ja/claude-apps-gateway-config#admin) を設定している場合、ゲートウェイは次の例のようにそれをメッセージの末尾に追加します。
+
+```text theme={null}
+spend limit reached · resets Dec 1 · request an increase at https://go.example.com/claude-limits
+```
+
+`"0"` の上限はリセットされても解除されないため、メッセージに日付は含まれません。開発者が複数の上限を同時に超えた場合、メッセージは最後にリセットされる上限を示します。レスポンスには `retry-after` ヘッダーも含まれ、その上限の期間が終了するまでの秒数が示されます。
+
+ゲートウェイサーバーの v2.1.319 より前では、メッセージは `spend limit reached (daily; resets 2026-08-08 00:00 UTC)` のように期間とリセット時刻を示していました。v2.1.225 より前では、メッセージは `spend limit reached` で、期間、リセット時刻、`retry-after` ヘッダーはありませんでした。
 
 v2.1.227 以降では、`<public_url>/protocol` のプロトコルリファレンスに、正確な使用制限レスポンスヘッダーと `429` ボディが記載されています。
 
@@ -95,6 +103,7 @@ Claude Code は開発者が上限に近づくと警告します。最も消費�
 | 75% と 95% での使用量の警告 | v2.1.225 以降 | v2.1.225 以降 |
 | `/usage` 内の **Spend limit** バー（上限の使用率とリセット時刻を表示）、およびステータスライン入力の `rate_limits.spend_limit` オブジェクト | v2.1.251 以降 | v2.1.225 以降 |
 | **Spend limit** バー内の推定支出額と上限の米ドル表示（例: 「\$271.40 / \$500.00 spent this month」）、およびステータスライン入力の同じ金額と上限の期間 | v2.1.284 以降 | v2.1.284 以降 |
+| [`admin:`](https://code.claude.com/docs/ja/claude-apps-gateway-config#admin) ブロックがあるゲートウェイで、開発者に上限が適用されていない場合に `/usage` の **Spend (UTC)** の下に表示される推定支出額（例: 「\$13.06 today · \$80.76 this week · \$272.06 this month」） | v2.1.319 以降 | v2.1.319 以降 |
 
 警告と使用率は `anthropic-ratelimit-unified-*` ヘッダーから取得されます。ゲートウェイは、上限が設定されている開発者に対する成功した各 `/v1/messages` レスポンスにこれらのヘッダーを追加します。ヘッダーは常に開発者自身の上限を表します。ゲートウェイは、共有クォータを表すアップストリームプロバイダーのレート制限ヘッダーを削除し、決して転送しません。
 

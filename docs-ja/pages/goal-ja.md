@@ -178,7 +178,7 @@ v2.1.239 より前では、この方法でバックオフするのはアイド�
 
 ## 要件
 
-Claude Code は、評価器がフック システムの一部であるため、[ワークスペース信頼ルール（設定ファイル内のフックと同じ）](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下で `/goal` を利用可能にします。[`disableAllHooks`](https://code.claude.com/docs/ja/hooks#disable-or-remove-hooks) が `true` の場合（設定の優先順位が適用された後）、または [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) が管理設定で設定されている場合、`/goal` は利用できません。いずれの場合も、コマンドは何もしないのではなく、理由を伝えます。
+Claude Code は、評価器がフックシステムの一部であるため、[ワークスペース信頼ルール（設定ファイル内のフックと同じ）](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下で `/goal` を利用可能にします。[`disableAllHooks`](https://code.claude.com/docs/ja/hooks#disable-or-remove-hooks) が `true` の場合（設定の優先順位が適用された後）、または [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) が管理設定で設定されている場合も、`/goal` は利用できません。
 
 ## 関連項目
 

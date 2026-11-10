@@ -1380,9 +1380,9 @@ Claude Code は、Desktop がリモートマシンにインストールするバ
 * **ワークフロー**：Desktop は新しい[ワークフロー](https://code.claude.com/docs/ja/workflows.md)をそれぞれ開始前にチェックするため、Desktop が切断されている間、新しいワークフローは最大 10 分間待機した後に失敗します
 * **MCP サーバー**：Claude Code がリモートマシンで起動する MCP サーバーは Desktop を経由しないため、Claude は引き続きそれらのツールを呼び出せます。`claude_desktop_config.json` のサーバーがこれに含まれるのは、Desktop が[組み込みの SSH クライアント](#worktree-edits-while-disconnected)を使用していない場合のみです。それ以外の場合、および[一部の Windows リモートマシン](#windows-remote-machines)では、Desktop が切断されている間、Claude はそれらのツールを呼び出せません。
 
-> [accordion] worktree 内の編集が引き続き機能する場合
+> [accordion] worktree での編集が引き続き機能する場合
 >
-> Linux または macOS のリモートマシンでは、チェックが Desktop を経由しないため、Desktop が切断されている間も worktree 内の編集は引き続き機能します。Claude Desktop v2.37337.0 より前では、これは Linux リモートマシンにのみ当てはまります。
+> Linux または macOS のリモートマシンでは、各編集のチェックを Desktop なしで実行できるため、Desktop の接続が切れている間も worktree 内の編集が引き続き機能することがあります。[Claude Desktop v2.37337.0](#check-your-version) より前は、これは Linux のリモートマシンでのみ機能します。
 >
 > 次のような場合には、編集は引き続き失敗します：
 >

@@ -33,7 +33,7 @@ API は各リクエストの開始部分（プリフィックスと呼ばれま�
 レイヤーテーブルに表示されないが、キャッシュされたままになるものに影響する 2 つの設定があります。
 
 * **モデル**：各モデルには独自のキャッシュがあります。モデルを切り替えると、コンテンツが同じであってもリクエスト全体が再計算されます。以下の [モデルの切り替え](#switching-models) を参照してください。
-* **effort レベル**：ほとんどのモデルでは、各 effort レベルには独自のキャッシュがあるため、セッション中に effort を変更するとリクエスト全体が再計算されます。API キーまたは Claude サブスクリプションを使用した Opus 5.5、Sonnet 5.5、Haiku 5.5、および Fable 5.1 では、デフォルトではキャッシュはそのままです。以下の [effort レベルの変更](#changing-effort-level) を参照してください。
+* **effort レベル**：ほとんどのモデルでは、各 effort レベルには独自のキャッシュがあるため、セッション中に effort を変更するとリクエスト全体が再計算されます。API キーまたは Claude サブスクリプションを使用した Fable 5.1 以降、Opus 5.5、Sonnet 5.5、および Haiku 5.5 では、デフォルトではキャッシュはそのままです。以下の [effort レベルの変更](#changing-effort-level) を参照してください。
 
 > [!TIP]
 >
@@ -94,7 +94,7 @@ Fable モデル、Opus 5.5、Sonnet 5.5、および Opus 5 の [自動モデル�
 
 ほとんどのモデルでは、セッション中に [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level) を変更すると、次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。キャッシュがまだ温かい間、Claude Code は最初に変更を確認するよう求めます。
 
-API キーまたは Claude サブスクリプションを使用する Opus 5.5、Sonnet 5.5、Haiku 5.5、および Fable 5.1 では、effort を変更してもキャッシュが保持されます。Claude Code は確認なしに [新しいレベルを適用](https://code.claude.com/docs/ja/model-config.md#when-a-new-effort-level-starts) します。Amazon Bedrock、Google Cloud の Agent Platform、または [Claude アプリゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway) を使用する場合、あるいは [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](https://code.claude.com/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities) を設定した場合や組織が HIPAA 構成を持つ場合は、ほとんどのモデルと同じように動作します。
+API キーまたは Claude サブスクリプションを使用する場合、Fable 5.1 以降、Opus 5.5、Sonnet 5.5、および Haiku 5.5 では、effort を変更してもキャッシュが保持されます。Claude Code は確認なしに [新しいレベルを適用](https://code.claude.com/docs/ja/model-config.md#when-a-new-effort-level-starts) します。Amazon Bedrock、Google Cloud の Agent Platform、または [Claude アプリゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway) を使用する場合、あるいは [`CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`](https://code.claude.com/docs/ja/llm-gateway-protocol#disable-pre-release-capabilities) を設定した場合や組織が HIPAA 構成を持つ場合は、ほとんどのモデルと同じように動作します。
 
 v2.1.260 より前では、API キーまたは Claude サブスクリプションを使用する Fable 5.1 の effort を変更すると、キャッシュも無効化されていました。
 

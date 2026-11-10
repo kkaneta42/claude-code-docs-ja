@@ -17,6 +17,281 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-11-10</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/advisor-ja.md                        |   9 +-
+ docs-ja/pages/agent-teams-ja.md                    |   2 +-
+ docs-ja/pages/agent-view-ja.md                     |  48 +-
+ docs-ja/pages/best-practices-ja.md                 |   4 +-
+ docs-ja/pages/changelog.md                         | 125 ++++
+ docs-ja/pages/claude-apps-gateway-config-ja.md     |  38 +
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md     |  14 +
+ docs-ja/pages/claude-apps-gateway-ja.md            |   2 +-
+ .../pages/claude-apps-gateway-spend-limits-ja.md   |  13 +-
+ docs-ja/pages/cli-reference-ja.md                  | 184 ++---
+ docs-ja/pages/commands-ja.md                       |   2 +-
+ docs-ja/pages/costs-ja.md                          |   2 +-
+ docs-ja/pages/cross-session-messaging-ja.md        | 132 ++--
+ docs-ja/pages/desktop-ja.md                        |   4 +-
+ docs-ja/pages/env-vars-ja.md                       |   3 +-
+ docs-ja/pages/errors-ja.md                         | 807 +++++++++++----------
+ docs-ja/pages/fast-mode-ja.md                      |  39 +-
+ docs-ja/pages/github-actions-ja.md                 |   1 +
+ docs-ja/pages/goal-ja.md                           |   2 +-
+ docs-ja/pages/hooks-guide-ja.md                    |   2 +-
+ docs-ja/pages/hooks-ja.md                          |  14 +-
+ docs-ja/pages/large-codebases-ja.md                |   4 +-
+ docs-ja/pages/llm-gateway-protocol-ja.md           |   2 +-
+ docs-ja/pages/model-config-ja.md                   |  79 +-
+ docs-ja/pages/permissions-ja.md                    |   9 +-
+ docs-ja/pages/prompt-caching-ja.md                 |   4 +-
+ docs-ja/pages/remote-control-ja.md                 |   3 +
+ docs-ja/pages/sandboxing-ja.md                     |   4 +
+ .../self-hosted-environments-configuration-ja.md   |  18 +-
+ .../pages/self-hosted-environments-deploy-ja.md    |  21 +-
+ .../self-hosted-environments-quickstart-ja.md      |   4 +-
+ .../pages/self-hosted-environments-reference-ja.md |   2 +-
+ docs-ja/pages/settings-ja.md                       |   1 +
+ docs-ja/pages/settings-reference-ja.md             |   8 +-
+ docs-ja/pages/skills-ja.md                         |   2 +-
+ docs-ja/pages/sub-agents-ja.md                     |   2 +
+ docs-ja/pages/tools-reference-ja.md                |  29 +-
+ docs-ja/pages/worktrees-ja.md                      |   2 +-
+ docs-ja/pages/zero-data-retention-ja.md            |   4 +-
+ 39 files changed, 1002 insertions(+), 643 deletions(-)
+```
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index aa9edfb..40d9f33 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -99,8 +99,9 @@ Claude Code はアドバイザーの役割における能力に基づいてモ
+ | Sonnet 5.5 | Fable、Opus 5 以降、Sonnet 5.5 |
+ | Opus 5 または Opus 5.5 | Fable、Opus 5 以降 |
+-| Fable 5 | Fable 5.1 または Fable 5 |
+-| Fable 5.1 | Fable 5.1 |
++| Fable 5 | Fable 5.2、Fable 5.1、または Fable 5 |
++| Fable 5.1 | Fable 5.2 または Fable 5.1 |
++| Fable 5.2 | Fable 5.2 |
+ 
+-Fable 5.1 には Claude Code v2.1.257 以降が必要です。Fable モデルには [Fable アクセス](https://code.claude.com/docs/ja/model-config.md#work-with-fable) が必要です。Opus 4.7 または Opus 4.8 のメインモデルに対して Sonnet 5.5 をアドバイザーとして使用するには、Claude Code v2.1.287 以降が必要です。Haiku 5.5 をメインモデルまたはアドバイザーとして使用するには、Claude Code v2.1.293 以降が必要です。
++Fable 5.2 には Claude Code v2.1.321 以降が必要で、Fable 5.1 には v2.1.257 以降が必要です。Fable モデルには [Fable アクセス](https://code.claude.com/docs/ja/model-config.md#work-with-fable) が必要です。Opus 4.7 または Opus 4.8 のメインモデルに対して Sonnet 5.5 をアドバイザーとして使用するには、Claude Code v2.1.287 以降が必要です。Haiku 5.5 をメインモデルまたはアドバイザーとして使用するには、Claude Code v2.1.293 以降が必要です。
+ 
+ アドバイザーを `fable`、`opus`、または `sonnet` として設定します。これらのエイリアスは Claude Code の各モデルファミリーの[組み込みデフォルトバージョン](https://code.claude.com/docs/ja/model-config.md#model-aliases)に解決され、新しい Claude Code リリースで進化します。`claude-opus-5-5` や `claude-haiku-5-5` などの完全なモデル ID を渡すこともできます。Haiku 4.5 はアドバイザーを呼び出すことはできますが、アドバイザーとして機能することはできません。
+@@ -160,5 +161,5 @@ Claude が advisor を呼び出すと、advisor モデルが会話を読むた
+ * **サブスクリプションプラン**: advisor 使用量はプランの使用制限にカウントされます。ただし、Fable advisor は Fable 使用量が課金される計画では[使用クレジット](https://code.claude.com/docs/ja/model-config.md#fable-and-usage-credits)に課金されます
+ 
+-アカウントが使用クレジット同意を必要とする場合、Fable advisor は同意を与えるまで何も課金されません。Claude Code はそれまで[選択を適用しない](#fable-advisor-and-usage-credits)ためです。
++Fable advisor と使用クレジットの連携については、[Fable advisor と使用クレジット](#fable-advisor-and-usage-credits)を参照してください。
+ 
+ Claude は各ターンではなく決定ポイントで advisor を呼び出すため、より高速なメインモデルをより強力な advisor と組み合わせることは、通常、より強力なモデルを全体で実行するよりもコストが低くなります。advisor 使用量は [`/usage`](https://code.claude.com/docs/ja/costs#track-your-costs)で表示されるセッション合計にカウントされます。
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index e2a4c53..89d3278 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -9,5 +9,5 @@
+ > [!WARNING]
+ >
+-> エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](https://code.claude.com/docs/ja/settings.md) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。その変数がない場合、セッション開始時にチームが設定されず、チームディレクトリが書き込まれず、Claude はチームメンバーをスポーンまたは提案しません。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
++> エージェントチームは実験的機能であり、デフォルトでは無効になっています。[settings.json](https://code.claude.com/docs/ja/settings.md) または環境に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にしてください。エージェントチームには、セッション再開、タスク調整、シャットダウン動作に関する[既知の制限](#limitations)があります。
+ 
+ エージェントチームを使用すると、複数の Claude Code インスタンスが連携して動作するように調整できます。1 つのセッションがチームリーダーとして機能し、作業を調整し、タスクを割り当て、結果を統合します。チームメンバーは独立して動作し、それぞれ独自のコンテキストウィンドウで動作し、互いに直接通信します。リーダーを経由せずに、任意のチームメンバーと直接対話することもできます。
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index 89968e2..eb7640f 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -842,27 +842,27 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
+ セッションが独自の言葉で進捗を報告するようにしたい場合は、`state.json` を編集する代わりに、例えば `$CLAUDE_JOB_DIR/tmp` の下など、独自のファイルを書き込むようにしてください。
+ 
+-## バックグラウンドセッションのホスティング方法
++## バックグラウンドセッションのホスト方法
+ 
+-Claude Code は、エージェントビューに表示されているすべてのセッションをバックグラウンドセッションとして扱います。現在接続しているかどうかに関わらず、バックグラウンドセッションとして扱われます。これに対して、`claude` を直接実行して開始したセッションはそのターミナルに紐付けられ、ターミナルが閉じると終了します。ただし、[バックグラウンドに送信](#from-inside-a-session)することはできます。
++Claude Code は、エージェントビューに一覧表示されるすべてのセッションを、現在アタッチしているかどうかにかかわらずバックグラウンドセッションとして扱います。これに対して、`claude` を直接実行して開始したセッションはそのターミナルに紐付けられ、[バックグラウンドに送る](#from-inside-a-session)場合を除き、ターミナルを閉じると終了します。
+ 
+-どのような種類のセッションにいるかを確認するには、[`/status`](https://code.claude.com/docs/ja/commands) を実行してください。バックグラウンドセッションでは、`Session kind` の行に `background job · attached` または `background job · unattended` と表示されます。ターミナルが接続されているかどうかによって異なります。その他のセッションでは `interactive` と表示されます。
++現在どの種類のセッションにいるかを確認するには、[`/status`](https://code.claude.com/docs/ja/commands) を実行します。`Session kind` 行には、バックグラウンドセッションではターミナルがアタッチされているかどうかに応じて `background job · attached` または `background job · unattended` と表示され、それ以外のセッションでは `interactive` と表示されます。
+ 
+ ### スーパーバイザープロセス
+ 
+-スーパーバイザーはバックグラウンドサービスで、バックグラウンドセッションを実行し、エージェントビューやターミナルを閉じた後もセッションが動作し続けるようにします。Claude Code は、セッションをバックグラウンドに送信するか、エージェントビューを開いた時点で最初にスーパーバイザーを起動します。自分で管理する必要はありません。
++スーパーバイザーは、エージェントビューやターミナルを閉じた後もバックグラウンドセッションが動作し続けるよう、それらを実行するバックグラウンドサービスです。Claude Code は、初めてセッションをバックグラウンドに送るかエージェントビューを開いたときにスーパーバイザーを起動するため、自分で管理する必要はありません。
+ 
+-各セッションはスーパーバイザーの下で独自の Claude Code プロセスであり、そのプロセスに何が起こるかはセッションの状態によって異なります。
++各セッションはスーパーバイザー配下の個別の Claude Code プロセスであり、そのプロセスがどうなるかはセッションの状態によって異なります。
+ 
+-* **動作中、権限プロンプトまたは他のダイアログで一時停止中、または接続中**：プロセスは実行を続けます。実行中のサブエージェント、ワークフロー、またはモニターは動作中としてカウントされます。`/loop` のウェイクアップなど、保留中の[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)も同様です。
+-* **完了したか次のメッセージを待機中で、約 1 時間未接続**：スーパーバイザーはリソースを解放するためにプロセスを停止します。質問を投げかけてターンを終了したセッションは、次のメッセージを待機中としてカウントされます。会話はディスクに保存され、次回接続または返信するときに、セッションは中断したところから再開されます。`Ctrl+T` でセッションをピンして、プロセスの実行を継続させます。
+-* **スーパーバイザーが実行中に予期せず終了した**：スーパーバイザーはプロセスを再起動します。`←` または `/background` で自分でバックグラウンドに送信したセッションを、たとえば `kill` で終了した場合は、再起動されずに停止済みとしてマークされます。シャットダウンで終了したセッションについては、[セッションがシャットダウン後に失敗または停止として表示される](#sessions-show-as-failed-after-shutdown) を参照してください。
+-* **自動更新後**：スーパーバイザーは新しいバージョンに再起動し、アイドル状態のセッションをバックグラウンドで移動します。動作中、ユーザーの応答を待機中、または接続中のセッションは中断されません。
+-* **スーパーバイザー自体が停止した**（たとえば、そのプロセスが Claude Code の外部から終了された場合）：macOS と Linux では、約 1 分以内に新しいスーパーバイザーが接続しない限り、セッションは停止します。スーパーバイザーを起動するには、シェルで `claude agents` を実行してください。その 1 分が経過した後については、[スーパーバイザーの停止後もセッションを実行し続ける](#keep-sessions-running-after-the-supervisor-stops) を参照してください。
++* **作業中、権限プロンプトやその他のダイアログで一時停止中、またはアタッチ中**：プロセスは実行を続けます。実行中のサブエージェント、ワークフロー、モニターは作業中とみなされ、`/loop` のウェイクアップなど保留中の[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)も同様です。
+```
+
+</details>
+
+<details>
+<summary>best-practices-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/best-practices-ja.md b/docs-ja/pages/best-practices-ja.md
+index a75b509..a645f5c 100644
+--- a/docs-ja/pages/best-practices-ja.md
++++ b/docs-ja/pages/best-practices-ja.md
+@@ -434,5 +434,5 @@ auto モードがアクションをブロックすると通知が届き、その
+ ### モデルと effort を変更する
+ 
+-[effort](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level) は Claude が考える長さを制御する主な手段であり、かつてプロンプトの言い回しで行っていたことのほとんどを置き換えます。Claude Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium` で、スコープが明確な日常的な機能開発には十分です。セッション内で `/effort` を使って変更するのは次のような場合です：
++[effort](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level) は Claude が考える長さを制御する主な手段であり、かつてプロンプトの言い回しで行っていたことのほとんどを置き換えます。Claude Fable 5.2、Opus 5.5、Sonnet 5.5、Haiku 5.5 のデフォルトは `medium` で、スコープが明確な日常的な機能開発には十分です。セッション内で `/effort` を使って変更するのは次のような場合です：
+ 
+ * 正しく仕上げられるかどうかが見落としやすいケースにかかっているときは、`/effort high` または `/effort xhigh` で引き上げます。自分が書いていないコードのバグ、不安定なテスト、古い形式を読んでいる箇所を Claude がすべて見つけなければならないスキーマ変更などです。Claude はより多くのエッジケースをチェックし、回答前に自分の作業をより多く検証します。追加の時間とトークンはそこに使われます。
+@@ -441,5 +441,5 @@ auto モードがアクションをブロックすると通知が届き、その
+ * 日常的な作業の途中で難しい質問が 1 つだけあるときのように、次のメッセージだけに必要な場合は、設定を変更する代わりにそのプロンプトに [`ultrathink`](https://code.claude.com/docs/ja/model-config#use-ultrathink-for-one-off-deep-reasoning) を入れます。
+ 
+-モデル自体については、デフォルトの Opus 5.5 がほとんどのコーディングをうまくこなし、Sonnet は日常的な作業でより低コストです。[Claude Fable 5.1](https://code.claude.com/docs/ja/model-config.md#work-with-fable) は `/model fable` で明示的に選択したときに使用でき、Haiku は単純な仕事をするサブエージェントに適しています。プランとプロバイダーごとの完全なリストは[モデル設定](https://code.claude.com/docs/ja/model-config.md)にあります。
++モデル自体については、デフォルトの Opus 5.5 がほとんどのコーディングをうまくこなし、Sonnet は日常的な作業でより低コストです。[Claude Fable 5.2](https://code.claude.com/docs/ja/model-config.md#work-with-fable) を使用するには、`/model fable` を実行します。Haiku は単純な仕事をするサブエージェントに適しています。プランとプロバイダーごとの完全なリストは[モデル設定](https://code.claude.com/docs/ja/model-config.md)にあります。
+ 
+ ### サブエージェントのコストを知る
+```
+
+</details>
+
+<details>
+<summary>changelog.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
+index cb9d948..766241d 100644
+--- a/docs-ja/pages/changelog.md
++++ b/docs-ja/pages/changelog.md
+@@ -1,4 +1,129 @@
+ # Changelog
+ 
++## 2.1.322
++
++- Added fast mode on Vertex in the global, us and eu regions, falling back to standard speed if Vertex refuses it
++
++## 2.1.321
++
++- Added Claude Fable 5.2 (`claude-fable-5-2`), now the default Fable model — 1M context, $8/$40 per Mtok with $0.20/Mtok cache reads
++- Added `--settings <file>` to `claude remote-control`, which applies a settings file to every session it starts; if the file changes, no new session starts until you restart `claude remote-control`
++- Fixed MCP OAuth requests sending secrets such as refresh tokens to another host when a server redirected them
++- Fixed a case where a read-only Bash command ran outside the sandbox without a permission prompt
++- Fixed a case where Bash permission checks judged a file write from the wrong folder and didn't prompt
++- Fixed deny rules and protected-file prompts not applying to the file that a `cp` or `mv` into a directory writes
++- Fixed the "Draws from usage credits" note showing after a switch to Fable on Enterprise seats whose plan includes Fable
++- Fixed the fallback model sometimes declining a request or mentioning a stopped response when the first model was blocked before replying
++- Fixed `claude mcp login` printing a SEP-2352 issuer warning each time you sign in again to a server that Claude Code registered with
++- Fixed `NotebookEdit` deleting or overwriting a notebook's first cell when the call named no cell, on network paths (UNC shares, WSL folders, `/net` mounts)
++- Fixed Edit changing the first of several matches, replacing a whole file on an empty `old_string`, or editing a notebook as text, on network paths (UNC shares, WSL folders, `/net` mounts)
++- Fixed `/config` showing Manual as the default permission mode when new sessions start in auto mode; pressing Space on "Auto (default)" now saves Don't Ask, not Plan
++- Windows: Fixed `FileChanged` hooks stopping for paths set through `watchPaths` after the first shell command, when the session's working directory had a lowercase drive letter
++- Fixed `--plugin-dir .` and `--plugin-dir ./builtin` writing generated type files for Claude Code's built-in plugins into a `builtin` folder
++- Fixed context usage estimates overcounting tool definitions when exact token counts are unavailable
++- Fixed `/compact` showing twice in Remote Control on web and mobile
++- Fixed plugin auto-updates and `/plugin` marketplace updates downloading a plugin again for each worktree or folder of a repository
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-config-ja.md b/docs-ja/pages/claude-apps-gateway-config-ja.md
+index 4b432c5..d30d7cd 100644
+--- a/docs-ja/pages/claude-apps-gateway-config-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-config-ja.md
+@@ -27,4 +27,5 @@ Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` と
+ **オプションセクション：**
+ 
++* [`login_notice`](#login_notice)：開発者がサインイン時に表示される通知
+ * [`admin`](#admin)：Admin API 認証、支出制限の保持
+ * [`enforcement`](#enforcement)：支出制限のフェイルオープンまたはフェイルクローズ動作
+@@ -846,4 +847,16 @@ IdP の userinfo エンドポイントが groups クレームを返し、かつ
+ ## オプションセクション
+ 
++### `login_notice`
++
++開発者がサインインするときにお知らせを表示するには、トップレベルの `login_notice` キーにお知らせのテキストを最大 500 文字で設定します。次の例では、ゲートウェイの対象者とアクセスに関する問い合わせ先を示しています。
++
++```yaml theme={null}
++login_notice: This gateway is for Example Corp staff. For access questions, email it-help@example.com.
++```
++
++開発者には、ブラウザのゲートウェイ検証ページと、ターミナルの対話型サインイン画面で、`Notice from <gateway hostname>` の下にこのテキストが表示されます。テキスト内の改行はスペースになります。お知らせはサインイン前に表示されるため、ゲートウェイにアクセスできる人なら誰でも読むことができます。
++
++ゲートウェイサーバーに Claude Code v2.1.319 以降が必要です。ターミナル画面については、開発者のマシンにも同じバージョンが必要です。それより前のゲートウェイは、このキーを見つけると起動を拒否します。キーを追加する前にすべてのレプリカをアップグレードし、ロールバックする前にキーを削除してください。
++
+ ### `admin`
+ 
+@@ -864,4 +877,7 @@ admin:
+   admin_groups: [platform-finops]
+   blocked_message: request an increase at https://go.example.com/claude-limits
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-deploy-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-deploy-ja.md b/docs-ja/pages/claude-apps-gateway-deploy-ja.md
+index 770c8e3..61e114c 100644
+--- a/docs-ja/pages/claude-apps-gateway-deploy-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-deploy-ja.md
+@@ -174,4 +174,18 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ
+ * **運用ログ**: 起動、警告、アップストリームのエラーについて、`[gateway]` というプレフィックスの付いた人間が読める形式の行を出力します。詳細度は `CLAUDE_GATEWAY_LOG_LEVEL` 環境変数で制御し、`debug`、`info`、`warn`、`error` のいずれかを指定できます。デフォルトは `info` です。`debug` では、サインインとリフレッシュのたびに id\_token に含まれるクレームの名前（値ではありません）もログに記録され、`userinfo_fallback` が何らかのクレームを提供した場合は userinfo クレームの名前も記録されます。これにより、PII をログに残さずに `email_claim` と `groups_claim` の設定を診断できます。この設定は監査イベントには影響せず、監査イベントは常に出力されます。
+ 
++#### 運用ログを JSON として書き出す
++
++ログコレクターが各行のレベルを JSON フィールドから読み取る場合は、ゲートウェイの環境で `CLAUDE_GATEWAY_LOG_FORMAT=json` を設定します。ゲートウェイサーバーで Claude Code v2.1.319 以降が必要です。
++
++これにより、各運用ログ行は `severity`、`time`、`message` を持つ 1 つのオブジェクトになります。
++
++```json theme={null}
++{"severity":"INFO","time":"2026-11-04T17:03:21.512Z","message":"claude gateway listening on http://0.0.0.0:8080"}
++```
++
++`severity` は大文字で表したログレベルで、`warn` は `WARNING` と書かれます。起動の失敗は `ERROR` の行になります。
++
++同じく stderr に出力される監査イベントは変わりません。監査イベントには `ts` と `evt` が含まれ、`severity` は含まれません。
++
+ ### ヘルスチェック
+ 
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-11-09</summary>
 
 **変更ファイル:**
@@ -2544,262 +2819,6 @@ index 6be6271..f61b283 100644
 +`/rewind` を実行するか、プロンプト入力が空のときに `Esc` を 2 回押すと、巻き戻しメニューが開きます。
  
  > [!NOTE]
-```
-
-</details>
-
-<details>
-<summary>claude-apps-gateway-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-config-ja.md b/docs-ja/pages/claude-apps-gateway-config-ja.md
-index 8d558aa..5f14717 100644
---- a/docs-ja/pages/claude-apps-gateway-config-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-config-ja.md
-@@ -420,5 +420,5 @@ upstreams:
- ```yaml theme={null}
- models:
--  - id: claude-opus-restricted          # a custom id, not a built-in model name
-+  - id: restricted-claude-opus-4-8      # a custom id, not a built-in model name
-     upstream_model:
-       bedrock-isolated: us.anthropic.claude-opus-4-8   # the only upstream that serves it
-@@ -630,5 +630,8 @@ AWS SigV4 でリクエストに署名する Amazon Bedrock または Claude Plat
- ゲートウェイは失敗したアップストリームの記録を保持しないため、アップストリームがダウンしている間、そこに到達するすべてのリクエストは引き続きそのアップストリームを試行し、失敗するのを待ってから次に進みます。
- 
--Anthropic API アップストリームでは、[`timeouts.upstream_ttfb_ms`](#http-tuning) がダウンしたアップストリームでの待機時間の上限を定めます。この設定は他のプロバイダーには適用されず、それらのプロバイダーでは、ゲートウェイはアップストリームが応答を開始するまで最大 1 時間待機します。
-+ゲートウェイがレスポンスの開始を待機する時間は次のとおりです。
-+
-+* **`provider: anthropic` アップストリーム**: [`timeouts.upstream_ttfb_ms`](#http-tuning)。デフォルトは 120 秒
-+* **その他のプロバイダー**: 最大 1 時間。ストリーミングリクエストでこの待機時間を短縮するには、ゲートウェイ v2.1.295 以降で `timeouts.upstream_ttfb_ms` を設定します。非ストリーミングのモデルリクエストは、いずれの場合も最大 1 時間待機します
- 
- `404` はアップストリームごとのモデルの提供状況を表すため、モデルを有効にしていないアップストリームが、そのモデルを提供する後続のアップストリームを妨げることはありません。要求されたモデルを解決できないアップストリームは、ネットワークのラウンドトリップなしでスキップされます。
-@@ -874,7 +877,9 @@ managed:
-     - match: { groups: [restricted-projects] }
-       cli:
--        availableModels: [claude-opus-restricted]
-+        availableModels: [restricted-claude-opus-4-8]
-         enforceAvailableModels: true
--        model: claude-opus-restricted
-+        model: restricted-claude-opus-4-8
-+        env:
-```
-
-</details>
-
-<details>
-<summary>claude-apps-gateway-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
-index 9f663ee..fda094b 100644
---- a/docs-ja/pages/claude-apps-gateway-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-ja.md
-@@ -398,5 +398,5 @@ Claude Code は親が提供した [`sandbox.credentials`](https://code.claude.co
- * **[`mode: mask`](https://code.claude.com/docs/ja/sandboxing#mask-credential-files)を持つファイルエントリ**：センチネルのみとして転送され、`injectHosts` が空のリストである全ファイルマスクとして。プロキシは親が提供したエントリの実際の値を任意のプラットフォームで置き換えることはありません。すべての構造化マスキングフィールドも削除されるため、親が提供した抽出パターンは別のソースが同じパスに設定するより厳密なマスクを置き換えることはできません。
- * **`mode: mask` を持つ `envVars` エントリ**：転送されません。`deny` は親チャネルが `envVars` エントリを通じて表現できる唯一の制限です。
--* **[`awsPairs` と `sigv4`](https://code.claude.com/docs/ja/sandboxing#re-sign-aws-requests)**：制限のみ転送されます。`sigv4` からは `deny` 値のみが保持され、親が `sigv4` ブロックをまったく定義する場合、すべての 3 つのリクエスト形式 `streaming`、`presigned`、および `sigv4a` を `deny` にピン留めします。`awsPairs` ペアは再署名できる形式では転送されません。従来の AWS 変数の 1 つに名前を付けるペアは、`AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、および `AWS_SESSION_TOKEN` の自動ペアリングを抑制したままにする不活性エントリに置き換えられます。
-+* **[`awsPairs` と `sigv4`](https://code.claude.com/docs/ja/sandboxing#re-sign-aws-requests)**：制限のみ転送されます。`sigv4` からは `deny` 値のみが保持され、親が `sigv4` ブロックを何らかの形で定義する場合、すべての 3 つのリクエスト形式 `streaming`、`presigned`、および `sigv4a` を `deny` にピン留めします。`awsPairs` ペアは再署名できる形式では転送されません。従来の AWS 変数の 1 つに名前を付けるペアは、`AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、および `AWS_SESSION_TOKEN` の自動ペアリングを抑制したままにする不活性エントリに置き換えられます。
- 
- #### ロックをデプロイする
-@@ -447,5 +447,5 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
- 5 つのロックすべてが設定されていても、以下の親が提供した設定はフィルターを通過します。
- 
--* **`forceLoginOrgUUID`**：最優先の管理ソースが組織 UUID を設定しない場合、Claude Code は親が提供した値を尊重します。ゲートウェイサインインはこのキーをチェックしません。最優先の管理ソースの組織 UUID は親の値をブロックし、Claude Code が強制するものです。
-+* **`forceLoginOrgUUID`**：Claude Code が適用する管理設定が組織 UUID を設定していない場合、Claude Code は親が提供した値を尊重します。ゲートウェイサインインはこのキーをチェックしません。Claude Code が適用する管理設定内の組織 UUID は親の値をブロックし、Claude Code が強制する組織 UUID になります。フリートで Anthropic 組織を固定している場合、`forceLoginOrgUUID` をどこに設定するかについては[ログインキーを提供する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#which-managed-source-supplies-login-keys)を参照してください。
- * **`allowedMcpServers`**：有効な管理リストがない場合、Claude Code は親が提供した許可リストを尊重します。`allowManagedMcpServersOnly` はそれをブロックしません。ロックは勝者となったリストを管理値として強制し、どの管理ソースもリストを提供しない場合は親が提供したリストも含まれるためです。最優先の管理ソースのリストは親のリストをブロックし、Claude Code が強制するリストになるため、ロックの隣のそこに `allowedMcpServers` を設定します。v2.1.223 より前では、任意の管理ソースのいずれかのキーの値は親の値をブロックしました。
- * **`availableModels`**：勝者の管理ソースが設定しない場合、Claude Code は親が提供したモデルリストを尊重します。フリートがモデルを制限する場合、勝者ソースに `availableModels` を設定します。
-@@ -455,5 +455,5 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
- * **`strictPluginOnlyCustomization`**：このキーはロックに関係なくフィルターを通過し、Claude Code が開発者独自のカスタマイズ（保護フックを含む）を無視するようにします。ロックはそれをブロックしません。
- 
--デフォルトの最初の勝ちの設定の下では、管理値が親の値をブロックするのは、それが最優先の管理ソースにある場合のみです。ただし、[MCP サーバーロック](#lock-behavior-across-sources)がオンの間の `allowedMcpServers` は除きます。`managedSourcesBehavior` マージオプトインの下では、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)が代わりにどのソースの値が適用されるかを示します。
-+`managedSourcesBehavior` を `"merge"` に設定している場合は、[キーの種類ごとにどのソースの値が適用されるか](https://code.claude.com/docs/ja/managed-settings.md#compose-every-managed-source)を確認してください。
- 
- #### 親設定のフックキーとスキルキーがどのように有効になるか
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-10-28</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/accessibility-ja.md                  |   4 +-
- docs-ja/pages/admin-setup-ja.md                    |   1 +
- docs-ja/pages/agent-view-ja.md                     |  10 +-
- docs-ja/pages/agents-ja.md                         |   2 +-
- docs-ja/pages/amazon-bedrock-ja.md                 |   4 +-
- docs-ja/pages/artifacts-ja.md                      |  40 +-
- docs-ja/pages/changelog.md                         |  42 ++
- docs-ja/pages/chrome-ja.md                         |   2 +-
- docs-ja/pages/claude-apps-gateway-config-ja.md     |   4 +-
- docs-ja/pages/claude-code-on-the-web-ja.md         |  16 +-
- docs-ja/pages/claude-platform-on-aws-ja.md         |   4 +-
- docs-ja/pages/claude-projects-ja.md                |  22 +-
- docs-ja/pages/code-review-local-ja.md              |   6 +-
- docs-ja/pages/commands-ja.md                       |   4 +-
- docs-ja/pages/computer-use-ja.md                   |  12 +-
- docs-ja/pages/cross-session-messaging-ja.md        |   4 +
- docs-ja/pages/desktop-ja.md                        | 132 ++--
- docs-ja/pages/desktop-scheduled-tasks-ja.md        |   4 +-
- docs-ja/pages/env-vars-ja.md                       |   2 +
- docs-ja/pages/errors-ja.md                         | 661 +++++++++++----------
- docs-ja/pages/fast-mode-ja.md                      |   4 +-
- docs-ja/pages/google-vertex-ai-ja.md               |   4 +-
- docs-ja/pages/headless-ja.md                       |   7 +-
- docs-ja/pages/hooks-ja.md                          |  14 +-
- docs-ja/pages/interactive-mode-ja.md               |   6 +-
- docs-ja/pages/large-codebases-ja.md                |   6 +-
- docs-ja/pages/llm-gateway-connect-ja.md            |   2 -
- docs-ja/pages/mcp-ja.md                            |  10 +-
- docs-ja/pages/memory-ja.md                         |   4 +-
- docs-ja/pages/model-config-ja.md                   |  10 +-
- docs-ja/pages/monitoring-usage-ja.md               |  14 +-
- docs-ja/pages/output-styles-ja.md                  |   2 +-
- docs-ja/pages/permission-modes-ja.md               |  69 ++-
- docs-ja/pages/permissions-ja.md                    |  48 +-
- docs-ja/pages/remote-control-ja.md                 |   4 +-
- docs-ja/pages/routines-ja.md                       |  14 +-
- docs-ja/pages/sandboxing-ja.md                     |   3 +-
- .../self-hosted-environments-configuration-ja.md   |   2 +-
- docs-ja/pages/server-managed-settings-ja.md        |   8 +-
- docs-ja/pages/sessions-ja.md                       |   2 +-
- docs-ja/pages/settings-ja.md                       |   2 +-
- docs-ja/pages/settings-reference-ja.md             | 329 +++++-----
- docs-ja/pages/skills-ja.md                         |  10 +-
- docs-ja/pages/sub-agents-ja.md                     |  13 +-
- docs-ja/pages/terminal-config-ja.md                |   2 +-
- docs-ja/pages/ultrareview-ja.md                    |   8 +-
- docs-ja/pages/web-quickstart-ja.md                 |   2 +-
- docs-ja/pages/workflows-ja.md                      |  12 +-
- docs-ja/pages/worktrees-ja.md                      |  30 +-
- 49 files changed, 898 insertions(+), 719 deletions(-)
-```
-
-<details>
-<summary>accessibility-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/accessibility-ja.md b/docs-ja/pages/accessibility-ja.md
-index 68bf9f7..5e0d246 100644
---- a/docs-ja/pages/accessibility-ja.md
-+++ b/docs-ja/pages/accessibility-ja.md
-@@ -80,7 +80,5 @@ Claude Code は起動時に [確認行](#turn-on-screen-reader-mode) を印刷
- | `Cost:` | Claude Code が終了するときのセッションコスト概要（アカウントが [コストを表示](https://code.claude.com/docs/ja/costs.md) している場合） |
- 
--Claude Code はターミナルカーソルを入力キャレットに保つため、スクリーンリーダーの現在の行を読むコマンドは、編集しているプロンプトを読み込みます。
--
--入力行の末尾に入力するとき、または `Backspace` を押すと、Claude Code は変更された文字のみを書き込みます。スクリーンリーダーはそれらの文字のみをエコーします。
-+Claude Code はターミナルカーソルを入力キャレットに保つため、スクリーンリーダーの現在の行を読むコマンドは、編集しているプロンプトを読み込みます。入力行の末尾で入力するとき、またはそこで `Backspace` を押すとき、Claude Code は変更された文字のみを書き込みます。スクリーンリーダーはそれらの文字のみをエコーします。
- 
- [テキスト編集ショートカット](https://code.claude.com/docs/ja/interactive-mode.md#text-editing) の 1 つで単語または行を削除すると、Claude Code は削除されたテキストを発表します：
-```
-
-</details>
-
-<details>
-<summary>admin-setup-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
-index b63e797..ce2c6f9 100644
---- a/docs-ja/pages/admin-setup-ja.md
-+++ b/docs-ja/pages/admin-setup-ja.md
-@@ -192,4 +192,5 @@ Team、Enterprise、Claude API、およびクラウドプロバイダープラ
- * [All settings](https://code.claude.com/docs/ja/settings-reference.md): すべての設定キー、ファイルの場所、および例
- * [Which value Claude Code uses](https://code.claude.com/docs/ja/settings.md#which-value-claude-code-uses): マネージド、プロジェクト、ローカル、およびユーザー設定全体の優先度ルール
-+* [Manage plugins for your organization](https://code.claude.com/docs/ja/plugins/org.md): 管理設定を通じて、すべてのマシンに共有プラグインをインストールする
- * [Monorepos and large repos](https://code.claude.com/docs/ja/large-codebases.md): 大規模リポジトリをデプロイする組織向けのディレクトリごとの設定パターン
- * [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud's Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md): プロバイダー固有のデプロイメント
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index d2bdbac..9ca98d7 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -321,5 +321,5 @@ Claude Code がセッションをバックグラウンドにすると（約 10 
- #### 過去のセッションを戻す
- 
--Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッチ入力](#dispatch-an-agent-from-agent-view) に `/resume` と入力します。ピッカーが開き、エージェントビューを開いたリポジトリの過去のセッションが新しい順に表示されます。リストから削除したセッションも含まれます。既に行があるセッションは表示されません。`Enter` を押すと、選択したセッションがバックグラウンドセッションとして再開され、行としてリストに戻ります。
-+セッションを戻すには、[ディスパッチ入力](#dispatch-an-agent-from-agent-view) に `/resume` と入力します。ピッカーが開き、エージェントビューを開いたリポジトリの過去のセッションが新しい順に表示されます。リストから削除したセッションも含まれます。既に行があるセッションは表示されません。`Enter` を押すと、選択したセッションがバックグラウンドセッションとして再開され、行としてリストに戻ります。
- 
- 次の場合、`/resume` は `isn't available in agent view` で失敗します：
-@@ -411,5 +411,5 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ
- * `/model`、`/effort`、`/fast` は、[次にディスパッチするセッションの開始時の設定](#set-the-model-effort-and-fast-mode) を指定します。`/effort` と `/fast` には Claude Code v2.1.299 以降が必要です。
- * `/login` はサインインダイアログを開き、セッションにアタッチせずに再度サインインできます
--* 引数なしの `/resume`、またはそのエイリアス `/continue` は、リポジトリの過去のセッションのピッカーを開き、1 つをバックグラウンドセッションとして [復帰させます](#bring-back-a-past-session)。Claude Code v2.1.212 以降が必要です
-+* 引数なしの `/resume`、またはそのエイリアス `/continue` は、リポジトリの過去のセッションのピッカーを開き、1 つをバックグラウンドセッションとして [復帰させます](#bring-back-a-past-session)
- 
- スキル、独自のコマンド、および `/init` などのプロンプトを展開する組み込みコマンドは、新しいバックグラウンドセッションの最初のプロンプトとして送信されます。`isn't available in agent view` というヒントは、入力した組み込みコマンドが実行されなかったことを意味します。実行するには、[セッションにアタッチ](#attach-to-a-session) してそこで入力してください。入力した内容はすべてヒントの横の入力に残るため、編集できます。
-@@ -455,8 +455,12 @@ Claude Code v2.1.212 以降でセッションを戻すには、[ディスパッ
- [エージェントビューがオフになっている](#turn-off-agent-view) 場合、`/fork` はセッションをコピーする代わりに [フォークされたサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation) を開始します。
- 
-+##### コピーにプロンプトを送信してそのセッションを開く
-+
- `/fork open a draft pull request with the work so far` のようにプロンプトを渡すと、コピーはすぐにその作業を開始します。プロンプトがない場合、コピーは最初の指示を待ちます。`claude agents` でその行を選択して `Space` を押して指示を送信するか、`claude attach <id>` を実行します。待機中、選択された行には `space to send it a prompt` が表示されます。
- 
- `/fork` の確認は 1 行で、コピーの状態（`session running` など）、エージェントビューの行の名前、および `claude attach` 用のセッション ID を表示します。名前をクリックするとコピーに切り替わります。`←` を押した場合と同様にこのセッションはバックグラウンドに移動し、エージェントビューがコピーのセッションを開きます。
- 
-+##### コピーが実行される場所
-+
- コピーが [その場で編集する](#how-file-edits-are-isolated) 場合を除き、Claude Code はコード変更を行う前に独自の worktree を作成するようコピーに指示します。git リポジトリの外では、フックが作成した worktree から移動したコピーのみがこの指示を受けます。[`WorktreeCreate` フック](https://code.claude.com/docs/ja/hooks#worktreecreate) がない場合、コピーはその場で編集します。元のセッションの worktree から移動したコピーには、分離設定に関係なく、その worktree を編集したり、そこでコマンドを実行したり、そこに入ったりしないようにも指示されます。
-```
-
-</details>
-
-<details>
-<summary>agents-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agents-ja.md b/docs-ja/pages/agents-ja.md
-index c5a6431..afa7188 100644
---- a/docs-ja/pages/agents-ja.md
-+++ b/docs-ja/pages/agents-ja.md
-@@ -33,5 +33,5 @@ Claude Code には、複数のタスクを同時に処理する 5 つの方法
- > [!NOTE]
- >
--> 複数のセッションまたはサブエージェントを同時に実行すると、トークン使用量が増加します。使用量とレート制限の詳細については、[コスト](https://code.claude.com/docs/ja/costs.md) を参照してください。
-+> 複数のセッションやサブエージェントを同時に実行すると、トークン使用量が倍増します。使用量とレート制限の詳細については、[コスト](https://code.claude.com/docs/ja/costs.md)を参照してください。
- 
- ## アプローチを選択する
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 666f3c9..3b47cb2 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -252,4 +252,6 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
- | 小型/高速モデル | Sonnet 4.5、例えば `us-*` リージョンの `us.anthropic.claude-sonnet-4-5-20250929-v1:0` |
- 
-+v2.1.280 より前では、Amazon Bedrock のプライマリモデルは Opus 5 にデフォルト設定され、`opus` エイリアスは v2.1.219 から Opus 5 に解決されました。
-+
- セッションタイトル生成などのバックグラウンドタスクは、小型/高速モデル（通常は Haiku クラスモデル）を使用します。Amazon Bedrock では、すべてのアカウントまたはリージョンで Haiku が有効になっていない可能性があるため、Claude Code はバックグラウンドタスクにデフォルト Sonnet モデルを使用します。2 つの選択がどのモデルがそれらを実行するかを変更します。
- 
-@@ -261,6 +263,4 @@ export ANTHROPIC_DEFAULT_HAIKU_MODEL='us.anthropic.claude-haiku-4-5-20251001-v1:
- > Opus モデルは Sonnet モデルよりトークンあたりの価格が高いため、プライマリモデルをピンしない場合は Opus のレートで請求されます。Sonnet 4.5 をプライマリモデルとして使用するには、`ANTHROPIC_MODEL` をその完全なモデル ID に設定してください。`ANTHROPIC_DEFAULT_SONNET_MODEL` でデフォルトを指定し、`ANTHROPIC_DEFAULT_OPUS_MODEL` を設定していないデプロイでは、指定した Sonnet モデルがデフォルトとして維持されます。
- 
--v2.1.280 より前では、Amazon Bedrock のプライマリモデルは Opus 5 にデフォルト設定され、`opus` エイリアスは v2.1.219 から Opus 5 に解決されました。v2.1.207 から v2.1.218 では、Amazon Bedrock のプライマリモデルは Opus 4.8 にデフォルト設定され、`opus` エイリアスは Opus 4.8 に解決されました。
--
- モデルをさらにカスタマイズするには、以下のいずれかの方法を使用してください。
- 
 ```
 
 </details>

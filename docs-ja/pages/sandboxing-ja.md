@@ -903,6 +903,10 @@ Claude がテキストをこれらのツールの 1 つにパイプする場合�
 
 失敗後、Claude は[コマンドをサンドボックス外で再実行することを提案](#the-unsandboxed-retry-escape-hatch)する場合があります。その再試行を承認するか、別のターミナルで git コマンドを自分で実行してください。`allowUnsandboxedCommands` を `false` に設定している場合、Claude は再試行を提案できないため、コマンドを自分で実行してください。
 
+### git コマンドが `Unable to create '…/index.lock'` で失敗する
+
+リポジトリのサブディレクトリで Claude Code を起動した場合、このエラーは `.git` が[サンドボックス化されたコマンドが書き込める範囲](#filesystem-isolation)の外にあることを意味している可能性があります。代わりにリポジトリのルートから、または[リンクされた worktree](https://code.claude.com/docs/ja/worktrees.md) ではその worktree のルートから Claude Code を起動してください。
+
 ### `objects` または `refs` という名前のフォルダがコマンドの後に消える
 
 セッション中に現れたトップレベルの `objects` または `refs` フォルダは、[サンドボックス化されたコマンドの終了後に削除される](#when-the-sandbox-deletes-head-objects-or-refs)ことがあります。コマンド、Claude、ユーザーのいずれが作成したかは関係ありません。フォルダを残すには、その中に何かを置いておいてください。セッション中に `HEAD` ファイルまたはシンボリックリンクがトップレベルに存在していた場合は、それを別の場所に移動してから、その作業ディレクトリで開いているすべての Claude Code セッションを再起動してください。

@@ -235,7 +235,9 @@ Claude がワークツリーを作成するとき、フルツリーの代わり�
 
 `sparsePaths` にはディレクトリをリストし、個別のファイルはリストしません。`package.json`、`tsconfig.base.json`、ロックファイルなどのルートレベルのファイルは、リストするディレクトリと一緒に常にチェックアウトされます。ルートレベルのディレクトリはそうではないため、ワークツリー内でリポジトリルートの `.claude/settings.json` または `.claude/rules/` を利用可能にしたい場合は、リストに `.claude` を含めます。プロジェクトスキル、エージェント、コマンドについては、[ワークツリーがメインチェックアウトと共有するもの](https://code.claude.com/docs/ja/worktrees.md#what-worktrees-share-with-the-main-checkout)を参照してください。
 
-Sparse checkout では、sparse worktree が存在する間、git がリポジトリの共有 `.git/config` で `extensions.worktreeConfig` を有効にする必要があります。Claude Code は最後の worktree が削除された後にそのエントリを削除しますが、それは Claude Code が追加した場合のみです。自分で設定した値が削除されることはありません。
+> [!NOTE]
+>
+> Sparse checkout では、sparse worktree が存在する間、git がリポジトリの共有 `.git/config` で `extensions.worktreeConfig` を有効にする必要があります。Claude Code は最後の worktree が削除された後にそのエントリを削除しますが、それは Claude Code が追加した場合のみです。
 
 `node_modules` などの大規模ディレクトリをワークツリー全体で複製するのを避けるには、同じ `.claude/settings.json` で `sparsePaths` を `symlinkDirectories` とペアにします。
 

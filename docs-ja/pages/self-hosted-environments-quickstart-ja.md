@@ -73,7 +73,9 @@ claude.ai で環境を作成し、ホスト上のターミナルからランナ�
 
 管理設定の [**Cloud environments** ページ](https://claude.ai/admin-settings/cloud-environments) に移動します。**Self-hosted environments** の下で、**New** を選択し、環境に名前を付けて、**Create** を選択します。ウィザードの 2 番目のステップで、**Copy environment key** を選択して環境シークレットをコピーします。管理 UI はこれを環境キーとしてラベル付けしています。claude.ai はシークレットを 1 回だけ表示し、後で取得することはできません。シークレットは作成から 365 日後に期限切れになります。環境の `ccpool_...` ID は詳細ダイアログに表示されたままになります。これは、[トークン検証](https://code.claude.com/docs/ja/self-hosted-environments-identity.md)の `aud` チェックと、[CI からのテストセッションのディスパッチ](https://code.claude.com/docs/ja/self-hosted-environments-testing.md#run-the-test-loop)に必要です。
 
-シークレットを紛失した場合、またはローテーションが必要な場合は、環境の **Configuration** タブから新しいシークレットを作成し、新しいシークレットをランナーにロールアウトしてから、古いシークレットを取り消します。取り消されたシークレットを保持しているランナーは、次の認証済みポーリングに失敗して終了し、`poll auth failed` をログに記録します。オーケストレーターは新しいシークレットでランナーを再起動します。
+シークレットが漏洩した可能性がある場合は、以下のローテーションではなく、[侵害が疑われる場合のデプロイページの手順](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#after-a-suspected-compromise)に従ってください。
+
+シークレットを紛失した場合、またはローテーションを予定している場合は、環境の **Configuration** タブから新しいシークレットを作成します。新しいシークレットをランナーにロールアウトしてから、古いシークレットを取り消します。取り消されたシークレットを保持しているランナーは、次の認証済みポーリングに失敗して終了し、`poll auth failed` をログに記録します。オーケストレーターは新しいシークレットでランナーを再起動します。
 
 **2. ランナーを起動する**
 

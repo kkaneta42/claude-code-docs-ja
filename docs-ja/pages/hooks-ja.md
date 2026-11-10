@@ -1089,7 +1089,7 @@ Claude を完全に停止するには、次のようにします。
 
 #### ターミナル通知を発行
 
-フックは制御ターミナルなしで実行されるため、エスケープ シーケンスを `/dev/tty` に直接書き込むことは失敗します。代わりに、エスケープ シーケンスを `terminalSequence` フィールドで返し、Claude Code は独自のターミナル書き込みパスを通じてそれを発行します。これはレース フリーで、tmux と GNU screen 内で機能し、`/dev/tty` がない Windows で機能します。
+フックは制御ターミナルなしで実行されるため、エスケープ シーケンスを `/dev/tty` に直接書き込むことは失敗します。代わりに、エスケープ シーケンスを `terminalSequence` フィールドで返し、Claude Code は独自のターミナル書き込みパスを通じてそれを発行します。これはレース フリーで、`/dev/tty` がない Windows でも機能します。
 
 フィールドは 1 つ以上の許可リストに登録されたエスケープ シーケンスの文字列を受け入れます。
 
@@ -1101,12 +1101,13 @@ Claude を完全に停止するには、次のようにします。
 
 シーケンスは BEL または ST で終了する場合があります。許可リスト外のもの（CSI カーソルと色シーケンス、OSC パレット シーケンス、OSC 8 ハイパーリンク、OSC 52 クリップボード書き込み、OSC 1337 を含む）は拒否され、フィールドは無視されます。
 
-Claude Code はフックの出力を処理するときにシーケンス自体を書き込むため、このフィールドは `Notification` や `StopFailure` など、`systemMessage` と `continue` を破棄するイベントでも機能します。ただし、2 つの制限があります。
+Claude Code はフックの出力を処理するときにシーケンス自体を書き込むため、このフィールドは `Notification` や `StopFailure` など、`systemMessage` と `continue` を破棄するイベントでも機能します。ただし、いくつかの制限があります。
 
 * Claude Code は対話セッションでのみ、かつそのインターフェイスが画面に表示されている間のみシーケンスを書き込みます。`-p` フラグを使用した非対話モードおよび Agent SDK では、このフィールドは無視されます。
+* このフィールドは[バックグラウンド](#run-hooks-in-the-background)で実行されないフックからのみ機能するため、`async` と `asyncRewake` はオフのままにしてください。
 * `WorktreeCreate` コマンド フックは JSON を返せません。Claude Code はその stdout を worktree パスとして読み取るためです。HTTP `WorktreeCreate` フックは JSON を返すため、このフィールドを含めることができます。
 
-以下の例は `Notification` フックからデスクトップ通知を発火します。エスケープ シーケンスは `printf` 8 進数エスケープで構築されるため、制御バイトはシェル コマンド ラインに表示されず、`jq -n --arg` は JSON 出力を構築するため、通知メッセージの引用符、バックスラッシュ、改行は正しくエスケープされます。
+tmux または GNU screen を使用している場合は、まず[それらのセットアップ](#get-terminal-notifications-inside-tmux-or-gnu-screen)を完了してください。以下の例は、Ghostty や Warp など OSC `777` を読み取るターミナルで、`Notification` フックからデスクトップ通知を発火します。スクリプトの `jq -nc --arg` 呼び出しは JSON 出力を構築し、通知メッセージ内の引用符、バックスラッシュ、改行をエスケープします。
 
 ```bash theme={null}
 #!/bin/bash
@@ -1119,6 +1120,13 @@ jq -nc --arg seq "$seq" '{terminalSequence: $seq}'
 ```
 
 `{ "terminalSequence": "..." }` の形状は、任意のシェルまたは言語から同じです。
+
+#### tmux または GNU screen 内でターミナル通知を受け取る
+
+Claude Code が tmux または GNU screen 内で実行されている場合、OSC シーケンスがターミナル アプリケーションに届くには次の設定が必要です。
+
+* **tmux 3.3 以降**: `~/.tmux.conf` に `set -g allow-passthrough on` を追加し、シェルから `tmux source-file ~/.tmux.conf` を実行します。このオプションは Claude Code だけでなく、それらのペイン内のすべてのプログラムに適用されます。`on` の場合、シーケンスを送信できるのは tmux が表示しているペインのみです。アタッチしているセッション内の他のペインからも送信できるようにするには、tmux 3.4 以降で `on` の代わりに `all` を使用します。
+* **GNU screen**: Claude Code のウィンドウを screen で表示したままにしてください。バックグラウンド ウィンドウからのシーケンスはターミナル アプリケーションに届かないためです
 
 #### Claude 用にコンテキストを追加
 

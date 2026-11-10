@@ -964,7 +964,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 
 > [!NOTE]
 >
-> マシンに[管理設定](https://code.claude.com/docs/ja/settings.md#check-what-your-organization-enforces)がなく、セッションで Team または Enterprise プランの [`/login` 認証情報](https://code.claude.com/docs/ja/authentication#authentication-precedence)を使用していない場合、`PreToolUse` フックがブロックした呼び出しを [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が承認できます。代わりに API キーや長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されている場合でも、そのログインを使用していません。
+> マシンに[管理設定](https://code.claude.com/docs/ja/settings.md#check-what-your-organization-enforces)と [`managed-mcp.json` ファイル](https://code.claude.com/docs/ja/managed-mcp#deploy-managed-mcp-json)がなく、セッションで Team または Enterprise プランの [`/login` 認証情報](https://code.claude.com/docs/ja/authentication#authentication-precedence)を使用していない場合があります。その場合、`PreToolUse` フックがブロックした呼び出しを [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が承認できます。代わりに API キーや長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されている場合でも、そのログインを使用していません。
 >
 > plan モードでは、mod がそのようなブロックされた呼び出しを承認できるのは読み取り専用の場合のみであり、ファイル編集は承認できません。mod の承認がルールやフックを通過しないケースについては、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。
 

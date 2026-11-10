@@ -135,6 +135,7 @@ Claude Code GitHub Action を削除するには、インストールに適用さ
 | Merge queues | 読み取り |
 | Metadata | 読み取り |
 | Pull requests | 読み取りと書き込み |
+| Repository creation | 読み取りと書き込み |
 | Repository hooks | 読み取りと書き込み |
 | Statuses | 読み取り |
 | Workflows | 読み取りと書き込み |

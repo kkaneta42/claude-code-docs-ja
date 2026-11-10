@@ -26,6 +26,7 @@ Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` と�
 
 **オプションセクション：**
 
+* [`login_notice`](#login_notice)：開発者がサインイン時に表示される通知
 * [`admin`](#admin)：Admin API 認証、支出制限の保持
 * [`enforcement`](#enforcement)：支出制限のフェイルオープンまたはフェイルクローズ動作
 * [`pricing`](#pricing)：契約レート、支出メーター用の乗数、開発者が表示するコスト数値用の乗数
@@ -845,6 +846,18 @@ IdP の userinfo エンドポイントが groups クレームを返し、かつ 
 
 ## オプションセクション
 
+### `login_notice`
+
+開発者がサインインするときにお知らせを表示するには、トップレベルの `login_notice` キーにお知らせのテキストを最大 500 文字で設定します。次の例では、ゲートウェイの対象者とアクセスに関する問い合わせ先を示しています。
+
+```yaml theme={null}
+login_notice: This gateway is for Example Corp staff. For access questions, email it-help@example.com.
+```
+
+開発者には、ブラウザのゲートウェイ検証ページと、ターミナルの対話型サインイン画面で、`Notice from <gateway hostname>` の下にこのテキストが表示されます。テキスト内の改行はスペースになります。お知らせはサインイン前に表示されるため、ゲートウェイにアクセスできる人なら誰でも読むことができます。
+
+ゲートウェイサーバーに Claude Code v2.1.319 以降が必要です。ターミナル画面については、開発者のマシンにも同じバージョンが必要です。それより前のゲートウェイは、このキーを見つけると起動を拒否します。キーを追加する前にすべてのレプリカをアップグレードし、ロールバックする前にキーを削除してください。
+
 ### `admin`
 
 オプション。`/v1/organizations/spend_limits` を有効にします。これは Anthropic のパブリック Admin API をミラーリングし、`/v1/messages` でデベロッパーごとの支出強制を行います。キャップの設定と強制方法については [支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md) を参照してください。このセクションでは、この機能をオンにしてチューニングする `gateway.yaml` キーについて説明します。
@@ -863,6 +876,9 @@ admin:
   # IdP groups granted full admin via the normal gateway JWT (no API key).
   admin_groups: [platform-finops]
   blocked_message: request an increase at https://go.example.com/claude-limits
+  # Try eng-platform's pooled budget first, then eng-all's, then any other group's.
+  pooled_conflict_rule: priority_list
+  pooled_priority_order: [eng-platform, eng-all]
 ```
 
 | フィールド | 必須 | 説明 |
@@ -875,6 +891,21 @@ admin:
 | `spend_retention_months` | いいえ | デフォルト `13`。この期間より古い `spend` カウンター行は削除されます。デフォルトは前年比レポート用に完全な 1 年と現在の部分月を保持します。 |
 | `identity_retention_days` | いいえ | デフォルト `90`。`principal_emails` 行の最終確認からの TTL。この行は各デベロッパーのメール、表示名、グループ（PII）を保持します。意図的に支出保持より短くしているため、プロビジョニング解除されたアイデンティティは期限切れになりますが、その匿名支出カウンターは残ります。 |
 | `group_limit_mode` | いいえ | `min`（デフォルト）または `max`。デベロッパーがキャップのある複数のグループに属する場合、`min` は最も制限的なものを強制し、`max` は最も制限の緩いものを強制します。強制と `/effective` の両方で使用されます。 |
+| `pooled_conflict_rule` | いいえ | `default_order`（デフォルト）または `priority_list`。ゲートウェイが開発者のプール予算を試す順序です。[プール予算の順序](#pooled-budget-order) を参照してください。v2.1.319 以降が必要です。 |
+| `pooled_priority_order` | `priority_list` の場合 | 最大 50 個のグループ名。それぞれ 1 回だけ、IdP が送信する表記どおりに記載します。ゲートウェイが最初にプール予算を試すグループです。[プール予算の順序](#pooled-budget-order) を参照してください。v2.1.319 以降が必要です。 |
+
+#### プール予算の順序
+
+プール予算とは、グループ全体で消費する 1 つの月次制限です。設定するには、[グループの月次上限を設定するリクエスト](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md#set-a-cap) に `pooled_budget` を追加します。たとえば \$5,000 の場合は `"pooled_budget": {"amount": "500000"}` とします。このリクエストでは、グループの `scope`、`"period": "monthly"`、`amount` も指定します。`amount` は引き続き各メンバー個人の上限になります。
+
+このようなグループに複数属している開発者の場合、各リクエストは支出が制限を下回っている最初の予算に計上され、すべての予算を使い切るとリクエストは拒否されます。`pooled_conflict_rule` は、ゲートウェイが予算を試す順序を設定します。
+
+* **`default_order`**: 制限額が最も大きいものから順に試し、制限額が同じ場合はグループ名の昇順で試します
+* **`priority_list`**: `pooled_priority_order` 内のグループの予算をリストの順に試し、その後、その他のグループの予算をグループ名の順に試します
+
+`pooled_conflict_rule: priority_list` を指定せずにグループをリストした場合、ゲートウェイはそのリストを無視し、起動時に警告をログに記録します。
+
+v2.1.319 より前のゲートウェイサーバーは、`pooled_conflict_rule` または `pooled_priority_order` を見つけると起動を拒否します。いずれかのキーを追加する前にすべてのレプリカをアップグレードし、ロールバックする前に両方のキーを削除してください。
 
 ### `enforcement`
 
@@ -1673,6 +1704,8 @@ load_test_mode:
 # environment variable (debug | info | warn | error; default info). debug
 # also logs the claim names in each id_token, for groups_claim diagnosis.
 # It does not affect audit events, which are always emitted.
+# Set CLAUDE_GATEWAY_LOG_FORMAT=json to write operational log lines as JSON
+# objects with severity, time, and message.
 
 listen:
   host: 0.0.0.0
@@ -1713,6 +1746,9 @@ store:
   # connect_timeout_seconds: 5
   # readiness_grace_seconds: 300   # keep passing the readiness check through a database failover
 
+# Notice shown at sign-in. Anyone who can reach the gateway can read it.
+# login_notice: This gateway is for Example Corp staff. For access questions, email it-help@example.com.
+
 # Enables /v1/organizations/spend_limits (mirrors the Anthropic Admin API)
 # and per-developer spend enforcement on /v1/messages. Omit to disable.
 # Caps themselves are set via the admin API, not here.
@@ -1727,6 +1763,8 @@ store:
 #   # spend_retention_months: 13
 #   # identity_retention_days: 90
 #   # group_limit_mode: min
+#   # pooled_conflict_rule: priority_list
+#   # pooled_priority_order: [eng-platform, eng-all]
 
 # enforcement:
 #   fail_closed_on_error: false
