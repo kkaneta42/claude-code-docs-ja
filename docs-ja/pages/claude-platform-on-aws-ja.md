@@ -8,13 +8,13 @@
 
 AWS 上の Claude Platform は、AWS 認証、IAM アクセス制御、AWS Marketplace 請求を備えた Anthropic が運営する Claude API です。リクエストは Anthropic の API に直接到達するため、[Claude API](https://platform.claude.com/docs) と同じモデルと API 機能を同じリリーススケジュールで取得できます。AWS 認証情報またはワークスペース API キーで認証し、AWS Marketplace を通じて支払います。
 
-Claude Code が Anthropic の機能フラグサービスを通じてオンにするクライアント側機能はデフォルトではオフであり、[アドバイザーツール](https://code.claude.com/docs/ja/advisor.md)は利用できません。完全なリストについては、[機能可用性マトリックス](https://code.claude.com/docs/ja/feature-availability.md#summary-by-provider)を参照してください。
-
 このガイドを使用して、AWS 上の Claude Platform を通じてすでにプロビジョニングしたワークスペースに Claude Code をポイントします。このガイドの前に行う AWS サブスクリプションとワークスペースのセットアップについては、[AWS 上の Claude Platform ドキュメント](https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws)を参照してください。
 
 > [!NOTE]
 >
 > AWS Marketplace を通じてサブスクリプションすると、AWS アカウントに関連付けられた新しい Anthropic 組織がプロビジョニングされます。この組織は、Anthropic で既に持っている組織とは別であり、認証情報はそれらの間で転送されません。AWS にリンクされた組織のワークスペース ID と API キーを使用してください。既存の Claude Console アカウントからではなく。
+
+一部の Claude Code 機能は、AWS 上の Claude Platform では利用できないか、動作が異なります。[機能可用性マトリックス](https://code.claude.com/docs/ja/feature-availability.md#summary-by-provider)および[機能フラグの取得を必要とする機能](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)を参照してください。
 
 ## 前提条件
 

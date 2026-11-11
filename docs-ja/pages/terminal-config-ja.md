@@ -328,28 +328,28 @@ $env:CLAUDE_CODE_NO_FLICKER = "1"; claude
 
 幅広いターミナルでは、Claude のレスポンス内の各行のテキストがウィンドウの全幅に渡ります。代わりに設定した列数でテキストを折り返すには、設定で [`maxProseWidth`](https://code.claude.com/docs/ja/settings-reference#maxprosewidth) を設定してください。
 
-## 大量のコンテンツを貼り付ける
+## 大きなコンテンツを貼り付ける
 
-800 文字以上または 3 行以上をプロンプトに貼り付けると、Claude Code は入力を `[Pasted text #1 +120 lines]` などのプレースホルダーに折りたたんで、入力ボックスが使用可能な状態を保ちます。送信時に完全なコンテンツを送信します。ファイル全体やログが長いなど、非常に大きな入力の場合は、コンテンツをファイルに書き込んで、貼り付けの代わりに Claude にそれを読むよう依頼してください。会話トランスクリプトが読みやすくなり、Claude が後のターンでパスによってファイルを参照できます。VS Code 統合ターミナルは、非常に大きな貼り付けから Claude Code に到達する前に文字をドロップできるため、そこではファイルを使用してください。
+プロンプトに 800 文字を超える、または 3 行を超えるテキストを貼り付けると、Claude Code は入力ボックスを使いやすい状態に保つため、入力を `[Pasted text #1 +120 lines]` のようなプレースホルダーに折りたたみます。送信時には完全な内容が送られます。ファイル全体や長いログなど非常に大きな入力の場合は、貼り付けるのではなく、内容をファイルに書き出して Claude にそのファイルを読むよう依頼してください。そうすることで会話のトランスクリプトが読みやすく保たれ、Claude は後のターンでもパスを指定してそのファイルを参照できます。また、VS Code の統合ターミナルでは、非常に大きな貼り付けの一部の文字が Claude Code に届く前に欠落することがあるため、その場合もファイルを使用してください。
 
-貼り付けに [目に見えない Unicode 文字](https://code.claude.com/docs/ja/interactive-mode.md#invisible-characters-in-prompts) が含まれている場合、Claude Code は Enter キーを押すときにそれらを削除し、クリーンアップされたプロンプトを入力ボックスに戻して、別の Enter で送信できるようにします。
+貼り付けた内容に[不可視の Unicode 文字](https://code.claude.com/docs/ja/interactive-mode.md#invisible-characters-in-prompts)が含まれている場合、Enter を押すと Claude Code がそれらを除去し、クリーンアップされたプロンプトを入力ボックスに戻します。もう一度 Enter を押すと送信できます。
 
-### Claude が貼り付けたテキストをどのように処理するか
+### Claude による貼り付けテキストの扱い
 
-送信すると、Claude は各 `[Pasted text #N]` プレースホルダーの背後にあるコンテンツを、他の場所から貼り付けたテキストとして表示され、入力したテキストではなく表示されます。Claude には、貼り付けには入力していない指示が含まれる可能性があり、入力したメッセージがそれを要求する場所でのみ指示に従うよう指示されます。[機能フラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) しないセッションでは、貼り付けはマークされません。
+送信すると、Claude は各 `[Pasted text #N]` プレースホルダーの背後にある内容を、ユーザーが入力したものではなく他の場所から貼り付けたテキストとしてマークされた状態で受け取ります。Claude には、貼り付けた内容にはユーザーが書いていない指示が含まれている可能性があること、そしてその中の指示には、ユーザーが入力したメッセージで求められている場合にのみ従うべきであることが伝えられます。[フィーチャーフラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)しないセッションでは、貼り付けた内容はマークされません。
 
-### 折りたたまれた貼り付けを削除して復元する
+### 折りたたまれた貼り付けの削除と復元
 
-`Ctrl+W` や `Ctrl+K` などの単語または行ショートカットで削除するか、`df]` などの `f`/`t` モーションを使用した vim 削除で削除し、削除範囲が `[Pasted text #N]` プレースホルダー内に達する場合、Claude Code はプレースホルダー全体を削除します。復元するには、単語または行ショートカットの後に [`Ctrl+Y`](https://code.claude.com/docs/ja/interactive-mode#text-editing) で削除を貼り付け直すか、vim 削除の後に [`p` NORMAL モード](https://code.claude.com/docs/ja/interactive-mode#editing-normal-mode) で復元してください。
+`Ctrl+W` や `Ctrl+K` などの単語または行単位のショートカット、あるいは `df]` のような `f`/`t` モーションを使った vim の削除で削除を行い、削除範囲が `[Pasted text #N]` プレースホルダーの内部に及んだ場合、Claude Code はプレースホルダー全体を削除します。復元するには、単語または行単位のショートカットの後であれば [`Ctrl+Y`](https://code.claude.com/docs/ja/interactive-mode#text-editing) で、vim の削除の後であれば [NORMAL モードでの `p`](https://code.claude.com/docs/ja/interactive-mode#editing-normal-mode) で、削除した内容を貼り付け直します。
 
-### 貼り付けたテキストを含むプロンプトを呼び出す
+### 貼り付けテキストを含むプロンプトを呼び出す
 
-Claude Code は折りたたまれたコンテンツを各 `[Pasted text #N]` プレースホルダーの背後に `~/.claude/paste-cache/` に保持するため、[コマンド履歴](https://code.claude.com/docs/ja/interactive-mode.md#command-history) からプロンプトを呼び出して再送信すると、完全な貼り付けコンテンツが再度送信され、後のセッションでも含まれます。
+Claude Code は各 `[Pasted text #N]` プレースホルダーの背後にある内容を `~/.claude/paste-cache/` に保存します。そのため、[コマンド履歴](https://code.claude.com/docs/ja/interactive-mode.md#command-history)からプロンプトを呼び出して再送信すると、後のセッションであっても、貼り付けた完全な内容が再び送信されます。
 
-[保持期間スイープルール](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically) に従い、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) より古いキャッシュファイルは削除されるため、呼び出されたプロンプトは存在しなくなった貼り付けテキストを参照できます。そのようなプロンプトを送信すると、Claude Code はリテラル `[Pasted text #N]` 文字列を送信することはなく、不足している貼り付けの名前を示す通知を表示します。
+[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) より古いキャッシュファイルは[保持期間のクリーンアップルール](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)に従って削除されるため、呼び出したプロンプトが、もう存在しない貼り付けテキストを参照している場合があります。そのようなプロンプトを送信すると、Claude Code は `[Pasted text #N]` という文字列そのものは送信せず、見つからない貼り付けを示す通知を表示します。
 
-* テキストが残っているプレーンプロンプトでは、Claude Code はプレースホルダーを削除して残りのテキストを送信します。
-* [シェルモード](https://code.claude.com/docs/ja/interactive-mode.md#shell-mode-with-prefix) コマンドまたは `/` コマンドでは、削除が実行内容を変更する可能性があり、プロンプトの削除が空のままになる場合、Claude Code は送信をキャンセルし、元のテキストを入力に保持します。プレースホルダーはまだ含まれています。プレースホルダーを削除するか、コマンドを編集してから再送信してください。
+* テキストが残っている通常のプロンプトでは、Claude Code はプレースホルダーを削除し、残りのテキストを送信します。
+* 削除によって実行される内容が変わってしまう [シェルモード](https://code.claude.com/docs/ja/interactive-mode.md#shell-mode-with-prefix)のコマンドや `/` コマンドの場合、および削除によって空になるあらゆるプロンプトの場合、Claude Code は送信をキャンセルし、プレースホルダーを含む元のテキストを入力欄に残します。プレースホルダーを削除するかコマンドを編集してから、再送信してください。
 
 ## Vim キーバインディングでプロンプトを編集する
 

@@ -169,7 +169,9 @@ Completed
 
 リストが [ディレクトリでグループ化](#organize-the-list) されている場合、概要はセッションの状態を示す色付きの単語で始まります。例えば `Needs input · double jump or wall climb?` のようになります。デフォルトの状態グループ化では、グループヘッダーがすでに状態を示しているため、行は概要のみを表示します。
 
-ターン終了時の概要と各ターン途中の書き直しは、通常のプロバイダーを通じた 1 回の短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](https://code.claude.com/docs/ja/data-usage.md) の下で課金および処理されます。モデルによる書き直しの間の 15 秒ごとの更新はセッション自身の出力を再利用し、リクエストを送信しません。Haiku クラスモデルが設定されていないサードパーティプロバイダーまたはゲートウェイでは、リクエストは代わりにセッションのメインモデルを使用します。モデルを選択するには [`ANTHROPIC_DEFAULT_HAIKU_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) を設定します。
+#### 行の概要のコスト
+
+ターン終了時の概要と各ターン途中の書き直しは、通常のプロバイダーを通じた 1 回の短いリクエストであり、セッション自体と同じ [データ使用条件](https://code.claude.com/docs/ja/data-usage.md) の下で課金および処理されます。サードパーティプロバイダーまたはゲートウェイでは、概要は [`ANTHROPIC_DEFAULT_HAIKU_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) で設定したモデルを使用します。これが設定されていない場合は、プロバイダーのバックグラウンドタスク用モデルを使用します。[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md#4-pin-model-versions)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md#5-pin-model-versions)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md#4-pin-model-versions)、または [ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway-protocol.md#requests-and-defaults-by-connection-method) を参照してください。
 
 ### プルリクエストステータス
 

@@ -12,7 +12,7 @@
 
 fast mode はサポートされているモデル向けの高速な設定で、モデルを最大 2.5 倍高速化しますが、トークンあたりのコストは高くなります。迅速な反復やライブデバッグなどのインタラクティブな作業で速度が必要な場合は `/fast` でオンにし、コストがレイテンシーより重要な場合はオフにします。
 
-fast mode は同じモデルを、コスト効率よりも速度を優先する異なる API 設定で使用するため、品質と機能は変わりません。fast mode は Fable 5.2、Opus 5.5、Opus 5、および Opus 4.8 でサポートされています。Sonnet、Haiku、または他のモデルでは利用できません。
+fast mode は同じモデルを、コスト効率よりも速度を優先する異なる API 設定で使用するため、品質と機能は変わりません。Anthropic API では、fast mode は Fable 5.2、Opus 5.5、Opus 5、および Opus 4.8 でサポートされています。Sonnet、Haiku、または他のモデルでは利用できません。Google Cloud の Agent Platform 上のモデルについては、[Agent Platform で fast mode を使用する](#use-fast-mode-on-agent-platform)を参照してください。
 
 > [!WARNING]
 >
@@ -25,19 +25,21 @@ Opus 4.7 は高速モードをサポートしていないため、それに切�
 
 知っておくべきこと：
 
-* Claude Code CLI で `/fast` を使用して高速モードをオンにします。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)は、選択したモデルが高速モードをサポートしている場合、**高速モードを切り替え**コマンドを提供します。Claude Code はそのトグルを [`fastMode` 設定](#toggle-fast-mode)に保存します。
-* fast mode の価格は、MTok あたりの入力/出力で Fable 5.2 が \$16/\$80、Opus 5.5 が \$8/\$40、Opus 5 および Opus 4.8 が \$10/\$50 です。
-* サブスクリプションプラン（Pro/Max/Ultra/Team/Enterprise）の Claude Code ユーザーと Claude Console で利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織は Opus 5 または Opus 4.8 で使用するために、最初にアクセスをプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
+* Claude Code CLI で `/fast` を使用して fast mode をオンにします。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)は、選択したモデルが fast mode をサポートしている場合、**Toggle fast mode** コマンドを提供します。Anthropic API では、Claude Code はそのトグルを [`fastMode` 設定](#toggle-fast-mode)に保存します。
+* Anthropic の fast mode の価格は、MTok あたりの入力/出力で Fable 5.2 が \$16/\$80、Opus 5.5 が \$8/\$40、Opus 5 および Opus 4.8 が \$10/\$50 です。
+* サブスクリプションプラン（Pro/Max/Ultra/Team/Enterprise）の Claude Code ユーザー、Claude Console、および[条件付き](#use-fast-mode-on-agent-platform)で Google Cloud の Agent Platform で利用可能です。Team および Enterprise 組織は Owner が最初に有効にする必要があり、Console 組織は Opus 5 または Opus 4.8 で使用するために、最初にアクセスをプロビジョニングする必要があります。どちらも[要件](#requirements)に記載されています。
 * サブスクリプションプラン（Pro/Max/Ultra/Team/Enterprise）の Claude Code ユーザーの場合、fast mode は使用クレジットのみで利用可能であり、サブスクリプションのレート制限には含まれていません。
 
 ## 高速モードの切り替え
+
+Agent Platform では、`/fast` と `fastMode` 設定の動作が異なるため、代わりに[Agent Platform で fast mode を使用する](#use-fast-mode-on-agent-platform)の手順に従ってください。
 
 CLI では、次のいずれかの方法で高速モードを切り替えます：
 
 * `/fast` を実行して、Space キーを押してオンまたはオフに切り替えてから、Enter キーを押して確認します
 * fast mode をサポートしているモデルで、[ユーザー設定ファイル](https://code.claude.com/docs/ja/settings.md)に `"fastMode": true` を設定します。それ以外のモデルで設定した場合、そのモデルのまま fast mode はオフになります。Fable 5.2 では、Fable 5.2 の使用中に `/fast` を実行するまで、その設定だけでは効果がありません。
 
-デフォルトでは、対話セッションで有効にした fast mode は、サポートされているモデルであればセッションをまたいで保持されます。Fable 5.2 では、[Fable 5.2 の使用中にオンにした](#switch-models-while-fast-mode-is-on)場合にのみ保持されます。fast mode を各セッションでリセットするように構成できます。詳細は[セッションごとのオプトインが必要](#require-per-session-opt-in)を参照してください。
+Anthropic API では、デフォルトで、対話セッションで有効にした fast mode は、サポートされているモデルであればセッションをまたいで保持されます。Fable 5.2 では、[Fable 5.2 の使用中にオンにした](#switch-models-while-fast-mode-is-on)場合にのみ保持されます。fast mode を各セッションでリセットするように構成できます。詳細は[セッションごとのオプトインが必要](#require-per-session-opt-in)を参照してください。
 
 [クラウドセッション](#use-fast-mode-in-cloud-sessions)の外では、[非インタラクティブモード](https://code.claude.com/docs/ja/headless.md)で `-p` フラグを使用する場合、`/fast` は [`--settings`](https://code.claude.com/docs/ja/cli-reference#cli-flags) 値で高速モードを使用して起動されたセッションでのみ機能します。例えば `claude -p --settings '{"fastMode": true}'` のように使用します。その場合、切り替えはそのセッションにのみ適用され、デフォルトとして保存されません。`-p` 形式には Claude Code v2.1.205 以降が必要です。非インタラクティブモードの他の場所では、コマンドが高速モードが利用できないことを報告します。
 
@@ -47,13 +49,13 @@ Claude が処理中に `/fast` を実行でき、Claude Code は処理の終了�
 
 `/fast` で fast mode を有効にすると：
 
-* 現在のモデルが高速モードをサポートしていない場合、Claude Code は Opus に切り替わります
+* Anthropic API では、現在のモデルが fast mode をサポートしていない場合、Claude Code は Opus に切り替わります
 * Fable 5.2 での fast mode には Claude Code v2.1.321 以降が必要です
 * 確認メッセージが表示されます：「Fast mode ON」
 * 高速モードがアクティブな間、プロンプトの横に小さい `↯` アイコンが表示されます
 * いつでも `/fast` を再度実行して、高速モードがオンかオフかを確認できます
 
-Opus 5.5 は Claude Code v2.1.280 以降の fast mode のデフォルトです。v2.1.280 より前では、fast mode のデフォルトは v2.1.219 以降 Opus 5 でした。
+Anthropic API では、Opus 5.5 は Claude Code v2.1.280 以降の fast mode のデフォルトです。v2.1.280 より前では、fast mode のデフォルトは v2.1.219 以降 Opus 5 でした。
 
 `/fast` を再度実行して fast mode を無効にすると、現在のモデルに留まります。別のモデルに切り替えるには、`/model` を使用します。
 
@@ -63,15 +65,13 @@ fast mode はモデルの切り替えに追従します：
 
 * **切り替える**：高速モードをサポートしていないモデルに切り替えると、Claude Code は高速モードをオフにします。これには Opus 4.7 が含まれます。v2.1.221 より前では、高速モードは Opus 4.7 への切り替え後もオンのままで、API がリクエストを拒否していました。
 * **戻す**：保存された設定がオンの場合、サポートされている Opus モデルに戻すと fast mode が再度オンになります。[セッションごとのオプトイン](#require-per-session-opt-in)を使用している場合は、代わりに `/fast` を実行してください。
-* **Fable 5.2 に切り替える**：Fable 5.2 の使用中にオンにした場合を除き、fast mode はオフになります。オンにするには、Fable 5.2 で `/fast` を実行します。[セッションごとのオプトイン](#require-per-session-opt-in)を設定していない限り、オフにするか別のモデルでオンにするまで、その状態はセッションをまたいで保持されます。
+* **Fable 5.2 に切り替える**：Fable 5.2 の使用中にオンにした場合を除き、fast mode はオフになります。オンにするには、Fable 5.2 で `/fast` を実行します。[セッションごとのオプトイン](#require-per-session-opt-in)を設定していない限り、オフにするか別のモデルでオンにするまで、その状態は Anthropic API 上でセッションをまたいで保持されます。
 
 モデル切り替えが高速モードをオンまたはオフにするたびに、Claude Code は `Fast mode ON` または `Fast mode OFF` の確認を表示し、高速モードがオンの間は `↯` アイコンが表示されます。これは `/model` で切り替える場合、[`/config model=<model>`](https://code.claude.com/docs/ja/settings)で切り替える場合、または [Remote Control](https://code.claude.com/docs/ja/remote-control.md)を通じて接続されたデバイスから切り替える場合に当てはまります。
 
-Claude Code は、モデル切り替え、再接続、または失敗した[可用性チェック](#use-fast-mode-behind-proxies-and-llm-gateways)の後、Remote Control を通じて接続されたデバイスにセッションの fast mode 状態を再送信します。
-
 ### クラウドセッションで高速モードを使用する
 
-高速モードは[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で機能します。アカウントで利用可能な場合、セッションが Anthropic 管理インフラストラクチャで実行されるか、[セルフホストランナー](https://code.claude.com/docs/ja/self-hosted-environments)で実行されるかに関わらず機能します。セッションの環境で Claude Code v2.1.271 以降が必要です。
+fast mode は[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で機能します。アカウントで利用可能な場合、セッションが Anthropic 管理インフラストラクチャで実行されるか、Anthropic API 上の[セルフホストランナー](https://code.claude.com/docs/ja/self-hosted-environments)で実行されるかに関わらず機能します。セッションの環境で Claude Code v2.1.271 以降が必要です。
 
 セッションで `/fast on` と入力して高速モードをオンにします。そのセッションのみオンのままで、デフォルトとして保存されません。[要件](#requirements)はクラウドセッションにも適用されます。
 
@@ -79,7 +79,7 @@ Claude Code は、モデル切り替え、再接続、または失敗した[可�
 
 ## コストのトレードオフを理解する
 
-fast mode は標準速度よりもトークンあたりの価格が高くなります。
+fast mode は標準速度よりもトークンあたりの価格が高くなります。Anthropic の料金は次のとおりです。
 
 | モデル | 入力（MTok） | 出力（MTok） |
 | - | - | - |
@@ -129,7 +129,7 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 
 高速モードには以下のすべてが必要です：
 
-* **Anthropic API またはサブスクリプションのみ**：fast mode は Anthropic Console API および使用クレジットを使用する Claude サブスクリプションプランで利用可能です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または AWS 上の Claude Platform では利用できません。Console 組織が Opus 5 または Opus 4.8 で fast mode を使用するには、[fast mode アクセスをプロビジョニング](#enable-fast-mode-for-your-organization)する必要もあります。
+* **サポートされているプロバイダー**：fast mode は Anthropic Console API、使用クレジットを使用する Claude サブスクリプションプラン、および Google Cloud の Agent Platform で[条件付き](#use-fast-mode-on-agent-platform)で利用できます。Amazon Bedrock、Microsoft Foundry、または AWS 上の Claude Platform では利用できず、`/fast` は「Fast mode is not available on this provider」と表示します。Console 組織が Opus 5 または Opus 4.8 で fast mode を使用するには、[fast mode アクセスをプロビジョニング](#enable-fast-mode-for-your-organization)する必要もあります。
 * **サブスクリプションプランで使用クレジットが有効**：Pro、Max、Ultra、Team、または Enterprise プランでは、アカウントで[使用クレジット](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)が有効になっている必要があります。これにより、プランに含まれる使用量を超えて課金できるようになります。有効になるまで、`/fast` は「Fast mode requires usage credits」と表示します。有効にする方法はプランによって異なります：
   * Pro、Max、および Ultra では、claude.ai の [**Settings > Usage**](https://claude.ai/settings/usage) の **Usage credits** セクションで有効にするか、`/usage-credits` を実行してそのページを開きます。
   * Team および Enterprise では、請求アクセス権を持つメンバーが [**Organization settings > Usage**](https://claude.ai/admin-settings/usage) で組織の使用クレジットを有効にし、アクセス権を持たないメンバーは `/usage-credits` を実行して組織の管理者にリクエストを送信します。
@@ -150,7 +150,7 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 > * **高速モードが有効になっていない**：組織で高速モードが有効になっていない場合、`/fast` で高速モードをオンにすると「Fast mode has been disabled by your organization.」と表示されます。
 > * **高速モードが管理設定によってオフにされている**：組織が [`fastMode: false`](https://code.claude.com/docs/ja/settings-reference#fastmode) を設定する[管理設定](https://code.claude.com/docs/ja/managed-settings.md)をデプロイしている場合、`/fast` で高速モードをオンにすると同じ「Fast mode has been disabled by your organization」メッセージが表示されます。
 > * **セッションごとのオプトインが必要**：[`fastModePerSessionOptIn: true`](#require-per-session-opt-in) を設定する管理設定は、インタラクティブターミナルセッション以外のすべての場所で `/fast on` を同じメッセージで拒否します。
-> * **fast mode モデルが許可されていない**：組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが fast mode の Opus モデルを除外している場合、オンにすることは「is not in your organization's allowed models」で拒否されます。fast mode をサポートする許可されたモデルで既に実行中のセッションでは、`/fast` はモデルを切り替える代わりに現在のモデルで fast mode を有効にします。
+> * **fast mode モデルが許可されていない**：組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが `/fast` の切り替え先のモデルを除外している場合、オンにすることは「is not in your organization's allowed models」で拒否されます。fast mode をサポートする許可されたモデルで既に実行中のセッションでは、`/fast` はモデルを切り替える代わりに現在のモデルで fast mode を有効にします。
 
 ### 組織の高速モードを有効にする
 
@@ -163,11 +163,33 @@ Claude Opus 5 または Claude Opus 4.8 を使用する Console 組織は、[Cla
 
 高速モードを完全に無効にするもう 1 つのオプションは、`CLAUDE_CODE_DISABLE_FAST_MODE=1` を設定することです。[環境変数](https://code.claude.com/docs/ja/env-vars.md)を参照してください。
 
+### Agent Platform で fast mode を使用する
+
+[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md) では、Fable 5.2 で fast mode をオンにできます。対話セッションでは `/fast` で、[非対話モード](https://code.claude.com/docs/ja/headless.md)では起動フラグでオンにします。Claude Code v2.1.322 以降が必要です。
+
+fast mode を使用するには、Fable 5.2 の[リージョン](https://code.claude.com/docs/ja/google-vertex-ai.md#region-configuration)が `global`、`us`、または `eu` である必要があります。その他のリージョンでは、`/fast` は `Fast mode needs Vertex region global, us or eu` と表示し、`claude -p` は標準速度で実行されます。Claude Code を起動する前に、シェルでリージョンを設定します。例えば `global` に設定する場合：
+
+```bash theme={null}
+export VERTEX_REGION_CLAUDE_FABLE_5_2=global
+```
+
+次に、fast mode をオンにします：
+
+* **対話セッションの場合**：`/fast` を実行します。Opus モデル、または Agent Platform で fast mode に対応していない別のモデルから Fable 5.2 に切り替わります。fast mode はデフォルトとして保存されません。
+* **非対話モードの場合**：Fable 5.2 を [`--model`](https://code.claude.com/docs/ja/cli-reference#cli-flags) に、fast mode を [`--settings`](https://code.claude.com/docs/ja/cli-reference#cli-flags) に渡します。例：`claude -p "Summarize this project" --model claude-fable-5-2 --settings '{"fastMode": true}'`
+
+Agent Platform では、ユーザー、プロジェクト、ローカル、または管理設定の `"fastMode": true` は効果がありません。
+
+Agent Platform が fast mode を拒否した場合、Claude Code は標準速度にフォールバックします。その後、対話セッションでは次のいずれかのターミナルメッセージが表示されます：
+
+* `Using standard speed on Fable 5.2 · fast mode wasn't available`：`/fast on` を実行して fast mode を再試行します
+* `Fast mode was refused for this project · trying again in 30m`：Agent Platform が fast mode リクエストに 403 または 404 エラーで応答しました。より早く再試行するには、`/fast on` を実行します。
+
 ### プロキシと LLM ゲートウェイの背後で高速モードを使用する
 
-高速モードを提供する前に、Claude Code は `api.anthropic.com` への直接リクエストで組織の高速モード可用性をチェックします。チェックは [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) に従わないため、Claude トラフィックを [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を通じてルーティングし、`api.anthropic.com` への直接エグレスをブロックするネットワークでは、推論リクエストが機能していてもチェックが失敗します。チェックは設定された [HTTP プロキシ](https://code.claude.com/docs/ja/network-config.md#proxy-configuration)を使用するため、ネットワークブロックはプロキシを通じても `api.anthropic.com` に到達できない場合にのみチェックに失敗します。
+Anthropic API で fast mode を提供する前に、Claude Code は `api.anthropic.com` への直接リクエストで組織の fast mode の利用可否をチェックします。チェックは [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) に従わないため、Claude トラフィックを [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を通じてルーティングし、`api.anthropic.com` への直接エグレスをブロックするネットワークでは、推論リクエストが機能していてもチェックが失敗します。
 
-組織で fast mode が有効になっているのに `/fast` がそうでないと表示する場合は、表示されたメッセージを以下のケースから探してください。
+チェックは設定された [HTTP プロキシ](https://code.claude.com/docs/ja/network-config.md#proxy-configuration)を使用するため、ネットワークブロックはプロキシを通じても `api.anthropic.com` に到達できない場合にのみチェックに失敗します。組織で fast mode が有効になっているのに `/fast` がそうでないと表示する場合は、表示されたメッセージを以下のケースから探してください。
 
 #### Fast mode unavailable due to network connectivity issues
 
@@ -199,7 +221,7 @@ fast mode を復元するには、`api.anthropic.com` への直接エグレス�
 
 ### セッションごとのオプトインが必要
 
-デフォルトでは、ユーザーが対話セッションでオンにした fast mode は、サポートされているモデル上でセッションをまたいで保持されます。Fable 5.2 では、ユーザーが [Fable 5.2 の使用中にオンにした](#switch-models-while-fast-mode-is-on)場合にのみ保持されます。
+Anthropic API のデフォルトでは、ユーザーが対話セッションでオンにした fast mode は、サポートされているモデル上でセッションをまたいで保持されます。Fable 5.2 では、ユーザーが [Fable 5.2 の使用中にオンにした](#switch-models-while-fast-mode-is-on)場合にのみ保持されます。
 
 すべてのセッションを fast mode がオフの状態で開始させるには、任意の[設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `fastModePerSessionOptIn` を `true` に設定します。これにより、ユーザーは各セッションで `/fast` を使って有効にします。[Team](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_teams#team-&-enterprise) または [Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=fast_mode_enterprise) プランの Owner は、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて組織全体にこれをデプロイできます。
 
@@ -227,7 +249,7 @@ fast mode には標準速度とは別のレート制限があります。Console
 セッション中に使用量クレジットが不足した場合、Claude Code は拒否された各高速モードリクエストを標準速度と価格で再試行するため、作業を続けることができ、クールダウンはありません。拒否の表示方法はセッションタイプによって異なります：
 
 * 対話セッションでは、Claude Code は「Fast mode disabled · Out of usage credits」通知を表示し、fast mode をオフにします。保存された fast mode 設定は変わりません。`/fast` を実行して fast mode を再度オンにします。
-* [非インタラクティブモード](https://code.claude.com/docs/ja/headless.md)で `--output-format stream-json` を使用する場合、および Agent SDK を通じて、Claude Code はメッセージストリーム上で同じテキストを `system` メッセージとして、サブタイプ `notification` で、使用量クレジットが不足している間、ターンごとに 1 回発行します。高速モードはオンのままです。Claude Code v2.1.221 以降が必要です。
+* [非対話モード](https://code.claude.com/docs/ja/headless.md)で `--output-format stream-json` を使用する場合、および Agent SDK を通じて、Claude Code はメッセージストリーム上で同じテキストを、サブタイプ `notification` の `system` メッセージとして発行します。このメッセージは、使用クレジットが不足している間、ターンごとに 1 回届きます。fast mode はオンのままです。
 
 ## リサーチプレビュー
 

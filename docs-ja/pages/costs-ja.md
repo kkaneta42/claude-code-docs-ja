@@ -294,9 +294,7 @@ MCP ツール定義は [デフォルトで遅延](https://code.claude.com/docs/j
 
 カスタム [フック](https://code.claude.com/docs/ja/hooks.md) は Claude がそれを見る前にデータを前処理できます。Claude が 10,000 行のログファイルを読んでエラーを見つける代わりに、フックは `ERROR` に対して grep を実行し、一致する行のみを返すことができます。これにより、コンテキストを数万トークンから数百に削減します。
 
-[スキル](https://code.claude.com/docs/ja/skills.md) は Claude にドメイン知識を与えることができるため、探索する必要がありません。たとえば、「codebase-overview」スキルはプロジェクトのアーキテクチャ、主要なディレクトリ、命名規則を説明できます。Claude がスキルを呼び出すと、構造を理解するために複数のファイルを読むトークンを費やす代わりに、このコンテキストが即座に得られます。
-
-たとえば、この PreToolUse フックはテスト出力をフィルタリングして失敗のみを表示します。
+この PreToolUse フックは、テスト出力を最後の 100 行に切り詰めます。
 
 > [tab] settings.json
 >
@@ -322,17 +320,17 @@ MCP ツール定義は [デフォルトで遅延](https://code.claude.com/docs/j
 
 > [tab] filter-test-output.sh
 >
-> フックはこのスクリプトを呼び出します。`mkdir -p ~/.claude/hooks` でフォルダを作成し、以下のスクリプトを `~/.claude/hooks/filter-test-output.sh` として保存し、`chmod +x ~/.claude/hooks/filter-test-output.sh` で実行可能にします。コマンドがテストランナーであるかどうかをチェックし、失敗のみを表示するように変更します。
+> フックはこのスクリプトを呼び出します。`mkdir -p ~/.claude/hooks` でフォルダを作成し、以下のスクリプトを `~/.claude/hooks/filter-test-output.sh` として保存し、`chmod +x ~/.claude/hooks/filter-test-output.sh` で実行可能にします。コマンドがテストランナーであるかどうかをチェックし、テストランナーである場合は出力の最後の 100 行のみを保持します。
 >
 > ```bash theme={null}
 > #!/bin/bash
 > input=$(cat)
 > cmd=$(echo "$input" | jq -r '.tool_input.command')
 >
-> # If running tests, filter to show only failures
+> # If running tests, keep only the last 100 lines
 > pattern='^(npm test|pytest|go test)( [^;&|<>`$#\\[:cntrl:]]*)?$'
 > if [[ "$cmd" =~ $pattern ]]; then
->   filtered_cmd="$cmd 2>&1 | grep -A 5 -E '(FAIL|ERROR|error:)' | head -100"
+>   filtered_cmd="$cmd 2>&1 | tail -n 100"
 >   echo "$input" | jq --arg filtered "$filtered_cmd" \
 >     '{hookSpecificOutput: {hookEventName: "PreToolUse", updatedInput: (.tool_input + {command: $filtered})}}'
 > else
@@ -341,6 +339,8 @@ MCP ツール定義は [デフォルトで遅延](https://code.claude.com/docs/j
 > ```
 
 セットアップを確認するには、`/hooks` を実行して、フックが PreToolUse の下に表示されることを確認します。`claude --debug-file ./claude-debug.txt` で Claude Code を起動し、Claude に `npm test` を実行するよう依頼することもできます。フックがコマンドを書き直すと、そのログファイルには `command` と他の Bash 入力フィールドをリストする `modified tool input keys` 行が含まれます。
+
+[スキル](https://code.claude.com/docs/ja/skills.md) は Claude にドメイン知識を与えることができるため、探索する必要がありません。たとえば、「codebase-overview」スキルはプロジェクトのアーキテクチャ、主要なディレクトリ、命名規則を説明できます。Claude がスキルを呼び出すと、構造を理解するために複数のファイルを読むトークンを費やす代わりに、このコンテキストが即座に得られます。
 
 ### CLAUDE.md からスキルに指示を移動する
 

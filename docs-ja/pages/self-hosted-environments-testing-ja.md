@@ -12,7 +12,7 @@
 
 [自己ホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)では、Claude Code の[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、ユーザーが構築・管理する実行イメージ上で実行されます。新しいイメージを本番環境にロールアウトする前に、スクリプトからテスト環境に対して完全なセッションを実行します。セッションを作成し、Claude の返信を読み取り、フォローアップを送信し、その返信も読み取ります。これは実行イメージ、git アクセス、カスタムツールを検証する CI スモークテストの形です。
 
-このレシピは、[環境と実行イメージのセットアップ](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md#set-up-an-environment-and-runner)が完了していることを前提としています。また、CI ジョブがテストスクリプトと同じホスト上で実行イメージプロセスを開始することを想定しています。これは新しい実行イメージをテストするための自然なセットアップです。実行イメージにインストールする Stop フックは、各ターンの最終返信をローカルファイルに書き込み、スクリプトがそこから読み取ります。そのため、Anthropic API への呼び出しは 2 つのディスパッチだけです。テスト実行イメージが別のインフラストラクチャ上にある場合は、[リモートテスト実行イメージ](#remote-test-runners)をご覧ください。
+このレシピは、[環境とランナーのセットアップ](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md#set-up-an-environment-and-runner)が完了していること、および CI ジョブがテストスクリプトと同じホスト上でランナープロセスを開始することを前提としています。ランナーにインストールする Stop フックは、各ターンの最終返信をローカルファイルに書き込み、スクリプトはそこから読み取ります。テストランナーが別のインフラストラクチャ上にある場合は、[リモートテストランナー](#remote-test-runners)をご覧ください。
 
 ## テスト実行イメージにキャプチャフックをインストールする
 

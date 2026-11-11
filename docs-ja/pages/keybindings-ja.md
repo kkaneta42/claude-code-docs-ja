@@ -10,24 +10,24 @@ Claude Code はカスタマイズ可能なキーボードショートカット�
 
 ## 設定ファイル
 
-キーバインディング設定ファイルは、`bindings` 配列を持つオブジェクトです。各ブロックはコンテキストとキーストロークからアクションへのマップを指定します。
+キーボードショートカットの設定ファイルは、`bindings` 配列を持つオブジェクトです。各ブロックでは、コンテキストと、キー入力からアクションへのマッピングを指定します。
 
 > [!NOTE]
 >
-> キーバインディングファイルへの変更は自動的に検出され、Claude Code を再起動することなく適用されます。
+> キーボードショートカットファイルへの変更は自動的に検出され、Claude Code を再起動しなくても適用されます。
 
 | フィールド | 説明 |
 | :- | :- |
-| `$schema` | エディタのオートコンプリート用のオプション JSON スキーマ URL |
+| `$schema` | エディターでの自動補完用のオプションの JSON Schema URL |
 | `$docs` | オプションのドキュメント URL |
-| `bindings` | コンテキスト別のバインディングブロックの配列 |
+| `bindings` | コンテキストごとのバインディングブロックの配列 |
 
-この例では、チャットコンテキストで `Ctrl+E` を外部エディタを開くにバインドし、`Ctrl+S` をアンバインドします。
+この例では、チャットコンテキストで `Ctrl+E` に外部エディターを開く操作を割り当て、`Ctrl+S` の割り当てを解除しています。
 
 ```json theme={null}
 {
   "$schema": "https://www.schemastore.org/claude-code-keybindings.json",
-  "$docs": "https://code.claude.com/docs/ja/keybindings",
+  "$docs": "https://code.claude.com/docs/en/keybindings",
   "bindings": [
     {
       "context": "Chat",
@@ -78,27 +78,27 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 
 ## 利用可能なアクション
 
-アクションは `namespace:action` 形式に従います。例えば、メッセージを送信する `chat:submit` や、タスクリストを表示する `app:toggleTodos` などです。各コンテキストには特定のアクションが利用可能です。
+アクションは `namespace:action` 形式に従います。たとえば、メッセージを送信する `chat:submit` や、タスクリストを表示する `app:toggleTodos` などです。各コンテキストには、それぞれ利用可能なアクションがあります。
 
-### アプリケーションアクション
+### アプリアクション
 
 `Global` コンテキストで利用可能なアクション：
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `app:interrupt` | Ctrl+C | 現在の操作をキャンセル |
-| `app:exit` | Ctrl+D | Claude Code を終了します。800ms 以内に 2 回押して確認 |
-| `app:redraw` | （バインドなし） | ターミナルの再描画を強制 |
-| `app:toggleTodos` | Ctrl+T | Claude のやることリストの表示を切り替えます。これは [`/tasks`](https://code.claude.com/docs/ja/commands) バックグラウンドタスクビューではありません |
-| `app:toggleTranscript` | Ctrl+O | 詳細トランスクリプトの表示を切り替え |
+| `app:interrupt` | Ctrl+C | 現在の操作をキャンセルします |
+| `app:exit` | Ctrl+D | Claude Code を終了します。確認のため 800ms 以内に 2 回押します |
+| `app:redraw` | （未割り当て） | ターミナルを強制的に再描画します |
+| `app:toggleTodos` | Ctrl+T | Claude の To-Do チェックリストの表示を切り替えます。これは [`/tasks`](https://code.claude.com/docs/ja/commands) のバックグラウンドタスクビューではありません |
+| `app:toggleTranscript` | Ctrl+O | 詳細なトランスクリプトの表示を切り替えます |
 
 ### 履歴アクション
 
-コマンド履歴をナビゲートするためのアクション：
+コマンド履歴を移動するためのアクション：
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `history:search` | Ctrl+R | 履歴検索を開く |
+| `history:search` | Ctrl+R | 履歴検索を開きます |
 | `history:previous` | Up | 前の履歴項目 |
 | `history:next` | Down | 次の履歴項目 |
 
@@ -108,25 +108,25 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `chat:cancel` | Escape | 現在の入力をキャンセル |
-| `chat:clearInput` | Ctrl+L | 入力と会話を保持したまま、フルスクリーン再描画を強制 |
-| `chat:clearScreen` | Cmd+K | `chat:clearInput` と同じです。Cmd+K が iTerm2 と Terminal.app でどのように動作するかについては、[会話をクリア](https://code.claude.com/docs/ja/fullscreen.md#clear-the-conversation) を参照してください |
-| `chat:killAgents` | Ctrl+X Ctrl+K | このセッション内のすべての実行中の [バックグラウンドサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background) を停止し、残りのセッションの [アーティファクト自動返信](https://code.claude.com/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own) をオフにします。確認のため、3 秒以内にショートカットを 2 回押します。バックグラウンドサブエージェントの権限プロンプトが開いている間も押すことができます |
-| `chat:cycleMode` | Shift+Tab\* | 権限モードをサイクル |
-| `chat:modelPicker` | Meta+P | モデルピッカーを開く |
-| `chat:fastMode` | Meta+O | 高速モードを切り替え |
-| `chat:thinkingToggle` | Meta+T | 拡張思考を切り替え |
-| `chat:submit` | Enter | メッセージを送信 |
-| `chat:queueSubmit` | Ctrl+X Enter | メッセージを送信し、順番を待つようにマーク：Claude が作業中の場合、Claude Code は [それをキューに入れ](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)、ターンを中断することはありません。`chat:submit` とは異なり、オートコンプリート候補がハイライトされている場合でもドラフトを送信します。v2.1.247 以降が必要 |
-| `chat:sendNow` | Ctrl+Enter、Ctrl+X Ctrl+S | [キューに入れたメッセージ](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works) とドラフトをすぐに送信します。[Claude Code がキューに入れたものを送信する場合](https://code.claude.com/docs/ja/interactive-mode.md#when-claude-code-sends-what-you-queued) は、Claude が作業中のターンに何が起こるかについて説明しています。何も実行されていない場合、キーはドラフトを送信し、[シェルモード](https://code.claude.com/docs/ja/interactive-mode.md#shell-mode-with-prefix) ではコマンドのみをキューに入れます。拡張キーを報告しないターミナルは `Ctrl+Enter` をプレーン `Enter` として配信するため、`Ctrl+X Ctrl+S` はどのターミナルでも機能するバインディングです。v2.1.275 以降が必要 |
-| `chat:newline` | Ctrl+J | 送信せずに改行を挿入 |
-| `chat:undo` | Ctrl+\_、Ctrl+Shift+- | 最後のアクションを元に戻す |
-| `chat:externalEditor` | Ctrl+G、Ctrl+X Ctrl+E | 外部エディタで開きます。[エージェントビューディスパッチ入力](https://code.claude.com/docs/ja/agent-view.md#keyboard-shortcuts) もこのアクションの単一キーストロークバインディングに従います |
-| `chat:stash` | Ctrl+S | 現在のプロンプトを保存 |
-| `chat:imagePaste` | Ctrl+V （Windows と WSL では Alt+V） | クリップボードから画像を貼り付けます。WSL では、両方のショートカットがデフォルトでバインドされています |
-| `command:<name>` | （バインドなし） | [コマンド](https://code.claude.com/docs/ja/commands.md) `/<name>` を実行します。例えば、`Chat` ブロック内で `"meta+g": "command:compact"` と指定すると、`Meta+G` で `/compact` が実行されます |
+| `chat:cancel` | Escape | 現在の入力をキャンセルします |
+| `chat:clearInput` | Ctrl+L | 入力と会話を保持したまま、画面全体を強制的に再描画します |
+| `chat:clearScreen` | Cmd+K | `chat:clearInput` と同じです。iTerm2 と Terminal.app での Cmd+K の動作については、[会話をクリアする](https://code.claude.com/docs/ja/fullscreen.md#clear-the-conversation)を参照してください |
+| `chat:killAgents` | Ctrl+X Ctrl+K | このセッションで実行中のすべての[バックグラウンドサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)を停止し、セッションの残りの間は[アーティファクトの自動返信](https://code.claude.com/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own)をオフにします。確認のため、3 秒以内にショートカットを 2 回押します。バックグラウンドサブエージェントの権限プロンプトが開いている間も押すことができます |
+| `chat:cycleMode` | Shift+Tab\* | 権限モードを順に切り替えます |
+| `chat:modelPicker` | Meta+P | モデルピッカーを開きます |
+| `chat:fastMode` | Meta+O | fast mode を切り替えます |
+| `chat:thinkingToggle` | Meta+T | 拡張思考を切り替えます |
+| `chat:submit` | Enter | メッセージを送信します |
+| `chat:queueSubmit` | Ctrl+X Enter | メッセージを、順番を待つよう印を付けて送信します。Claude が作業中の場合、Claude Code はそのメッセージを[キューに入れ](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)、ターンを中断することはありません。`chat:submit` とは異なり、オートコンプリートの候補がハイライトされている間もドラフトを送信します。v2.1.247 以降が必要です |
+| `chat:sendNow` | Ctrl+Enter, Ctrl+X Ctrl+S | [キューに入れたメッセージ](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)を、ドラフトと一緒にすぐに送信します。Claude が作業中のターンがどうなるかについては、[Claude Code がキューに入れた内容を送信するタイミング](https://code.claude.com/docs/ja/interactive-mode.md#when-claude-code-sends-what-you-queued)で説明しています。何も実行されていない場合、このキーはドラフトを送信します。[シェルモード](https://code.claude.com/docs/ja/interactive-mode.md#shell-mode-with-prefix)では、コマンドをキューに入れるだけです。拡張キーを報告しないターミナルでは `Ctrl+Enter` が通常の `Enter` として送られるため、どのターミナルでも機能するバインディングは `Ctrl+X Ctrl+S` です。v2.1.275 以降が必要です |
+| `chat:newline` | Ctrl+J | 送信せずに改行を挿入します |
+| `chat:undo` | Ctrl+\_, Ctrl+Shift+- | 最後の操作を元に戻します |
+| `chat:externalEditor` | Ctrl+G, Ctrl+X Ctrl+E | 外部エディタで開きます。[エージェントビューのディスパッチ入力](https://code.claude.com/docs/ja/agent-view.md#keyboard-shortcuts)も、このアクションの単一キーストロークのバインディングに従います |
+| `chat:stash` | Ctrl+S | 現在のプロンプトを一時退避（stash）します |
+| `chat:imagePaste` | Ctrl+V（Windows と WSL では Alt+V） | クリップボードから画像を貼り付けます。WSL では、両方のショートカットがデフォルトでバインドされています |
+| `command:<name>` | （未割り当て） | [コマンド](https://code.claude.com/docs/ja/commands.md) `/<name>` を実行します。たとえば、`Chat` ブロックに `"meta+g": "command:compact"` を記述すると、`Meta+G` で `/compact` が実行されます |
 
-\*VT モードなし Windows （Node \<24.2.0/\<22.17.0、Bun \<1.2.23） では、デフォルトは Meta+M です。
+\*VT モードのない Windows（Node \<24.2.0/\<22.17.0、Bun \<1.2.23）では、デフォルトは Meta+M です。
 
 ### オートコンプリートアクション
 
@@ -134,8 +134,8 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `autocomplete:accept` | Tab | 候補を受け入れ |
-| `autocomplete:dismiss` | Escape | メニューを閉じる |
+| `autocomplete:accept` | Tab | 候補を確定します |
+| `autocomplete:dismiss` | Escape | メニューを閉じます |
 | `autocomplete:previous` | Up | 前の候補 |
 | `autocomplete:next` | Down | 次の候補 |
 
@@ -145,24 +145,24 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `confirm:yes` | Enter | アクションを確認 |
-| `confirm:no` | Escape | アクションを拒否 |
+| `confirm:yes` | Enter | 操作を確定します |
+| `confirm:no` | Escape | 操作を拒否します |
 | `confirm:previous` | Up | 前のオプション |
 | `confirm:next` | Down | 次のオプション |
-| `confirm:nextField` | Tab | `/fast` ダイアログで fast mode をオンまたはオフにする |
-| `confirm:previousField` | （バインドなし） | Claude Code はこのアクションに応答しません。このアクションを指定する `keybindings.json` は引き続き有効です |
-| `confirm:toggle` | Space | 選択を切り替え |
-| `confirm:cycleMode` | Shift+Tab\* | ファイル権限プロンプトでは、開いている [コメントフィールド](https://code.claude.com/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt) を閉じます。フィールドが開いていない場合は、プロンプトがそのオプションを提供していれば、セッションの残りの間アクションを許可するオプションを選択します |
+| `confirm:nextField` | Tab | `/fast` ダイアログで、fast mode をオンまたはオフにします |
+| `confirm:previousField` | （未割り当て） | Claude Code はこのアクションに反応しません。このアクションを指定した `keybindings.json` も引き続き有効です |
+| `confirm:toggle` | Space | 選択を切り替えます |
+| `confirm:cycleMode` | Shift+Tab\* | ファイルの権限プロンプトで、開いている[コメントフィールド](https://code.claude.com/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)を閉じます。フィールドが開いていない場合は、プロンプトにそのオプションがあれば、セッションの残りの間その操作を許可するオプションを選択します |
 
-\*VT モードなし Windows （Node \<24.2.0/\<22.17.0、Bun \<1.2.23） では、デフォルトは Meta+M です。
+\*VT モードのない Windows（Node \<24.2.0/\<22.17.0、Bun \<1.2.23）では、デフォルトは Meta+M です。
 
-v2.1.257 より前では、`confirm:toggleExplanation` アクション（デフォルトでは `Ctrl+E` にバインド）が Bash と PowerShell 権限プロンプトでモデル生成の説明を表示していました。
+v2.1.257 より前は、デフォルトで `Ctrl+E` にバインドされた `confirm:toggleExplanation` アクションがあり、Bash と PowerShell の権限プロンプトで、モデルが生成したコマンドの説明を表示していました。
 
-ダイアログは `confirm:yes` と `confirm:no` を使用して、はい/いいえの質問をしていない場合でも受け入れてキャンセルします。このコンテキストで `y` や `n` などのベアレターをバインドすると、そのレターをキーとして表示しないダイアログにも作用します。`y` と `n` をキーとして表示するダイアログはそれらのレターを自分で読み取り、バインディングは必要ありません。
+ダイアログは、はい/いいえを尋ねるものでない場合でも、確定とキャンセルに `confirm:yes` と `confirm:no` を使用します。このコンテキストで `y` や `n` のような単一の文字をバインドすると、その文字は、キーとして表示していないダイアログでも機能します。`y` と `n` をキーとして表示するダイアログは、それらの文字を自身で読み取るため、バインディングは不要です。
 
-ほとんどのダイアログでは、`Ctrl+C` または `Ctrl+D` を 2 回押すと、Claude Code を終了する代わりにダイアログを閉じます。最初の押下後のヒントは、2 番目の押下がダイアログを閉じるか Claude Code を終了するかを示します。両方のキーは [予約済み](#reserved-shortcuts) であり、再バインドできません。
+ほとんどのダイアログでは、`Ctrl+C` または `Ctrl+D` を 2 回押すと、Claude Code を終了するのではなくダイアログが閉じます。1 回目に押した後に表示されるヒントで、2 回目に押したときにダイアログが閉じるのか終了するのかがわかります。どちらのキーも[予約済み](#reserved-shortcuts)であり、再バインドできません。
 
-この例は `y` を `confirm:yes` に、`n` を `confirm:no` にバインドします：
+次の例では、`y` を `confirm:yes` に、`n` を `confirm:no` にバインドしています：
 
 ```json theme={null}
 {
@@ -178,17 +178,17 @@ v2.1.257 より前では、`confirm:toggleExplanation` アクション（デフ�
 }
 ```
 
-これらのバインディングを使用すると、[テキストフィールド](#text-fields) がフォーカスを持つ間、`y` と `n` はまだレターとして入力されます。
+これらのバインディングを設定しても、[テキストフィールド](#text-fields)にフォーカスがある間は、`y` と `n` は引き続き文字として入力されます。
 
-v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は `confirm:no` にバインドされていました。v2.1.280 より前に `/keybindings` で `keybindings.json` を作成した場合、ファイルは両方のバインディングをリストし、それらの 2 行を削除するまで有効なままです。
+v2.1.280 より前は、デフォルトで `y` も `confirm:yes` に、`n` も `confirm:no` にバインドされていました。v2.1.280 より前に `/keybindings` で `keybindings.json` を作成した場合、ファイルには両方のバインディングが記載されており、それらの 2 行を削除するまで有効なままです。
 
 ### 権限アクション
 
-権限ダイアログの `Confirmation` コンテキストで利用可能なアクション：
+権限ダイアログ用に `Confirmation` コンテキストで利用可能なアクション：
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `permission:toggleDebug` | （バインドなし） | Claude Code はこのアクションに応答しません。このアクションを指定する `keybindings.json` は引き続き有効です |
+| `permission:toggleDebug` | （未割り当て） | Claude Code はこのアクションに反応しません。このアクションを指定した `keybindings.json` も引き続き有効です |
 
 ### トランスクリプトアクション
 
@@ -196,10 +196,10 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `transcript:toggleShowAll` | Ctrl+E | すべてのコンテンツの表示を切り替え |
-| `transcript:exit` | q、Ctrl+C、Escape | トランスクリプトビューを終了 |
+| `transcript:toggleShowAll` | Ctrl+E | すべてのコンテンツの表示を切り替えます |
+| `transcript:exit` | q, Ctrl+C, Escape | トランスクリプトビューを終了します |
 
-`transcript:toggleShowAll` はクラシックレンダラーのみで適用されます。[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md) では、トランスクリプトビューアは show-all トグルを提供しません。
+`transcript:toggleShowAll` はクラシックレンダラーでのみ適用されます。[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)では、トランスクリプトビューアにすべて表示の切り替えはありません。
 
 ### 履歴検索アクション
 
@@ -207,13 +207,13 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `historySearch:next` | Ctrl+R | 次のマッチ |
-| `historySearch:accept` | Escape、Tab | 選択を受け入れ |
-| `historySearch:cancel` | Ctrl+C | 検索をキャンセル |
-| `historySearch:execute` | Enter | 選択したコマンドを実行 |
-| `historySearch:cycleScope` | Ctrl+S | スコープをサイクル：セッション、プロジェクト、すべて |
+| `historySearch:next` | Ctrl+R | 次の一致 |
+| `historySearch:accept` | Escape, Tab | 選択を確定します |
+| `historySearch:cancel` | Ctrl+C | 検索をキャンセルします |
+| `historySearch:execute` | Enter | 選択したコマンドを実行します |
+| `historySearch:cycleScope` | Ctrl+S | スコープを順に切り替えます：セッション、プロジェクト、すべて |
 
-`historySearch:next`、`historySearch:accept`、`historySearch:cancel`、および `historySearch:execute` のデフォルトは、クラシックレンダラーのインライン履歴検索に適用されます。これは常にすべてのプロジェクトからプロンプトを検索します。`historySearch:cycleScope` は [フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md) でのみ有効です。ここで `Ctrl+R` は検索ダイアログを開き、`Ctrl+S` はそのスコープをサイクルします。ダイアログの他のキーは固定されており、再バインドできません：`Enter` または `Tab` はハイライトされたマッチをプロンプト入力に配置し、`Esc` はキャンセルします。
+`historySearch:next`、`historySearch:accept`、`historySearch:cancel`、`historySearch:execute` のデフォルトは、クラシックレンダラーのインライン履歴検索に適用されます。この検索は常にすべてのプロジェクトのプロンプトを対象とします。`historySearch:cycleScope` は[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)でのみ有効です。フルスクリーンレンダリングでは、`Ctrl+R` で代わりに検索ダイアログが開き、`Ctrl+S` でそのスコープを順に切り替えます。ダイアログのその他のキーは固定されており、再バインドできません：`Enter` または `Tab` でハイライトされた一致をプロンプト入力に配置し、`Esc` でキャンセルします。
 
 ### タスクアクション
 
@@ -221,7 +221,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `task:background` | Ctrl+B、Ctrl+X Ctrl+B | 現在のタスクをバックグラウンドに移動 |
+| `task:background` | Ctrl+B, Ctrl+X Ctrl+B | 現在のタスクをバックグラウンドに移します |
 
 ### テーマアクション
 
@@ -229,7 +229,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `theme:toggleSyntaxHighlighting` | Ctrl+T | 構文ハイライトを切り替え |
+| `theme:toggleSyntaxHighlighting` | Ctrl+T | シンタックスハイライトを切り替えます |
 
 ### ヘルプアクション
 
@@ -237,7 +237,7 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `help:dismiss` | Escape | ヘルプメニューを閉じる |
+| `help:dismiss` | Escape | ヘルプメニューを閉じます |
 
 ### タブアクション
 
@@ -245,12 +245,12 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `tabs:next` | Tab、Right | 次のタブ |
-| `tabs:previous` | Shift+Tab、Left | 前のタブ |
+| `tabs:next` | Tab, Right | 次のタブ |
+| `tabs:previous` | Shift+Tab, Left | 前のタブ |
 
-タブ付きダイアログでは、タブ行がフォーカスを持つ間、`tabs:next` と `tabs:previous` がタブを切り替えます。`/help` や `/sandbox` などの一部のダイアログでは、タブ切り替えキーはタブのコンテンツ内からも機能します。
+タブ付きダイアログでは、タブの行にフォーカスがある間、`tabs:next` と `tabs:previous` でタブを切り替えます。`/help` や `/sandbox` などの一部のダイアログでは、タブの切り替えキーはタブのコンテンツ内からも機能します。
 
-`Up` と `Down` はタブ行とタブのコンテンツ間でフォーカスを移動し、コンテンツ内のリストはフォーカスを持つ間のみキーに応答します。
+`Up` と `Down` でタブの行とタブのコンテンツの間でフォーカスを移動します。コンテンツ内のリストは、フォーカスがある間のみキーに反応します。
 
 ### 添付ファイルアクション
 
@@ -260,8 +260,8 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | :- | :- | :- |
 | `attachments:next` | Right | 次の添付ファイル |
 | `attachments:previous` | Left | 前の添付ファイル |
-| `attachments:remove` | Backspace、Delete | 選択した添付ファイルを削除 |
-| `attachments:exit` | Down、Escape | 添付ファイルナビゲーションを終了 |
+| `attachments:remove` | Backspace, Delete | 選択した添付ファイルを削除します |
+| `attachments:exit` | Down, Escape | 添付ファイルのナビゲーションを終了します |
 
 ### フッターアクション
 
@@ -271,22 +271,22 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 | :- | :- | :- |
 | `footer:next` | Right | 次のフッター項目 |
 | `footer:previous` | Left | 前のフッター項目 |
-| `footer:up` | Up、Ctrl+P | フッター内を上に移動（上部で選択解除） |
-| `footer:down` | Down、Ctrl+N | フッター内を下に移動 |
-| `footer:openSelected` | Enter | 選択したフッター項目を開く |
-| `footer:clearSelection` | Escape | フッター選択をクリア |
-| `footer:close` | x | 選択した [エージェント](https://code.claude.com/docs/ja/sub-agents.md#observe-and-steer-running-forks) または [ワークフロー](https://code.claude.com/docs/ja/workflows.md#manage-runs) を停止します。すでに実行中でない場合は、その行を閉じます |
-| `footer:dismiss` | （バインドなし） | このアクションにキーをバインドしても効果がなく、それを名前付けする `keybindings.json` は有効なままです。v2.1.281 より前では、Backspace と Delete はフッターから選択したアーティファクトリンクを削除しました。 |
+| `footer:up` | Up, Ctrl+P | フッター内で上に移動します（一番上では選択を解除します） |
+| `footer:down` | Down, Ctrl+N | フッター内で下に移動します |
+| `footer:openSelected` | Enter | 選択したフッター項目を開きます |
+| `footer:clearSelection` | Escape | フッターの選択を解除します |
+| `footer:close` | x | 選択した[エージェント](https://code.claude.com/docs/ja/sub-agents.md#observe-and-steer-running-forks)または[ワークフロー](https://code.claude.com/docs/ja/workflows.md#manage-runs)を停止します。すでに実行されていない場合は、その行を閉じます |
+| `footer:dismiss` | （未割り当て） | このアクションにキーをバインドしても効果はありません。このアクションを指定した `keybindings.json` も引き続き有効です。v2.1.281 より前は、Backspace と Delete がこのアクションにバインドされており、選択したアーティファクトリンクをフッターから閉じていました。 |
 
-フッター項目が選択されている間（プロンプトの下のエージェントパネルの行など）は、`Chat` コンテキストで `Enter` を `chat:queueSubmit` または `chat:newline` に再バインドしていても、`Enter` はその項目を開きます。
+プロンプトの下にあるエージェントパネルの行など、フッター項目が選択されている間は、`Chat` コンテキストで `Enter` を `chat:queueSubmit` や `chat:newline` に再バインドしていても、`Enter` でその項目が開きます。
 
-`Chat` バインディングは、`Shift+Tab` を `chat:cycleMode` のように `Footer` コンテキストがバインドしないキーで機能し、項目が選択されている間も機能します。
+`chat:cycleMode` の `Shift+Tab` のように、`Footer` コンテキストがバインドしていないキーに対する `Chat` のバインディングは、項目が選択されている間も引き続き機能します。
 
 ### メッセージセレクターアクション
 
-[リワインドメニュー](https://code.claude.com/docs/ja/checkpointing.md) のメッセージリストでは、[選択アクション](#select-actions) とそのデフォルトキーを使用してメッセージを移動して選択します。これらのアクションの `Select` バインディングもそこに適用されます。`MessageSelector` コンテキストには、独自のアクションまたはデフォルトバインディングはありません。このリストのみのキーを変更するには、`MessageSelector` ブロックで `select:accept` などの選択アクションをバインドします。
+[巻き戻しメニュー](https://code.claude.com/docs/ja/checkpointing.md)のメッセージリストでは、[Select アクション](#select-actions)とそのデフォルトキーを使用して、メッセージ間を移動し、1 つを選択します。これらのアクションに対する `Select` のバインディングもここに適用されます。`MessageSelector` コンテキストには、独自のアクションやデフォルトのバインディングはありません。このリストに限ってキーを変更するには、`MessageSelector` ブロックで `select:accept` などの Select アクションをバインドします。
 
-この例は、リワインドメニューでハイライトされたメッセージを選択するために `o` を `select:accept` にバインドします。他のリストは変更しません：
+次の例では、他のリストを変更せずに、巻き戻しメニューでハイライトされたメッセージを選択するキーとして `o` をバインドしています：
 
 ```json theme={null}
 {
@@ -301,52 +301,52 @@ v2.1.280 より前では、`y` はデフォルトで `confirm:yes` に、`n` は
 }
 ```
 
-v2.1.283 より前では、このリストは `Select` バインディングを無視し、独自のアクション `messageSelector:up`、`messageSelector:down`、`messageSelector:top`、`messageSelector:bottom`、および `messageSelector:select` を持っていました。`keybindings.json` がそれらの名前の 1 つをバインドする場合、バインディングはこのリストで同じことを行う選択アクションとして機能し続けます。`Home` と `End` はリストのいずれかの端にジャンプします。v2.1.283 より前では、`Shift+K` や `Shift+J` などのキーがデフォルトでそれを行いました。
+v2.1.283 より前は、このリストは `Select` のバインディングを無視し、独自のアクションとして `messageSelector:up`、`messageSelector:down`、`messageSelector:top`、`messageSelector:bottom`、`messageSelector:select` を持っていました。`keybindings.json` でこれらの名前のいずれかをバインドしている場合、そのバインディングはこのリストで、同じ動作をする Select アクションとして引き続き機能します。`Home` と `End` でリストの両端にジャンプします。v2.1.283 より前は、デフォルトで `Shift+K` や `Shift+J` などのキーがこれを行っていました。
 
 ### 差分アクション
 
-これらのアクションは、Claude Code の以前の差分ビューアにのみ作用します。このビューアは、`/plugin` で [`cc-plugin-diff` mod](https://code.claude.com/docs/ja/plugins/mods/overview#mods-built-into-claude-code) を無効にした後、[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md) 以外で `/diff` を実行すると開きます。この mod が有効な間は、`/diff` は代わりに [差分ダイアログ](https://code.claude.com/docs/ja/interactive-mode.md#diff-dialog) を開きます。これらのアクションを指定する `keybindings.json` は、どちらの場合でもエラーなく読み込まれます。
+これらのアクションは、Claude Code の以前の差分ビューアにのみ作用します。このビューアは、`/plugin` で [`cc-plugin-diff` mod](https://code.claude.com/docs/ja/plugins/mods/overview#mods-built-into-claude-code) を無効にした後、[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)以外で `/diff` を実行すると開きます。この mod が有効な間は、`/diff` で代わりに[差分ダイアログ](https://code.claude.com/docs/ja/interactive-mode.md#diff-dialog)が開きます。
 
 `DiffDialog` コンテキストで利用可能なアクション：
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `diff:dismiss` | Escape | 差分ビューアを閉じます。詳細ビューから、ファイルリストに戻ります |
+| `diff:dismiss` | Escape | 差分ビューアを閉じます。ただし詳細ビューからは、ビューアを閉じる代わりにファイル一覧に戻ります |
 | `diff:previousSource` | Left | 前の差分ソース |
 | `diff:nextSource` | Right | 次の差分ソース |
-| `diff:previousFile` | Up、K | ファイルリスト内の前のファイル。詳細ビューで 1 行上にスクロール |
-| `diff:nextFile` | Down、J | ファイルリスト内の次のファイル。詳細ビューで 1 行下にスクロール |
-| `diff:back` | （バインドなし） | 差分ビューアで戻ります。Escape は `diff:dismiss` を介してバック アクションを実行します。詳細ビューの Left の以前のデフォルトは v2.1.203 で削除されました |
+| `diff:previousFile` | Up, K | ファイル一覧では前のファイル、詳細ビューでは 1 行上にスクロールします |
+| `diff:nextFile` | Down, J | ファイル一覧では次のファイル、詳細ビューでは 1 行下にスクロールします |
+| `diff:back` | （未割り当て） | 差分ビューアで戻ります。Escape は `diff:dismiss` を介して戻る操作を実行します。詳細ビューでの以前のデフォルトである Left は v2.1.203 で削除されました |
 
-ファイルリストは [選択アクション](#select-actions) にも応答し、そのデフォルトキーと `Select` バインディングを通じて応答します。`select:previous` と `select:next` は前のファイルと次のファイルに移動し、`Enter` は `select:accept` を通じて選択したファイルの差分を開きます。ファイルリストのみのそれらのキーの 1 つを変更するには、`DiffDialog` ブロックで選択アクションをバインドします。
+ファイル一覧は、[Select アクション](#select-actions)にも、そのデフォルトキーと `Select` のバインディングを通じて反応します。`select:previous` と `select:next` で前後のファイルに移動し、`Enter` で `select:accept` を通じて選択したファイルの差分を開きます。ファイル一覧に限ってこれらのキーのいずれかを変更するには、`DiffDialog` ブロックで Select アクションをバインドします。
 
-v2.1.283 より前では、ファイルリストは `Select` バインディングを無視し、`Enter` は別の `diff:viewDetails` アクションを通じて選択したファイルの差分を開きました。`keybindings.json` が `diff:viewDetails` をバインドする場合、バインディングはファイルリストで `select:accept` として機能し続けます。
+v2.1.283 より前は、ファイル一覧は `Select` のバインディングを無視し、`Enter` は別の `diff:viewDetails` アクションを通じて選択したファイルの差分を開いていました。`keybindings.json` で `diff:viewDetails` をバインドしている場合、そのバインディングはファイル一覧で `select:accept` として引き続き機能します。
 
-差分詳細ビューは、ページャースタイルキーを標準 [スクロールアクション](#scroll-actions) にバインドします。これらのバインディングは `DiffDialog` コンテキストの一部であり、詳細ビューのみで適用されます。[スクロールアクション](#scroll-actions) の下にリストされている `Scroll` コンテキストのデフォルトは変更されません。
+差分の詳細ビューでは、ページャー形式のキーも標準の[スクロールアクション](#scroll-actions)にバインドされています。これらのバインディングは `DiffDialog` コンテキストの一部であり、詳細ビューでのみ適用されます。[スクロールアクション](#scroll-actions)に記載されている `Scroll` コンテキストのデフォルトは変わりません。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `scroll:pageUp` | PageUp | ビューポートの半分上にスクロール |
-| `scroll:pageDown` | PageDown | ビューポートの半分下にスクロール |
-| `scroll:fullPageUp` | Shift+Space、B | フルビューポート上にスクロール |
-| `scroll:fullPageDown` | Space | フルビューポート下にスクロール |
-| `scroll:top` | G、Home | トップにジャンプ |
-| `scroll:bottom` | Shift+G、End | ボトムにジャンプ |
+| `scroll:pageUp` | PageUp | ビューポートの半分だけ上にスクロールします |
+| `scroll:pageDown` | PageDown | ビューポートの半分だけ下にスクロールします |
+| `scroll:fullPageUp` | Shift+Space, B | ビューポート 1 つ分上にスクロールします |
+| `scroll:fullPageDown` | Space | ビューポート 1 つ分下にスクロールします |
+| `scroll:top` | G, Home | 先頭にジャンプします |
+| `scroll:bottom` | Shift+G, End | 末尾にジャンプします |
 
 ### 差分パネルアクション
 
-`/diff` がフルスクリーンレンダリングで開く [差分パネル](https://code.claude.com/docs/ja/interactive-mode.md#diff-panel) のアクション。`app:cycleDiffBase` は `DiffPanel` コンテキストにあり、パネルが開いている間はアクティブです。その他は `Global` です。
+フルスクリーンレンダリングで `/diff` が開く[差分パネル](https://code.claude.com/docs/ja/interactive-mode.md#diff-panel)用のアクションです。`app:cycleDiffBase` は、パネルが開いている間アクティブになる `DiffPanel` コンテキストにあり、その他は `Global` です。
 
-組み込みの [`cc-plugin-diff` mod](https://code.claude.com/docs/ja/plugins/mods/overview#mods-built-into-claude-code) がこのパネルを描画し、`app:cycleDiffBase`、`app:diffFileListUp`、`app:diffFileListDown` を処理します。`app:toggleReplTab`、`app:toggleDiffNoiseFilter`、`app:toggleDiffPreSession` は、Claude Code の以前のパネルにのみ作用します。このパネルは、`/plugin` で `cc-plugin-diff` を無効にした後に `/diff` で開きます。
+組み込みの [`cc-plugin-diff` mod](https://code.claude.com/docs/ja/plugins/mods/overview#mods-built-into-claude-code) がこのパネルを描画し、`app:cycleDiffBase`、`app:diffFileListUp`、`app:diffFileListDown` を処理します。`app:toggleReplTab`、`app:toggleDiffNoiseFilter`、`app:toggleDiffPreSession` は、Claude Code の以前のパネルにのみ作用します。このパネルは、`/plugin` で `cc-plugin-diff` を無効にした後に `/diff` を実行すると開きます。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `app:toggleReplTab` | （バインドなし） | 差分パネルを開くか閉じる |
-| `app:cycleDiffBase` | Ctrl+X B | パネルの比較ベースをサイクル：このセッション、コミットされていない、その後ブランチ |
-| `app:diffFileListUp` | Ctrl+Up、Meta+Up | パネルのファイルリストがオーバーフローするときに上にスクロール |
-| `app:diffFileListDown` | Ctrl+Down、Meta+Down | パネルのファイルリストがオーバーフローするときに下にスクロール |
-| `app:toggleDiffNoiseFilter` | （バインドなし） | パネルのテストファイルと生成ファイルを表示または非表示 |
-| `app:toggleDiffPreSession` | （バインドなし） | このセッション前の変更を展開または折りたたむ |
+| `app:toggleReplTab` | （未割り当て） | 差分パネルを開閉します |
+| `app:cycleDiffBase` | Ctrl+X B | パネルの比較基準を順に切り替えます：このセッション、未コミット、ブランチの順 |
+| `app:diffFileListUp` | Ctrl+Up, Meta+Up | パネルのファイル一覧があふれている場合に上にスクロールします |
+| `app:diffFileListDown` | Ctrl+Down, Meta+Down | パネルのファイル一覧があふれている場合に下にスクロールします |
+| `app:toggleDiffNoiseFilter` | （未割り当て） | パネル内のテストファイルと生成ファイルを表示または非表示にします |
+| `app:toggleDiffPreSession` | （未割り当て） | このセッションより前の変更を展開または折りたたみます |
 
 ### モデルピッカーアクション
 
@@ -354,41 +354,41 @@ v2.1.283 より前では、ファイルリストは `Select` バインディン�
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `modelPicker:decreaseEffort` | Left | 努力レベルを低下 |
-| `modelPicker:increaseEffort` | Right | 努力レベルを増加 |
-| `modelPicker:thisSessionOnly` | s | ハイライトされたモデルをこのセッションのみに適用 |
+| `modelPicker:decreaseEffort` | Left | effort レベルを下げます |
+| `modelPicker:increaseEffort` | Right | effort レベルを上げます |
+| `modelPicker:thisSessionOnly` | s | ハイライトされたモデルをこのセッションのみに適用します |
 
-### 努力スライダーアクション
+### effort スライダーアクション
 
-`EffortSlider` コンテキストで利用可能なアクション。引数なしで `/effort` を実行するときに開くスライダー。スライダーの Enter と Escape キーは再バインドできません。
+`EffortSlider` コンテキストで利用可能なアクションです。これは、引数なしで `/effort` を実行したときに開くスライダーです。スライダーの Enter キーと Escape キーは再バインドできません。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `effortSlider:decreaseEffort` | Left | スライダーを次の低い努力レベルに移動します。v2.1.284 以降が必要 |
-| `effortSlider:increaseEffort` | Right | スライダーを次の高い努力レベルに移動します。v2.1.284 以降が必要 |
-| `effortSlider:toggleUltracode` | Tab | このセッションの [ultracode](https://code.claude.com/docs/ja/workflows.md#let-claude-decide-with-ultracode) をオンまたはオフにします。スライダーが [それを提供する](https://code.claude.com/docs/ja/model-config.md#when-ultracode-is-available) 場合。v2.1.284 以降が必要 |
-| `effortSlider:thisSessionOnly` | s | フォーカスされた [努力レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level) をこのセッションのみに適用します。v2.1.257 以降が必要 |
+| `effortSlider:decreaseEffort` | Left | スライダーを 1 つ下の effort レベルに移動します。v2.1.284 以降が必要です |
+| `effortSlider:increaseEffort` | Right | スライダーを 1 つ上の effort レベルに移動します。v2.1.284 以降が必要です |
+| `effortSlider:toggleUltracode` | Tab | スライダーが [ultracode を提供している](https://code.claude.com/docs/ja/model-config.md#when-ultracode-is-available)場合に、このセッションの [ultracode](https://code.claude.com/docs/ja/workflows.md#let-claude-decide-with-ultracode) をオンまたはオフにします。v2.1.284 以降が必要です |
+| `effortSlider:thisSessionOnly` | s | フォーカスされている [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)をこのセッションのみに適用します。v2.1.257 以降が必要です |
 
-### 選択アクション
+### Select アクション
 
 `Select` コンテキストで利用可能なアクション：
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `select:next` | Down、J、Ctrl+N | 次のオプション |
-| `select:previous` | Up、K、Ctrl+P | 前のオプション |
-| `select:pageUp` | PageUp | オプションの 1 ページ上に移動 |
-| `select:pageDown` | PageDown | オプションの 1 ページ下に移動 |
+| `select:next` | Down, J, Ctrl+N | 次のオプション |
+| `select:previous` | Up, K, Ctrl+P | 前のオプション |
+| `select:pageUp` | PageUp | オプションを 1 ページ分上に移動します |
+| `select:pageDown` | PageDown | オプションを 1 ページ分下に移動します |
 | `select:first` | Home | 最初のオプション |
 | `select:last` | End | 最後のオプション |
-| `select:accept` | Enter | 選択を受け入れ |
-| `select:cancel` | Escape | 選択をキャンセル |
+| `select:accept` | Enter | 選択を確定します |
+| `select:cancel` | Escape | 選択をキャンセルします |
 
-`/skills`、`/mcp`、`/tasks` などのリストパネルでは、Claude Code は `select:pageUp`、`select:pageDown`、`select:first`、および `select:last` バインディングを適用します。`/model` ピッカーなどのほとんどの他のリストでは、`select:first` と `select:last` バインディングが適用されます。PageUp と PageDown は、バインディングに関係なく、これらのリストのオプションをページングします。
+`/skills`、`/mcp`、`/tasks` などのリストパネルでは、Claude Code は `select:pageUp`、`select:pageDown`、`select:first`、`select:last` のバインディングを適用します。`/model` ピッカーなど、その他のほとんどのリストでは、`select:first` と `select:last` のバインディングが適用されます。これらのリストでは、バインディングに関係なく PageUp と PageDown でオプションをページ送りします。
 
-v2.1.280 より前では、これらの他のリストは Home、End、および `select:first` と `select:last` バインディングを無視していました。
+v2.1.280 より前は、これらのその他のリストは Home、End、および `select:first` と `select:last` のバインディングを無視していました。
 
-v2.1.283 より前では、`/mcp` ツールリストは、バインディングに関係なく固定 PageUp と PageDown キーでページングしました。
+v2.1.283 より前は、`/mcp` のツールリストは、バインディングに関係なく固定の PageUp キーと PageDown キーでページ送りしていました。
 
 ### プラグインアクション
 
@@ -396,112 +396,112 @@ v2.1.283 より前では、`/mcp` ツールリストは、バインディング�
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `plugin:toggle` | Space | プラグイン選択を切り替え |
-| `plugin:install` | I | 選択したプラグインをインストール |
-| `plugin:favorite` | F | 選択したプラグインをお気に入りにして、インストール済みタブの上部付近でソート |
+| `plugin:toggle` | Space | プラグインの選択を切り替えます |
+| `plugin:install` | I | 選択したプラグインをインストールします |
+| `plugin:favorite` | F | 選択したプラグインをお気に入りに登録し、Installed タブの上部近くに並ぶようにします |
 
 ### プロンプト上部アクション
 
-プロンプトの上にある帯のアクション。この帯は、[mod](https://code.claude.com/docs/ja/plugins/mods/interface.md#pick-where-to-draw) がボタン、入力フィールド、セレクトを描画する共有ストリップです。`abovePrompt:toggle` と `abovePrompt:focus` は `Chat` コンテキストで適用されます。その他のアクションは、帯またはペイン内でキーボードフォーカスを持っているものの [コンテキスト](#contexts) で適用されます。
+プロンプトの上にあるバンド用のアクションです。このバンドは、[mod](https://code.claude.com/docs/ja/plugins/mods/interface.md#pick-where-to-draw) がボタン、入力フィールド、セレクトを描画する共有の帯です。`abovePrompt:toggle` と `abovePrompt:focus` は `Chat` コンテキストで適用されます。その他のアクションは、バンドまたはペイン内でキーボードフォーカスを持っているものの[コンテキスト](#contexts)で適用されます。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `abovePrompt:toggle` | Ctrl+X Ctrl+A | 帯を 1 行のヒントに折りたたむか、再び展開する |
-| `abovePrompt:focus` | Ctrl+X Tab | キーボードフォーカスを帯に移動し、次に開いている各 [ペイン](#pane-actions) に移動し、最後のペインからプロンプトに戻す |
-| `abovePrompt:next` | Tab | 次のコントロールにフォーカス |
-| `abovePrompt:previous` | Shift+Tab | 前のコントロールにフォーカス |
-| `abovePrompt:press` | Enter | フォーカスされたボタンを押す、フォーカスされた入力フィールドを送信する、またはセレクト内のハイライトされたオプションを選択する |
-| `abovePrompt:leave` | Escape | キーボードフォーカスをプロンプトに戻す |
-| `abovePrompt:highlightNext` | Down | フォーカスされたセレクト内の次のオプションをハイライト |
-| `abovePrompt:highlightPrevious` | Up | フォーカスされたセレクト内の前のオプションをハイライト |
+| `abovePrompt:toggle` | Ctrl+X Ctrl+A | バンドを 1 行のヒントに折りたたむか、再び展開します |
+| `abovePrompt:focus` | Ctrl+X Tab | キーボードフォーカスをバンドに移動し、次に開いている各[ペイン](#pane-actions)に移動し、最後のペインからプロンプトに戻します |
+| `abovePrompt:next` | Tab | 次のコントロールにフォーカスします |
+| `abovePrompt:previous` | Shift+Tab | 前のコントロールにフォーカスします |
+| `abovePrompt:press` | Enter | フォーカスされたボタンを押すか、フォーカスされた入力フィールドを送信するか、セレクトでハイライトされたオプションを選択します |
+| `abovePrompt:leave` | Escape | キーボードフォーカスをプロンプトに戻します |
+| `abovePrompt:highlightNext` | Down | フォーカスされたセレクトで次のオプションをハイライトします |
+| `abovePrompt:highlightPrevious` | Up | フォーカスされたセレクトで前のオプションをハイライトします |
 
-[`AbovePrompt` コンテキスト](#contexts) では、デフォルトで Right と Left も `abovePrompt:next` と `abovePrompt:previous` を実行し、Space も `abovePrompt:press` を実行します。
+[`AbovePrompt` コンテキスト](#contexts)では、デフォルトで Right と Left も `abovePrompt:next` と `abovePrompt:previous` を実行し、Space も `abovePrompt:press` を実行します。
 
-`AbovePrompt` コンテキストは、Up、Down、PageUp、PageDown、Home、End も [ペインのスクロールアクション](#pane-actions) `pane:scrollUp` から `pane:bottom` にバインドしています。そのため、帯でこれらのキーのいずれかを変更するには、`AbovePrompt` ブロックでスクロールアクションをバインドします。
+`AbovePrompt` コンテキストは、Up、Down、PageUp、PageDown、Home、End も [ペインのスクロールアクション](#pane-actions) `pane:scrollUp` から `pane:bottom` にバインドしています。そのため、バンドでこれらのキーのいずれかを変更するには、`AbovePrompt` ブロックでスクロールアクションをバインドします。
 
 ### ペインアクション
 
-[mod](https://code.claude.com/docs/ja/plugins/mods/interface.md#know-which-keys-your-mod-can-receive) が描画するペインのアクション。スクロール、サイズ変更、閉じるの各アクションは `Pane` [コンテキスト](#contexts) で適用されます。`pane:close` は `PaneField` コンテキストでも適用されるため、ペインのフィールドのいずれかがフォーカスを持っている間も機能します。`pane:next` と `pane:previous` は、複数のペインが開いている間、`Global` コンテキストで適用されます。
+[mod](https://code.claude.com/docs/ja/plugins/mods/interface.md#know-which-keys-your-mod-can-receive) が描画するペイン用のアクションです。スクロール、サイズ変更、閉じるアクションは `Pane` [コンテキスト](#contexts)で適用されます。`pane:close` は `PaneField` コンテキストでも適用されるため、ペインのフィールドのいずれかにフォーカスがある間も機能します。`pane:next` と `pane:previous` は、複数のペインが開いている間、`Global` コンテキストで適用されます。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `pane:scrollUp` | Up | ペインが表示できる行数より多くの行を持つ場合に、ペインを上にスクロール |
-| `pane:scrollDown` | Down | ペインが表示できる行数より多くの行を持つ場合に、ペインを下にスクロール |
-| `pane:pageUp` | PageUp | ペインを 1 ページ上にスクロール |
-| `pane:pageDown` | PageDown | ペインを 1 ページ下にスクロール |
-| `pane:top` | Home | ペインのトップにジャンプ |
-| `pane:bottom` | End | ペインのボトムにジャンプ |
-| `pane:grow` | Ctrl+X Left、Ctrl+X Up | ペインの領域を広げる：トランスクリプトの横にある場合は幅、プロンプトの上にある場合は高さ |
-| `pane:shrink` | Ctrl+X Right、Ctrl+X Down | ペインの領域を狭める：トランスクリプトの横にある場合は幅、プロンプトの上にある場合は高さ |
-| `pane:close` | Ctrl+X X | ペインを閉じる |
-| `pane:next` | （バインドなし） | 次の開いているペインを表示 |
-| `pane:previous` | （バインドなし） | 前の開いているペインを表示 |
+| `pane:scrollUp` | Up | 表示できる以上の行がある場合に、ペインを上にスクロールします |
+| `pane:scrollDown` | Down | 表示できる以上の行がある場合に、ペインを下にスクロールします |
+| `pane:pageUp` | PageUp | ペインを 1 ページ上にスクロールします |
+| `pane:pageDown` | PageDown | ペインを 1 ページ下にスクロールします |
+| `pane:top` | Home | ペインの先頭にジャンプします |
+| `pane:bottom` | End | ペインの末尾にジャンプします |
+| `pane:grow` | Ctrl+X Left, Ctrl+X Up | ペインの領域を広げます：トランスクリプトの横にある場合は幅を、プロンプトの上にある場合は高さを広げます |
+| `pane:shrink` | Ctrl+X Right, Ctrl+X Down | ペインの領域を狭めます：トランスクリプトの横にある場合は幅を、プロンプトの上にある場合は高さを狭めます |
+| `pane:close` | Ctrl+X X | ペインを閉じます |
+| `pane:next` | （未割り当て） | 次に開いているペインを表示します |
+| `pane:previous` | （未割り当て） | 前に開いているペインを表示します |
 
-`Pane` コンテキストは、Tab、Shift+Tab、Enter、Escape も帯と同じ [プロンプト上部アクション](#above-prompt-actions) にバインドしており、ペインの入力フィールドとセレクトは `AbovePromptInput` と `AbovePromptSelect` コンテキストを使用します。ペイン内で各キーが何をするかは、[キーボードフォーカスとホットキー](https://code.claude.com/docs/ja/plugins/mods/interface.md#know-which-keys-your-mod-can-receive) に記載されています。
+`Pane` コンテキストは、Tab、Shift+Tab、Enter、Escape も、バンドと同じ[プロンプト上部アクション](#above-prompt-actions)にバインドしています。また、ペインの入力フィールドとセレクトは `AbovePromptInput` と `AbovePromptSelect` コンテキストを使用します。ペイン内で各キーが何をするかについては、[キーボードフォーカスとホットキー](https://code.claude.com/docs/ja/plugins/mods/interface.md#know-which-keys-your-mod-can-receive)に記載されています。
 
 ### 設定アクション
 
-`Settings` コンテキストで利用可能なアクション。`select:accept` と `confirm:no` アクションは [選択](#select-actions) と [確認](#confirmation-actions) コンテキストから再利用されます。設定固有の動作：変更は各設定を変更するとすぐに適用されるため、Escape はパネルを閉じ、変更を保存します。拒否するのではなく。
+`Settings` コンテキストで利用可能なアクションです。`select:accept` と `confirm:no` のアクションは、[Select](#select-actions) と [Confirmation](#confirmation-actions) のコンテキストから再利用されていますが、Settings 固有の動作をします：変更は各設定項目を変更した時点ですぐに適用されるため、Escape は拒否するのではなく、変更を保存した状態でパネルを閉じます。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `settings:search` | / | 検索モードに入る |
-| `settings:retry` | R | エラー時に使用データの読み込みを再試行 |
-| `settings:fixUsage` | F | `/usage` フッターが修正を提示している場合に、Claude Code が適用できる [`/usage` の推奨事項](https://code.claude.com/docs/ja/costs#apply-recommendations-with-the-fix-shortcut) をセッションに送信します。v2.1.305 以降が必要 |
-| `select:accept` | Enter、Space | 選択した設定を変更またはそのサブメニューを開く |
-| `confirm:no` | Escape | パネルを閉じます。変更は既に保存されています |
+| `settings:search` | / | 検索モードに入ります |
+| `settings:retry` | R | エラー時に使用状況データの読み込みを再試行します |
+| `settings:fixUsage` | F | `/usage` のフッターに修正が表示されている場合に、Claude Code が適用できる [`/usage` の推奨事項](https://code.claude.com/docs/ja/costs#apply-recommendations-with-the-fix-shortcut)をセッションに送信します。v2.1.305 以降が必要です |
+| `select:accept` | Enter, Space | 選択した設定項目を変更するか、そのサブメニューを開きます |
+| `confirm:no` | Escape | パネルを閉じます。変更はすでに保存されています |
 
 ### エージェントアクション
 
-`Agents` コンテキストで利用可能なアクション。`claude agents` で開く [エージェントビュー](https://code.claude.com/docs/ja/agent-view.md) で適用されます。v2.1.257 以降が必要です。
+`Agents` コンテキストで利用可能なアクションです。このコンテキストは、`claude agents` で開く[エージェントビュー](https://code.claude.com/docs/ja/agent-view.md)で適用されます。v2.1.257 以降が必要です。
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `agents:switchView` | Ctrl+S | [セッショングループ化](https://code.claude.com/docs/ja/agent-view.md#organize-the-list) を状態とディレクトリ間で切り替え |
-| `agents:togglePin` | Ctrl+T | 選択したセッションを [ピン留めまたはピン留め解除](https://code.claude.com/docs/ja/agent-view.md#organize-the-list) |
-| `agents:find` | Ctrl+F | [`n:` フィルター](https://code.claude.com/docs/ja/agent-view#filter-sessions) を使って名前でセッションを検索します。v2.1.288 以降が必要 |
-| `agents:rename` | Ctrl+R | 選択したセッションの [名前を変更](https://code.claude.com/docs/ja/agent-view.md#organize-the-list) します。v2.1.288 以降が必要 |
-| `agents:previousGroup` | Ctrl+Up、Meta+Up | 前の [グループヘッダー](https://code.claude.com/docs/ja/agent-view.md#organize-the-list) にジャンプします。v2.1.288 以降が必要 |
-| `agents:nextGroup` | Ctrl+Down、Meta+Down | 次のグループヘッダーにジャンプします。v2.1.288 以降が必要 |
+| `agents:switchView` | Ctrl+S | [セッションのグループ化](https://code.claude.com/docs/ja/agent-view.md#organize-the-list)を状態とディレクトリの間で切り替えます |
+| `agents:togglePin` | Ctrl+T | 選択したセッションを[ピン留めまたはピン留め解除](https://code.claude.com/docs/ja/agent-view.md#organize-the-list)します |
+| `agents:find` | Ctrl+F | [`n:` フィルター](https://code.claude.com/docs/ja/agent-view#filter-sessions)を使用して、名前でセッションを検索します。v2.1.288 以降が必要です |
+| `agents:rename` | Ctrl+R | 選択したセッションの[名前を変更](https://code.claude.com/docs/ja/agent-view.md#organize-the-list)します。v2.1.288 以降が必要です |
+| `agents:previousGroup` | Ctrl+Up, Meta+Up | 前の[グループヘッダー](https://code.claude.com/docs/ja/agent-view.md#organize-the-list)にジャンプします。v2.1.288 以降が必要です |
+| `agents:nextGroup` | Ctrl+Down, Meta+Down | 次のグループヘッダーにジャンプします。v2.1.288 以降が必要です |
 
-エージェントビューが開いている間、Claude Code は `Agents` コンテキストがバインドするキーに対して `Agents` バインディングを使用し、同じキーの `Chat` または `Global` バインディングを無視します。例えば、エージェントビューで Ctrl+S を押すと、デフォルトの `chat:stash` をトリガーするのではなく、セッショングループ化を切り替えます。
+エージェントビューが開いている間、Claude Code は `Agents` コンテキストがバインドしているキーに対して `Agents` のバインディングを使用し、同じキーに対する `Chat` や `Global` のバインディングを無視します。たとえば、エージェントビューで Ctrl+S を押すと、デフォルトの `chat:stash` がトリガーされるのではなく、セッションのグループ化が切り替わります。
 
-ディスパッチ入力の外部エディタショートカットは `Agents` アクションではありません。エージェントビューは `Chat` コンテキストの `chat:externalEditor` バインディング（デフォルトでは Ctrl+G）に従います。
+ディスパッチ入力の外部エディタショートカットは `Agents` アクションではありません。エージェントビューは、`Chat` コンテキストの `chat:externalEditor` バインディング（デフォルトは Ctrl+G）に従います。
 
-バインディングはエージェントビューで単一キーストロークで発火するため、`chat:externalEditor` にバインドされた Ctrl+X Ctrl+E コードはエディタをそこで開きません。
+エージェントビューではバインディングは単一のキーストロークで発火するため、`chat:externalEditor` にバインドされた Ctrl+X Ctrl+E のコードでは、そこでエディタは開きません。
 
 ### 音声アクション
 
-[音声ディクテーション](https://code.claude.com/docs/ja/voice-dictation.md) が有効な場合、`Chat` コンテキストで利用可能なアクション：
+[音声入力](https://code.claude.com/docs/ja/voice-dictation.md)が有効な場合に `Chat` コンテキストで利用可能なアクション：
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `voice:pushToTalk` | Space | プロンプトをディクテーション。`/voice` モードに応じて保持またはタップ |
+| `voice:pushToTalk` | Space | プロンプトを音声入力します。`/voice` のモードに応じて長押しまたはタップします |
 
 ### スクロールアクション
 
-[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md) が有効な場合、`Scroll` コンテキストで利用可能なアクション：
+[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)が有効な場合に `Scroll` コンテキストで利用可能なアクション：
 
 | アクション | デフォルト | 説明 |
 | :- | :- | :- |
-| `scroll:lineUp` | `wheelup` | 1 行上にスクロール。マウスホイールスクロールはこのアクションをトリガー |
-| `scroll:lineDown` | `wheeldown` | 1 行下にスクロール。マウスホイールスクロールはこのアクションをトリガー |
-| `scroll:pageUp` | PageUp | ビューポート高さの半分上にスクロール |
-| `scroll:pageDown` | PageDown | ビューポート高さの半分下にスクロール |
-| `scroll:top` | Ctrl+Home | 会話の開始にジャンプ |
-| `scroll:bottom` | Ctrl+End | 最新のメッセージにジャンプして自動フォローを再度有効化 |
-| `scroll:halfPageUp` | （バインドなし） | ビューポート高さの半分上にスクロール。`scroll:pageUp` と同じ動作。vi スタイルの再バインドのために提供 |
-| `scroll:halfPageDown` | （バインドなし） | ビューポート高さの半分下にスクロール。`scroll:pageDown` と同じ動作。vi スタイルの再バインドのために提供 |
-| `scroll:fullPageUp` | （バインドなし） | フルビューポート高さ上にスクロール |
-| `scroll:fullPageDown` | （バインドなし） | フルビューポート高さ下にスクロール |
-| `selection:copy` | Ctrl+Shift+C / Cmd+C | 選択したテキストをクリップボードにコピー |
-| `selection:clear` | （バインドなし） | アクティブなテキスト選択をクリア。v2.1.234 以降が必要 |
-| `selection:extendLeft` | Shift+Left | アクティブな選択を 1 列左に拡張 |
-| `selection:extendRight` | Shift+Right | アクティブな選択を 1 列右に拡張 |
-| `selection:extendUp` | Shift+Up | アクティブな選択を 1 行上に拡張。選択が上端に達するとビューポートをスクロール |
-| `selection:extendDown` | Shift+Down | アクティブな選択を 1 行下に拡張。選択が下端に達するとビューポートをスクロール |
-| `selection:extendLineStart` | Shift+Home | アクティブな選択を行の開始に拡張 |
-| `selection:extendLineEnd` | Shift+End | アクティブな選択を行の終了に拡張 |
+| `scroll:lineUp` | `wheelup` | 1 行上にスクロールします。マウスホイールでのスクロールがこのアクションをトリガーします |
+| `scroll:lineDown` | `wheeldown` | 1 行下にスクロールします。マウスホイールでのスクロールがこのアクションをトリガーします |
+| `scroll:pageUp` | PageUp | ビューポートの高さの半分だけ上にスクロールします |
+| `scroll:pageDown` | PageDown | ビューポートの高さの半分だけ下にスクロールします |
+| `scroll:top` | Ctrl+Home | 会話の先頭にジャンプします |
+| `scroll:bottom` | Ctrl+End | 最新のメッセージにジャンプし、自動追従を再び有効にします |
+| `scroll:halfPageUp` | （未割り当て） | ビューポートの高さの半分だけ上にスクロールします。`scroll:pageUp` と同じ動作で、vi 形式の再バインド用に提供されています |
+| `scroll:halfPageDown` | （未割り当て） | ビューポートの高さの半分だけ下にスクロールします。`scroll:pageDown` と同じ動作で、vi 形式の再バインド用に提供されています |
+| `scroll:fullPageUp` | （未割り当て） | ビューポートの高さ全体分上にスクロールします |
+| `scroll:fullPageDown` | （未割り当て） | ビューポートの高さ全体分下にスクロールします |
+| `selection:copy` | Ctrl+Shift+C / Cmd+C | 選択したテキストをクリップボードにコピーします |
+| `selection:clear` | （未割り当て） | アクティブなテキスト選択を解除します。v2.1.234 以降が必要です |
+| `selection:extendLeft` | Shift+Left | アクティブな選択を 1 列左に拡張します |
+| `selection:extendRight` | Shift+Right | アクティブな選択を 1 列右に拡張します |
+| `selection:extendUp` | Shift+Up | アクティブな選択を 1 行上に拡張します。選択が上端に達するとビューポートをスクロールします |
+| `selection:extendDown` | Shift+Down | アクティブな選択を 1 行下に拡張します。選択が下端に達するとビューポートをスクロールします |
+| `selection:extendLineStart` | Shift+Home | アクティブな選択を行頭まで拡張します |
+| `selection:extendLineEnd` | Shift+End | アクティブな選択を行末まで拡張します |
 
 ## キーストロークシンタックス
 

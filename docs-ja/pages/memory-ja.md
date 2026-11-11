@@ -163,7 +163,7 @@ CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 claude --add-dir ../shared-config
 
 インライン形式は、Bash または Zsh でその 1 回の起動に対して変数を設定します。すべてのセッションで有効にするには、[環境変数を設定する](https://code.claude.com/docs/ja/env-vars.md#set-environment-variables) に示されているように `~/.claude/settings.json` の `env` ブロックに追加してください。
 
-これは追加ディレクトリから `CLAUDE.md`、`.claude/CLAUDE.md`、`.claude/rules/*.md`、および `CLAUDE.local.md` をロードします。`CLAUDE.local.md` は [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference) から `local` を除外する場合はスキップされます。
+変数を設定すると、Claude Code は追加ディレクトリの `CLAUDE.md`、`.claude/CLAUDE.md`、`CLAUDE.local.md`、`.claude/rules/*.md` ファイルをロードします。ただし、[`paths` フィールド](#path-specific-rules) を設定しているルールは除きます。`CLAUDE.local.md` は [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference) から `local` を除外する場合はスキップされます。
 
 ### `.claude/rules/` でルールを整理する
 

@@ -23,7 +23,8 @@
   * **[Anthropic 管理の git](#use-the-anthropic-git-proxy) を使用する場合**：このような認証情報があると、Claude は Anthropic 管理の git を経由せずに GitHub に直接アクセスします。
   * **Anthropic 管理の git を使用しない場合**：[イメージに git 設定を含める](#ship-git-config-in-your-image)で説明しているとおりに厳密にスコープを限定すれば、クローン用の認証情報をイメージに残しておくことができます。
 * **環境シークレットをセッション実行ホストに置かない**：環境シークレットはランナーを登録し、環境でキューに入っているセッションを取得できます。固定フリートでは、シークレットはすべてのランナーホストに存在し、どのセッションのコードもシークレットファイルを読み取ることができます。[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を優先してください。この場合、シークレットはユーザーコードを一切実行しないオーケストレーターホストに留まり、各ランナーは正確に 1 つのランナーを登録する単一使用の作業指示を受け取ります。固定フリートでは、環境シークレットファイルをすべてのセッションで読み取り可能として扱い、セッション侵害が疑われる場合はその後にシークレットをローテーションしてください。
-  * **侵害が疑われる場合**：[Owner](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) に環境の **Configuration** タブから新しいシークレットを作成して古いシークレットを取り消してもらい、その後、新しいシークレットを配布してください。Anthropic は、古いシークレットを使用するすべてのオーケストレーターとランナー（その作業指示から起動されたオンデマンドランナーを含む）を拒否します。ランナーは終了し、実行中のセッションは中断されます。
+  * **侵害が疑われる場合は、まず疑わしいセッションを取り消す**：ランナーを停止したりシークレットを取り消したりする前に、**Activity** タブでそのセッションのメニューから **Revoke token** を選択してください。これにより、どのランナーもそのセッションを再開できなくなります。
+  * **次にシークレットを置き換える**：[Owner](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments) に環境の **Configuration** タブから新しいシークレットを作成して古いシークレットを取り消してもらい、その後、新しいシークレットを配布してください。Anthropic は、古いシークレットを使用するすべてのオーケストレーターとランナー（その作業指示から起動されたオンデマンドランナーを含む）を拒否します。ランナーは終了し、実行中のセッションは中断されます。
 * **デフォルト拒否ネットワーク出力**：すべての環境でランナーとセッションコンテナのアウトバウンドトラフィックをネットワーク境界で制限してください。[デフォルト拒否出力](#default-deny-egress)では、許可する内容と理由について説明しています。
 * **最小権限ホスト IAM**：ランナーホストに接続されたコンピュート ID（インスタンスプロファイルやノードサービスアカウントなど）は、ランナー自体が必要とするもののみを付与する必要があります。セッションは、ホストの ID を継承するのではなく、ラッパースクリプトを通じて独自の認証情報を取得する必要があります。
 * **セッションからクラウドメタデータエンドポイントをブロックする**：セッションにホスト ID を使わせないようにするには、クラウドメタデータエンドポイントへのアクセスをブロックする必要があります。サブネットレベルの出力ポリシーはリンクローカルメタデータトラフィックをインターセプトしないため、コンテナ自体でブロックしてください：
@@ -243,7 +244,7 @@ Anthropic が提供するセッションでは、ランナーのクローンと�
 
 各セッションについて、Claude Code v2.1.267 以降のランナーは、Anthropic がセッションの git を提供する場合は `governed git ACTIVE` を含む `[runner:session]` 行を、提供しない場合は `the server withheld Anthropic-managed git for this session` を含む `[runner:warn]` 行を 1 つログに記録します。表示されている行を次のケースから探してください：
 
-* **`governed git ACTIVE` も `withheld` 行もない**：Claude Code v2.1.267 より古いランナーはどちらの行もログに記録せず、Anthropic はそのセッションを提供しません。[バージョンを固定する](#pin-the-version)の手順に従って、ランナーを v2.1.267 以降に更新してください。
+* **`governed git ACTIVE` も `withheld` 行もない**：ランナーが Claude Code v2.1.267 より古い場合、Anthropic はそのセッションを提供しません。[バージョンを固定する](#pin-the-version)の手順に従って、ランナーを v2.1.267 以降に更新してください。
 * **`withheld` 行**：Anthropic はセッションを提供しませんでした。以前は git プロキシで動作していたランナーでも、ユーザー側で何も変更していないのにこのように失敗することがあります。
   * **github.com 上にないリポジトリがある**：GitHub Enterprise Server など別の git ホスト上のリポジトリが 1 つでもあるセッションは、その github.com リポジトリも含めて提供されません。その環境のランナーでは [Anthropic git プロキシをオフにしてください](#turn-the-anthropic-git-proxy-off)。
   * **すべてのリポジトリが github.com 上にある**：`withheld` 行のセッション ID を添えて、[Anthropic アカウントチーム](#report-an-issue)に失敗を報告してください。Anthropic は理由を自社側で記録しています。
@@ -396,6 +397,7 @@ ENTRYPOINT ["claude"]
 ノードが ARM の場合は `linux-x64` を `linux-arm64` に置き換え、Alpine などの musl ベースのイメージでは `linux-x64-musl` または `linux-arm64-musl` に置き換えてください。musl イメージに必要な追加パッケージについては、[Alpine Linux のセットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。この URL は標準の Claude Code リリース配布場所であるため、[バイナリの整合性とコード署名](https://code.claude.com/docs/ja/setup.md#binary-integrity-and-code-signing)で説明しているとおり、ダウンロードしたバイナリをリリースの署名付きマニフェストと照合して検証できます。ランナーには Claude Code バージョン 2.1.224 以降が必要で、Claude Tag セッションを処理するには 2.1.229 以降が必要です。イメージをビルドしたら、レジストリにプッシュし、以下のレシピで参照してください。
 
 ```bash theme={null}
+# If your model needs a newer release, change stable to latest in the URL
 docker build \
   --build-arg CLAUDE_CODE_VERSION="$(curl -fsSL https://downloads.claude.ai/claude-code-releases/stable)" \
   -t <your-registry>/claude-runner:latest .
@@ -429,7 +431,7 @@ resources:
 ランナーは `--capacity` を使用して、一度に実行するセッション数をキャップします。CPU またはメモリをセッション間で分割しないため、ランナー上のセッションはコンテナの CPU とメモリを共有します。1 つのセッションのメモリ使用が他のセッションを終了させないようにするには、[専用のメモリ制限](#give-each-session-its-own-memory-limit)を設けて、ランナーあたり 1 つのセッションを実行してください。
 
 * **ランナーあたり 1 つのセッション**: 各コンテナに 1 つのセッションの値を与えます。[強化セクション](#harden-your-deployment)が推奨する `--capacity 1` でこのサイズ設定を使用し、[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)の場合、[`spawn-runner` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)が送信するワークロード（Kubernetes Job のポッドテンプレートなど）に値を設定します。
-* **ランナーあたり複数のセッション**: `--capacity` が 1 より上の場合、1 つのセッションの値に容量を掛けます。その容量まで多くのセッションがコンテナ内で同時に実行できるためです。[Kubernetes](#kubernetes) と [Docker Compose](#docker-compose) レシピは CPU またはメモリ制限なしで `--capacity 4` を実行するため、実行する容量のサイズ設定された制限を追加してください。
+* **ランナーあたり複数のセッション**: `--capacity` が 1 より上の場合、1 つのセッションの値に容量を掛けます。[アイドル状態のセッションも含め](#release-idle-sessions-on-a-fixed-fleet)、その容量まで多くのセッションがコンテナ内で同時に実行できるためです。[Kubernetes](#kubernetes) と [Docker Compose](#docker-compose) レシピは CPU またはメモリ制限なしで `--capacity 4` を実行するため、実行する容量のサイズ設定された制限を追加してください。
 * **1 つのホスト上の複数のランナーコンテナ**: 各ランナーは自身のセッションのみを `--capacity` に対してカウントするため、ランナーの容量の合計に合わせてホストをサイズ設定します。
 
   * **メモリ**: 1 つのセッションのメモリに合計を掛け、ホスト自身のプロセスが使用する分を加えます

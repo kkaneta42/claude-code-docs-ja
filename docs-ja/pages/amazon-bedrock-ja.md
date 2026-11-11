@@ -367,7 +367,7 @@ Amazon Bedrock の [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIRe
 | `ap-*` | `apac.` |
 | その他すべてのリージョン | `global.` |
 
-`ANTHROPIC_BEDROCK_REGION_PREFIX` を設定して、Claude Code が最初に試すプレフィックスを選択します。Claude Code がプロファイルの可用性を確認でき、モデルに一致するプロファイルが見つからない場合、以下の解決順序に従ってフォールバックします。有効な値は `us`、`eu`、`apac`、`jp`、`au`、および `global` です。たとえば、アカウントに `global.` プロファイルが有効になっているが、Claude Code が AWS リージョンから地理的に固有のプロファイルを導出する場合は、`global` に設定します。Claude Code v2.1.224 以降が必要です。
+`ANTHROPIC_BEDROCK_REGION_PREFIX` を設定して、Claude Code が最初に試すプレフィックスを選択します。有効な値は `us`、`eu`、`apac`、`jp`、`au`、および `global` です。たとえば、アカウントに `global.` プロファイルが有効になっているが、Claude Code が AWS リージョンから地理的に固有のプロファイルを導出する場合は、`global` に設定します。
 
 この例は、デフォルトモデルを `global.` プロファイルを通じてルーティングします。
 
@@ -386,7 +386,7 @@ export ANTHROPIC_BEDROCK_REGION_PREFIX=global
   3. 一致するプロファイルがないモデルの場合、優先プレフィックスを持つ組み込みモデル ID。Claude Code はこのステップで可用性を確認せずにこの ID を適用します。[スタートアップモデルチェック](#startup-model-checks) はセッションのデフォルトモデルをカバーします。
 * プロファイル検出が利用できない場合、Claude Code は可用性を確認せずにプレフィックスを適用します。アカウントにそのプレフィックスを持つ推論プロファイルが有効になっていない場合、リクエストは 400 エラーで失敗します。
 
-Claude Code は、自分で設定した Amazon Bedrock 推論プロファイル ID または ARN、または [`modelOverrides`](#map-each-model-version-to-an-inference-profile) 値を書き直しません。Anthropic 形式のモデル ID は [/model ピッカーと同じマッピング](#map-each-model-version-to-an-inference-profile) を通じて解決されます。Claude Code は 2 つのケースで変数を無視します。
+Claude Code は、自分で設定した Amazon Bedrock 推論プロファイル ID または ARN、または [`modelOverrides`](#map-each-model-version-to-an-inference-profile) 値を書き直しません。Anthropic 形式のモデル ID は [`/model` ピッカーと同じマッピング](#map-each-model-version-to-an-inference-profile) を通じて解決されます。Claude Code は次の 2 つのケースでも変数を無視します。
 
 * AWS GovCloud リージョンでは、Claude Code は常に `us-gov.` を使用します。これは GovCloud パーティション内でルーティングする唯一のプレフィックスです。
 * 有効な値の 1 つではない値を設定した場合、Claude Code はリージョン導出の優先プレフィックスにフォールバックします。

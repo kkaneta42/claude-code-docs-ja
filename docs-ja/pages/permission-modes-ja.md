@@ -25,7 +25,7 @@ Claude Code v2.1.283 以降では、auto モードはインタラクティブタ
 
 すべての操作を確認するモードは、CLI、`claude --help`、VS Code および JetBrains 拡張機能、デスクトップアプリでは **Manual** という名前で表示されます。その設定値は `default` で、フックや SDK 連携ではこの値が使われます。CLI では値を入力する箇所であればどこでも `manual` をエイリアスとして受け付けます（例: `claude --permission-mode manual` や `"defaultMode": "manual"`）。
 
-[保護されたパス](#protected-paths)への書き込みは、`bypassPermissions` モードと、bypass permissions が利用可能な plan モードのセッション（[モードの切り替えサイクルに `bypassPermissions` が含まれる](#switch-permission-modes)方法で起動された対話型ターミナルセッション）を除き、自動承認されることはありません。
+[保護されたパス](#protected-paths)への書き込みには、モードごとに独自のルールがあります。
 
 モードは基本設定を決めるものです。その上に[権限ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)を重ねることで、特定のツールを事前承認またはブロックできます。拒否ルールは `bypassPermissions` を含むすべてのモードでブロックします。Claude が呼び出せるツールが少なくとも 1 つ他に残っている限り、拒否ルールと確認ルールは [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) には適用されません。許可ルールは `bypassPermissions` では効果がありません。
 
@@ -686,6 +686,8 @@ Claude Code は [`--restricted`](https://code.claude.com/docs/ja/cli-reference#c
 * **受け入れた場合**: Claude Code は `skipDangerousModePermissionPrompt` を `~/.claude/settings.json` の `true` に設定するため、後のセッションではダイアログをスキップします。ダイアログを再度表示するには、そのファイルからキーを削除するか、`false` に設定してください。[`skipDangerousModePermissionPrompt` リファレンス](https://code.claude.com/docs/ja/settings-reference#skipdangerousmodepermissionprompt)には、ユーザーまたは組織が設定できる他の設定ファイルが記載されています。
 * **拒否した場合**: Claude Code は終了します。
 
+[`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を `user` なしで渡すと、以前に受け入れていてもダイアログが再び表示されることがあります。スキップするには、`--setting-sources user,project` のように `user` を追加してください。
+
 [非対話モード](https://code.claude.com/docs/ja/headless.md)ではダイアログは表示されません。
 
 [バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)は、ユーザー設定または管理設定に受け入れが記録されている場合、その受け入れを尊重します。
@@ -728,13 +730,13 @@ Bypass permissions was requested at launch and ignored · if that was you, ~/.cl
 
 ## 保護されたパス
 
-パスの小さなセットへの書き込みは、`bypassPermissions` モードおよび [bypass permissions が利用可能](#skip-all-checks-with-bypasspermissions-mode)なプラン モードのインタラクティブターミナルセッションを除き、自動承認されることはありません。これはリポジトリ状態と Claude 独自の設定の偶発的な破損を防ぎます。
+少数のパスはリポジトリの状態と Claude 自身の設定を保持しているため、それらへの書き込みにはモードごとに個別のルールがあります：
 
 | モード | 保護されたパスへの書き込み |
 | :- | :- |
 | `default`、`acceptEdits` | プロンプト表示 |
 | `plan` | [bypass permissions](#skip-all-checks-with-bypasspermissions-mode)が利用可能なインタラクティブターミナルセッションで許可。そうでない場合、[auto モード](#eliminate-prompts-with-auto-mode)が計画中に利用可能な場合は分類器にルーティング。利用できない場合はプロンプト表示 |
-| `auto` | 分類器にルーティング |
+| `auto` | 分類器にルーティングされ、分類器が判断 |
 | `dontAsk` | 拒否 |
 | `bypassPermissions` | 許可 |
 

@@ -256,7 +256,7 @@ Code タブはペインを任意のレイアウトで配置できるように構
 
 ### ペインを最小化する
 
-Terminal、Browser、または [iOS Simulator](https://code.claude.com/docs/ja/desktop-ios-simulator.md) を小さいサイズで表示したままにするには、ペインのヘッダーにある**Minimize**をクリックします。このボタンを使用するには、Claude Desktop v4.0.0 以降と、[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)ではなく Claude アカウントが必要です。Browser ペインでは、ローカルセッションでのみこのボタンが表示されます。
+Terminal、Browser、[iOS Simulator](https://code.claude.com/docs/ja/desktop-ios-simulator.md)、または[サイドチャット](#ask-a-side-question-without-derailing-the-session)を小さいサイズで表示したままにするには、ペインのヘッダーにある**Minimize**をクリックします。このボタンを使用するには、Claude Desktop v4.0.0 以降と、[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)ではなく Claude アカウントが必要です。Browser ペインでは、ローカルセッションでのみこのボタンが表示されます。
 
 最小化されたペインは、[セッション詳細パネル](#see-session-details)が画面に表示されている間はそのパネル内に配置され、それ以外の場合はチャットの隅にフローティング表示されます：
 
@@ -2050,7 +2050,7 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
 
 * **このマシン上のローカルセッション**：ディスクにデプロイされた管理設定ファイルが適用されます。管理コンソールを通じてリモートでプッシュされた管理設定は、セッションが[適格なログイン](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)で認証する場合、Anthropic の API でこれらのセッションに到達します。ターミナル CLI と同じ[設定の優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence)に従います。
 * **[クラウドセッション](#cloud-sessions)**：[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を受け取ります。デバイスにデプロイされたファイルはこれらのセッションに到達しません。Anthropic が管理する VM で実行されるためです。[自己ホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)にルーティングされたセッションは、ランナーイメージ内の管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)は、そのファイルが適用される場合を示しています。
-* **[SSH セッション](#ssh-sessions)**：セッションはリモートホストから管理設定ファイルを読み取ります。Desktop 自体は、ローカルマシン上で`sshConfigs`、`sshHostAllowlist`、`disableSshSavedPasswords`、および`disableDesktopLocalSessions`を読み取ります。複数の管理ソースを配信する場合、Desktop は[デフォルトではそのうち 1 つから](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)これらを読み取ります。
+* **[SSH セッション](#ssh-sessions)**：セッションはリモートホストから管理設定ファイルを読み取ります。Desktop 自体は、ローカルマシン上で`sshConfigs`、`sshHostAllowlist`、`disableSshSavedPasswords`、および`disableDesktopLocalSessions`を読み取ります。複数の管理ソースを配信する場合、Desktop は[デフォルトではそのうち 1 つから](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)これらを読み取ります。ローカルマシンで有効な管理設定で`permissions.disableBypassPermissionsMode`または`disableAutoMode`を設定すると、リモートホストの設定に関係なく、SSH セッションのモードセレクタにはそのモードが表示されません。
 * **[Cowork](https://claude.com/docs/cowork/overview)セッション**：このマシン上の Cowork セッションでは、ユーザーが Team または Enterprise アカウントでサインインしている場合でも、Claude Code は管理コンソール設定をフェッチしません。マシンにデプロイされたポリシーを読み取ります。ただし、Claude Desktop 設定が`requireCoworkFullVmSandbox`を設定している場合を除きます。リモート Cowork セッションはどちらも受け取りません。[ポリシーが適用される場所と時期](https://code.claude.com/docs/ja/managed-settings.md#where-and-when-a-policy-applies)を参照して、どのデバイスファイルが Cowork に到達するかを確認してください。[MCP 権限ルール](https://code.claude.com/docs/ja/permissions.md#mcp)を参照して、`Bash`および`WebFetch`ルールが Cowork のツールにどのように適用されるかを確認してください。
 
 ローカルおよび SSH セッションでは、デスクトップアプリは各ユーザーの接続された claude.ai コネクタを Claude Code に直接配信します。MCP 設定または`managed-mcp.json`はこれらのコネクタに到達しません。使用する設定ソースまたはファイルの場所に関係なく。これらのセッションでコネクタのツールをブロックするには、組織の[コネクタツールコントロール](https://code.claude.com/docs/ja/mcp.md#organization-controls-on-connector-tools)を使用してください。[コネクタが Claude Code に到達する方法](https://code.claude.com/docs/ja/mcp.md#how-connectors-reach-claude-code)は、各種類のセッションでコネクタを管理する設定を示しています。

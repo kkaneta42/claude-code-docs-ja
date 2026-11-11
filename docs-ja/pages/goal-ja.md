@@ -131,9 +131,10 @@ Claude が評価者に答え続けても進捗がない場合（複数ターン�
 
 #### 修正が必要なエラーはゴールをクリアします
 
-修正するまでクリアされないエラーでターンが失敗した場合、Claude Code はゴールをクリアし、原因を名前で示す警告を出力します。警告は `Goal cleared after an unrecoverable error` で始まり、`Run /goal again to continue` で終わります。原因を修正してから、`/goal <condition>` で [ゴールを再度設定](#set-a-goal) してください。4 つの種類の失敗がゴールをクリアします。
+修正するまでクリアされないエラーでターンが失敗した場合、Claude Code はゴールをクリアし、原因を名前で示す警告を出力します。警告は `Goal cleared after an unrecoverable error` で始まり、`Run /goal again to continue` で終わります。原因を修正してから、`/goal <condition>` で [ゴールを再度設定](#set-a-goal) してください。ゴールをクリアする失敗には次のものがあります。
 
 * 認証失敗。Claude Code が独自の認証情報を管理している場合です。デスクトップアプリや [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) など、ホストがあなたのために認証情報を管理している場合、Claude Code はホストが独自にアクセスを復元するため、ゴールをアクティブなままにします。
+* Claude Code が claude.ai のログインを更新できないほどのディスク容量不足。Claude Code が独自の認証情報を管理している場合です。警告には `(disk full)` と表示されます。[Claude Code の設定ディレクトリがあるディスクの空き容量を確保してください](https://code.claude.com/docs/ja/errors.md#could-not-refresh-your-login-disk-full)。
 * クレジット残高の枯渇
 * [自動コンパクション](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window) でクリアできないコンテキストオーバーフロー
 * 利用できないモデル

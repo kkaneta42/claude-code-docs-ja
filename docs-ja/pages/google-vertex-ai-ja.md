@@ -134,12 +134,12 @@ export VERTEX_REGION_CLAUDE_4_6_SONNET=europe-west1
 
 レート制限を高くするには、Google Cloud サポートに連絡してください。Google Cloud の Agent Platform を使用する場合、認証が Google Cloud 認証情報を通じて処理されるため、`/logout` コマンドは利用できません。
 
-Claude Code は [MCP tool search](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)と事前ロードをモデル生成によって決定します。
+Claude Code は、[MCP ツール検索](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)と事前ロードのどちらを使うかをモデルの世代によって決定します。
 
 * **Claude Opus 4.5、Sonnet 4.5、Haiku 4.5、およびそれ以降**：Claude Code はデフォルトでツール検索を有効にします。
 * **以前のモデル**：Claude Code は MCP ツール定義を事前にロードします。これは、これらのモデルの Agent Platform サービングスタックが必要なベータヘッダーを拒否するためです。`ENABLE_TOOL_SEARCH=true` を設定してもこれを上書きしません。
 
-すべてのモデルでツール検索を無効にするには、`ENABLE_TOOL_SEARCH=false` を設定します。v2.1.221 より前は、Claude Code は `ENABLE_TOOL_SEARCH=true` を設定しない限り、Google Cloud の Agent Platform 上のすべてのモデルでツール検索を無効にしていました。
+すべてのモデルでツール検索を無効にするには、`ENABLE_TOOL_SEARCH=false` を設定します。
 
 ### モデルバージョンをピン留めする
 

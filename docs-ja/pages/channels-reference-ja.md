@@ -322,7 +322,7 @@ instructions: 'Messages arrive as <channel source="webhook" chat_id="...">. Repl
 
 以下は、双方向サポート付きの完全な `webhook.ts` です。アウトバウンド返信は [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)（SSE）を使用して `GET /events` でストリーミングされるため、`curl -N localhost:8788/events` はそれらをライブで見ることができます。インバウンドチャットは `POST /` に到着します：
 
-```ts title="返信ツール付きの完全な webhook.ts' expandable theme={null}
+```ts title="返信ツール付きの完全な webhook.ts" expandable theme={null}
 #!/usr/bin/env bun
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'

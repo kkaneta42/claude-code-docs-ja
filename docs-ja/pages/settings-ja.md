@@ -66,7 +66,7 @@ Claude Code は、[`~/.claude.json`](https://code.claude.com/docs/ja/claude-dire
 
 ### チームと設定を共有する
 
-`.claude/settings.json` をコミットして、リポジトリをクローンするすべての人が同じ権限、フック、およびプラグインを取得するようにします。各チームメイトは、独自の `.claude/settings.local.json` で自分用にそれを上書きできるため、個人的な例外にコミットは必要ありません。完全なチームファイルについては、[チームの共有設定](https://code.claude.com/docs/ja/settings-example.md#a-teams-shared-settings)を参照してください。
+`.claude/settings.json` をコミットすると、リポジトリをクローンしたすべてのユーザーが同じ権限、フック、プラグイン設定を使えるようになります。各チームメンバーは自分の `.claude/settings.local.json` でこのファイルを個別に上書きできるため、個人的な例外のためにコミットする必要はありません。チームファイルの完全な例については、[チームの共有設定](https://code.claude.com/docs/ja/settings-example.md#a-teams-shared-settings)を参照してください。
 
 コミットするものの一部は、各チームメイトが[フォルダを信頼する](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)まで待機し、いくつかのキーはリポジトリファイルからは決して有効になりません。[適用されない設定をトラブルシューティングする](#common-cases)で両方を説明しています。
 
@@ -199,7 +199,7 @@ JSON をタイプミスするか、Claude Code が受け入れない値にキー
 * **設定エラー**：ユーザー、プロジェクト、またはローカルファイルに無効な JSON またはスキーマが拒否する値があります。インタラクティブセッションの開始時に Claude Code はダイアログを表示し、Claude の助けでファイルを修正するか、終了するか、壊れた設定なしで続行できます。
 * **設定警告**：個別のエントリのみが失敗します。不正な形式の権限ルールまたは不明な hook イベント名など。Claude Code はそれらの値をスキップし、ファイルの残りを有効に保ちます。
 * **管理設定**：Claude Code はファイルの残りを強制し続けます。[管理設定の無効なエントリ](https://code.claude.com/docs/ja/managed-settings.md#invalid-entries-in-managed-settings)は、それが削除するものと、修正するまでどのキーがより厳密な値にフォールバックするかを説明します。有効な JSON ではない管理設定ドキュメントについては、[管理設定ドキュメントを解析できませんでした](https://code.claude.com/docs/ja/errors.md#managed-settings-document-could-not-be-parsed)を参照してください。
-* **構成エラー**：[`~/.claude.json`](https://code.claude.com/docs/ja/claude-directory#ce-claude-json) を解析できません。`claude -p` の実行は終了し、ファイルは変更されません。以前のコピーを復元するには、[\~/.claude.json の構成エラー](https://code.claude.com/docs/ja/errors.md#configuration-error-in-claude-json)を参照してください。Claude Code は壊れたファイルを `~/.claude/backups/.claude.json.corrupted.<timestamp>` にコピーし、インタラクティブセッションでは、終了して修正するか、デフォルト構成にリセットするかを尋ねます。ファイルが空で、復元できるバックアップがない場合、Claude Code はデフォルト設定で起動します。
+* **構成エラー**：[`~/.claude.json`](https://code.claude.com/docs/ja/claude-directory#ce-claude-json) を解析できません。`claude -p` の実行は終了します。以前のコピーを復元するには、[\~/.claude.json の構成エラー](https://code.claude.com/docs/ja/errors.md#configuration-error-in-claude-json)を参照してください。Claude Code は壊れたファイルを `~/.claude/backups/.claude.json.corrupted.<timestamp>` にコピーし、インタラクティブセッションでは、終了して修正するか、デフォルト構成にリセットするかを尋ねます。ファイルが空で、復元できるバックアップがない場合、Claude Code はデフォルト設定で起動します。
 
 続行した後、`/status` を実行して影響を受けたファイルを確認し、各エラーの詳細について `claude doctor` を実行してください。
 

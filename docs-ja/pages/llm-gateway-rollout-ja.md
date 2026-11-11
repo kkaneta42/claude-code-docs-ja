@@ -251,7 +251,7 @@ claude -p "Reply with one word: connected"
 
 * ログインプロンプトは認証情報ギャップを意味します。`/status` を実行し、**Status** タブを開きます。`Setting sources` 行にマネージドセッティングが含まれていない場合、配布がマシンに到達しませんでした。含まれている場合、開発者認証情報が配布されなかったため、`ANTHROPIC_AUTH_TOKEN` または `apiKeyHelper` を設定してください。
 * `Failed to authenticate` エラーはゲートウェイがリクエストを拒否していることを意味します。そのログはどの認証情報が失敗したかを示しています。ゲートウェイ自体がログする拒否は開発者キーに名前を付けますが、`api.anthropic.com` またはプロバイダーのエンドポイントからの `401` は、ゲートウェイが保持するプロバイダー認証情報が拒否されたことを意味します。
-* キーが `x-api-key` ヘッダーで期待される場合、初回使用時の 1 回限りの承認プロンプトは予想されます。`ANTHROPIC_API_KEY` として設定されます。`ANTHROPIC_AUTH_TOKEN` では、プロンプトは表示されず、変数が静かに引き継ぎます。以前に保存された claude.ai ログインはそのセッションでは非アクティブです。
+* ゲートウェイが `x-api-key` ヘッダーでキーを期待し、`ANTHROPIC_API_KEY` として設定されている場合、初回使用時のキーに対する 1 回限りの承認プロンプトは想定どおりの動作です。
 
 組織が [高速モード](https://code.claude.com/docs/ja/fast-mode.md)を使用する場合は、ここで `/fast` も実行してください。可用性チェックはゲートウェイベース URL に従う代わりに `api.anthropic.com` に直接呼び出すため、ゲートウェイルーティングセッションは推論が機能していても高速モードが利用不可または無効として報告できます。[プロキシと LLM ゲートウェイの背後で高速モードを使用する](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-behind-proxies-and-llm-gateways)は、各メッセージを、[設定の残り](#distribute-the-configuration)と一緒に配布される変数にマップします。
 

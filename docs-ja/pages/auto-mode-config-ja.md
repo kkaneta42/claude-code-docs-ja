@@ -180,7 +180,7 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
 
 Claude Code はバックグラウンドでスキャンを行い、その後草案を表示します。草案は全体として承認または破棄するため、個々のエントリを調整するには後で `~/.claude/settings.json` を編集してください。承認すると、Claude Code は草案を書き込み、既存の設定と整合させます。
 
-* Claude Code は `environment` リストを `"$defaults"` なしで書き込みます。草案には、変更されなかった組み込みエントリが明記されているためです
+* `~/.claude/settings.json` の `environment` リストへの追加を選んだ場合、リスト内の `"$defaults"` エントリは保持されます。そのリストの置き換えを選んだ場合はそのエントリが失われるため、デフォルトのエントリが必要な場合は `"$defaults"` を追加し直してください
 * Claude Code は、草案がエントリを追加する `allow`、`soft_deny`、`hard_deny` の各リストに `"$defaults"` を含めます（ただし、`"$defaults"` を含まない `allow` リストをすでに書いている場合を除きます）。これにより、置き換えていない[組み込みルール](#override-the-block-and-allow-rules)が引き続き有効になります
 * 保存後、Claude Code は `~/.claude/settings.json` 内の `permissions.allow` ルールのうち、`Bash(*)` のように auto モードが無視するもの、または破壊的なコマンドを自動承認するものを削除するよう提案します
 
@@ -216,7 +216,7 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
 
 3 つの追加フィールドを使用すると、分類器の組み込みルールリストを置き換えることができます。
 
-* `autoMode.hard_deny`：無条件のセキュリティ境界
+* `autoMode.hard_deny`：ユーザーが求めた場合でもブロックするアクション
 * `autoMode.soft_deny`：ユーザーの意図でクリアできる破壊的なアクション
 * `autoMode.allow`：ソフトブロックルールの例外
 
@@ -231,7 +231,7 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
 
 一般的なリクエストは明示的な意図としてカウントされません。Claude に「リポジトリをクリーンアップする」ように依頼することは force push を認可しませんが、「このブランチを force push する」ように依頼することは認可します。
 
-緩和するには、分類器がデフォルトの例外がカバーしていないルーチンパターンを繰り返しフラグする場合、`allow` に追加します。厳しくするには、環境に固有で、デフォルトが見落としているリスクについて `soft_deny` に追加するか、絶対に越えてはいけないセキュリティ境界について `hard_deny` に追加します。
+緩和するには、分類器がデフォルトの例外がカバーしていない日常的なパターンを繰り返し警告する場合、`allow` に追加します。厳しくするには、環境に固有でデフォルトが見落としている破壊的なリスクについて `soft_deny` に追加するか、ユーザーが求めた場合でもブロックするアクションについて `hard_deny` に追加します。
 
 組み込みルールを保持しながら独自のルールを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトルールはその位置に挿入されるため、カスタムルールはそれらの前後に配置でき、リリース全体でビルトインリストが変更されるにつれて更新を継続して継承します。
 
@@ -252,7 +252,7 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
     "soft_deny": [
       "$defaults",
       "Never run database migrations outside the migrations CLI, even against dev databases",
-      "Never modify files under infra/terraform/prod/: production infrastructure changes go through the review workflow"
+      "Running terraform apply in infra/terraform/prod/ needs an explicit request: production infrastructure changes go through the review workflow"
     ],
     "hard_deny": [
       "$defaults",

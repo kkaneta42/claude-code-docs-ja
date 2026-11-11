@@ -71,9 +71,9 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 * **Fable 5.2**: `/model fable` を実行するか、`claude --model fable` で起動します。[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) のセッションでは、代わりに `/model claude-fable-5-2` を実行します。
 * **Fable 5.1 または Fable 5**: モデル ID で選択します。Anthropic API では、`/model claude-fable-5-1` または `/model claude-fable-5` を実行するか、`claude --model claude-fable-5-1` で起動します。その他のプロバイダーでは、プロバイダーのモデル ID を使用するか、`ANTHROPIC_DEFAULT_FABLE_MODEL` で[固定](#pin-models-for-third-party-deployments)します。
 
-Pro、Max、Team、Enterprise プランでは、ユーザー設定に保存された `claude-fable-5-1` モデルは `fable` エイリアスに移行します。
+Pro、Max、Ultra、Team、Enterprise プランでは、ユーザー設定に保存された `claude-fable-5-1` モデルは `fable` エイリアスに移行します。
 
-* **Pro または Max プラン**: 移行は v2.1.321 以降を初めて実行したときに行われます。ターミナルでは、起動時のモデル行に `(auto-updated)` が一度表示されることがあります。
+* **Pro、Max、または Ultra プラン**: 移行は v2.1.321 以降を初めて実行したときに行われます。ターミナルでは、起動時のモデル行に `(auto-updated)` が一度表示されることがあります。
 * **Team または Enterprise プラン**: 移行は組織の設定を待って行われるため、後の起動時に行われる場合もあれば、まったく行われない場合もあります。移行は次のセッションから適用され、`(auto-updated)` 行は表示されません。モデルを確認するには、`/model` を実行します。
 
 移行後、Fable 5.2 に対して[レベルを設定](#adjust-effort-level)していない限り、セッションは Fable 5.2 のデフォルトの effort で開始されます。Console アカウント、サードパーティプロバイダー、およびプロジェクト設定、ローカル設定、管理設定では `claude-fable-5-1` が維持されます。

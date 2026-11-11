@@ -572,6 +572,17 @@ Claude Code はフックの [JSON 入力](#hook-input-and-output)を `Content-Ty
 
 Claude Code は、[終了コード 0 の解析ルール](#exit-code-0)に従い、コマンドフックの stdout と同じ方法でツールのテキストコンテンツを読み取ります。ツールが `isError: true` を返した場合、フックは非ブロッキングエラーを生成し、実行は続行されます。
 
+フックのエラーに次のいずれかのメッセージが含まれている場合、Claude Code はツールの応答を読み取れなかったため、フックは判定を返していません。
+
+```text theme={null}
+MCP tool "security_scan" on server "my_server" gave no answer that could be read, because a message from the server was too large, so this hook gave no verdict. If this keeps happening, the tool must send a smaller answer.
+MCP tool "security_scan" on server "my_server" answered without its text, which happens when a result is too large, so this hook gave no verdict. If this keeps happening, the tool must send a smaller answer.
+```
+
+`PreToolUse` では、Claude Code はフックがチェックしていたツール呼び出しを拒否します。`UserPromptSubmit`、`PostToolUse`、`Stop` などの他のイベントでは、このエラーは非ブロッキングです。
+
+このエラーが繰り返し表示される場合は、ツールから返すデータを減らすか、応答が小さくなるようにフックの [`tool` または `input`](#mcp-tool-hook-fields) を変更してください。
+
 ##### サーバーがまだ接続中の場合
 
 `PreToolUse` や `Stop` など、フックが結果をブロックまたは変更できるイベントでは、Claude Code は接続中のサーバーを待ってからツールを呼び出します。待機時間は最大で [`MCP_TIMEOUT`](https://code.claude.com/docs/ja/env-vars) までで、フック自体の [`timeout`](#common-fields) の範囲内です。`Notification` や `SessionEnd` などの観察用イベントでは待機しません。
@@ -892,9 +903,14 @@ Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or
 
 #### バックグラウンド プロセスを開始するフック
 
+フックは、開発サーバーなどの長時間実行されるプログラムを起動し、セッションの続行中も実行したままにできます。フックのスクリプトまたは[シェル形式](#exec-form-and-shell-form)のコマンドで、次のようにします。
+
+* プログラムをバックグラウンドで実行する
+* その stdout と stderr をリダイレクトする。例えば、Bash コマンド `npm run dev > dev-server.log 2>&1 &` は両方をファイルに送ります。リダイレクトしない場合、[非同期](#run-hooks-in-the-background)でないフックは、自身のプロセスが終了してから完了するまでに最大 10 秒かかります。
+
 コマンド フックがバックグラウンド プロセスで決定を行ってから終了する場合、Claude Code が読み取りを停止した後にそのプロセスが出力した deny はツール呼び出しをブロックしません。[非同期](#run-hooks-in-the-background)でないフックの場合、Claude Code はフック自身のプロセスが終了した直後にフックの出力の読み取りを終えます。
 
-バックグラウンド プロセスを開始する前に決定を出力し、そのプロセスの stdout と stderr をリダイレクトしてください。スクリプトが allow を出力した後、そのプロセスの stdout と stderr をリダイレクトせずにバックグラウンド プロセスを開始した場合、Claude Code はツール呼び出しをブロックします。フック エラーには `refusing to honor the suspect capture` が含まれます。
+バックグラウンド プロセスを開始する前に決定を出力し、そのプロセスの stdout と stderr をリダイレクトしてください。スクリプトが allow を出力した後、そのプロセスの stdout と stderr をリダイレクトせずにバックグラウンド プロセスを開始した場合、Claude Code はツール呼び出しをブロックします。フック エラーには `stdio went quiet` と `refusing to honor the suspect capture` が含まれます。
 
 この `PreToolUse` フック スクリプトは `policy-check.sh` で決定を出力し、その後バックグラウンドでメトリクスをアップロードします。
 
@@ -1193,7 +1209,7 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 
 * `PreToolUse`: `hookSpecificOutput` の直下の `updatedInput` は、ツールが実行される前にそのツールの引数を置き換えます。[PreToolUse 決定制御](#pretooluse-decision-control)を参照してください
 * `PermissionRequest`: `decision` オブジェクト内の `updatedInput`。[PermissionRequest 決定制御](#permissionrequest-decision-control)を参照してください
-* `PostToolUse`: `updatedToolOutput` はツールの結果を置き換えます。[PostToolUse 決定制御](#posttooluse-decision-control)を参照してください
+* `PostToolUse`: `updatedToolOutput` はツールの結果を置き換えます。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでは、ツールが `AskUserQuestion` または `ExitPlanMode` の場合、Claude Code は `updatedToolOutput` を無視し、Claude は元の回答またはプランを読み取ります。[PostToolUse 決定制御](#posttooluse-decision-control)を参照してください
 * `UserPromptSubmit`: プロンプトを置き換えることはできません。`additionalContext` をそれと一緒に注入するだけです
 
 秘匿化や変換のユースケースの場合、アウトバウンド ツール入力の場合は `PreToolUse` で、インバウンド ツール結果の場合は `PostToolUse` で傍受します。
@@ -2210,6 +2226,14 @@ Monitor コマンドを許可または書き換えるには、[Monitor コマン
 | `addDirectories` | `directories`、`destination` | 作業ディレクトリを追加します。`directories` はパス文字列の配列です |
 | `removeDirectories` | `directories`、`destination` | 作業ディレクトリを削除します |
 
+`rules` では、`Tool(specifier)` と記述される[権限ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)について、`toolName` はツールの名前、`ruleContent` は指定子です。
+
+* `Bash(npm test)`：`{ "toolName": "Bash", "ruleContent": "npm test" }`
+* `Bash` または `Bash(*)`：`{ "toolName": "Bash" }`（どちらもツール全体にマッチするため）
+* `mcp__github__get_issue`：`{ "toolName": "mcp__github__get_issue" }`
+
+[MCP ツール](https://code.claude.com/docs/ja/permissions.md#mcp)の許可ルールでは `ruleContent` を省略してください。追加すると、そのルールはどの呼び出しにもマッチしません。
+
 > [!NOTE]
 >
 > `bypassPermissions` を指定した `setMode` は、bypass モードがすでに利用可能な状態でセッションを起動した場合にのみ有効になります。具体的には、`--dangerously-skip-permissions`、`--permission-mode bypassPermissions`、`--allow-dangerously-skip-permissions`、または [ユーザー設定、`--settings`、管理設定](https://code.claude.com/docs/ja/settings-reference#permissions-defaultmode)での `permissions.defaultMode: "bypassPermissions"` のいずれかです。それ以外の場合、この更新は何も行いません。また、[`permissions.disableBypassPermissionsMode`](https://code.claude.com/docs/ja/permissions#managed-settings) によってこのモードが無効化されている場合や、セッションが[制限モード](https://code.claude.com/docs/ja/cli-reference.md#cli-flags)で開始された場合も、この更新は何も行いません。
@@ -2289,8 +2313,8 @@ v2.1.319 より前では、メッセージでターンを中断した後にフ�
 | `reason` | `decision` が `"block"` の場合に Claude に表示される説明 |
 | `additionalContext` | ツールの結果とともに Claude のコンテキストに追加される文字列。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
 | `classifierContext` | この呼び出しの結果について、Claude ではなく [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器に向けた短いメモ。[auto モードの分類器向けに結果に注釈を付ける](#annotate-a-result-for-the-auto-mode-classifier)を参照してください。Claude Code v2.1.236 以降が必要です |
-| `updatedToolOutput` | Claude に送信される前に、ツールの出力を指定された値で置き換えます。値はツールの出力の形式と一致している必要があります |
-| `updatedMCPToolOutput` | [MCP ツール](#match-mcp-tools)の出力のみを置き換えます。すべてのツールで機能する `updatedToolOutput` の使用を推奨します |
+| `updatedToolOutput` | Claude に送信される前に、ツールの出力を指定した値に置き換えます。値はツールの出力の形式と一致している必要があります。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでは、ツールが `AskUserQuestion` または `ExitPlanMode` の場合、Claude Code はこのフィールドを無視し、Claude は元の回答またはプランを読み取ります |
+| `updatedMCPToolOutput` | [MCP ツール](#match-mcp-tools)の場合のみ出力を置き換えます。組み込みツールでも機能する `updatedToolOutput` を優先してください |
 
 次の例は、`Bash` 呼び出しの出力を置き換えます。置き換える値は `Bash` ツールの出力の形式と一致しています。
 

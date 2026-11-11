@@ -142,18 +142,21 @@ Claude Code は、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings
 `sessions/` のセッションファイル、自動メモリ、Claude Desktop および Cowork トランスクリプトは、それぞれ独自の保持ルールに従います：
 
 * **`sessions/`**：実行中の各セッションに 1 つの小さいファイルを保持します。同時実行セッションとクラッシュを検出するために使用されます。年齢ベースのスイープの一部ではありません。Claude Code は、セッションが終了するときに各ファイルを削除し、次の起動時にクラッシュの残りをクリアします。
+* **`seed-admin/`**：[ultrareview](https://code.claude.com/docs/ja/ultrareview.md) または[クラウドセッションのアップロード](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)のためにリポジトリをパッケージ化する際に、Claude Code が作成する一時的な git ディレクトリです。アップロードが終了したとき、または中断された場合は後のセッションで、Claude Code はそのアップロードのディレクトリを削除し、`seed-admin/` 自体はそのまま残します。
 * **自動メモリ**：スイープは、プロジェクトの[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)ディレクトリ `projects/<project>/memory/` 内のメモリファイルを削除しません。Claude Code は、保持期間全体が空だった場合にのみそのディレクトリを削除します。v2.1.228 より前では、スイープはメモリディレクトリ内のフォルダをセッションデータとして扱い、その下の古いファイルを削除できました。
 * **Claude Desktop および Cowork トランスクリプト**：Claude Code は、Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトを任意の年齢で保持します。これらのトランスクリプトに年齢制限を与えるには、[`desktopSessionCleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#desktopsessioncleanupperioddays) を設定します。Claude Code v2.1.248 以降が必要です。それより前のバージョンでは、`cleanupPeriodDays` の後に削除します。
 
-  次のいずれかの場合、Claude Code は代わりに `cleanupPeriodDays` の後にこれらのトランスクリプトを削除します：
+  ただし、次のような場合、Claude Code はこれらのトランスクリプトを `cleanupPeriodDays` の経過後に削除します。
 
-  * [管理設定](https://code.claude.com/docs/ja/managed-settings.md)が `cleanupPeriodDays` を設定している
+  * [管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `cleanupPeriodDays` が設定されている
   * [HIPAA 設定がセッションに適用されている](https://code.claude.com/docs/ja/hipaa-setup.md#check-how-developers-sign-in-and-connect)
 
 Claude Code は、以下の場合に年齢ベースのスイープをスキップします：
 
 * **ベアモード**：[`--bare`](https://code.claude.com/docs/ja/headless#start-faster-with-bare-mode)で `claude -p` を実行する場合、Claude Code はそのセッションでスイープを実行しません。
-* **一時停止されたスイープ**：Claude Code が保持期間を安全に判定できない場合、保持クリーンアップスイープを一時停止します。[`retention_sweep` イベント](https://code.claude.com/docs/ja/monitoring-usage#retention-sweep-event)は、それを一時停止する各設定をリストします。原因が読み込みまたは解析できない設定ファイル、または `cleanupPeriodDays` または `desktopSessionCleanupPeriodDays` が明示的に設定された設定エラーの場合、Claude Code は設定エラーを修正するまで `/status` に警告も表示します。[管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)が `cleanupPeriodDays` を提供する場合、Claude Code はどちらの場合でも管理値でスイープを実行します。
+* **一時停止されたスイープ**：Claude Code が保持期間を安全に判定できない場合、スイープを一時停止します。[`retention_sweep` イベント](https://code.claude.com/docs/ja/monitoring-usage#retention-sweep-event)には、スイープを一時停止させる各設定が記載されます。原因が読み込みまたは解析できない設定ファイルである場合、または `cleanupPeriodDays` や `desktopSessionCleanupPeriodDays` が設定された状態で設定エラーがある場合は、原因を修正するまで `/status` に警告が表示されます。
+
+[管理設定](https://code.claude.com/docs/ja/managed-settings.md)が `cleanupPeriodDays` を提供している場合、優先度の低い設定ファイルにエラーがあっても、Claude Code は管理値でスイープを実行します。
 
 組織内のマシンが設定した保持期間でスイープを実行していることを確認するには、[保持スイープを確認する](https://code.claude.com/docs/ja/monitoring-usage.md#check-the-retention-sweep)を参照してください。
 

@@ -54,6 +54,8 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 }
 ```
 
+各チームメイトも、クローンごとに 1 回 [`claude plugin install security-guidance@claude-plugins-official --scope project` を実行](https://code.claude.com/docs/ja/plugins/loading#enabled-in-project-settings-but-not-installed)します。
+
 管理者は、[管理設定](https://code.claude.com/docs/ja/admin-setup.md) で [`enabledPlugins`](https://code.claude.com/docs/ja/settings-reference#enabledplugins) を設定することで、組織全体でプラグインを有効化できます。
 
 ## プラグインがチェックする内容
@@ -135,11 +137,11 @@ Claude が Bash ツールを通じて `git commit` または `git push` を実�
 patterns:
   - rule_name: internal_api_key
     substrings: ["sk_live_", "AKIA"]
-    reminder: "ハードコードされた API キープレフィックス。シークレットマネージャーから認証情報を読み込んでください。"
+    reminder: "Hardcoded API key prefix. Load credentials from the secret manager."
   - rule_name: tenant_unfiltered_query
     regex: "\\.objects\\.all\\(\\)"
     paths: ["**/src/tenants/**"]
-    reminder: "マルチテナントコードは org_id でフィルタリングする必要があります。"
+    reminder: "Multi-tenant code must filter by org_id."
 ```
 
 | フィールド | タイプ | 説明 |

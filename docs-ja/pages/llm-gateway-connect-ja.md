@@ -156,7 +156,7 @@ Claude Code が実行されるすべての場所で設定を適用し、[バッ�
 
 ### 既存のログインとの競合
 
-ゲートウェイ認証情報変数は、保存された claude.ai ログインまたは Console キーより優先されます。claude.ai ログインは保存されたままで、変数が設定されている間は使用されません。変数を設定解除すると、Claude Code はそれに戻ります。`ANTHROPIC_AUTH_TOKEN` では、変数は直ちに優先されます。`ANTHROPIC_API_KEY` では、キーが引き継ぐ前に、インタラクティブモードで 1 回承認するよう求められます。
+ゲートウェイ認証情報変数は、保存された claude.ai ログインまたは Console キーより優先されます。`ANTHROPIC_AUTH_TOKEN` では、変数は直ちに優先されます。`ANTHROPIC_API_KEY` では、キーが引き継ぐ前に、インタラクティブモードで 1 回承認するよう求められます。
 
 `/status` を実行して、どの認証情報ソースがアクティブかを確認します。起動が 2 つのソースという名前の認証競合警告を表示する場合は、[トラブルシューティングテーブル](#troubleshoot-gateway-errors)の最初の行を参照して、どちらを削除するかを確認してください。保存されたログインをクリアしてゲートウェイ認証情報のみを残すには、`/logout` を実行してください。
 
@@ -378,7 +378,7 @@ Claude Code がヘルパーを再実行する他のケースについては、[`
 変数を設定すると、以下の効果と制限があります。
 
 * 自動更新が無効になるため、パッケージマネージャーやマネージド配布などの別の更新パスを計画してください。
-* [高速モード](https://code.claude.com/docs/ja/fast-mode.md)の可用性チェックが抑制されます。前のチェックがマシンで高速モードを既に有効にしていない限り、`/fast`は高速モードが利用できないと報告します。
+* [fast mode](https://code.claude.com/docs/ja/fast-mode.md)の可用性チェックが抑制されます。Anthropic API で、その後`/fast`が fast mode を利用できないと報告する場合は、[プロキシや LLM ゲートウェイの背後で fast mode を使用する](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-behind-proxies-and-llm-gateways)を参照して fast mode を復元してください。
 * [ゲートウェイモデルディスカバリー](#add-gateway-models-to-the-model-picker)には影響しません。これはゲートウェイのみをクエリします。v2.1.257 より前では、変数はディスカバリーのリフレッシュも停止したため、ピッカーは以前キャッシュされたリストを保持していました。
 * WebFetch ツールの[ドメイン安全チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check)は影響を受けず、引き続き`api.anthropic.com`を呼び出します。ネットワークがそのホストをブロックする場合は、[設定](https://code.claude.com/docs/ja/settings.md)で`skipWebFetchPreflight: true`を使用して個別にオフにします。
 * 各テレメトリストリームとそれを制御する変数については、[テレメトリサービス](https://code.claude.com/docs/ja/data-usage.md#telemetry-services)を参照してください。

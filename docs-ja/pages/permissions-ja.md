@@ -578,6 +578,8 @@ MCP サーバーのすべてのツールにマッチさせるには、`mcp__<ser
 * `mcp__puppeteer__*` はワイルドカード構文を使用し、同じく `puppeteer` サーバーのすべてのツールにマッチします
 * `mcp__puppeteer__puppeteer_navigate` は `puppeteer` サーバーが提供する `puppeteer_navigate` ツールにマッチします
 
+MCP ツールの許可ルールは、[指定子](#use-specifiers-for-fine-grained-control)なしで書いてください。指定子は、[権限の更新](https://code.claude.com/docs/ja/hooks.md#permission-update-entries)では `ruleContent` と呼ばれます。ツールの呼び出しの一部のみを許可するために指定子を追加すると、そのルールはどの呼び出しにもマッチしません。代わりに一部の呼び出しをブロックするには、[入力パラメータでマッチする](#match-by-input-parameter)を参照してください。
+
 `<server>` には、そのサーバーのツール名に表示されるとおりにサーバー名を書きます。以下の例は、特殊文字を含む名前、プラグインのサーバー、および `__` を含む、または `_` で終わる名前について書くべきルールを示しています。
 
 * **`.` やスペースなどの文字を含む名前**: これらの文字は `_` になるため、`my.server` として設定したサーバーには `mcp__my_server__*` と書きます

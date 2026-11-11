@@ -93,7 +93,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✓（Opus 5 および 4.8 ではプロビジョニングが必要）</td>
       <td>✗</td>
       <td>✗</td>
-      <td>✗</td>
+      <td>✓（[Fable 5.2、条件付き](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-on-agent-platform)）</td>
       <td>✗</td>
     </tr>
 
@@ -112,7 +112,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✓</td>
       <td>✓</td>
       <td>✗</td>
-      <td>✗</td>
+      <td>✓（Claude Code v2.1.300 以降）</td>
       <td>✗</td>
       <td>✗</td>
     </tr>
@@ -221,7 +221,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [!NOTE]
 >
-> [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由で認証する場合、機能の利用可能性はゲートウェイの転送先である基盤プロバイダーと同じになります。ただし、Claude Code 自体がオフにする機能は除きます。`ANTHROPIC_BASE_URL` が `api.anthropic.com` 以外のホストを指している場合、ゲートウェイが何を転送するかにかかわらず、Claude Code は [Remote Control](https://code.claude.com/docs/ja/remote-control.md#requirements) や[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)などの機能をオフにします。[Advisor](https://code.claude.com/docs/ja/advisor.md) などの一部の Anthropic 専用機能は、ゲートウェイがリクエストをそのままの形で Anthropic API に転送する場合にのみ動作します。
+> [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由で認証する場合、機能の利用可能性はゲートウェイの転送先である基盤プロバイダーと同じになります。ただし、Claude Code 自体がオフにする機能は除きます。`ANTHROPIC_BASE_URL` が `api.anthropic.com` 以外のホストを指している場合、ゲートウェイが何を転送するかにかかわらず、Claude Code は [Remote Control](https://code.claude.com/docs/ja/remote-control.md#requirements) や[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)などの機能をオフにします。[Advisor](https://code.claude.com/docs/ja/advisor.md#requirements) などの一部の機能は、ゲートウェイがリクエストをそのままの形で転送する場合にのみ動作します。
 >
 > Amazon Bedrock 形式または Agent Platform 形式のゲートウェイ、`ANTHROPIC_BASE_URL` ゲートウェイ、Claude apps ゲートウェイでのサインインの間で、Claude Code が送信するリクエストがどのように異なるかについては、[接続方法別のクライアントの動作](https://code.claude.com/docs/ja/llm-gateway-protocol.md#how-the-connection-method-changes-client-behavior)を参照してください。
 
@@ -244,9 +244,9 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [tab] Claude Platform on AWS
 >
-> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
-> **Amazon Bedrock では利用できないが、こちらでは利用可能：**[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)。
+> **Amazon Bedrock では利用できないが、こちらでは利用可能：**[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)、および Claude Code v2.1.300 以降での [Advisor](https://code.claude.com/docs/ja/advisor.md)。
 >
 > **部分的なサポート：**
 >
@@ -256,12 +256,13 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [tab] Google Cloud's Agent Platform
 >
-> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
 > **部分的なサポート：**
 >
 > * [Desktop](https://code.claude.com/docs/ja/desktop.md)：[管理設定](https://claude.com/docs/third-party/claude-desktop/configuration)または [Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview) 経由
 > * [Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)：Opus 4、Sonnet 4、Haiku 4.5 以降のモデル
+> * [fast mode](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-on-agent-platform)：`global`、`us`、`eu` リージョンの Fable 5.2。Agent Platform が fast mode を拒否した場合は標準速度
 > * [auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)：Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
 > * [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
 > * [Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md)：Google Cloud との契約に従います

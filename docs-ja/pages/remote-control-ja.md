@@ -33,7 +33,7 @@ Remote Control を使用する前に、環境が以下の条件を満たして�
   * [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM gateway](https://code.claude.com/docs/ja/llm-gateway) やプロキシなど）を指している。Remote Control を使用するには、この変数を設定解除してください。
   * エンタープライズ [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) 経由でサインインしている。
 * **機能フラグ評価**: [環境変数を設定して機能フラグ評価をオフにする](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) 場合、Remote Control が利用可能かどうかは、どの変数を設定するかによって異なります。
-  * `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` または `DISABLE_GROWTHBOOK` を設定した場合、Remote Control は利用できません。シェル環境または [`settings.json` ファイル](https://code.claude.com/docs/ja/settings-reference#all-settings) の `env` ブロックのいずれかで変数が設定されている場所で変数を設定解除して、Remote Control を使用してください。
+  * `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` または [`CLAUDE_CODE_DISABLE_FEATURE_FLAGS`](https://code.claude.com/docs/ja/env-vars#variables) を設定した場合、Remote Control は利用できません。シェル環境または [`settings.json` ファイル](https://code.claude.com/docs/ja/settings-reference#all-settings) の `env` ブロックのいずれかで変数が設定されている場所で変数を設定解除して、Remote Control を使用してください。
   * `DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみを設定した場合、組織が [Trusted Devices](#trusted-devices) を要求しない限り、Remote Control は利用可能なままです。要求する場合は、Remote Control を使用するために変数を設定解除してください。いずれかの変数を設定した状態で Remote Control を使用するには、Claude Code v2.1.283 以降、または Claude Desktop アプリでは v2.1.304 以降が必要です。
 * **ワークスペース信頼**: まだ信頼していないディレクトリで、`claude remote-control` は信頼を有効にする内容を出力し、開始する前に `Trust <directory>? [y/N]` と尋ねます。`y` と答えると選択が保存されます。ただし、ホームディレクトリでは信頼は保存されず、実行するたびに質問が返されます。標準入力または出力がターミナルでない場合、コマンドは質問できず、[`Workspace not trusted`](https://code.claude.com/docs/ja/errors#workspace-not-trusted-when-starting-remote-control) エラーで終了します。
 
@@ -185,6 +185,17 @@ Remote Control セッションがアクティブになったら、別のデバ�
 * **effort レベル**：接続されたデバイスから `/effort` またはデバイスの effort コントロールで [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を設定すると、Claude Code はそれをマシン上のセッションに適用します。`CLAUDE_CODE_EFFORT_LEVEL` でレベルを固定している場合、セッションはそのレベルを維持し、Claude Code は effort コントロールでの異なる選択を拒否します。effort コントロールからレベルを選択するには、マシン上で Claude Code v2.1.234 以降が必要です。
 * **接続失敗後の再接続**：`/remote-control` を実行して再接続します。その間にコンテキスト圧縮によって会話が書き換えられたか、`/resume` で会話を切り替えた場合、Claude Code は使用していたサーバーセッションをセッション一覧に残さずアーカイブします。そのセッションは、claude.ai/code の[アーカイブされたセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#find-an-archived-session)から引き続き見つけられます。デバイスが接続されたままの状態で会話を切り替えても、セッションはアーカイブされません。
 
+### ブラウザからセッションをフォークする
+
+セッションを中断せずに別の方向性を試すには、[claude.ai/code](https://claude.ai/code) でセッションを開き、セッションのメニューで **Fork** を選択するか、トランスクリプト内の以前のメッセージからフォークします。フォークはセッション一覧に新しいセッションとして開き、元のセッションが実行を続ける間、その時点から会話を続行します。フォークするには、マシン上で Claude Code v2.1.277 以降が必要です。
+
+`--spawn session` で起動した `claude remote-control` サーバーには 1 つのセッション分の枠しかないため、フォークを実行できません。
+
+Claude Code は次のような場合にフォークを拒否します。
+
+* セッションがビジー状態である。アイドル状態のときにフォークしてください。
+* セッションが VS Code 拡張機能、または [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) 上に構築された別のアプリによってホストされている。
+
 ### すべてのセッションで Remote Control を有効にする
 
 自動接続がオンになっていない限り、Remote Control は `claude remote-control`、`claude --remote-control`、または `/remote-control` を明示的に実行したときにのみ有効になります。すべてのインタラクティブセッションで自動接続をオンにするには、Claude Code 内で `/config` を実行し、**Enable Remote Control for all sessions** を設定します。このトグルは 3 つの値を取ります。
@@ -206,7 +217,7 @@ VS Code 拡張機能と Desktop アプリにも自動接続のトグルがあり
 
 #### `DISABLE_TELEMETRY` または `DO_NOT_TRACK` を設定した状態での自動接続
 
-`DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみを設定している場合、組織の管理者によるデフォルトや Claude Code 自体のデフォルトによってセッションが自動接続されることはありません。`DISABLE_GROWTHBOOK` や LLM ゲートウェイなど、他の理由で Remote Control が利用できない場合は、代わりに[要件](#requirements)から確認してください。
+`DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみを設定している場合、組織の管理者によるデフォルトや Claude Code 自体のデフォルトによってセッションが自動接続されることはありません。[`CLAUDE_CODE_DISABLE_FEATURE_FLAGS`](https://code.claude.com/docs/ja/env-vars#variables) や LLM ゲートウェイなど、他の理由で Remote Control が利用できない場合は、代わりに[要件](#requirements)から確認してください。
 
 `DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみを設定した状態で自動接続をオンにする前に、Claude Code のバージョンが[これらの変数の要件](#requirements)を満たしていることを確認してください。次に、組織が [Trusted Devices](#trusted-devices) を必須としているかどうかを確認します。
 
@@ -447,8 +458,8 @@ Claude Code は、Remote Control がアカウントに対して有効になっ�
 
 フィーチャーフラグ評価をオフにする [環境変数](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) が設定されており、完全なメッセージは Claude Code が見つけた変数を名前に挙げています。v2.1.154 より前のバージョンでは、同じ設定により「Remote Control is not yet enabled for your account」が代わりに生成されます。実行する内容は、メッセージが名前に挙げている変数によって異なります。
 
-* **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` または `DISABLE_GROWTHBOOK`**：シェル環境または [`settings.json` ファイル](https://code.claude.com/docs/ja/settings-reference#all-settings) の `env` ブロックで設定されている場所から変数を設定解除してください。
-* **`DISABLE_TELEMETRY` または `DO_NOT_TRACK`**：Pro、Max、Ultra、Team、または Enterprise プランで `DISABLE_GROWTHBOOK` が設定解除されている場合、組織が [Trusted Devices](#trusted-devices) を要求しない限り、これらの変数が設定されていても Remote Control は利用可能なままです。要求する場合は、Remote Control を使用するために変数を設定されている場所から設定解除してください。v2.1.154 から v2.1.282 までは、どちらかの変数が設定されているとこのメッセージが表示されるため、[これらの変数の要件](#requirements)を満たすバージョンに Claude Code を更新してください。
+* **`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`、`CLAUDE_CODE_DISABLE_FEATURE_FLAGS`、または `DISABLE_GROWTHBOOK`**：シェル環境または [`settings.json` ファイル](https://code.claude.com/docs/ja/settings-reference#all-settings) の `env` ブロックで設定されている場所から変数を設定解除してください。
+* **`DISABLE_TELEMETRY` または `DO_NOT_TRACK`**：Pro、Max、Ultra、Team、または Enterprise プランで `CLAUDE_CODE_DISABLE_FEATURE_FLAGS` と `DISABLE_GROWTHBOOK` が設定解除されている場合、組織が [Trusted Devices](#trusted-devices) を要求しない限り、これらの変数が設定されていても Remote Control は利用可能なままです。要求する場合は、Remote Control を使用するために変数を設定されている場所から設定解除してください。v2.1.154 から v2.1.282 までは、どちらかの変数が設定されているとこのメッセージが表示されるため、[これらの変数の要件](#requirements)を満たすバージョンに Claude Code を更新してください。
 
 ### "Remote Control is only available when using Claude via api.anthropic.com"
 

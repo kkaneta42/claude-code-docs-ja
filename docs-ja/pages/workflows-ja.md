@@ -375,9 +375,10 @@ Claude Code はエージェントが開始される順序で実行をリプレ�
 
   v2.1.305 より前では、`pipeline()` の各項目や `parallel()` の各タスクがそれぞれ複数のエージェントを実行するスクリプトを編集せずに再起動した場合にも、完了済みのエージェントが再実行されることがありました。新しい実行でこうした再実行を防ぐには、Claude Code を更新してください。
 * **停止時にまだ実行中だったもの**: 最初からやり直します。実行全体を停止しても、どのエージェントも失敗とは見なされません。
+* **v2.1.318 以降で[使用制限に達して失敗したもの](#when-a-run-hits-your-usage-limit)**: 再実行され、完了済みのエージェントは保存された結果を返します。失敗の後にスクリプトが別のエージェントを呼び出し、そのエージェントが結果を返していた場合は、スクリプトが失敗したエージェントの後に開始するすべてのエージェントも再実行されます。
 * **失敗したもの**: 再実行され、スクリプトがその後に開始するすべてのエージェントも、完了済みのものを含めて再実行されます。[`/workflows`](#watch-the-run) でエージェントを選択して `x` を押し、1 つのエージェントだけを停止した場合は、失敗として扱われます。
 
-この最後のケースは、ファンアウトの途中で失敗が起きると、すでに完了した作業が再実行されることを意味します。スクリプトが A、B、C、D の順に開始し、B が失敗した場合、再起動すると A はキャッシュから返され、B、C、D が再実行されます。
+この最後のケースは、ファンアウトの途中のエージェントが**失敗したもの**に該当すると、すでに完了した作業が再実行されることを意味します。スクリプトが A、B、C、D の順に開始し、B が**失敗したもの**に該当する場合、再起動すると A はキャッシュから返され、B、C、D が再実行されます。
 
 A、B、C、D を開始していたスクリプトを編集して A、C、B、D の順に開始するようにすると、2 番目に開始するエージェントは C になりますが、前回の実行では B でした。再起動すると A はキャッシュから返され、C、B、D が再実行されます。
 
@@ -395,16 +396,21 @@ A、B、C、D を開始していたスクリプトを編集して A、C、B、D 
 
 ### 実行が使用制限に達した場合
 
-エージェントが claude.ai の[使用制限](https://code.claude.com/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)に達すると、そのエージェントを失敗させるのではなく、実行が一時停止します。制限に達したエージェントはリセットを待ち、新しいエージェントは開始されません。制限がリセットされた直後に、待機中のエージェントが再実行され、実行は自動的に続行します。Claude Code v2.1.271 以降が必要です。それより前のバージョンでは、影響を受けたエージェントは失敗します。
+エージェントが claude.ai の[使用制限](https://code.claude.com/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)に達すると、そのエージェントを失敗させるのではなく、実行が一時停止します。制限に達したエージェントはリセットを待ち、新しいエージェントは開始されません。制限がリセットされた直後に、待機中のエージェントが再実行され、実行は自動的に続行します。Claude Code v2.1.271 以降、またはデスクトップの [Code タブ](https://code.claude.com/docs/ja/desktop.md)では [v2.1.319 以降](https://code.claude.com/docs/ja/desktop.md#claude-code-version-in-the-code-tab)が必要です。それより前のバージョンでは、影響を受けたエージェントは失敗します。
 
-実行が待機している間、タスクパネルの進捗行と [`/workflows`](#watch-the-run) のヘッダーに制限がリセットされる時刻が表示されます。
+実行が待機している間、タスクパネルの進捗行と [`/workflows`](#watch-the-run) のヘッダーに制限がリセットされる時刻が表示されます。Code タブでは、実行に `Paused at usage limit · continues after 3:45 PM if the app stays open` のような行が表示されます。アプリを開いたままにしてください。
 
 実行が一時停止するのは、以下のすべてが満たされる場合のみです。いずれかが満たされない場合、影響を受けたエージェントは代わりに失敗します。
 
-* セッションが対話型で、claude.ai サブスクリプションでサインインしていること。`claude -p` による[非対話モード](https://code.claude.com/docs/ja/headless.md)や [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md)、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) や[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイトセッションでは、実行は一時停止しません。
+* セッションが[従量課金](https://code.claude.com/docs/ja/interactive-mode.md#start-a-wait-yourself)なしの claude.ai サブスクリプションでサインインしており、次のいずれかのセッションタイプであること。
+  * 対話型のターミナルセッション。`claude -p` による[非対話モード](https://code.claude.com/docs/ja/headless.md)や [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md)、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) や[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイトセッションでは、実行は一時停止しません。
+  * Code タブで開始したローカルセッション。SSH、WSL、[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)、[スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md)のセッション、Remote Control から開始したセッションや[企業向けランチャー](https://code.claude.com/docs/ja/corporate-launcher.md)経由で開始したセッション、または [`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars#variables) が設定されている間は、実行は一時停止しません。
 * [`autoContinueAtUsageLimit`](https://code.claude.com/docs/ja/settings-reference#autocontinueatusagelimit) がオンであること。これは、セッション自体が[使用制限のリセットを待つ](https://code.claude.com/docs/ja/interactive-mode.md#wait-for-a-usage-limit-to-reset)ようにするのと同じ設定です。待機中にオフにすると、待機が終了し、待機中のエージェントは失敗します。
+* Code タブでは、[セッション制限カード](https://code.claude.com/docs/ja/errors.md#youve-hit-your-session-limit)の **Auto-continue when limits reset** チェックボックスがオンになっていること（デフォルトではオンです）。チェックを外すと、Code タブのセッションでの実行は一時停止しなくなります。ただし、管理設定で `autoContinueAtUsageLimit` が `true` に設定されている場合を除きます。
 * 制限が 24 時間以内にリセットされること。週単位の制限はそれより先にリセットされる場合があります。
 * 実行がまだ 2 回待機していないこと。3 回目に制限に達すると、エージェントは失敗します。
+
+制限に達してエージェントが失敗した実行を完了させるには、制限がリセットされた後に[ワークフローの再起動](#which-agents-run-again)を Claude に依頼してください。
 
 ### エージェントが停滞して再起動する場合
 

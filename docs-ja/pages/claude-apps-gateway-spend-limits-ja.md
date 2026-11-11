@@ -76,7 +76,7 @@ v2.1.227 以降では、`<public_url>/protocol` のプロトコルリファレ�
 3. そのアップストリーム ID にマップした [`models[].id`](https://code.claude.com/docs/ja/claude-apps-gateway-config#models) のリスト価格。Amazon Bedrock アプリケーション推論プロファイル ARN や Microsoft Foundry デプロイメント名など、モデル名を含まないアップストリーム文字列の場合です。v2.1.218 以降が必要です。
 4. 不明なモデルティアの 100 万入力/出力トークンあたり $5/$25。メーターが配置できない ID は決して無料ではありません。gateway はブート時と実行時に ID ごとに 1 回、このティアを使用する場合に警告します。
 
-どの料金が適用されても、メーターは金額に [`pricing.multiplier`](https://code.claude.com/docs/ja/claude-apps-gateway-config#pricing) を乗算します。デフォルトは `1` です。
+どの料金が適用されても、メーターは金額に [`pricing.multiplier`](https://code.claude.com/docs/ja/claude-apps-gateway-config#pricing) を乗算します。デフォルトは `1` です。Claude Code v2.1.227 以降を実行しているゲートウェイサーバーが必要です。
 
 クライアント中止も請求されます。アップストリームの最終使用量フレームなしでストリームが終了した場合、メーターはクライアントに既に送信されたテキストについて、出力トークンあたり約 4 文字のフロア推定値を請求します。そのため、リクエストを早期に中止しても上限を回避できません。
 

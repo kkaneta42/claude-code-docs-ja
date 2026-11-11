@@ -40,7 +40,7 @@ Google Cloud's Agent Platform は Google Cloud の Claude エンドポイント�
 
 | フォーマット | 選択方法 | エンドポイント | 変更せずに転送するもの |
 | :- | :- | :- | :- |
-| Anthropic Messages | `ANTHROPIC_BASE_URL` | `/v1/messages`、`/v1/messages/count_tokens`（任意） | `anthropic-beta` および `anthropic-version` リクエストヘッダー |
+| Anthropic Messages | `ANTHROPIC_BASE_URL` | `/v1/messages`、`/v1/messages/count_tokens`（任意） | `anthropic-beta` および `anthropic-version` リクエストヘッダー、ならびに [claude.ai ログイン](#request-headers)によって Anthropic へのリクエストが認証される場合は `Authorization` |
 | Amazon Bedrock InvokeModel | `ANTHROPIC_BEDROCK_BASE_URL` と `CLAUDE_CODE_USE_BEDROCK=1` | `/model/{model}/invoke`、`/model/{model}/invoke-with-response-stream`、`/model/{model}/count-tokens`（任意） | `anthropic_beta` および `anthropic_version` リクエストボディフィールド |
 | Google Cloud's Agent Platform rawPredict | `ANTHROPIC_VERTEX_BASE_URL` と `CLAUDE_CODE_USE_VERTEX=1` | `:rawPredict`、`:streamRawPredict`、`count-tokens:rawPredict`（任意） | `anthropic-beta` および `anthropic-version` リクエストヘッダー、ならびに `anthropic_version` リクエストボディフィールド |
 
@@ -115,11 +115,11 @@ Claude Code はストリーミングの推論応答を、到着したそばか�
 
 ## リクエストヘッダー
 
-Claude Code は API リクエストにこれらのヘッダーを含めます。ヘッダー名はワイヤ上では大文字と小文字を区別しません。`anthropic-version` および `anthropic-beta` を変更なしで転送し、アップストリームが [AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md) の場合は `anthropic-workspace-id` も転送してください。残りはゲートウェイがルーティング、属性、およびトレース用に使用でき、転送する必要はありません。
+Claude Code は API リクエストにこれらのヘッダーを含めます。ヘッダー名はワイヤ上では大文字と小文字を区別しません。`anthropic-version` および `anthropic-beta` を変更なしで転送し、アップストリームが [AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md) の場合は `anthropic-workspace-id` も転送してください。また、ゲートウェイが独自のキーではなく開発者の claude.ai ログインで Anthropic に認証する場合は、`Authorization` も転送してください。残りはゲートウェイがルーティング、属性、およびトレース用に使用でき、転送する必要はありません。
 
 | ヘッダー | 説明 |
 | :- | :- |
-| `Authorization`、`x-api-key` | 開発者のゲートウェイクレデンシャル。設定した[クレデンシャル変数](https://code.claude.com/docs/ja/llm-gateway-connect.md#set-the-credential-variable)に応じて、1 つまたは両方のヘッダーに含まれます |
+| `Authorization`、`x-api-key` | 開発者のゲートウェイ認証情報。開発者が設定した[認証情報変数](https://code.claude.com/docs/ja/llm-gateway-connect.md#set-the-credential-variable)に応じて、一方または両方のヘッダーに含まれます。claude.ai ログインを使用していてゲートウェイ認証情報がない場合、`Authorization` にはログインのトークンが含まれます |
 | `anthropic-version` | API バージョン。現在は `2023-06-01`。Amazon Bedrock および Google Cloud の Agent Platform フォーマットリクエストは、`anthropic_version` ボディフィールドも含みます。その値はこのヘッダーの値ではなく、プロバイダー方言文字列です |
 | `anthropic-beta` | リクエストの機能値をカンマで区切ったもの。ヘッダーをそのまま転送してください。個別の値をホワイトリストに登録しないでください。セットは Claude Code リリースで変わるためです。開発者が claude.ai ログインで認証する場合（`ANTHROPIC_BASE_URL` がゲートウェイクレデンシャル変数なしで設定されている場合に可能）、このヘッダーはアップストリームが必要とする OAuth 機能も含み、それを削除するとそれらのリクエストは `401` で失敗します |
 | `x-claude-code-session-id` | 現在の Claude Code セッションの一意の識別子。リクエストボディを解析せずに 1 つのセッションからのすべてのリクエストを集約するために使用してください |

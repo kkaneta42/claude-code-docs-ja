@@ -37,7 +37,7 @@
 
 **Default** は独自の設定を持ちません。
 
-* [**Trusted** ネットワークアクセス](#access-levels)：セッションはパッケージレジストリおよび他の [許可リストドメイン](#default-allowed-domains) に到達でき、セッションのネットワークを通じて他には何も到達できません。
+* [**Limited** ネットワークアクセス](#access-levels)：セッションはパッケージレジストリおよび他の [許可リストドメイン](#default-allowed-domains) に到達できます。
 * その他の設定なし：**Default** は環境変数またはセットアップスクリプトを定義しないため、セッションは [プリインストールされたツール](#installed-tools) だけで開始されます。
 
 **Default** のみが利用可能な場合、すべてのセッションはそれで実行されます。複数の環境がある場合、セッションはサーフェスごとに 1 つを選択します。
@@ -102,7 +102,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 * **ロール**: すべてのプランで、ロールに関係なく自分の環境でシークレットを追加および削除できます。Team および Enterprise では、Owner は claude.ai 組織内で組織管理者ロールを保持し、Admin は保持しません。これにより、次のケースで表示される内容が変わります。
   * **自分の環境**: 組織管理者ロールがない場合、**シークレットを追加** を選択すると [短いフォーム](#add-a-secret-without-the-role) が開きます
   * **共有環境**: Owner が管理設定から [シークレットを追加および削除](#add-a-credential) します。組織管理者ロールがない場合は、環境のダイアログに **ネットワークシークレット** セクションがないため、Owner にシークレットの追加を依頼してください
-* **環境タイプ**: 既に存在する Anthropic ホスト型クラウド環境。[自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments) にはネットワークシークレットがありません
+* **環境タイプ**: Anthropic ホスト型クラウド環境。[自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments) にはネットワークシークレットがありません
 * **API 到達可能性**: API がインターネットからの接続を受け入れます。リクエストは Anthropic のネットワークから離れるためです
 * **暗号化キー**: 組織が顧客管理の暗号化キーを使用する場合、ネットワークシークレットを保存できません
 
@@ -198,7 +198,7 @@ Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-setting
 
 ## ネットワークアクセス
 
-各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。デフォルトレベルの **Trusted** は、パッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) を許可します。**Custom** はカスタムドメインリストを使用します。
+各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。新しい環境は **Allow package managers** がチェックされた **Limited** で開始されるため、そのセッションはパッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) に到達できます。
 
 環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [クラウドスケジュールタスクエディター](https://code.claude.com/docs/ja/routines.md#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
 
@@ -210,14 +210,13 @@ Anthropic ホスト環境のネットワークアクセスを変更すると、�
 
 ### アクセスレベル
 
-[environment dialog](#configure-your-environment) の **Network access** フィールドは、4 つのレベルのいずれかを取ります。
+[environment dialog](#configure-your-environment) の **Network access** フィールドは、3 つのレベルのいずれかを取ります。
 
 | Level | 送信接続 |
 | :- | :- |
 | **None** | セッションのネットワークを通じた送信ネットワークアクセスなし |
-| **Trusted** | [許可リストに登録されたドメイン](#default-allowed-domains) のみ：パッケージレジストリ、GitHub、クラウド SDK |
+| **Limited** | **Allow package managers** がチェックされている間はパッケージレジストリ、GitHub、クラウド SDK の [デフォルト許可リスト](#default-allowed-domains)、およびユーザーが [リストしたドメイン](#allow-specific-domains)。[ブロックされたリクエストの表示例](https://code.claude.com/docs/ja/errors.md#host-not-allowed-in-a-cloud-session) を参照してください。 |
 | **Full** | 任意のドメイン |
-| **Custom** | カスタム許可リスト（オプションでデフォルトを含む） |
 
 どのレベルを選択しても、セッションはこれらに到達できます。各セッションはセッションのネットワーク許可リストを通じない経路を取るためです。
 
@@ -226,9 +225,14 @@ Anthropic ホスト環境のネットワークアクセスを変更すると、�
 * 環境の [ネットワークシークレット](#add-network-secrets) にリストしたホスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）
 * Anthropic API（Claude Code 独自のリクエスト用。[Security and isolation](https://code.claude.com/docs/ja/claude-code-on-the-web.md#security-and-isolation) に記載されているように **None** でも）
 
+**Trusted** または **Custom** として保存された環境は、引き続き同じホストに到達し、次のように開きます。
+
+* **Trusted として保存された場合**：**Allow package managers** がチェックされた **Limited** として開きます
+* **Custom として保存された場合**：設定したとおりの **Allowed domains** リストと **Allow package managers** を持つ **Limited** として開きます。リストに単独の `*` が含まれていた場合は **Full** として開きます
+
 ### 特定のドメインを許可する
 
-Trusted リストにないドメインを許可するには、環境のネットワークアクセス設定で **Custom** を選択し、**Allowed domains** フィールドに 1 行に 1 つのドメインをリストします。この例は、内部プロジェクトが必要とする 3 つのホストを許可します。
+[デフォルト許可リスト](#default-allowed-domains) にないドメインを許可するには、環境の **Network access** セレクターで **Limited** を選択し、**Allowed domains** フィールドに 1 行に 1 つのドメインをリストします。先頭の `*.` はすべてのサブドメインにマッチします。この例は、内部プロジェクトが必要とする 3 つのホストを許可します。
 
 ```text theme={null}
 api.example.com
@@ -236,14 +240,14 @@ api.example.com
 registry.example.com
 ```
 
-この環境のセッションは、`api.example.com`、`internal.example.com` のすべてのサブドメイン、および `registry.example.com` に到達でき、セッションのネットワークを通じた他のドメインには到達できません。[GitHub traffic](#github-proxy)、[MCP connector traffic](#network-access)、および環境の [ネットワークシークレット](#add-network-secrets) のホストへのリクエスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）は、この許可リストを通じません。先頭の `*.` はすべてのサブドメインにマッチします。[Trusted domains](#default-allowed-domains) も保持するには、**Also include default list of common package managers** をチェックします。チェックを外すと、リストしたもののみを許可します。
+**Allow package managers** がチェックされている間、この環境のセッションはリストしたドメインに加えて [デフォルト許可リスト](#default-allowed-domains) にも到達します。デフォルト許可リストを除外するには、チェックボックスをオフにします。[GitHub traffic](#github-proxy)、[MCP connector traffic](#network-access)、および環境の [ネットワークシークレット](#add-network-secrets) のホストへのリクエスト（[シークレットを取得しないホスト](#requests-that-never-get-the-credential) を除く）は、この許可リストを通じません。
 
 組織が [artifacts](https://code.claude.com/docs/ja/artifacts.md#availability) を使用する場合、セッションがそれらを読み取るために `*.frame.claudeusercontent.com` をリストに含める必要はありません。リストがそのホストを除外する場合、Claude Code はセッションの Anthropic への接続を通じてアーティファクトコンテンツを読み取ります。ホストを許可リストに保持する 2 つの状況があります。
 
 * **この環境のセッションが別の組織のパブリックアーティファクトを開く**：Claude Code はホストから直接それらをフェッチするため、このリストに追加します。
 * **ローカル CLI または自己ホスト型ランナーを設定している**：ホストをその許可リストに保持します。[network access requirements](https://code.claude.com/docs/ja/network-config.md#network-access-requirements) と自己ホスト型 [network requirements](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#network-requirements) を参照してください。
 
-各環境は独自の許可ドメインリストを持ちます。管理者がすべてのメンバーの環境にプッシュできる組織レベルの許可リストはありません。[server-managed setting](https://code.claude.com/docs/ja/server-managed-settings.md) も環境のネットワーク許可リストにドメインを追加しません。チームに 1 つの標準リストを提供するには、Owner が **Custom** ネットワークアクセスとそのリストを持つ [organization-shared environment](#organization-shared-environments) を作成できます。
+各環境は独自の許可ドメインリストを持ちます。管理者がすべてのメンバーの環境にプッシュできる組織レベルの許可リストはありません。[server-managed setting](https://code.claude.com/docs/ja/server-managed-settings.md) も環境のネットワーク許可リストにドメインを追加しません。チームに 1 つの標準リストを提供するには、Owner が **Limited** ネットワークアクセスとそのリストを持つ [organization-shared environment](#organization-shared-environments) を作成できます。
 
 ### GitHub プロキシ
 
@@ -255,7 +259,7 @@ Anthropic ホスト環境では、すべての GitHub 操作は、環境の [acc
 * **Repository scope**：プロキシは、セッションに接続されたリポジトリに対する GitHub API リクエストを処理します。他のリポジトリに対する API リクエストは、`GitHub access to` で始まり `is not enabled for this session` を含むメッセージとともに 403 を受け取ります。`github.com/{owner}/{repo}/archive/` または `codeload.github.com` の URL 経由で取得するソースアーカイブも、リポジトリが接続されていない場合は、パブリックリポジトリであっても同じ 403 を受け取ります。
 * **GraphQL restrictions**：プロキシは GitHub の GraphQL エンドポイントへのリクエストを、`GitHub GraphQL is not available from Claude Code sessions` で始まり REST フォールバック `gh api repos/{owner}/{repo}/...` を示すメッセージとともに 403 で拒否します。`gh pr` や `gh issue` など GraphQL を使用する `gh` サブコマンドも同じ 403 を受け取ります。制限は、提供する認証情報に関係なく、プロキシを通じたすべてのリクエストに適用されるため、設定した `GH_TOKEN` は同じ 403 を取得します。Claude はプロキシを通じて Projects v2 などの GraphQL にのみ存在する GitHub API に到達できません。
 
-パブリックリポジトリからのコミットされたファイルは `raw.githubusercontent.com` を通じて到着し、[security proxy](#security-proxy) が代わりに処理します。そのドメインはデフォルト [Trusted list](#default-allowed-domains) にあるため、環境の [access level](#access-levels) がそれを除外しない限り、それらのファイルは到達可能なままです。
+パブリックリポジトリからのコミットされたファイルは `raw.githubusercontent.com` を通じて到着し、[security proxy](#security-proxy) が代わりに処理します。そのドメインは [デフォルト許可リスト](#default-allowed-domains) にあるため、環境の [ネットワークアクセス](#access-levels) がそのリストを許可している限り、それらのファイルは到達可能なままです。
 
 ### セキュリティプロキシ
 
@@ -391,7 +395,7 @@ service postgresql start
 service redis-server start
 ```
 
-Docker はコンテナ化されたサービスを実行するために利用可能です。Claude に `docker compose up` を実行するよう依頼して、プロジェクトのサービスを開始してください。イメージをプルするためのネットワークアクセスは環境の[アクセスレベル](#access-levels)に従い、[信頼できるデフォルト](#default-allowed-domains)には Docker Hub および他の一般的なレジストリが含まれます。
+Docker はコンテナ化されたサービスを実行するために利用可能です。Claude に `docker compose up` を実行するよう依頼して、プロジェクトのサービスを開始してください。イメージをプルするためのネットワークアクセスは環境の[アクセスレベル](#access-levels)に従い、[デフォルト許可リスト](#default-allowed-domains)には Docker Hub および他の一般的なレジストリが含まれます。
 
 イメージが大きいか遅い場合は、[セットアップスクリプト](#setup-scripts)に `docker compose pull` または `docker compose build` を追加してください。[環境キャッシュ](#environment-caching)はプルされたイメージを保持するため、各新しいセッションはディスク上にそれらを持ちます。キャッシュはファイルのみを保存し、実行中のプロセスは保存しないため、Claude は各セッションでコンテナを開始します。
 
@@ -445,7 +449,7 @@ apt update && apt install -y shellcheck
 
 * **ゼロで終了**：スクリプトがゼロ以外で終了する場合、セッションは [開始に失敗](https://code.claude.com/docs/ja/web-quickstart.md#setup-script-failed) するか、スクリプトがインストールに失敗したものがない状態で開始されます。非重要なコマンドに `|| true` を追加して、一時的なインストール失敗によってスクリプトが失敗しないようにします。
 * **5 分以内に完了**：スクリプトの総実行時間を約 5 分以内に保つため、[環境キャッシュ](#environment-caching) をビルドできます。セットアップが 5 分以上かかる場合、環境はキャッシュされません。独立したインストールを `&` と `wait` で並列実行し、フィットしない単一ダウンロードを [SessionStart フック](#setup-scripts-vs-sessionstart-hooks) に移動して、バックグラウンドで起動します。新しいセッションがセットアップ中にハングまたはタイムアウトする場合は、[新しいセッションがセットアップ中にハングまたはタイムアウトする](https://code.claude.com/docs/ja/web-quickstart.md#new-sessions-hang-or-time-out-during-setup) を参照してください。
-* **インストール用のネットワークアクセス**：パッケージインストールはレジストリに到達する必要があります。デフォルトの **Trusted** レベルは npm、PyPI、RubyGems、crates.io を含む [一般的なパッケージレジストリ](#default-allowed-domains) をカバーします。**None** ネットワークアクセスでは、インストールは失敗します。
+* **インストール用のネットワークアクセス**：パッケージインストールはレジストリに到達する必要があります。**Allow package managers** にチェックが入ったデフォルトの **Limited** レベルは、npm、PyPI、RubyGems、crates.io を含む [一般的なパッケージレジストリ](#default-allowed-domains) をカバーします。**None** ネットワークアクセスでは、インストールは失敗します。
 * **環境の変数はまだ設定されていない**：スクリプトは、セッションが環境の [環境変数](#set-environment-variables) を設定する前に実行されます。スクリプトが必要とする値は、スクリプト自体で設定してください。
 
 ### 環境キャッシング
@@ -541,7 +545,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 * **セッションごとに 1 つのリポジトリ**：Anthropic ホスト環境では、複数のリポジトリを持つセッションはどのリポジトリの `.claude/settings.json` からもフックをロードしないため、そこで定義した SessionStart フックは実行されません。これらのセッションの依存関係は、代わりに [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境については、[どのリポジトリの設定が適用されるか](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories) を参照してください。
 * **プロジェクトのクラウドスレッドでは実行されない**：[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) 内のクラウドスレッドは、リポジトリの数にかかわらず、リポジトリの `.claude/settings.json` からフックを実行しません。Anthropic ホスト環境では、スレッドの依存関係は [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境では、代わりに [ランナーホストの設定](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories) にあるフックを使用してください。
 * **クラウドのみのスコープなし**：フックはローカルとクラウドセッションの両方で実行されます。ローカル実行をスキップするには、[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように `CLAUDE_CODE_REMOTE` 環境変数が `true` でない限り早期に終了します。
-* **ネットワークアクセスが必要**：インストールコマンドはパッケージレジストリに到達する必要があります。環境が **None** ネットワークアクセスを使用する場合、これらのフックは失敗します。**Trusted** の下の [デフォルト許可リスト](#default-allowed-domains) は npm、PyPI、RubyGems、crates.io をカバーします。
+* **ネットワークアクセスが必要**：インストールコマンドはパッケージレジストリに到達する必要があります。環境が **None** ネットワークアクセスを使用する場合、これらのフックは失敗します。**Allow package managers** にチェックが入ったデフォルトの **Limited** レベルでは、[デフォルト許可リスト](#default-allowed-domains) が npm、PyPI、RubyGems、crates.io をカバーします。
 * **プロキシ互換性**：Anthropic ホスト環境では、すべての送信トラフィックは [セキュリティプロキシ](#security-proxy) を通じて渡されます。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。
 * **スタートアップレイテンシを追加**：フックはセッションが開始または再開されるたびに実行されます。[環境キャッシング](#environment-caching) の恩恵を受けるセットアップスクリプトとは異なります。[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように、既に完了している作業をスキップすることで、インストールスクリプトを高速に保ちます。
 
@@ -549,7 +553,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 
 ## デフォルト許可ドメイン
 
-**Trusted** ネットワークアクセスでは、セッションはデフォルトで次のドメインに到達できます。`*` でマークされたドメインはワイルドカードサブドメインマッチングを示すため、`*.gcr.io` は `gcr.io` のすべてのサブドメインを許可します。
+**Limited** ネットワークアクセスで **Allow package managers** がオンになっている場合（新しい環境ではオンになっています）、セッションは次のドメインに到達できます。`*` でマークされたドメインはワイルドカードサブドメインマッチングを示すため、`*.gcr.io` は `gcr.io` のすべてのサブドメインを許可します。
 
 > [accordion] Anthropic サービス
 >

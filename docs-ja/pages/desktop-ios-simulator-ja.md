@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> iOS シミュレータペインは、macOS 上の Claude Code Desktop でパブリックベータ版です。Pro、Max、Ultra、Team、Enterprise プランで利用可能です。ただし、HIPAA 設定が有効になっている Enterprise 組織では利用できません。
+> iOS シミュレータペインは、macOS 上の Claude Code Desktop でパブリックベータ版です。Pro、Max、Ultra、Team、Enterprise プランで利用可能です。ただし、HIPAA 設定が有効になっている Enterprise 組織では利用できません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用している場合は利用できません。
 
 iOS シミュレータペインは、Claude Code Desktop の会話の横に Apple の iOS シミュレータで実行されているアプリを表示します。Claude がシミュレータでアプリをビルド、インストール、起動、またはチェックするときに、ペインが自動的に開き、デバイス画面がライブでストリーミングされます。Claude がアプリを実行してテストするのを見守ったり、Claude が作業を続けている間に自分でアプリをタップして操作したりできます。
 
@@ -147,7 +147,7 @@ Claude がアプリを実行またはテストしたいことを認識してい�
 * 目標を明確に述べます。例えば「iOS シミュレータでアプリを実行し、サインアップフローをタップして操作してください」。
 * Xcode と iOS シミュレータがインストールされており、Xcode バージョンが [要件](#requirements)を満たしていることを確認します。
 * 組織が Claude Code を管理している場合、[シミュレータツールはポリシーによって無効にされている可能性があります](#turn-off-simulator-access)。
-* Enterprise 組織で HIPAA 設定が有効になっている場合、シミュレータペインは利用できません。
+* Enterprise 組織で HIPAA 設定が有効になっている場合、または[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用している場合、シミュレータペインは利用できません。
 * シミュレータペインには Claude Desktop v1.24012.0 以降が必要です。**Claude > Check for Updates…** を開き、アプリを再起動します。
 
 ### シミュレータペインにシミュレータが見つからないと表示される

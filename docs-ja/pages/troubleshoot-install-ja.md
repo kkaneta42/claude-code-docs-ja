@@ -29,7 +29,7 @@
 | インストール中に `EACCES: permission denied` | [インストールディレクトリの権限を修正する](#permission-errors-during-installation) |
 | `TLS connect error` または `SSL/TLS secure channel` | [CA 証明書を更新する](#tls-or-ssl-connection-errors) |
 | `CRYPT_E_NO_REVOCATION_CHECK` または `CRYPT_E_REVOCATION_OFFLINE` | [ブロックされた失効確認を回避する](#tls-or-ssl-connection-errors) |
-| `Failed to fetch version` またはダウンロードサーバーに到達できない | [ネットワークとプロキシの設定を確認する](#check-network-connectivity) |
+| `Failed to fetch version` またはダウンロードサーバーに到達できない | [ネットワークとプロキシの設定を確認する](#check-network-connectivity)か、証明書エラーの場合は[企業の CA 証明書を設定する](#tls-or-ssl-connection-errors) |
 | `The connection dropped while downloading the update` または `Download timed out: exceeded the total deadline` | [アップデートを再実行するか、プロキシを設定する](#the-connection-dropped-while-downloading-the-update) |
 | `Release verification failed for Claude Code` | [`claude update` または `claude install` を再実行する](#release-verification-failed) |
 | セッションのフッターに赤字で `Auto-update failed · Run claude doctor` | [シェルから `claude update` を実行する](#auto-update-failed) |
@@ -94,11 +94,11 @@
 * `403`：通常、プロキシまたはネットワークフィルターがホストをブロックしているか、Claude Code が[ご利用の地域では利用できません](https://www.anthropic.com/supported-countries)
 * `5xx`：通常、一時的なサービスの問題です。数分待ってから再試行してください
 
-出力がない、`Could not resolve host`、または接続タイムアウトが表示される場合、ネットワークが接続をブロックしています。一般的な原因：
+出力がない場合、またはインストーラーに `Could not resolve host` や接続タイムアウトが表示される場合は、接続に失敗しています。次の原因を確認してください：
 
 * `downloads.claude.ai` をブロックしている企業ファイアウォールまたはプロキシ
 * 地域的なネットワーク制限：VPN または別のネットワークを試してください
-* TLS/SSL の問題：システムの CA 証明書を更新するか、`HTTPS_PROXY` が設定されているかどうかを確認してください
+* TLS/SSL の問題：[TLS または SSL 接続エラー](#tls-or-ssl-connection-errors)を参照してください
 
 企業プロキシの背後にいる場合は、インストール前に `HTTPS_PROXY` と `HTTP_PROXY` をプロキシのアドレスに設定してください。プロキシ URL がわからない場合は IT チームに問い合わせるか、ブラウザのプロキシ設定を確認してください。
 
@@ -566,13 +566,19 @@ brew list --cask | grep claude-code
    irm https://claude.ai/install.ps1 | iex
    ```
 
-3. **プロキシまたはファイアウォールの干渉を確認する**：TLS 検査を実行する企業プロキシはこれらのエラーを引き起こす可能性があります。`unable to get local issuer certificate` と `SELF_SIGNED_CERT_IN_CHAIN` を含みます。インストール手順では、インストールダウンロードが企業プロキシの CA を信頼するようにします。
+3. **プロキシまたはファイアウォールの干渉を確認する**：TLS 検査を実行する企業プロキシは、`unable to get local issuer certificate`、`unable to verify the first certificate`、`SELF_SIGNED_CERT_IN_CHAIN` などのこれらのエラーを引き起こす可能性があります。インストールのダウンロードが企業プロキシの CA を信頼するようにしてください。
 
    > [tab] macOS/Linux
    >
+   > インストールスクリプトの `curl` ダウンロードには `CURL_CA_BUNDLE` を、スクリプトがその後に実行する `claude install` コマンドには [`NODE_EXTRA_CA_CERTS`](https://code.claude.com/docs/ja/network-config#custom-ca-certificates) を設定します。プロキシのルート CA 証明書を含む PEM ファイルがない場合は、IT チームに依頼してください。次の例では、両方をプロキシの CA ファイルに設定し、同じターミナルでスクリプトを実行します。
+   >
    > ```bash theme={null}
-   > curl --cacert /path/to/corporate-ca.pem -fsSL https://claude.ai/install.sh | bash
+   > export CURL_CA_BUNDLE=/path/to/corporate-ca.pem
+   > export NODE_EXTRA_CA_CERTS=/path/to/corporate-ca.pem
+   > curl -fsSL https://claude.ai/install.sh | bash
    > ```
+   >
+   > それでもこれらの証明書エラーのいずれかでインストールが失敗する場合は、公開ルート証明書とプロキシの完全な CA チェーンの両方を含むファイルを IT チームに依頼してください。その後、両方の変数をそのファイルに設定してください。
 
    > [tab] Windows PowerShell
    >
@@ -596,8 +602,6 @@ brew list --cask | grep claude-code
    > $env:NODE_EXTRA_CA_CERTS = 'C:\path\to\corporate-ca.pem'
    > ```
 
-   証明書ファイルがない場合は IT チームに依頼してください。直接接続で試して、プロキシが原因であることを確認することもできます。
-
 4. **Windows では、ブロックされた失効確認を回避する**。エラー `CRYPT_E_NO_REVOCATION_CHECK (0x80092012)` と `CRYPT_E_REVOCATION_OFFLINE (0x80092013)` は curl がサーバーに到達したが、ネットワークが証明書失効確認をブロックしていることを意味します。これは企業ファイアウォールの背後では一般的です。失敗しているコマンドが `install.cmd` をダウンロードする `curl` の場合、`--ssl-revoke-best-effort` を追加してコマンドプロンプトから再実行してください。
    ```batch theme={null}
    curl --ssl-revoke-best-effort -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
@@ -610,7 +614,7 @@ brew list --cask | grep claude-code
 
 ### `Failed to fetch version from downloads.claude.ai`
 
-インストーラーがダウンロードサーバーに到達できませんでした。これは通常、`downloads.claude.ai` がネットワークでブロックされていることを意味します。[ネットワーク接続を確認](#check-network-connectivity)を参照してください。
+メッセージの末尾に理由が示されます。`unable to verify the first certificate` などの証明書エラーの場合は、[TLS または SSL 接続エラー](#tls-or-ssl-connection-errors)を参照してください。その他の理由の場合は、[ネットワーク接続を確認](#check-network-connectivity)を参照してください。
 
 ### The connection dropped while downloading the update
 

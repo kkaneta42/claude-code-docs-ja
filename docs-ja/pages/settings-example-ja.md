@@ -232,24 +232,24 @@
 
 ## 組織の管理設定
 
-`managed-settings.json` ファイルは、管理キーの形状を示し、各キーに対して 1 つの妥当な値を含みます。これは推奨ポリシーではありません。自分の要件に合致するキーを選択し、独自の値を設定してください。この例では、以下のキーを設定しています。
+管理対象のキーの構造を示す `managed-settings.json` ファイルで、各キーに妥当な値を 1 つずつ設定しています。これは推奨ポリシーではありません。自身の要件に合うキーを選び、独自の値を設定してください。この例では次のキーを設定しています。
 
-* `forceLoginMethod` と `forceLoginOrgUUID` はログイン方法と組織を固定します
-* `availableModels` と `enforceAvailableModels` はセッションが使用できるモデルを制限します
-* `permissions.deny` は 2 つのファイル読み取りと `curl` コマンドをブロックし（[Claude が記述する方法](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)）、`disableBypassPermissionsMode` は権限モードのバイパスを削除します
-* [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) と [`allowManagedMcpServersOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedmcpserversonly) は、管理権限と MCP 許可リストのみを適用対象にします
-* `allowedMcpServers` は MCP サーバーを URL で固定します
-* `strictKnownMarketplaces` は 1 つのプラグインマーケットプレイスを許可します
-* `sandbox` はコマンドを固定ネットワーク許可リストでサンドボックス化し、サンドボックス外での再試行を許可しません。その `failIfUnavailable` キーは、[サンドボックスを実行できない環境では Claude Code を起動させないようにします](https://code.claude.com/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)
-* `requiredMinimumVersion` は最小 Claude Code バージョンを設定します
-* `cleanupPeriodDays` はセッショントランスクリプトおよび他のローカルデータの保持期間を 7 日に短縮します
-* `companyAnnouncements` は起動時にメッセージを表示します
+* `forceLoginMethod` と `forceLoginOrgUUID` は、ログイン方法と組織を固定します
+* `availableModels` と `enforceAvailableModels` は、セッションで使用できるモデルを制限します
+* `permissions.deny` は、2 つのファイル読み取りと、[Claude が記述する形式での](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits) `curl` コマンドを拒否します。また、`disableBypassPermissionsMode` はバイパス権限モードを削除します
+* [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) と [`allowManagedMcpServersOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedmcpserversonly) は、管理対象の権限と MCP の許可リストのみが適用されるようにします
+* `allowedMcpServers` は、MCP サーバーを URL で固定します
+* `strictKnownMarketplaces` は、1 つのプラグインマーケットプレイスを許可します
+* `sandbox` は、固定のネットワーク許可リストを使用し、サンドボックス外での再試行なしでコマンドをサンドボックス化します。その `failIfUnavailable` キーは、[サンドボックスを実行できない環境で Claude Code が起動しないようにします](https://code.claude.com/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)
+* `requiredMinimumVersion` は、Claude Code の最小バージョンを設定します
+* `cleanupPeriodDays` は、セッションのトランスクリプトおよびその他のローカルデータの保持期間を 7 日間に短縮します
+* `companyAnnouncements` は、起動時にメッセージを表示します
 
-管理者は、このようなファイルを `managed-settings.json` として、または MDM もしくは [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) を通じて同じ JSON をデプロイします。デプロイされた 1 つのファイルは、それが到達するすべてのマシンまたはアカウントに適用されます。グループに異なる値を付与するには、そのグループに異なるファイルまたはプロファイルをデプロイしてください。[サーバー管理設定はまだグループごとのポリシーをサポートしていない](https://code.claude.com/docs/ja/server-managed-settings.md#current-limitations) ためです。
+管理者は、このようなファイルを `managed-settings.json` としてデプロイするか、同じ JSON を MDM または[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じてデプロイします。デプロイされた 1 つのファイルは、それが届くすべてのマシンまたはアカウントに適用されます。グループに異なる値を与えるには、そのグループに別のファイルまたはプロファイルをデプロイします。Enterprise プランでは、代わりにサーバー管理設定で[グループに独自の設定を与える](https://code.claude.com/docs/ja/server-managed-settings.md#give-groups-different-settings)こともできます。
 
 > [tab] コピー可能な設定ファイル
 >
-> これを `managed-settings.json` としてデプロイするか、MDM または claude.ai コンソールを通じて同じ JSON をデプロイしてください。コメントのない有効な JSON です。例の組織 UUID、サーバー URL、およびマーケットプレイスを自分のものに置き換え、不要なキーを削除してください。
+> これを `managed-settings.json` としてデプロイするか、同じ JSON を MDM または claude.ai コンソールを通じてデプロイします。コメントを含まない有効な JSON です。例の組織 UUID、サーバー URL、マーケットプレイスを独自のものに置き換え、不要なキーは削除してください。
 >
 > ```json managed-settings.json theme={null}
 > {
@@ -303,36 +303,39 @@
 > }
 > ```
 
-> [tab] 各キーの機能
+> [tab] 各キーの役割
 >
-> 各キーの上にコメントが付いた同じファイルです。ここで読んでください。Claude Code は設定ファイルのコメントを受け入れないため、他のタブからコピーしてください。
+> 同じファイルで、各キーの上にコメントを付けたものです。ここで内容を確認し、コピーはもう一方のタブから行ってください。Claude Code は設定ファイル内のコメントを受け付けないためです。
 >
 > ```jsonc managed-settings.json theme={null}
 > {
->   // claude.ai ログインのみ、かつこの組織内のみ
+>   // claude.ai ログインのみ、かつこの組織のみ
 >   "forceLoginMethod": "claudeai",
 >   "forceLoginOrgUUID": [
 >     "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 >   ],
->   // Opus と Sonnet モデルのみ。enforceAvailableModels を使用すると、デフォルトオプションもリストに従います
+>   // Opus と Sonnet モデルのみ。enforceAvailableModels により、Default オプションもこのリストに従う
 >   "availableModels": [
 >     "opus",
 >     "sonnet"
 >   ],
 >   "enforceAvailableModels": true,
 >   "permissions": {
->     // すべてのマシンで curl、プロジェクトの .env ファイル、およびそのシークレットフォルダをブロック
+>     // すべてのマシンで、curl コマンドと、プロジェクトの .env ファイルおよび secrets フォルダの読み取りを拒否
 >     "deny": [
 >       "Bash(curl *)",
 >       "Read(./.env)",
 >       "Read(./secrets/**)"
 >     ],
->     // すべてのセッションから権限モードのバイパスを削除
+>     // すべてのセッションからバイパス権限モードを削除
 >     "disableBypassPermissionsMode": "disable"
 >   },
->   // ユーザー、プロジェクト、およびローカル設定からの権限ルールを無視
+>   // ユーザー、プロジェクト、ローカルの設定からの権限ルールを無視
 >   "allowManagedPermissionRulesOnly": true,
->   // GitHub MCP サーバーのみ。ユーザーは任意のサーバーに「github」という名前を付けることができるため、名前ではなく URL で照合されます。リストに一致しないユーザーが追加したサーバーは読み込まれません。リストに URL エントリのみがある場合、すべての stdio サーバーを含みます。以下の allowManagedMcpServersOnly キーは、この管理リストのみが適用される許可リストにします
+>   // GitHub MCP サーバーのみ。ユーザーは任意のサーバーに "github" という名前を付けられるため、
+>   // 名前ではなく URL で照合する。一致しないユーザー追加サーバーは読み込まれない。リストに
+>   // URL エントリしかない場合は、すべての stdio サーバーも読み込まれない。下の allowManagedMcpServersOnly
+>   // キーにより、この管理対象リストが適用される唯一の許可リストになる
 >   "allowedMcpServers": [
 >     {
 >       "serverUrl": "https://api.githubcopilot.com/*"
@@ -346,7 +349,9 @@
 >       "repo": "acme-corp/approved-plugins"
 >     }
 >   ],
->   // Claude が実行するすべてのコマンドをサンドボックス化し、サンドボックスをセットアップできない場合は起動を拒否し、ブロックされたコマンドがサンドボックス外で再試行されることを許可しません。ネットワークは npm と GitHub に制限され、ユーザーはドメインを追加できません
+>   // Claude が実行するすべてのコマンドをサンドボックス化し、サンドボックスをセットアップできない場合は
+>   // 起動を拒否し、ブロックされたコマンドをサンドボックス外で再試行させない。ネットワークは
+>   // npm と GitHub に制限し、ユーザーはドメインを追加できない
 >   "sandbox": {
 >     "enabled": true,
 >     "failIfUnavailable": true,
@@ -359,11 +364,11 @@
 >       "allowManagedDomainsOnly": true
 >     }
 >   },
->   // 2.1.150 より古いバージョンでの起動を拒否
+>   // 2.1.150 より古いバージョンでは起動を拒否
 >   "requiredMinimumVersion": "2.1.150",
->   // 7 日後にセッショントランスクリプトおよび他のローカルセッションデータを削除
+>   // セッションのトランスクリプトおよびその他のローカルセッションデータを 7 日後に削除
 >   "cleanupPeriodDays": 7,
->   // すべてのユーザーが起動時に表示するメッセージ
+>   // 起動時にすべてのユーザーに表示されるメッセージ
 >   "companyAnnouncements": [
 >     "Welcome to Acme Corp! Review our code guidelines at docs.example.com"
 >   ]

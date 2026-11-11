@@ -197,7 +197,7 @@ Claude のコンテンツ検索はデフォルトで `.gitignore` を尊重す�
 * `Marketplace "claude-plugins-official" not found`: `/plugin marketplace add anthropics/claude-plugins-official` でマーケットプレイスを追加してから、インストールを再試行します。
 * `Plugin "<name>" not found in marketplace "claude-plugins-official"`: マーケットプレイスカタログのローカルコピーが古くなっている可能性があります。`/plugin marketplace update claude-plugins-official` で更新してから、インストールを再試行します。再試行しても同じメッセージが表示される場合は、[Plugin not found in marketplace](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-not-found-in-marketplace) を参照してください。
 
-プラグインを自分でインストールするのではなく、リポジトリ内のすべての人に対して有効にするには、[`enabledPlugins` プロジェクト設定](https://code.claude.com/docs/ja/settings-reference#plugin-settings)に追加します。
+リポジトリ内のすべての人に対してプラグインをオンにするには、[`enabledPlugins` プロジェクト設定](https://code.claude.com/docs/ja/settings-reference#plugin-settings)に追加します。ただし、各自が[インストールする](https://code.claude.com/docs/ja/plugins/loading.md#enabled-in-project-settings-but-not-installed)必要があります。
 
 コード インテリジェンス プラグインには、各開発者のマシンに言語の言語サーバーバイナリが必要です。[各言語が必要とするバイナリ](https://code.claude.com/docs/ja/plugins/code-intelligence.md)を参照してください。公式マーケットプレイスからのインストールには、マーケットプレイスがホストされている GitHub へのネットワークアクセスが必要です。制限されたネットワークでは、代わりに[内部 Git ホストまたはローカルパスからマーケットプレイスを追加](https://code.claude.com/docs/ja/plugins/install.md#add-a-marketplace)してください。
 

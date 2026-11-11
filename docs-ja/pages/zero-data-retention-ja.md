@@ -41,12 +41,13 @@ ZDR は Claude for Enterprise 上の Claude Code を通じて行われたモデ�
 
 ### ZDR がカバーしない内容
 
-ZDR は、ZDR が有効化されている組織であっても、以下には適用されません。これらの機能は[標準データ保持ポリシー](https://code.claude.com/docs/ja/data-usage.md#data-retention)に従います：
+ZDR は、ZDR が有効化されている組織であっても、以下には適用されません。行に別途記載がある場合を除き、これらの機能は[標準データ保持ポリシー](https://code.claude.com/docs/ja/data-usage.md#data-retention)に従います：
 
 | 機能 | 詳細 |
 | - | - |
 | claude.ai 上のチャット | Claude for Enterprise ウェブインターフェース経由のチャット会話は ZDR でカバーされません。 |
 | Cowork | Cowork セッションは ZDR でカバーされません。 |
+| アーティファクト | チャット会話および Cowork セッション内のアーティファクトは ZDR でカバーされず、組織がアーティファクトの保持期間を設定しない限り、削除されるまで保持されます。ZDR を使用する Claude Code ではアーティファクトは利用できません。 |
 | Claude Code Analytics | プロンプトまたはモデル応答を保存しませんが、アカウントメールや使用統計などの生産性メタデータを収集します。貢献メトリクスは ZDR 組織では利用できません。[analytics ダッシュボード](https://code.claude.com/docs/ja/analytics.md)は使用メトリクスのみを表示します。 |
 | ユーザーとシート管理 | アカウントメールやシート割り当てなどの管理データは標準ポリシーの下で保持されます。 |
 | サードパーティ統合 | サードパーティツール、MCP servers、またはその他の外部統合によって処理されたデータは ZDR でカバーされません。これらのサービスのデータ処理慣行を独立して確認してください。 |
@@ -60,7 +61,8 @@ Claude for Enterprise 上の Claude Code 組織に対して ZDR が有効化さ�
 | [Web 上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md)（[Desktop アプリ](https://code.claude.com/docs/ja/desktop.md#cloud-sessions)から開始されたものを含む） | セッションデータのサーバー側ストレージが必要です。これには、プロンプトと完了を含む会話履歴が含まれます。 |
 | [Chat と Cowork の統合](https://support.claude.com/en/articles/17444462-set-up-and-manage-the-new-unified-claude-experience-for-your-enterprise-organization) | クラウドセッションが必要です。 |
 | [Claude Tag](https://claude.com/docs/claude-tag) | チャネルメモリとセッショントランスクリプトを保持します。 |
-| [Artifacts](https://code.claude.com/docs/ja/artifacts.md) | Anthropic が運用するインフラストラクチャに公開されたページコンテンツを保存する必要があります。 |
+| Claude Code の [Artifacts](https://code.claude.com/docs/ja/artifacts.md) | Anthropic が運用するインフラストラクチャに公開されたページコンテンツを保存する必要があります。 |
+| [Claude Docs](https://support.claude.com/en/articles/16923645-get-started-with-claude-docs) | Anthropic が運用するインフラストラクチャにドキュメントコンテンツを保存する必要があります。 |
 | フィードバック送信（`/feedback`、`/bug`、`/share`） | フィードバックを送信すると、会話データが Anthropic に送信されます。 |
 | [Remote Control](https://code.claude.com/docs/ja/remote-control.md) | Anthropic サーバーにセッショントランスクリプトを保存して、デバイス間で会話を同期します。 |
 

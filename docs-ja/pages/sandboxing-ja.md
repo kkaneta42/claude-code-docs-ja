@@ -739,7 +739,7 @@ Claude Code はサンドボックスの外、ユーザーのマシン上でサ�
 
 サンドボックスはネイティブ Windows では実行されないため、`failIfUnavailable` が設定されていると、それらのマシンでは Claude Code が起動時に終了します。フリートに Windows ホストが含まれている場合は、次の方法を取れます。
 
-* **オペレーティングシステムごとに設定を配信する**：MDM を通じて、または[管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)として、macOS と Linux のマシンにのみデプロイします。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#current-limitations)は組織内のすべてのユーザーに適用されます
+* **オペレーティングシステムごとに設定を配信する**：MDM を通じて、または[管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)として、macOS と Linux のマシンにのみデプロイします。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#give-groups-different-settings)はデバイスではなくメンバーに従います。
 * **Windows ユーザーをサポートされている環境に移行する**：WSL2 またはコンテナ内で Claude Code を実行してもらいます
 
 ### 開発者がポリシーを広げるのを防ぐ

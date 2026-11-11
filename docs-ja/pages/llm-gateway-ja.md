@@ -47,7 +47,7 @@
 
 [ゲートウェイ認証情報変数](https://code.claude.com/docs/ja/llm-gateway-connect.md#set-the-credential-variable)または `apiKeyHelper` がアクティブな場合、リクエストは開発者の claude.ai サブスクリプションログインの代わりにその認証情報を使用し、サブスクリプションの使用制限は適用されません。Claude Code はマシンに保存された claude.ai ログインを保持していますが、それらのリクエストでは送信しません。そのトラフィックは、ゲートウェイが転送する認証情報の所有者（組織の Anthropic Console アカウント、またはゲートウェイがそこにルーティングする場合の Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry アカウント）にトークンごとに請求されます。
 
-[`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential)は Claude Code をゲートウェイに指し示す変数です。ゲートウェイ認証情報なしでその変数のみを設定しても、サブスクリプションは置き換わりません。リクエストはゲートウェイ経由でルーティングされますが、保存された claude.ai ログインはアクティブな認証情報のままなので、その使用制限と請求が適用されます。このトラフィックを Anthropic に渡すゲートウェイは、`anthropic-beta` の OAuth 機能を転送する必要があります。[リクエストヘッダーリファレンス](https://code.claude.com/docs/ja/llm-gateway-protocol.md#request-headers)を参照してください。
+[`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential)は Claude Code をゲートウェイに指し示す変数です。ゲートウェイ認証情報なしでその変数のみを設定しても、サブスクリプションは置き換わりません。リクエストはゲートウェイ経由でルーティングされますが、保存された claude.ai ログインはアクティブな認証情報のままなので、その使用制限と請求が適用されます。このトラフィックを Anthropic に渡すゲートウェイは、`Authorization` と `anthropic-beta` の OAuth 機能を転送する必要があります。[リクエストヘッダーリファレンス](https://code.claude.com/docs/ja/llm-gateway-protocol.md#request-headers)を参照してください。
 
 ## 関連ページ
 

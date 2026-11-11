@@ -56,7 +56,7 @@
 | `--session-stop-grace-sec <n>` | `SELF_HOSTED_RUNNER_SESSION_STOP_GRACE_MS` | `5` | セッションの終了後、強制終了する前に Claude プロセスが正常に終了するのを待つ時間。子プロセス自身の `SessionEnd` フックにより多くの時間が必要な場合は、値を引き上げてください。 |
 | `--startup-timeout-min <n>` | `SELF_HOSTED_RUNNER_STARTUP_TIMEOUT_MS` | `15` | 初期化されていない子プロセスを、セッションのスロットを解放するまでに待つ時間。計測がどこから始まるか、またどのセッションが実行されたまま残るかについては、[セッション起動タイムアウト](#session-startup-timeout)を参照してください。`0` でタイムアウトが無効になります。 |
 | `--trust-workspace [bool]` | `SELF_HOSTED_RUNNER_TRUST_WORKSPACE` | オン | 各セッションのリポジトリパスに対する永続的な信頼を事前に設定し、リポジトリにコミットされた `permissions.allow` と `additionalDirectories` が尊重されるようにします。`false` に設定すると、リポジトリにコミットされた権限の付与を破棄し、代わりにホスト設定の `settings.json` で許可ルールを構成します。リポジトリにコミットされた `sandbox.*` 設定はどちらの場合も適用されるため、[リポジトリ設定ガード](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)はこのフラグに関係なくそれらをスキャンします。 |
-| `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客が管理する git 認証の代わりに、[Anthropic git プロキシ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy)経由で github.com 上のリポジトリをクローンします。`--capacity 1` と git 2.32 以降が必要で、これらを満たさない場合、ランナーは起動を拒否します。書き換えフラグよりも優先されます。 |
+| `--use-anthropic-git-proxy` | `CLAUDE_RUNNER_USE_GIT_PROXY=1` | オフ | 顧客が管理する git 認証の代わりに、[Anthropic git プロキシ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy)経由で github.com 上のリポジトリをクローンします。`--capacity 1` と git 2.32 以降が必要で、これらを満たさない場合、ランナーは起動を拒否します。また、Claude Code v2.1.267 以降も必要です。書き換えフラグよりも優先されます。 |
 
 ほとんどの期間フラグには最大値があり、各タイムアウトがランタイムの 32 ビットタイマーの上限である約 24.85 日に収まるように選ばれています。`--*-min` フラグの上限は 10080 分（7 日）、`--drain-grace-sec` は 604800 秒（同じく 7 日）、`--drain-wait-sec` は 86400 秒（24 時間）です。`--session-stop-grace-sec` と `--post-session-hook-timeout-sec` には上限がありません。上限を超えた場合の動作は、指定方法によって異なります。
 
@@ -135,7 +135,7 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 セッション子は、オフにしない限り、運用テレメトリを Anthropic に送信します。コードまたはリポジトリコンテンツは送信されません。ランナープロセスでテレメトリ変数を設定します。ランナーはサーバー提供の環境変数を適用した後、それらを再アサートするため、オペレーターの設定は常に優先されます。
 
-1 つのコントロールはセルフホスト環境に固有です。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` は Datadog 運用メトリクスにオプトインします。これはセルフホスト環境ではデフォルトでオフです。一般的な Claude Code テレメトリコントロール `DISABLE_TELEMETRY`、`DO_NOT_TRACK`、`DISABLE_ERROR_REPORTING`、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` は [環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md) に記載されているようにセッション子に適用されます。`DISABLE_GROWTHBOOK` は関連していますが異なります。`DISABLE_GROWTHBOOK=1` を設定するとフィーチャーフラグフェッチが無効になり、`DISABLE_TELEMETRY` も設定されない限りテレメトリはオンのままです。
+1 つのコントロールはセルフホスト環境に固有です。`CLAUDE_CODE_BYOC_ENABLE_DATADOG=1` は Datadog 運用メトリクスにオプトインします。これはセルフホスト環境ではデフォルトでオフです。一般的な Claude Code テレメトリコントロール `DISABLE_TELEMETRY`、`DO_NOT_TRACK`、`DISABLE_ERROR_REPORTING`、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` は [環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md) に記載されているようにセッション子に適用されます。[`CLAUDE_CODE_DISABLE_FEATURE_FLAGS`](https://code.claude.com/docs/ja/env-vars#variables) は関連していますが異なります。`CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1` を設定するとフィーチャーフラグフェッチが無効になり、`DISABLE_TELEMETRY` も設定されない限りテレメトリはオンのままです。`CLAUDE_CODE_DISABLE_FEATURE_FLAGS` には Claude Code v2.1.319 以降が必要です。
 
 `CLAUDE_CODE_ENABLE_TELEMETRY` は無関係です。これは [監視](https://code.claude.com/docs/ja/monitoring-usage.md) で説明されているように、独自のコレクターへの OpenTelemetry エクスポートを有効にし、Anthropic のアナリティクスを制御しません。
 
@@ -161,61 +161,62 @@ SCM コネクタは利用できないため、このセクションのフラグ�
 
 ## Prometheus メトリクス
 
-各ランナーは `/healthz` と同じポートで `GET /metrics` で Prometheus メトリクスを提供します。主要なシリーズ：
+各ランナーは、`/healthz` と同じポートの `GET /metrics` で Prometheus メトリクスを提供します。主な系列は次のとおりです。
 
-| シリーズ | 注記 |
+| 系列 | 備考 |
 | :- | :- |
-| `claude_code_self_hosted_runner_info{runner_id,version,client_label}` | 常に `1`。フリートインベントリとバージョンドリフト検出に有用です。 |
-| `claude_code_self_hosted_runner_capacity` | 設定済み `--capacity` |
+| `claude_code_self_hosted_runner_info{runner_id,version,client_label}` | 常に `1`。フリートのインベントリ把握やバージョンのずれの検出に役立ちます |
+| `claude_code_self_hosted_runner_capacity` | 設定された `--capacity` |
 | `claude_code_self_hosted_runner_active_sessions` | 現在実行中のセッション |
-| `claude_code_self_hosted_runner_locked_account{email}` | ランナーがユーザーにロックされ、`act.email` クレームを持つセッショントークンが発行された後に存在します。シリーズは Claude Tag エージェントにロックされたランナーには存在しません。そのセッショントークンは `act.email` を持ちません。ラベル値はアカウントメールです。メトリクスストアが広く読み取り可能な場合は、スクレイプ時にラベルをドロップまたはハッシュします。例えば Prometheus `metric_relabel_configs` を使用します。 |
-| `claude_code_self_hosted_runner_last_poll_age_seconds` | 最後の成功したポーリング以降の秒数。60 を超える場合はアラートします。 |
-| `claude_code_self_hosted_runner_poll_errors_total{error_kind}` | 種類別の累積 PollWork 失敗：`transport`、`timeout`、`5xx`、`429`、または `4xx`。すべての 5 つのシリーズはプロセス開始から存在します。`rate(...[5m]) > 0` でアラートします。 |
-| `claude_code_self_hosted_runner_sessions_started_total{client_platform}` | ランナーの生存期間にわたってスポーンされたセッション子プロセス。セッションオリジン（`web_claude_ai`、`ios`、`android`、`desktop_app`、`claude_code_cli` など）ごとに 1 つのシリーズ、またはサーバーが 1 つを送信しなかった場合は `unknown`。Slack セッションは、どの Slack 統合が作成したかに応じて `claude_in_slack` または `claude-in-slack` を持ちます。`{client_platform=~"claude[-_]in[-_]slack"}` などの正規表現セレクターで両方と一致します。フリート合計には `sum()` を使用します。 |
-| `claude_code_self_hosted_runner_sessions_completed_total{client_platform}` | クリーンに終了したセッション。同じ方法でラベル付けされます。より広い範囲：[セッションライフサイクルカウンターセマンティクス](#session-lifecycle-counter-semantics) を参照して、何がカウントされるかを確認してください。 |
-| `claude_code_self_hosted_runner_sessions_failed_total{client_platform}` | 失敗で終了したセッション。同じ注意事項：[セッションライフサイクルカウンターセマンティクス](#session-lifecycle-counter-semantics) を参照してください。 |
-| `claude_code_self_hosted_runner_sessions_interrupted_total{client_platform}` | ランナーがセッション結果ではなく運用上の理由で終了したセッション。同じ方法でラベル付けされます。[セッションライフサイクルカウンターセマンティクス](#session-lifecycle-counter-semantics) を参照してください。 |
-| `claude_code_self_hosted_runner_initializing_sessions` | 初期化フェーズ内のセッション。割り当てから子の初期化イベントまで。 |
-| `claude_code_self_hosted_runner_session_init_duration_seconds` | セッション初期化期間のヒストグラム |
-| `claude_code_self_hosted_runner_session_init_errors_total` | 初期化に到達する前に失敗したセッション：チェックアウトフック失敗、git 準備、トークン問題、または初期化前の子クラッシュ |
-| `claude_code_self_hosted_runner_session_start_hook_errors_total` | エラー結果を報告した `SessionStart` フック。失敗したフック実行ごとに 1 つ。 |
-| `claude_code_self_hosted_runner_session_idle_seconds{session_id,client_platform}` | セッションがアイドル状態になってからの秒数のセッションごとのゲージ。未回答の権限プロンプトでスタックしているセッションを終了するのに有用です。 |
+| `claude_code_self_hosted_runner_locked_account{email}` | ランナーがユーザーにロックされ、`act.email` クレームを含むセッショントークンが発行された時点で存在します。Claude Tag エージェントにロックされたランナーでは、そのセッショントークンに `act.email` が含まれないため、この系列は存在しません。ラベルの値はアカウントのメールアドレスです。メトリクスストアを広く閲覧できる場合は、Prometheus の `metric_relabel_configs` などを使って、スクレイプ時にこのラベルを削除またはハッシュ化してください。 |
+| `claude_code_self_hosted_runner_last_poll_age_seconds` | 最後に成功したポーリングからの秒数。60 を超えた場合にアラートを出してください。 |
+| `claude_code_self_hosted_runner_poll_errors_total{error_kind}` | 種類別の PollWork 失敗の累計：`transport`、`timeout`、`5xx`、`429`、`4xx`。5 つの系列はすべてプロセス開始時から存在します。`rate(...[5m]) > 0` でアラートを出してください。 |
+| `claude_code_self_hosted_runner_sessions_started_total{client_platform}` | ランナーの稼働期間中に起動されたセッション子プロセス。セッションの起点ごとに 1 つの系列があり、`web_claude_ai`、`ios`、`android`、`desktop_app`、`claude_code_cli` などのほか、サーバーが起点を送信しなかった場合は `unknown` になります。Slack セッションは、作成した Slack インテグレーションに応じて `claude_in_slack` または `claude-in-slack` のいずれかを持つため、`{client_platform=~"claude[-_]in[-_]slack"}` のような正規表現セレクターで両方に一致させてください。フリート全体の合計には `sum()` を使用します。 |
+| `claude_code_self_hosted_runner_sessions_completed_total{client_platform}` | 正常に終了したセッション。ラベルは同様です。単純な正常終了よりも範囲が広いため、何がカウントされるかについては[セッションライフサイクルカウンターのセマンティクス](#session-lifecycle-counter-semantics)を参照してください。 |
+| `claude_code_self_hosted_runner_sessions_failed_total{client_platform}` | 失敗で終了したセッション。ラベルは同様です。同じ注意点があります。[セッションライフサイクルカウンターのセマンティクス](#session-lifecycle-counter-semantics)を参照してください。 |
+| `claude_code_self_hosted_runner_sessions_interrupted_total{client_platform}` | セッションの結果ではなく運用上の理由でランナーが終了させたセッション。ラベルは同様です。[セッションライフサイクルカウンターのセマンティクス](#session-lifecycle-counter-semantics)を参照してください。 |
+| `claude_code_self_hosted_runner_initializing_sessions` | 現在初期化フェーズにあるセッション（割り当てから子プロセスの init イベントまで） |
+| `claude_code_self_hosted_runner_session_init_duration_seconds` | セッション初期化所要時間のヒストグラム |
+| `claude_code_self_hosted_runner_session_init_errors_total` | init に到達する前に失敗したセッション：チェックアウトフックの失敗、git の準備、トークンの問題、または init 前の子プロセスのクラッシュ |
+| `claude_code_self_hosted_runner_session_start_hook_errors_total` | エラー結果を報告した `SessionStart` フック。失敗したフックの実行ごとに 1 つ |
+| `claude_code_self_hosted_runner_session_idle_seconds{session_id,client_platform}` | セッションがアイドルになってからの秒数を示すセッションごとのゲージ。応答のない権限プロンプトで止まっているセッションを終了させる際に役立ちます。 |
 
-オーケストレーターは `/healthz` と同じポートで `GET /metrics` で独自のシリーズを提供します。
+オーケストレーターは、自身の `/healthz` と同じポートの `GET /metrics` で独自の系列を提供します。
 
-| シリーズ | 注記 |
+| 系列 | 備考 |
 | :- | :- |
 | `claude_code_self_hosted_orchestrator_info{version,pool_id,orchestrator_uuid,hostname}` | 常に `1` |
-| `claude_code_self_hosted_orchestrator_connected` | 最新のポーリングが成功した場合は `1`。失敗の種類に関係なく、失敗したポーリング後は `0` にドロップします。 |
-| `claude_code_self_hosted_orchestrator_last_poll_age_seconds` | 最後のポーリング試行（成功または失敗）以降の秒数。最後の成功以降を測定するランナーの同じ名前のメトリクスとは異なります。`connected` とペアにして、失敗したポーリングをキャッチします。オーケストレーターのポーリングループはフック実行で待機するため、デフォルトで約 90 秒の `--hook-timeout` プラス余裕の上でアラートします。フラット 60 ではなく。 |
-| `claude_code_self_hosted_orchestrator_poll_errors_total{error_kind}` | 種類別の累積 PollSpawnHints 失敗：`transport`、`timeout`、`5xx`、`429`、または `4xx`。すべての 5 つのシリーズはプロセス開始から存在します。`rate(...[5m]) > 0` でアラートします。 |
-| `claude_code_self_hosted_orchestrator_queue_pending_sessions` | 今すぐクレーム可能なスポーン要求 |
-| `claude_code_self_hosted_orchestrator_queue_backing_off_sessions` | 再試行可能なフック失敗後の再試行バックオフ内のスポーン要求 |
-| `claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions` | スポーンがブロックされているセッション。各セッションは、ユーザーが新しいメッセージを送信するか、Owner が環境の **Activity** タブから再試行するまでブロックされたままです。原因を修正した後もカウントがゼロを超えたままになる場合があります。ゼロを超える場合はアラートします。 |
-| `claude_code_self_hosted_orchestrator_pool_pending_sessions` | この環境でランナーを待機している総セッション数。環境全体の集計。すべてのオーケストレーターインスタンスで同一です。インスタンス全体で `SUM` ではなく `MAX` を使用します。 |
-| `claude_code_self_hosted_orchestrator_pool_active_sessions` | この環境内のアライブランナーに現在割り当てられているセッション。環境全体の集計。すべてのオーケストレーターインスタンスで同一です。インスタンス全体で `SUM` ではなく `MAX` を使用します。 |
-| `claude_code_self_hosted_orchestrator_spawn_hooks_total{result}` | 累積 `spawn-runner` フック結果：`ok`、`retryable`、`non_retryable`。オーケストレーターフック呼び出しをカウントします。ランナーがスポーンするセッション子ではありません。容量が 1 を超える場合、ウォームプール、同じセッション用に再度スポーンされたランナーは `sessions_started_total` と比較できないため、2 つが異なります。 |
-| `claude_code_self_hosted_orchestrator_spawn_hook_duration_seconds` | フック期間のヒストグラム |
-| `claude_code_self_hosted_orchestrator_warm_hints_dispatched_total` | プロセス開始以降にディスパッチされたスタンバイスポーン要求 |
-| `claude_code_self_hosted_orchestrator_session_queue_wait_seconds` | 各セッションがオーケストレーターがスポーン用にクレームするまでキューで待機した秒数のヒストグラム。コントロールプレーンが各セッションのスポーン要求で送信するキュー待機タイムスタンプから記録されます。p50/p99 キュー時間アラートに使用します。プレウォーミングスポーンはサンプリングされません。 |
-| `claude_code_self_hosted_orchestrator_clock_skew_seconds` | ローカルマイナスサーバークロックスキュー。診断。測定後に存在します。 |
-| `claude_code_self_hosted_orchestrator_scm_connector_connected` | [SCM コネクタ](#scm-connector-flags) の WebSocket がオープンしている場合は `1`。ダイアルまたはバックオフ中は `0`。`--scm-connector-host` が設定されていない場合は存在しません。 |
-| `claude_code_self_hosted_orchestrator_scm_connector_requests_forwarded_total` | プロセス開始以降に設定された SCM ホストにプロキシされた累積 HTTP リクエスト。`--scm-connector-host` が設定されていない場合は存在しません。 |
+| `claude_code_self_hosted_orchestrator_connected` | 直近のポーリングが成功した場合は `1`。失敗の種類にかかわらず、ポーリングが失敗すると `0` に下がります |
+| `claude_code_self_hosted_orchestrator_last_poll_age_seconds` | 成功・失敗を問わず、最後のポーリング試行からの秒数。最後の成功からの時間を測るランナーの同名メトリクスとは異なります。失敗しているポーリングを検出するには `connected` と組み合わせてください。オーケストレーターのポーリングループはフックの実行を待機するため、一律の 60 ではなく、`--hook-timeout` に余裕を加えた値（デフォルトでは約 90 秒）を超えた場合にアラートを出してください。 |
+| `claude_code_self_hosted_orchestrator_poll_errors_total{error_kind}` | 種類別の PollSpawnHints 失敗の累計：`transport`、`timeout`、`5xx`、`429`、`4xx`。5 つの系列はすべてプロセス開始時から存在します。`rate(...[5m]) > 0` でアラートを出してください。 |
+| `claude_code_self_hosted_orchestrator_queue_pending_sessions` | 現在取得可能な起動リクエスト |
+| `claude_code_self_hosted_orchestrator_queue_backing_off_sessions` | 再試行可能なフック失敗の後、再試行のバックオフ中にある起動リクエスト |
+| `claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions` | 起動がブロックされているセッション。各セッションは、ユーザーが新しいメッセージを送信するか、Owner が環境の **Activity** タブから再試行するまでブロックされたままです。原因を修正した後もカウントがゼロより大きいままになることがあります。ゼロを超えた場合にアラートを出してください。 |
+| `claude_code_self_hosted_orchestrator_pool_pending_sessions` | この環境でランナーを待機しているセッションの合計。環境全体の集計値であり、すべてのオーケストレーターインスタンスで同一です。インスタンス間では `SUM` ではなく `MAX` を使用してください。 |
+| `claude_code_self_hosted_orchestrator_pool_active_sessions` | この環境で稼働中のランナーに現在割り当てられているセッション。環境全体の集計値であり、すべてのオーケストレーターインスタンスで同一です。インスタンス間では `SUM` ではなく `MAX` を使用してください。 |
+| `claude_code_self_hosted_orchestrator_spawn_hooks_total{result}` | `spawn-runner` フックの結果の累計：`ok`、`retryable`、`non_retryable`。ランナーが起動するセッション子プロセスではなく、オーケストレーターによるフック呼び出しをカウントします。1 を超える capacity、ウォームプール、同じセッションに対してランナーが再度起動されるケースのすべてで両者がずれるため、`sessions_started_total` とは比較できません。 |
+| `claude_code_self_hosted_orchestrator_spawn_hook_duration_seconds` | フック所要時間のヒストグラム |
+| `claude_code_self_hosted_orchestrator_warm_hints_dispatched_total` | プロセス開始以降にディスパッチされたスタンバイ起動リクエスト |
+| `claude_code_self_hosted_orchestrator_session_queue_wait_seconds` | オーケストレーターが起動のために取得するまでに各セッションがキューで待機した秒数のヒストグラム。コントロールプレーンが各セッションの起動リクエストとともに送信するキュー待機タイムスタンプから記録されます。p50/p99 のキュー時間のアラートに使用してください。事前ウォーミングによる起動はサンプリングされません。 |
+| `claude_code_self_hosted_orchestrator_clock_skew_seconds` | ローカルからサーバーを引いたクロックのずれ。診断用で、測定された時点で存在します |
+| `claude_code_self_hosted_orchestrator_scm_connector_connected` | [SCM コネクタ](#scm-connector-flags)の WebSocket が開いている場合は `1`、接続試行中またはバックオフ中は `0`。`--scm-connector-host` が設定されていない場合は存在しません。 |
+| `claude_code_self_hosted_orchestrator_scm_connector_requests_forwarded_total` | プロセス開始以降に、設定された SCM ホストへプロキシされた HTTP リクエストの累計。`--scm-connector-host` が設定されていない場合は存在しません。 |
 
-オートスケーリングの場合、スケーリングスタイルに一致するシリーズを選択し、スケーラーに供給する前にゲートします。
+オートスケーリングには、スケーリング方式に合った系列を選び、スケーラーに渡す前にゲートをかけてください。
 
-* **キュー深度スケーリング**：`queue_pending_sessions` ではなく `claude_code_self_hosted_orchestrator_pool_pending_sessions` を HPA または KEDA スケーラーに供給します。
-* **容量スケーリング**：ランナーの `active_sessions` と `capacity` の比率でスケーリングします。
-* **`connected` でゲート**：インスタンスごとに `claude_code_self_hosted_orchestrator_connected == 1` でクエリをフィルタリングします。切断されたレプリカの古い値がスケーラーに供給されないようにします。
+* **キュー深度によるスケーリング**：`queue_pending_sessions` ではなく、`claude_code_self_hosted_orchestrator_pool_pending_sessions` を HPA または KEDA スケーラーに渡します。
+* **容量によるスケーリング**：ランナーの `active_sessions` と `capacity` の比率に基づいてスケーリングします。
+* **`connected` でゲートする**：インスタンスごとに `claude_code_self_hosted_orchestrator_connected == 1` でクエリをフィルタリングし、切断されたレプリカの古い値がスケーラーに渡らないようにします。
 
-完全なポーリング停止中、すべてのレプリカが切断されると、ゲートされたクエリはデータを返しません。HPA は欠落メトリクスで現在のレプリカ数を保持しますが、KEDA の Prometheus スケーラーはデフォルト `ignoreNullValues: "true"` で空の結果をゼロとして読み取り、スケールインします。ScaledObject で `ignoreNullValues: "false"` を設定し、オプションで `fallback` レプリカフロアを設定します。
+ポーリングが完全に停止し、すべてのレプリカが切断されている間は、ゲートをかけたクエリはデータを返しません。HPA はメトリクスが欠落している場合に現在のレプリカ数を維持しますが、KEDA の Prometheus スケーラーはデフォルトの `ignoreNullValues: "true"` では空の結果をゼロとして読み取り、スケールインします。ScaledObject で `ignoreNullValues: "false"` を設定し、必要に応じて `fallback` によるレプリカの下限を設定してください。
 
-次の Prometheus Operator `PodMonitor` は両方のプロセスをカバーしています。`app.kubernetes.io/part-of: claude-code-self-hosted-runner` ラベルと、[Kubernetes レシピ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#kubernetes) が設定する名前付き `health` ポートでポッドを選択します。デプロイメントに合わせて名前空間を調整します。
+次の Prometheus Operator の `PodMonitor` は両方のプロセスを対象とします。`app.kubernetes.io/part-of: claude-code-self-hosted-runner` ラベルと、[Kubernetes レシピ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#kubernetes)で設定される名前付きの `health` ポートによって Pod を選択します。デプロイに合わせて名前空間を調整してください。
 
 ```yaml theme={null}
-# Claude Code セルフホストランナー + オーケストレーター用の Prometheus Operator PodMonitor の例。
-# 名前空間とラベルセレクターをデプロイメントに合わせて調整します。
-# ランナーとオーケストレーターの両方は、その --health-port（デフォルト 8080）で /metrics を提供します。
+# Claude Code セルフホスト型ランナーとオーケストレーター用の
+# Prometheus Operator PodMonitor の例。名前空間とラベルセレクターを
+# デプロイに合わせて調整してください。ランナーとオーケストレーターは
+# どちらも --health-port（デフォルト 8080）で /metrics を提供します。
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
@@ -227,8 +228,9 @@ spec:
       - claude-runners
   selector:
     matchExpressions:
-      # Kubernetes レシピからのランナー Deployment、および同じ方法でラベル付けされた
-      # オンデマンドランナー Job とオーケストレーターポッド、および名前付き 'health' containerPort を持つものと一致します。
+      # Kubernetes レシピのランナー Deployment に加え、同じ方法でラベル付けし、
+      # 名前付きの 'health' containerPort を指定したオンデマンドランナーの Job や
+      # オーケストレーター Pod に一致します。
       - key: app.kubernetes.io/part-of
         operator: In
         values: [claude-code-self-hosted-runner]
@@ -240,11 +242,11 @@ spec:
 
 ### サンプルアラートルール
 
-これらのサンプルアラートルールは出発点です。フリートサイズのしきい値を調整します。
+これらのサンプルアラートルールは出発点です。フリートの規模に合わせてしきい値を調整してください。
 
 ```yaml theme={null}
-# Claude Code セルフホストランナー + オーケストレーター用の Prometheus アラートルールの例。
-# フリートサイズと SLO のしきい値を調整します。
+# Claude Code セルフホスト型ランナーとオーケストレーター用の
+# Prometheus アラートルールの例。フリートの規模と SLO に合わせてしきい値を調整してください。
 groups:
   - name: claude-code-self-hosted-runner
     rules:
@@ -253,31 +255,31 @@ groups:
         for: 2m
         labels: {severity: warning}
         annotations:
-          summary: "ランナー {{ $labels.pod }} は 60 秒以上ポーリングしていません"
+          summary: "Runner {{ $labels.pod }} has not polled in >60s"
       - alert: ClaudeRunnerVersionDrift
         expr: count(count by (version) (claude_code_self_hosted_runner_info)) > 1
         for: 30m
         labels: {severity: info}
         annotations:
-          summary: "ランナーは混合バージョンを実行しています"
+          summary: "Runners are running mixed versions"
       - alert: ClaudeRunnerInitErrorsHigh
         expr: sum by (namespace) (increase(claude_code_self_hosted_runner_session_init_errors_total[10m])) > 3
         for: 5m
         labels: {severity: warning}
         annotations:
-          summary: "セッションが初期化前に失敗しています（チェックアウトフック / git / トークン / 初期化前クラッシュ）"
+          summary: "Sessions are failing before init (checkout hook / git / token / pre-init crash)"
       - alert: ClaudeRunnerPollErrors
         expr: sum by (pod) (rate(claude_code_self_hosted_runner_poll_errors_total[5m])) > 0
         for: 2m
         labels: {severity: warning}
         annotations:
-          summary: "ランナー {{ $labels.pod }}：PollWork が失敗しています（5 分間に {{ $value | humanize }}/s）"
+          summary: "Runner {{ $labels.pod }}: PollWork failing ({{ $value | humanize }}/s over 5m)"
       - alert: ClaudeRunnerSessionStartHookErrors
         expr: sum by (namespace) (increase(claude_code_self_hosted_runner_session_start_hook_errors_total[10m])) > 3
         for: 5m
         labels: {severity: warning}
         annotations:
-          summary: "SessionStart フックが失敗しています"
+          summary: "SessionStart hooks are failing"
 
   - name: claude-code-self-hosted-orchestrator
     rules:
@@ -286,47 +288,47 @@ groups:
         for: 2m
         labels: {severity: critical}
         annotations:
-          summary: "オーケストレーター {{ $labels.pod }} は Anthropic コントロールプレーンに到達できません"
+          summary: "Orchestrator {{ $labels.pod }} cannot reach the Anthropic control plane"
       - alert: ClaudeOrchestratorPollStale
         expr: claude_code_self_hosted_orchestrator_last_poll_age_seconds > 90
         for: 2m
         labels: {severity: warning}
         annotations:
-          summary: "オーケストレーター {{ $labels.pod }} は 90 秒以上ポーリングしていません（ポーリングループはフック実行で待機）"
+          summary: "Orchestrator {{ $labels.pod }} has not polled in >90s (poll loop waits on hook execution)"
       - alert: ClaudeOrchestratorCircuitBroken
         expr: max by (namespace) (claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions and on (instance) max_over_time(claude_code_self_hosted_orchestrator_connected[2m]) == 1) > 0
         for: 1m
         labels: {severity: critical}
         annotations:
-          summary: "スポーンがブロックされているセッション：{{ $value }}。Activity タブで各セッションのエラーを確認し、原因を修正してから Retry を選択してください"
+          summary: "Sessions blocked from spawning: {{ $value }}. Read each one's error in the Activity tab, fix the cause, then select Retry"
       - alert: ClaudeOrchestratorPollErrors
         expr: sum by (pod) (rate(claude_code_self_hosted_orchestrator_poll_errors_total[5m])) > 0
         for: 2m
         labels: {severity: warning}
         annotations:
-          summary: "オーケストレーター {{ $labels.pod }}：PollSpawnHints が失敗しています（5 分間に {{ $value | humanize }}/s）"
+          summary: "Orchestrator {{ $labels.pod }}: PollSpawnHints failing ({{ $value | humanize }}/s over 5m)"
       - alert: ClaudeOrchestratorSpawnHookFailing
         expr: sum by (pod) (increase(claude_code_self_hosted_orchestrator_spawn_hooks_total{result!="ok"}[5m])) > 3
         for: 5m
         labels: {severity: warning}
         annotations:
-          summary: "オーケストレーター {{ $labels.pod }}：5 分間に 3 回以上の spawn-runner フック失敗"
+          summary: "Orchestrator {{ $labels.pod }}: >3 spawn-runner hook failures in 5m"
 ```
 
-### ランナーの喪失と待機中のセッションでアラートする
+### ランナーの喪失と待機中のセッションに関するアラート
 
-ランナーが失われたとき、セッションが待機しているとき、またはオーケストレーターが停止しているときにアラートを受け取るには、[サンプルアラートルール](#sample-alert-rules) と併せて次の Prometheus アラートルールを読み込みます。
+ランナーが失われたとき、セッションが待機しているとき、またはオーケストレーターが停止しているときにアラートを受け取るには、[サンプルアラートルール](#sample-alert-rules)と並べて次の Prometheus アラートルールを読み込んでください。
 
 * **[固定フリート](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#scale-the-fleet)**：`ClaudeRunnersBelowFloor`
 * **[オンデマンドランナー](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)**：`ClaudeOrchestratorSessionsWaiting`、`ClaudeOrchestratorQueueWaitHigh`、`ClaudeOrchestratorAbsent`
 
-#### 固定フリートがランナーを失ったときにアラートする
+#### 固定フリートがランナーを失ったときのアラート
 
-`ClaudeRunnersBelowFloor` は、登録済みかつスクレイプ済みのランナー数がフロアを下回る状態が 10 分間続いたときに発火します。
+`ClaudeRunnersBelowFloor` は、登録済みかつスクレイプ済みのランナーの数が下限を下回った状態が 10 分間続くと発火します。
 
 ```yaml theme={null}
 groups:
-  # 固定フリートのみ。オンデマンドランナーではランナー数が需要に従うため、
+  # 固定フリートのみ。オンデマンドランナーでは数が需要に追従するため、
   # ClaudeRunnersBelowFloor は需要が低いときに常に発火してしまいます。
   - name: claude-code-self-hosted-fixed-fleet-capacity
     rules:
@@ -335,20 +337,20 @@ groups:
         for: 10m
         labels: {severity: critical, namespace: claude-runners}
         annotations:
-          summary: "登録済みかつスクレイプ済みのランナー：{{ $value }}、フロアを下回っています。まずランナーのワークロードを確認し、すべて実行中であればスクレイプターゲットを確認してください。"
+          summary: "Runners registered and scraped: {{ $value }}, below the floor. Check the runner workloads first, then the scrape targets if all are running."
 ```
 
-* **フロア**：`expr` 内の `2` を、レプリカ数の約半分（切り上げ）に設定します。レプリカが 3 つの場合は `2` のままにすると、ランナーが 1 つ以下になったときにアラートが発火します。
-* **名前空間**：matcher と `labels` 内の `claude-runners` を置き換え、追加の名前空間ごとにアラートをコピーします。ターゲットに `namespace` ラベルがない場合は、matcher とラベルを削除してください。そうしないと、アラートは 0 を読み取って発火します。
-* **`ClaudeRunnerPollStale` と `ClaudeRunnerPollErrors`**：[サンプルアラートルール](#sample-alert-rules) から読み込んだままにしておきます。`ClaudeRunnersBelowFloor` はポーリングできないランナーもカウントするためです
+* **下限**：`expr` の `2` を、レプリカ数の約半分（切り上げ）に設定します。レプリカが 3 つの場合は `2` のままにすると、ランナーが 1 つ以下になったときにアラートが発火します。
+* **名前空間**：matcher と `labels` の `claude-runners` を置き換え、追加の名前空間ごとにアラートをコピーします。ターゲットに `namespace` ラベルがない場合は、matcher とラベルを削除してください。削除しないとアラートが 0 を読み取って発火します。
+* **`ClaudeRunnerPollStale` と `ClaudeRunnerPollErrors`**：`ClaudeRunnersBelowFloor` はポーリングできないランナーもカウントするため、[サンプルアラートルール](#sample-alert-rules)からこれらを読み込んだままにしてください
 
-#### オンデマンドランナーをセッションが待機しているときにアラートする
+#### セッションがオンデマンドランナーを待機しているときのアラート
 
-`ClaudeOrchestratorSessionsWaiting` は、ランナーを待機しているセッション数が 10 分間 0 を超えたままのときに発火します。`ClaudeOrchestratorQueueWaitHigh` は、直近 10 分間のキュー待機の 1% 超が 160 秒を超え、その状態が 5 分間続いたときに発火します。
+`ClaudeOrchestratorSessionsWaiting` は、ランナーを待機しているセッションの数が 0 を超えた状態が 10 分間続くと発火します。`ClaudeOrchestratorQueueWaitHigh` は、直近 10 分間のキュー待機のうち 1% 超が 160 秒を超え、その状態が 5 分間続くと発火します。
 
 ```yaml theme={null}
 groups:
-  # オンデマンドランナーのみ。名前空間に合わせた編集は不要です。
+  # オンデマンドランナーのみ。名前空間の編集は不要です。
   - name: claude-code-self-hosted-on-demand-capacity
     rules:
       - alert: ClaudeOrchestratorSessionsWaiting
@@ -361,7 +363,7 @@ groups:
         for: 10m
         labels: {severity: warning}
         annotations:
-          summary: "ランナーを待機しているセッション：{{ $value }}、10 分間しきい値を超えています。result 別の claude_code_self_hosted_orchestrator_spawn_hooks_total を確認し、次に起動しないランナーのワークロードを確認してください。"
+          summary: "Sessions waiting for a runner: {{ $value }}, above the threshold for 10 minutes. Check claude_code_self_hosted_orchestrator_spawn_hooks_total by result, then runner workloads that don't start."
       - alert: ClaudeOrchestratorQueueWaitHigh
         expr: |
           histogram_quantile(0.99, sum by (namespace, le) (
@@ -370,19 +372,19 @@ groups:
         for: 5m
         labels: {severity: warning}
         annotations:
-          summary: "直近 10 分間のキュー待機の 1% 超が 160 秒を超えました。ClaudeOrchestratorDisconnected が発火しているかを確認し、次に result 別の claude_code_self_hosted_orchestrator_spawn_hooks_total と claude_code_self_hosted_orchestrator_spawn_hook_duration_seconds を確認してください。"
+          summary: "Over 1% of queue waits in the last 10 minutes exceeded 160 seconds. Check whether ClaudeOrchestratorDisconnected is firing, then claude_code_self_hosted_orchestrator_spawn_hooks_total by result and claude_code_self_hosted_orchestrator_spawn_hook_duration_seconds."
 ```
 
-* **しきい値**：常に何らかのセッションが待機している場合は、`ClaudeOrchestratorSessionsWaiting` の `> 0` を、通常見られる数より大きい値に引き上げます
-* **`ClaudeOrchestratorDisconnected`**：[サンプルアラートルール](#sample-alert-rules) から読み込んだままにしておきます。`ClaudeOrchestratorSessionsWaiting` は、名前空間内の最後のオーケストレーターが切断されてから約 2 分後に発火を停止するためです
+* **しきい値**：常に何らかのセッションが待機している場合は、`ClaudeOrchestratorSessionsWaiting` の `> 0` を、通常見られる数より大きい値に引き上げてください
+* **`ClaudeOrchestratorDisconnected`**：`ClaudeOrchestratorSessionsWaiting` は名前空間内の最後のオーケストレーターが切断されてから約 2 分後に発火しなくなるため、[サンプルアラートルール](#sample-alert-rules)からこれを読み込んだままにしてください
 
-#### オーケストレーターが停止したときにアラートする
+#### オーケストレーターが停止したときのアラート
 
-[オーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) 自体が停止していることを把握するには、`ClaudeOrchestratorAbsent` を読み込みます。このアラートは、名前空間内のどのオーケストレーターも 5 分間スクレイプされていないときに発火します。
+[オーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)自体が停止したことを把握するには、`ClaudeOrchestratorAbsent` を読み込みます。名前空間内のどのオーケストレーターも 5 分間スクレイプされていない場合に発火します。
 
 ```yaml theme={null}
 groups:
-  # オンデマンドランナーのみ。claude-runners をオーケストレーターの名前空間に置き換えます。
+  # オンデマンドランナーのみ。claude-runners をオーケストレーターの名前空間に置き換えてください。
   - name: claude-code-self-hosted-on-demand-orchestrator
     rules:
       - alert: ClaudeOrchestratorAbsent
@@ -390,22 +392,22 @@ groups:
         for: 5m
         labels: {severity: critical}
         annotations:
-          summary: "5 分間オーケストレーターがスクレイプされていません。オーケストレーターが停止している場合、オンデマンドランナーは起動せず、セッションは待機します。まずオーケストレーターのワークロードを確認し、実行中であればそのスクレイプターゲットを確認してください。"
+          summary: "No orchestrator has been scraped for 5 minutes. If it's down, no on-demand runner starts, and sessions wait. Check the orchestrator workload first, then its scrape target if it's running."
 ```
 
-* **名前空間**：`claude-runners` をオーケストレーターの名前空間に置き換え、オーケストレーターを実行する追加の名前空間ごとにアラートをコピーします。ターゲットに `namespace` ラベルがない場合は、matcher を削除してください。そうしないと、アラートは 5 分後に発火し、発火したままになります。
-* **オーケストレーターをスクレイプしない Prometheus サーバー**：そのようなサーバーではアラートが 5 分後に発火し、発火したままになるため、それらのサーバーのルールファイルにはこのアラートを含めないでください
-* **オーケストレーターの他のアラートに頼らない**：それらはオーケストレーター自身が提供するメトリクスを読み取ります。`ClaudeOrchestratorSessionsWaiting`、`ClaudeOrchestratorQueueWaitHigh`、およびオーケストレーターの [サンプルアラートルール](#sample-alert-rules) はすべて、オーケストレーターが停止してから約 10 分以内に発火を停止します。
+* **名前空間**：`claude-runners` をオーケストレーターの名前空間に置き換え、オーケストレーターを実行する追加の名前空間ごとにアラートをコピーします。ターゲットに `namespace` ラベルがない場合は matcher を削除してください。削除しないと、アラートは 5 分後に発火し、そのまま発火し続けます。
+* **オーケストレーターをスクレイプしない Prometheus サーバー**：そのようなサーバーではアラートが 5 分後に発火し、そのまま発火し続けるため、そのルールファイルにはこのアラートを含めないでください
+* **オーケストレーターの他のアラートに頼らない**：これらはオーケストレーター自身が提供するメトリクスを読み取ります。`ClaudeOrchestratorSessionsWaiting`、`ClaudeOrchestratorQueueWaitHigh`、およびオーケストレーターの[サンプルアラートルール](#sample-alert-rules)はすべて、オーケストレーターが停止してから約 10 分以内に発火しなくなります。
 
-### セッション子メトリクスをパススルーする
+### セッション子プロセスのメトリクスのパススルー
 
-各セッションは独自の子プロセスで実行され、独自の OpenTelemetry メトリクスを持ちます。`--capacity` が 1 を超える場合、ランナーはそれらの子メトリクスの公開方法を書き換えます。ランナーホストで `OTEL_METRICS_EXPORTER=prometheus` を設定し、セッションの環境で `CLAUDE_CODE_ENABLE_TELEMETRY=1` を設定します。例えば、[ラッパースクリプト](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts) またはセッションが継承するランナー独自の環境から、各子のカウンターとゲージ計器をランナー独自の `/metrics` エンドポイントで再公開します。ランナーのシリーズと並んで。ランナーは子のエクスポーターを書き換えて、ヘルスポートのループバックのみのレシーバーに OTLP 経由でプッシュし、各シリーズに `session_id` および `client_platform` ラベルでタグ付けし、セッションが終了するとセッションのシリーズを削除します。ヒストグラムはパススルーしません。ランナー独自のプレフィックスと衝突する子メトリクスの名前は削除されます。
+各セッションは独自の子プロセスで実行され、独自の OpenTelemetry メトリクスを持ちます。`--capacity` が 1 を超える場合、ランナーはそれらの子プロセスのメトリクスの公開方法を書き換えます。ランナーホストで `OTEL_METRICS_EXPORTER=prometheus` を設定し、セッションの環境で `CLAUDE_CODE_ENABLE_TELEMETRY=1` を設定すると（たとえば[ラッパースクリプト](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#wrapper-scripts)から、またはセッションが継承するランナー自身の環境で設定）、各子プロセスのカウンターおよびゲージのインストルメントが、ランナーの系列と並んでランナー自身の `/metrics` エンドポイントで再公開されます。ランナーは子プロセスのエクスポーターを書き換えて、ヘルスポート上のループバック専用レシーバーへ OTLP でプッシュさせ、各系列に `session_id` と `client_platform` ラベルを付け、セッションが終了するとそのセッションの系列を削除します。ヒストグラムはパススルーされず、名前がランナー自身のプレフィックスと衝突する子プロセスのメトリクスは破棄されます。
 
-デフォルトの `--capacity 1` では、書き換えは適用されません。セッションの子は通常どおりポート 9464 で独自の Prometheus エンドポイントをバインドします。
+デフォルトの `--capacity 1` では書き換えは適用されません。セッションの子プロセスは通常どおりポート 9464 で独自の Prometheus エンドポイントをバインドします。
 
 #### セッションのメトリクスをランナーのメトリクスと結合する
 
-アイドル状態のセッションにかかったコストを確認するには、ランナーの `claude_code_self_hosted_runner_session_idle_seconds` を Claude Code のコストメトリクスと `ccr_session_id` で結合します。ランナーのメトリクスはこのラベルを持たないため、次のクエリのように `label_replace` でラベルを付与します。
+アイドル状態のセッションにかかったコストを確認するには、ランナーの `claude_code_self_hosted_runner_session_idle_seconds` を Claude Code のコストメトリクスと `ccr_session_id` で結合します。ランナーのメトリクスにはそのラベルがないため、次のクエリのように `label_replace` でラベルを付与します。
 
 ```text theme={null}
 sum by (ccr_session_id) (claude_code_cost_usage_total)
@@ -416,39 +418,39 @@ label_replace(
 )
 ```
 
-このクエリは、10 分を超えてアイドル状態のセッションごとに 1 つの結果を返します。結果は、そのセッションの Claude Code プロセスがこれまでに計上したコスト（米ドル）です。別の Claude Code メトリクスを結合するには、クエリ内の `claude_code_cost_usage_total` を置き換えます。このクエリは任意の `--capacity` で機能します。
+このクエリは、10 分を超えてアイドル状態にあるセッションごとに 1 つの結果を返します。その値は、そのセッションの Claude Code プロセスがこれまでに計上した米ドル建てのコストです。別の Claude Code メトリクスを結合するには、クエリ内の `claude_code_cost_usage_total` を置き換えてください。このクエリはどの `--capacity` でも機能します。
 
-* **`session_id`**：ポート 9464 では、Claude Code メトリクスのこのラベルには Claude Code 独自の [`session.id`](https://code.claude.com/docs/ja/monitoring-usage#standard-attributes) が入っており、どのランナーシリーズとも一致しません。このラベルで結合しても何も返されないため、`ccr_session_id` で結合してください。
+* **`session_id`**：ポート 9464 では、Claude Code メトリクスのこのラベルは Claude Code 自身の [`session.id`](https://code.claude.com/docs/ja/monitoring-usage#standard-attributes) を保持しており、どのランナー系列とも一致しません。これで結合しても何も返らないため、`ccr_session_id` で結合してください。
 * **Claude Code メトリクスに `ccr_session_id` がない場合**：[`OTEL_METRICS_INCLUDE_SESSION_ID`](https://code.claude.com/docs/ja/monitoring-usage#metrics-cardinality-control) が `false` に設定されていないことを確認してください
 
-### セッションライフサイクルカウンターセマンティクス
+### セッションライフサイクルカウンターのセマンティクス
 
-`sessions_started_total`、`sessions_completed_total`、`sessions_failed_total`、`sessions_interrupted_total` カウンターは、各セッションがどのように終了したかで分類します。スポーンされたすべてのセッション子はスポーン時に `sessions_started_total` をインクリメントし、終了時に他の 3 つのうち正確に 1 つをインクリメントします。したがって、`sessions_started_total` から他の 3 つの合計を引いたものは、現在実行中のセッション子の数に等しくなります。
+`sessions_started_total`、`sessions_completed_total`、`sessions_failed_total`、`sessions_interrupted_total` カウンターは、各セッションを終了の仕方によって分類します。起動されたすべてのセッション子プロセスは起動時に `sessions_started_total` をインクリメントし、終了時には他の 3 つのうちちょうど 1 つがインクリメントされます。したがって、`sessions_started_total` から他の 3 つの合計を引いた値は、現在実行中のセッション子プロセスの数に等しくなります。
 
-* `completed`：セッションはクリーンに終了しました。これは子がコード `0` で独自に終了する場合、セッションが子がまだ接続されている間にアーカイブまたは削除される場合、およびランナーがスロットをクリーンハンドオフとしてリリースする場合をカバーします。アイドルタイムアウト、リタイア時間、または `--kill-session-after-min` 制限でのリリース、スタートアップタイムアウト、またはポーリングループが子が終了する前に気付いたサーバー側の割り当て解除。`sessions_completed_total` をインクリメントします。
-* `failed`：子がゼロ以外のコードで独自に終了しました。クラッシュまたはスポーン後のセットアップ失敗のいずれか。`sessions_failed_total` をインクリメントします。
-* `interrupted`：ランナーがセッション成功またはランナー障害のいずれでもない運用上の理由で子を終了しました。たとえばドレインや、`--kill-session-after-min` 制限後の [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) グレースウィンドウが終了した時点でまだランナー上にあったセッションの終了などです。Kubernetes ローリング再起動が `SIGTERM` を送信することは、ドレインの一例です。`sessions_interrupted_total` をインクリメントします。
+* `completed`：セッションが正常に終了しました。これには、子プロセスが自らコード `0` で終了した場合、子プロセスがまだ接続されている間にセッションがアーカイブまたは削除された場合、そしてランナーがスロットを正常に返却した場合が含まれます。正常な返却とは、アイドルタイムアウト、退役時刻、または `--kill-session-after-min` の制限でのセッションの解放、起動タイムアウト、あるいは子プロセスの終了前にポーリングループが検知したサーバー側の割り当て解除です。`sessions_completed_total` をインクリメントします。
+* `failed`：子プロセスが自ら非ゼロのコードで終了しました。クラッシュ、または起動後のセットアップ失敗のいずれかです。`sessions_failed_total` をインクリメントします。
+* `interrupted`：セッションの成功でもランナーの障害でもない運用上の理由で、ランナーが子プロセスを終了させました。たとえば、ドレインや、`--kill-session-after-min` の制限後の [`SELF_HOSTED_RUNNER_MAX_LIFETIME_GRACE_MS`](#environment-variable-only-settings) 猶予期間が終了した時点でまだランナー上にあったセッションの終了などです。`SIGTERM` を送信する Kubernetes のローリング再起動は、ドレインの一例です。`sessions_interrupted_total` をインクリメントします。
 
-v2.1.260 より前では、ランナーは `--kill-session-after-min` 制限に達したすべてのセッションを終了し、`sessions_interrupted_total` でカウントしました。
+v2.1.260 より前は、ランナーは `--kill-session-after-min` の制限に達したすべてのセッションを終了させ、`sessions_interrupted_total` にカウントしていました。
 
-[`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session) の `CLAUDE_RUNNER_EXIT_REASON` はクリーンハンドオフを異なる方法で分類します。フックは、ランナーが子を停止したため、リリース、スタートアップタイムアウト、サーバー割り当て解除、およびポーリングが先に気付いたアーカイブまたは削除を `interrupted` として報告します。これらのカウンターは、スロットがクリーンに返されたため、`completed` として同じイベントを記録します。
+[`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)の `CLAUDE_RUNNER_EXIT_REASON` は、正常な引き渡しを異なる方法で分類します。フックは、ランナーが子プロセスを停止したため、解放、起動タイムアウト、サーバーによる割り当て解除、およびポーリングが先に検知したアーカイブまたは削除を `interrupted` として報告します。一方、これらのカウンターは、スロットが正常に返却されたため、同じイベントを `completed` として記録します。
 
-フック受信を `sessions_completed_total` に対して直接調整する場合、完了をアンダーカウントします。セッションごとの保証にはフックを使用し、集計レートにはカウンターを使用します。
+フックの受信記録を `sessions_completed_total` と直接照合すると、完了数を過少にカウントすることになります。セッションごとの保証にはフックを、集計レートにはカウンターを使用してください。
 
-ワンショット環境では、`--capacity 1` とデフォルト `--drain-grace-sec 0` で、各ランナープロセスは 1 つのセッションが終了した直後に終了します。`sessions_completed_total`、`sessions_failed_total`、`sessions_interrupted_total` はセッション終了時にのみインクリメントされます。その終了の直前に、Prometheus スクレイプが 15 ～ 60 秒ごとの場合、ランナーのシリーズが消える前にインクリメントをキャッチすることはめったにありません。これら 3 つのセッション終了カウンターは、このセクションの残りが参照するターミナルカウンターです。`sessions_started_total` はスポーン時にインクリメントされ、セッションの生存期間中は表示されたままなので、確実に表示されます。ただし、ワンショット環境では、累積カウントよりも「現在実行中のセッション」に近く読み取られます。
+ワンショット環境（`--capacity 1` かつデフォルトの `--drain-grace-sec 0`）では、各ランナープロセスはその 1 つのセッションが終了した直後に終了します。`sessions_completed_total`、`sessions_failed_total`、`sessions_interrupted_total` はセッション終了時、つまりその終了の直前にのみインクリメントされるため、15～60 秒ごとの Prometheus スクレイプでは、ランナーの系列が消える前にインクリメントを捉えられることはほとんどありません。この 3 つのセッション終了時のカウンターが、このセクションの以降で言う終端カウンターです。`sessions_started_total` は起動時にインクリメントされ、セッションの存続期間中は表示され続けるため確実に現れますが、ワンショット環境では累積カウントというよりも「現在実行中のセッション」に近い値になります。
 
-対応する目標の代わりにこのテーブルのシリーズを使用します。
+終端カウンターの代わりに、目的に応じて次の表の系列を使用してください。
 
-| 目標 | 使用 |
+| 目的 | 使用するもの |
 | :- | :- |
-| スループット | `claude_code_self_hosted_orchestrator_spawn_hooks_total{result="ok"}`。成功した `spawn-runner` フック呼び出しごとに 1 回インクリメントされ、`rate()` の下で意味のある長寿命オーケストレーター上のカウンター。フック呼び出しをカウントします。ランナーがスポーンするセッションではなく、プレウォーミングと同じセッション用の繰り返しスポーンはセッションカウントから異なります。 |
-| 利用率 | `sum(claude_code_self_hosted_runner_active_sessions)` 対 `sum(claude_code_self_hosted_runner_capacity)`。ランナーの生存期間に関係なく、すべてのスクレイプで有効なゲージ。 |
-| バックログ | キュー深度の `claude_code_self_hosted_orchestrator_pool_pending_sessions`、および `claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions`。ゼロを超える場合はアラートします。 |
-| 失敗 | `claude_code_self_hosted_runner_sessions_failed_total`。ベストエフォート。スポーン後の実際のクラッシュはインクリメントされ、`rate()` はセッションを超えて生存するランナーで意味があります。`--drain-grace-sec` が `0` を超える場合。ワンショット環境は他のターミナルカウンターと同じスクレイプウィンドウ問題を持つため、表示される非ゼロ値を調査する価値があるものとして扱います。スポーン前の失敗（チェックアウトフック失敗、git 準備、トークン問題など）は `session_init_errors_total` にのみ表示されます。 |
+| スループット | `claude_code_self_hosted_orchestrator_spawn_hooks_total{result="ok"}`。長時間稼働するオーケストレーター上のカウンターで、`spawn-runner` フックが成功するたびに 1 回インクリメントされ、`rate()` の下でも意味を持ち続けます。セッションではなくフック呼び出しをカウントするため、事前ウォーミングや同じセッションに対する繰り返しの起動によってセッション数とずれます。 |
+| 使用率 | `sum(claude_code_self_hosted_runner_active_sessions)` と `sum(claude_code_self_hosted_runner_capacity)` の比較。どちらもランナーの存続期間に関係なく、すべてのスクレイプで有効なゲージです |
+| バックログ | キュー深度には `claude_code_self_hosted_orchestrator_pool_pending_sessions`、そして `claude_code_self_hosted_orchestrator_queue_circuit_broken_sessions`（ゼロを超えた場合にアラート） |
+| 失敗 | `claude_code_self_hosted_runner_sessions_failed_total`（ベストエフォート）。起動後の実際のクラッシュではインクリメントされ、`--drain-grace-sec` が `0` より大きくセッションより長く存続するランナーでは `rate()` が意味を持ちます。ワンショット環境では他の終端カウンターと同じスクレイプウィンドウの問題があるため、非ゼロの値が見られた場合は調査する価値があるものとして扱ってください。チェックアウトフックの失敗、git の準備、トークンの問題など、起動前の失敗は `session_init_errors_total` にのみ現れます。 |
 
-`orchestrator_*` 行は [オンデマンドオーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners) を実行している環境にのみ存在します。セッションを超えて生存するランナーを持つ固定フリートで、`--drain-grace-sec` が `0` を超える場合、スループットに `sum(rate(claude_code_self_hosted_runner_sessions_started_total[5m]))` を使用します。ワンショットフリートではそのシリーズは他のターミナルカウンターと同じスクレイプウィンドウ問題を持つため、キューに入ったセッション数に依存します。バックログを環境の **Activity** タブで確認します。[**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)：ランナーはキュー深度シリーズをエクスポートしません。
+`orchestrator_*` の行は、[オンデマンドオーケストレーター](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#on-demand-runners)を実行している環境にのみ存在します。ランナーがセッションより長く存続する（`--drain-grace-sec` が `0` より大きい）固定フリートでは、スループットに `sum(rate(claude_code_self_hosted_runner_sessions_started_total[5m]))` を使用してください。ワンショットのフリートでは、その系列には終端カウンターと同じスクレイプウィンドウの問題があるため、代わりにキューに入ったセッションの数を頼りにしてください。ランナーはキュー深度の系列をエクスポートしないため、バックログは [**Cloud environments** 管理ページ](https://claude.ai/admin-settings/cloud-environments)にある環境の **Activity** タブで確認してください。
 
-セッションごとの結果報告については、代わりに [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session) を使用してください。VM プリエンプションなどの突然のランナー終了を除き、子プロセスがスポーンされたすべてのセッション終了で発火します。[フック独自の契約](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#post-session) に従って。
+セッションごとの結果レポートには、代わりに [`post-session` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#post-session)を使用してください。[フック自体の規約](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#post-session)のとおり、VM のプリエンプションなどによるランナーの突然の終了を除き、子プロセスが起動されたすべてのセッション終了時に発火します。
 
 ## 次のステップ
 

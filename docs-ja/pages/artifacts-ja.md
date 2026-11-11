@@ -64,7 +64,7 @@ Claude が公開できないと応答した場合、またはリンクなしで�
 | :- | :- |
 | セッションが [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)になっている | 各アーティファクトの最初の公開前に確認する |
 | 公開が、[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)など、ページのランタイム機能を宣言している | その公開の前に確認する |
-| アーティファクトを公開共有している | 変更前に会話ごとに 1 回確認する |
+| アーティファクトを公開共有している | 変更前に会話ごとに 1 回確認し、アーティファクトへのコメントに返信する前にも毎回確認する |
 | 入力したプロンプトではなく、セッション内で実行された[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)によって開始されたターンで Claude が公開する | 各アーティファクトの最初の公開前に確認する |
 | Claude がユーザーの承認なしではファイルを読み取れない | 公開前に確認する。`Artifact` ツールの許可ルールがあっても、このプロンプトはスキップされない |
 | [Manual](https://code.claude.com/docs/ja/permission-modes.md) モードまたは `acceptEdits` モードで、Claude がユーザーの承認なしでは編集できないアーティファクトのファイル（Manual モードでのプロジェクトファイルなど）に小さな変更を加える | 変更を公開する前に確認する。ファイルの編集にはユーザーの承認が必要なため、`Artifact` ツールが許可ルールの対象になっていても確認される |
@@ -89,6 +89,22 @@ Claude にページを修正するよう依頼するか、長時間実行され�
 https://claude.ai/code/artifact/5fbea6f3-... を本日の数値で更新します。
 ```
 
+### ワンステップのアーティファクト更新をオフにする
+
+ワンステップ更新とは、Claude が `Edit` や `Write` の呼び出しを介さずに、公開処理の一部としてアーティファクトのファイルに加える小さな変更です。
+
+ワンステップ更新をオフにするには、[`CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS`](https://code.claude.com/docs/ja/env-vars) を `0` に設定します。次の例では、`~/.claude/settings.json` の `env` ブロックにこの変数を追加しています。
+
+```json theme={null}
+{
+  "env": {
+    "CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS": "0"
+  }
+}
+```
+
+その後、Claude Code を終了して再起動してください。実行中のセッションは変数を再読み込みしないためです。
+
 ## アーティファクトを再度見つける
 
 Claude Code で `/artifacts` を実行すると、所有しているアーティファクトと共有されているアーティファクトが一覧表示されます。現在のセッションのアーティファクトは **This session** の下に最初に表示されます。
@@ -111,6 +127,7 @@ Claude Code は claude.ai アカウントからリストを読み込むため、
 共有できる相手はプランによって異なります。
 
 * **組織内**: Team プランと Enterprise プランでは、組織内の特定のユーザーまたは全員にアクセス権を付与できます。ビューアーは、ページを表示するために claude.ai に組織のメンバーとしてサインインします。
+* **共有フォルダーにアクセスできるユーザー**: Team プランと Enterprise プランでは、自分が所有しているフォルダー、または自分がエディターになっているフォルダーにアーティファクトを移動します。移動は [Artifacts ページ](https://claude.ai/artifacts) から行います。このページは claude.ai のチャットを利用できる場合に使用できます。移動後は、フォルダーにアクセスできるすべてのユーザーがアーティファクトを開けるようになり、フォルダーの所有者とエディターはアーティファクトを変更できます。
 * **公開**: インターネット上の誰でも開くことができるリンクを共有でき、claude.ai へのサインインは不要です。Team プランと Enterprise プランでは、Owner が [組織に対して公開共有を有効にする](#control-public-sharing) まで、公開共有はオフになっています。
 
 ### 特定のビューにリンクする
@@ -178,7 +195,7 @@ Claude Code v2.1.228 以降が必要です。[フィーチャーフラグ取得]
 [権限モード](https://code.claude.com/docs/ja/permission-modes.md)によって、送信されたコメントが到着したときに Claude が何をするかが決まります。
 
 * **Claude が自動で返信する**：権限モードで Claude が確認を求めずに返信を投稿できる場合、Claude はスレッドを読んで返信します。`Auto-replied to comment thread on Artifact: <name>` が表示されます。
-* **Claude があなたを待つ**：プランモード外で、返信の投稿に承認が必要な場合、`Comments are waiting on Artifact: <name>` が表示されます。その後、Claude はスレッドを読む承認を求め、返信を投稿する承認を再度求めます。
+* **Claude がユーザーを待つ**：plan モード外で、返信の投稿に[ユーザーの承認が必要な場合](#when-claude-code-asks-before-publishing)、`Comments are waiting on Artifact: <name>` が表示されます。その後、Claude はスレッドを読む承認を求め、返信を投稿する承認を再度求めます。
 * **Claude がプランモードで一時停止する**：`Comments are waiting on Artifact: <name>` が表示され、Claude はプランモードを終了して読んで返信するよう求めるまで返信しません。
 
 Claude は、1 時間以内にそのアーティファクトで 60 件の送信されたコメントまたはスレッド有効化を処理した後、アーティファクトへの自動返信を停止します。`Comments are waiting on Artifact: <name>` が 1 回表示され、Claude はその時間のコメントが古くなると再開します。

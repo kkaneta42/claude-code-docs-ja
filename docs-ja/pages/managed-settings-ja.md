@@ -52,7 +52,7 @@
 * **配信制御**: [`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper)、[`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings)、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior)
 * **ゲートウェイログインキー**: [`forceLoginGatewayUrl`](https://code.claude.com/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](https://code.claude.com/docs/ja/settings-reference#gatewayinternalnetworks)、[`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値
 
-管理設定ファイル、MDM プロファイル、claude.ai コンソールは、それが届くすべてのユーザーに 1 つのポリシーを適用します。特定の開発者グループに異なるポリシーを適用するには、そのグループに別のファイルまたはプロファイルをデプロイします。claude.ai コンソールは[まだグループを対象にできません](https://code.claude.com/docs/ja/server-managed-settings.md#current-limitations)が、セルフホストの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) は IdP グループごとに管理設定を配信します。
+管理設定ファイルや MDM プロファイルでは、それが届くすべてのユーザーに 1 つのポリシーが適用されます。特定の開発者グループに異なるポリシーを適用するには、そのグループに別のファイルまたはプロファイルをデプロイします。Enterprise プランでは、サーバー管理設定で[グループごとに独自の設定を指定する](https://code.claude.com/docs/ja/server-managed-settings.md#give-groups-different-settings)こともできます。セルフホストの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) は IdP グループごとに管理設定を配信します。
 
 複数のメカニズムが同じマシンにポリシーを配信する場合、Claude Code はデフォルトで 1 つを使用し、他は無視します。[Claude Code が管理ソースを組み合わせる方法](#how-claude-code-combines-managed-sources)では、その順序と、すべてのソースを適用するオプトインについて説明しています。
 

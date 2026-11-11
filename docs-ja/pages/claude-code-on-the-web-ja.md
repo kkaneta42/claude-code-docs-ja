@@ -36,7 +36,7 @@
 
 すべてのクラウドセッションは[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)で実行されます。これはネットワークアクセス、環境変数、セットアップスクリプトを制御する保存された設定です。
 
-* **最初の環境**: 環境がまだない場合、オンボーディングは[**Trusted** ネットワークアクセス](https://code.claude.com/docs/ja/cloud-environments.md#access-levels)を持つ **Default** 環境をセットアップします。自動的に作成されるか、作成するよう求められるかのいずれかです。プランごとにどちらになるかについては、[Default 環境](https://code.claude.com/docs/ja/cloud-environments.md#the-default-environment)を参照してください
+* **最初の環境**: 環境がまだない場合、オンボーディングは[**Limited** ネットワークアクセス](https://code.claude.com/docs/ja/cloud-environments.md#access-levels)を持つ **Default** 環境をセットアップします。ご利用のプランでの動作については、[Default 環境](https://code.claude.com/docs/ja/cloud-environments.md#the-default-environment)を参照してください
 * **セッションが使用する環境**: 複数の環境がある場合にセッションが環境を選択する方法については、[Default 環境](https://code.claude.com/docs/ja/cloud-environments.md#the-default-environment)を参照してください
 * **セッションがアクセスできる対象や起動時に実行する内容を変更する**: [クラウド環境を設定する](https://code.claude.com/docs/ja/cloud-environments.md)を参照してください
 * **設定なしでインストールされているもの**: [インストール済みツール](https://code.claude.com/docs/ja/cloud-environments.md#installed-tools)を参照してください
@@ -205,7 +205,7 @@ View: https://claude.ai/code/session_01DiUkqY2kzbUbDmW1w96rfi?from=cli&m=0
 * **`/teleport` を使用する**: 既存の CLI セッション内で `/teleport` または `/tp` を実行すると、Claude Code を再起動せずに同じセッション選択画面を開けます。
 * **`/tasks` から**: `/tasks` を実行してバックグラウンドセッションを表示し、`t` を押してセッションに teleport します。
 * **claude.ai/code から**: セッションメニューから **Open in > Terminal** を選択すると、ターミナルに貼り付けられるコマンドがコピーされます。
-* **クラウドセッション内から**: `/teleport` と入力すると、Claude Code がそのセッション用の正確な `claude --teleport <session-id>` コマンドを返します。このコマンドはリポジトリのチェックアウトからすぐに実行できます。セッションの環境に Claude Code v2.1.223 以降が必要です。
+* **クラウドセッション内から**: `/teleport` と入力すると、Claude Code がそのセッション用の正確な `claude --teleport <session-id>` コマンドを返します。このコマンドはリポジトリのチェックアウトからすぐに実行できます。
 
 セッションを teleport すると、Claude は正しいリポジトリにいることを確認し、クラウドセッションのブランチをフェッチしてチェックアウトし、会話をターミナルに読み込みます。
 
@@ -499,9 +499,6 @@ v2.1.274 から v2.1.289 までは、サインインメッセージは `Claude C
 * **リポジトリ認証**: クラウドセッションをターミナルに取り込むことができるのは、同じアカウントで認証されている場合のみです。
 * **プラットフォーム制限**: Anthropic ホスト環境でのリポジトリのクローンとプルリクエストの作成には GitHub が必要です。自己ホスト型の [GitHub Enterprise Server](https://code.claude.com/docs/ja/github-enterprise-server.md) インスタンスは Team および Enterprise プランでサポートされています。GitLab、Bitbucket、またはその他の非 GitHub リポジトリをクラウドセッションに [ローカルバンドル](#send-local-repositories-without-github) として送信できます。これは `CCR_FORCE_BUNDLE=1` を設定することで実現できますが、セッションはその結果をリモートにプッシュバックできません。
   * **自己ホスト環境**: 他の git ホスト上のリポジトリについては、[`--environment` でセッションを開始するための要件](https://code.claude.com/docs/ja/self-hosted-environments-deploy#start-a-session-on-a-repository-outside-github) を参照してください。
-* **組織 IP 許可リスト**: クラウドセッションは、ユーザーのネットワークではなく Anthropic 管理のインフラストラクチャから Anthropic API を呼び出します。一方、[自己ホスト環境](https://code.claude.com/docs/ja/self-hosted-environments) のセッションは自身のネットワークから呼び出します。組織で [IP 許可リスト](https://support.claude.com/en/articles/13200993-restrict-access-to-claude-with-ip-allowlisting) が有効になっている場合、Anthropic ホスト型のすべてのクラウドセッションは認証エラーで失敗します。
-  * **Code Review とスケジュールタスク**: 同じことが [Code Review](https://code.claude.com/docs/ja/code-review.md) と、Anthropic ホスト環境で実行される [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) にも当てはまります。自己ホスト環境にルーティングされたスケジュールタスクは、自身のネットワークから API を呼び出します。
-  * **除外の取得**: Anthropic ホスト型サービスを組織の IP 許可リストから除外するには、[Anthropic サポート](https://support.claude.com/) にお問い合わせください。
 
 ## 関連リソース
 

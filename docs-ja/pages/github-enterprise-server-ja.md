@@ -190,7 +190,7 @@ Claude Code はこれらのマーケットプレイスをローカルにイン�
 いくつかの機能は GHES では github.com と異なる動作をします。[機能表](#what-works-with-github-enterprise-server) はサポートをまとめています。このセクションでは回避策について説明します。
 
 * **`/install-github-app` コマンド**：claude.ai で [管理者セットアップ](#admin-setup) フローに従ってください。GHES で GitHub Actions ワークフローも必要な場合は、[サンプルワークフロー](https://github.com/anthropics/claude-code-action/blob/main/examples/claude.yml) を手動で適応させてください。
-* **GitHub MCP サーバー**：代わりに GHES ホスト用に設定された `gh` CLI を使用してください。`gh auth login --hostname github.example.com` を実行して認証し、Claude はセッションで `gh` コマンドを使用できます。
+* **GitHub MCP サーバー**：自分のマシン上のセッションでは、代わりに GHES ホスト用に設定された `gh` CLI を使用してください。`gh auth login --hostname github.example.com` を実行して認証すると、Claude はそこで `gh` コマンドを使用できます。
 
 ## トラブルシューティング
 

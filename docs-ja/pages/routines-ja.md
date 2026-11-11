@@ -111,7 +111,7 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 * **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)ため、Anthropic がホストする環境では、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](https://code.claude.com/docs/ja/cloud-environments.md#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています
 * **Setup script**: タスクが必要とする依存関係とツールをインストールします。結果は[キャッシュ](https://code.claude.com/docs/ja/cloud-environments.md#environment-caching)されるため、スクリプトはセッションごとに再実行されません
 
-**Default** 環境は **Trusted** ネットワークアクセスで提供されます。これにより、パッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、一般的な開発ドメインからなる[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)のみがセッションのネットワークを通じて許可されます。タスクに追加するコネクタは Anthropic のサーバーを通じてサービスにアクセスするため、許可リストを変更する必要はありません。
+**Default** 環境は、**Limited** ネットワークアクセスで **Allow package managers** がオンの状態で提供されます。その実行は、パッケージレジストリ、クラウドプロバイダー API、コンテナレジストリ、一般的な開発ドメインからなる[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)にアクセスできます。タスクに追加するコネクタは Anthropic のサーバーを通じてサービスにアクセスするため、許可リストを変更する必要はありません。
 
 タスクが独自のサービスや、そのリストにないドメインに直接アクセスする必要がある場合は、実行前に環境の[ネットワークアクセス](https://code.claude.com/docs/ja/cloud-environments.md#network-access)を編集してください。別の環境を使用するには、先に[環境を作成](https://code.claude.com/docs/ja/cloud-environments.md#configure-your-environment)してください。
 
@@ -431,7 +431,7 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 各スケジュールタスクは、ネットワークアクセス、環境変数、セットアップスクリプトを制御する[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)を使用します。タスクは、すべての実行でその環境のネットワークポリシーを継承します。
 
-**Default** 環境は **Trusted** ネットワークアクセスを使用します。これにより、セッションのネットワークを通じて[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)のみが許可されます。そのパス上で許可リスト外のホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタのトラフィックはそのパスではなく Anthropic のサーバーを通じてルーティングされるため、タスクに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。不要なコネクタは[コネクタ](#connectors)で削除してください。
+**Default** 環境は、**Allow package managers** がチェックされた **Limited** アクセスを使用するため、その実行は[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)にアクセスできます。ブロックされたホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタのトラフィックは Anthropic のサーバーを通じてルーティングされるため、タスクに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。不要なコネクタは[コネクタ](#connectors)で削除してください。
 
 独自の環境のいずれかで追加のドメインを許可するには、以下の手順に従います。[組織共有環境](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments)はここでは読み取り専用で開くため、その場合は Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページからネットワークアクセスを変更します。
 
@@ -447,9 +447,9 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 リスト内の環境にマウスを置き、右側に表示される設定アイコンをクリックします。
 
-**4. ネットワークアクセスレベルを変更する**
+**4. ドメインを追加する**
 
-**Edit cloud environment** ダイアログで、**Network access** を **Custom** に変更し、**Allowed domains** にドメインを入力します。**Also include default list of common package managers** をチェックすると、カスタムドメインとともに[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)も維持されます。制限のないアクセスにするには、代わりに **Full** を選択します。
+**Edit cloud environment** ダイアログで、**Network access** の下にある **Limited** を選択し、**Allowed domains** にドメインを入力します。**Allow package managers** をチェックすると、独自のドメインとともに[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)も許可されます。制限のないアクセスにするには、代わりに **Full** を選択します。
 
 **5. 保存**
 
@@ -528,6 +528,6 @@ CLI は `/schedule` の要件の 1 つが満たされていない場合、この
 * [`/loop` とセッション内スケジューリング](https://code.claude.com/docs/ja/scheduled-tasks): 開いている CLI セッション内でローカルタスクをスケジュール
 * [Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md): マシン上で実行され、ローカルファイルにアクセスできるローカルのスケジュールタスク
 * [クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md): クラウドセッションのネットワークアクセス、環境変数、セットアップスクリプトを設定
-* [Projects](https://code.claude.com/docs/ja/claude-projects.md): Claude が複数のクラウドセッションにわたって並行して調整する継続的な作業。プロジェクトから作成されたスケジュールタスクは、その **Scheduled tasks** タブに表示されます
+* [Projects](https://code.claude.com/docs/ja/claude-projects.md): Claude が複数のクラウドセッションにわたって並行して調整する継続的な作業。プロジェクトから作成されたスケジュールタスクは、その **Scheduled tasks** ビューに表示されます
 * [MCP コネクタ](https://code.claude.com/docs/ja/mcp.md): Slack、Linear、Google Drive などの外部サービスを接続
 * [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md): リポジトリイベントに応じて CI パイプラインで Claude を実行

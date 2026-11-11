@@ -17,6 +17,329 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-11-11</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md                    |   2 +-
+ docs-ja/pages/advisor-ja.md                        |   9 +-
+ docs-ja/pages/agent-view-ja.md                     |   4 +-
+ docs-ja/pages/amazon-bedrock-ja.md                 |   4 +-
+ docs-ja/pages/artifacts-ja.md                      |  21 +-
+ docs-ja/pages/auto-mode-classifier-billing-ja.md   |   2 +-
+ docs-ja/pages/auto-mode-config-ja.md               |   8 +-
+ docs-ja/pages/channels-reference-ja.md             |   2 +-
+ docs-ja/pages/claude-apps-gateway-config-ja.md     |   8 +-
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md     |   4 +-
+ docs-ja/pages/claude-apps-gateway-ja.md            | 224 ++---
+ .../pages/claude-apps-gateway-spend-limits-ja.md   |   2 +-
+ docs-ja/pages/claude-code-on-the-web-ja.md         |   7 +-
+ docs-ja/pages/claude-directory-ja.md               |   9 +-
+ docs-ja/pages/claude-platform-on-aws-ja.md         |   4 +-
+ docs-ja/pages/claude-projects-ja.md                |  50 +-
+ docs-ja/pages/claude-security-ja.md                |   8 +-
+ docs-ja/pages/cloud-environments-ja.md             |  32 +-
+ docs-ja/pages/code-review-local-ja.md              |   4 +-
+ docs-ja/pages/commands-ja.md                       |   4 +-
+ docs-ja/pages/costs-ja.md                          |  12 +-
+ docs-ja/pages/desktop-ios-simulator-ja.md          |   4 +-
+ docs-ja/pages/desktop-ja.md                        |   4 +-
+ docs-ja/pages/env-vars-ja.md                       |  19 +-
+ docs-ja/pages/errors-ja.md                         | 897 ++++++++++++---------
+ docs-ja/pages/fast-mode-ja.md                      |  58 +-
+ docs-ja/pages/feature-availability-ja.md           |  13 +-
+ docs-ja/pages/gateways-ja.md                       |   2 +-
+ docs-ja/pages/github-enterprise-server-ja.md       |   2 +-
+ docs-ja/pages/goal-ja.md                           |   3 +-
+ docs-ja/pages/google-vertex-ai-ja.md               |   4 +-
+ docs-ja/pages/hooks-ja.md                          |  32 +-
+ docs-ja/pages/interactive-mode-ja.md               |   4 +-
+ docs-ja/pages/keybindings-ja.md                    | 372 ++++-----
+ docs-ja/pages/large-codebases-ja.md                |   2 +-
+ docs-ja/pages/llm-gateway-connect-ja.md            |   4 +-
+ docs-ja/pages/llm-gateway-ja.md                    |   2 +-
+ docs-ja/pages/llm-gateway-protocol-ja.md           |   6 +-
+ docs-ja/pages/llm-gateway-rollout-ja.md            |   2 +-
+ docs-ja/pages/managed-mcp-ja.md                    |   2 +-
+ docs-ja/pages/managed-settings-ja.md               |   2 +-
+ docs-ja/pages/mcp-ja.md                            | 524 ++++++------
+ docs-ja/pages/memory-ja.md                         |   2 +-
+ docs-ja/pages/model-config-ja.md                   |   4 +-
+ docs-ja/pages/monitoring-usage-ja.md               | 721 +++++++++--------
+ docs-ja/pages/permission-modes-ja.md               |   8 +-
+ docs-ja/pages/permissions-ja.md                    |   2 +
+ docs-ja/pages/prompt-caching-ja.md                 |   2 +-
+ docs-ja/pages/quickstart-ja.md                     |  12 +-
+ docs-ja/pages/remote-control-ja.md                 |  19 +-
+ docs-ja/pages/routines-ja.md                       |  10 +-
+ docs-ja/pages/sandbox-environments-ja.md           |   5 +-
+ docs-ja/pages/sandboxing-ja.md                     |   2 +-
+ docs-ja/pages/scheduled-tasks-ja.md                |   6 +-
+ docs-ja/pages/security-guidance-ja.md              |   6 +-
+ .../self-hosted-environments-configuration-ja.md   |   4 +-
+ .../pages/self-hosted-environments-deploy-ja.md    |   8 +-
+ .../pages/self-hosted-environments-reference-ja.md | 224 ++---
+ .../pages/self-hosted-environments-testing-ja.md   |   2 +-
+ docs-ja/pages/server-managed-settings-ja.md        |  51 +-
+ docs-ja/pages/settings-example-ja.md               |  55 +-
+ docs-ja/pages/settings-ja.md                       |   4 +-
+ docs-ja/pages/terminal-config-ja.md                |  24 +-
+ docs-ja/pages/troubleshoot-install-ja.md           |  20 +-
+ docs-ja/pages/web-quickstart-ja.md                 |   8 +-
+ docs-ja/pages/workflows-ja.md                      |  14 +-
+ docs-ja/pages/zero-data-retention-ja.md            |   6 +-
+ 67 files changed, 1952 insertions(+), 1645 deletions(-)
+```
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 591a80b..1571287 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -97,5 +97,5 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド
+ | [MCP サーバーの制御](https://code.claude.com/docs/ja/managed-mcp.md) | ユーザーが追加または接続できる MCP サーバーを制限したり、固定のセットをデプロイしたり、各ユーザー自身のサーバーに加えてリモートサーバーを全ユーザーに提供したりします | `allowedMcpServers`、`deniedMcpServers`、`allowManagedMcpServersOnly`、`managedMcpServers`、またはデプロイされた `managed-mcp.json` ファイル |
+ | [プラグインマーケットプレイスの制御](https://code.claude.com/docs/ja/plugins/org.md#restrict-what-users-can-install) | ユーザーが追加およびインストールできるマーケットプレイスソースを制限し、単一の実行のためにプラグイン、エージェント、MCP サーバーをサイドロードする CLI フラグを拒否します。[`command` プラグインソース](https://code.claude.com/docs/ja/plugins/marketplace-reference#command-plugin-source)をブロックし、ターミナルでどのマーケットプレイスのプラグインを提案できるかを許可リストで指定します | `strictKnownMarketplaces`、`blockedMarketplaces`、`disableSideloadFlags`、`disableCommandPluginSources`、`pluginSuggestionMarketplaces` |
+-| [カスタマイズのロックダウン](https://code.claude.com/docs/ja/settings-reference.md#strictpluginonlycustomization) | ユーザーおよびプロジェクトのソースからのスキル、エージェント、フック、MCP サーバーをブロックし、プラグインまたは管理設定からのみ提供されるようにします。スキルをロックすると、[開発者が claude.ai で有効にしたスキル](https://code.claude.com/docs/ja/skills.md#where-synced-skills-load)の同期も停止します | `strictPluginOnlyCustomization` |
++| [カスタマイズのロックダウン](https://code.claude.com/docs/ja/settings-reference.md#strictpluginonlycustomization) | ユーザーおよびプロジェクトのソースからのスキル、エージェント、フック、MCP サーバーをブロックします。スキルをロックすると、[開発者が claude.ai で有効にしたスキル](https://code.claude.com/docs/ja/skills.md#where-synced-skills-load)の同期も停止します | `strictPluginOnlyCustomization` |
+ | [claude.ai 同期の無効化](https://code.claude.com/docs/ja/settings-reference.md#syncclaudeaiskills) | 開発者が claude.ai で有効にした[スキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)と[プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)を Claude Code が読み込まないようにします。claude.ai で組織の Skills をオフにすると、Claude Code は両方の同期を停止し、v2.1.273 以降では同期済みのものも削除します。Skills をオフにせずにいずれかを停止するには、管理設定でそのキーを `false` に設定します | `syncClaudeAiSkills`、`syncClaudeAiPlugins` |
+ | [フックの制限](https://code.claude.com/docs/ja/settings-reference.md#allowmanagedhooksonly) | 実行するフックと HTTP フックの URL を制限します。影響の全一覧は [`allowManagedHooksOnly` で実行されるもの](https://code.claude.com/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)を参照してください | `allowManagedHooksOnly`、`allowedHttpHookUrls` |
+```
+
+</details>
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 40d9f33..c44ff56 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -9,5 +9,5 @@
+ > [!NOTE]
+ >
+-> advisor ツールは実験的機能であり、Anthropic API が必要です。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
++> advisor ツールは実験的機能であり、Anthropic API または [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) が必要です。Claude Platform on AWS では、Claude Code v2.1.300 以降が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
+ 
+ advisor ツールを使用すると、Claude はタスク中の重要な瞬間（アプローチをコミットする前、繰り返し発生するエラーで行き詰まった場合、またはタスク完了を宣言する前など）に、通常はより強力な 2 番目のモデルに相談できます。advisor は、すべてのツール呼び出しと結果を含む完全な会話を受け取り、Claude が続行する前に適用するガイダンスを返します。
+@@ -175,9 +175,8 @@ advisor モデル自体の会話の読み取りはキャッシュされません
+ ## 要件
+ 
+-advisor ツールには、以下のすべてが必要です。
+-
+-* **Anthropic API のみ**：advisor はサーバー実行ツールです。Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません。[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を通じて `ANTHROPIC_BASE_URL` で構成されている場合、利用可能性はゲートウェイがリクエストを Anthropic API に完全に転送するかどうかに依存します。ゲートウェイまたはそのアップストリームが advisor ツールを認識しない場合は、[自動リトライとエラー転送](https://code.claude.com/docs/ja/llm-gateway-protocol.md#automatic-retry-and-error-forwarding)を参照して、Claude Code がどのように応答するかを確認してください。
++* **プロバイダー**：Anthropic API または [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Claude Platform on AWS では、advisor を使用するには Claude Code v2.1.300 以降が必要です。
++* **LLM ゲートウェイ**：`ANTHROPIC_BASE_URL` で構成された [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を経由する場合、利用可能性はゲートウェイがリクエストを Anthropic API にそのまま転送するかどうかに依存します。ゲートウェイまたはそのアップストリームが advisor ツールを認識しない場合に Claude Code がどのように応答するかについては、[自動再試行とエラー転送](https://code.claude.com/docs/ja/llm-gateway-protocol.md#automatic-retry-and-error-forwarding)を参照してください。
+ * **サポートされているメインモデル**：Fable、Opus 4.6 以降、Sonnet 4.6 以降、Haiku 4.5、または Haiku 5.5。各メインモデルがどの advisor を受け入れるかについては、[advisor モデルを選択する](#choose-an-advisor-model)を参照してください。
+-* **フィーチャーフラグ取得**：Claude Code は Anthropic から取得するフィーチャーフラグを通じて advisor をオンにします。`DISABLE_TELEMETRY` など、フラグ取得をオフにする変数が設定されているセッションでは、advisor はオフのままです。[フィーチャーフラグ取得が必要な機能](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)を参照してください。
++* **フィーチャーフラグ取得**：Claude Platform on AWS を使用している場合を除き、advisor には Anthropic から取得するフィーチャーフラグが必要です。`DISABLE_TELEMETRY` など、取得をオフにする変数が設定されているセッションには、そのフラグがありません。セッションを確認するには、[取得をスキップするセッション、またはフラグなしで開始するセッション](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)を参照してください。
+ 
+ ## advisor をオフにする
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index eb7640f..d980ea1 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -170,5 +170,7 @@ Completed
+ リストが [ディレクトリでグループ化](#organize-the-list) されている場合、概要はセッションの状態を示す色付きの単語で始まります。例えば `Needs input · double jump or wall climb?` のようになります。デフォルトの状態グループ化では、グループヘッダーがすでに状態を示しているため、行は概要のみを表示します。
+ 
+-ターン終了時の概要と各ターン途中の書き直しは、通常のプロバイダーを通じた 1 回の短い Haiku クラスリクエストであり、セッション自体と同じ [データ使用条件](https://code.claude.com/docs/ja/data-usage.md) の下で課金および処理されます。モデルによる書き直しの間の 15 秒ごとの更新はセッション自身の出力を再利用し、リクエストを送信しません。Haiku クラスモデルが設定されていないサードパーティプロバイダーまたはゲートウェイでは、リクエストは代わりにセッションのメインモデルを使用します。モデルを選択するには [`ANTHROPIC_DEFAULT_HAIKU_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) を設定します。
++#### 行の概要のコスト
++
++ターン終了時の概要と各ターン途中の書き直しは、通常のプロバイダーを通じた 1 回の短いリクエストであり、セッション自体と同じ [データ使用条件](https://code.claude.com/docs/ja/data-usage.md) の下で課金および処理されます。サードパーティプロバイダーまたはゲートウェイでは、概要は [`ANTHROPIC_DEFAULT_HAIKU_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) で設定したモデルを使用します。これが設定されていない場合は、プロバイダーのバックグラウンドタスク用モデルを使用します。[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md#4-pin-model-versions)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md#5-pin-model-versions)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md#4-pin-model-versions)、または [ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway-protocol.md#requests-and-defaults-by-connection-method) を参照してください。
+ 
+ ### プルリクエストステータス
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 3a3ffc8..483d241 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -368,5 +368,5 @@ Amazon Bedrock の [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIRe
+ | その他すべてのリージョン | `global.` |
+ 
+-`ANTHROPIC_BEDROCK_REGION_PREFIX` を設定して、Claude Code が最初に試すプレフィックスを選択します。Claude Code がプロファイルの可用性を確認でき、モデルに一致するプロファイルが見つからない場合、以下の解決順序に従ってフォールバックします。有効な値は `us`、`eu`、`apac`、`jp`、`au`、および `global` です。たとえば、アカウントに `global.` プロファイルが有効になっているが、Claude Code が AWS リージョンから地理的に固有のプロファイルを導出する場合は、`global` に設定します。Claude Code v2.1.224 以降が必要です。
++`ANTHROPIC_BEDROCK_REGION_PREFIX` を設定して、Claude Code が最初に試すプレフィックスを選択します。有効な値は `us`、`eu`、`apac`、`jp`、`au`、および `global` です。たとえば、アカウントに `global.` プロファイルが有効になっているが、Claude Code が AWS リージョンから地理的に固有のプロファイルを導出する場合は、`global` に設定します。
+ 
+ この例は、デフォルトモデルを `global.` プロファイルを通じてルーティングします。
+@@ -387,5 +387,5 @@ export ANTHROPIC_BEDROCK_REGION_PREFIX=global
+ * プロファイル検出が利用できない場合、Claude Code は可用性を確認せずにプレフィックスを適用します。アカウントにそのプレフィックスを持つ推論プロファイルが有効になっていない場合、リクエストは 400 エラーで失敗します。
+ 
+-Claude Code は、自分で設定した Amazon Bedrock 推論プロファイル ID または ARN、または [`modelOverrides`](#map-each-model-version-to-an-inference-profile) 値を書き直しません。Anthropic 形式のモデル ID は [/model ピッカーと同じマッピング](#map-each-model-version-to-an-inference-profile) を通じて解決されます。Claude Code は 2 つのケースで変数を無視します。
++Claude Code は、自分で設定した Amazon Bedrock 推論プロファイル ID または ARN、または [`modelOverrides`](#map-each-model-version-to-an-inference-profile) 値を書き直しません。Anthropic 形式のモデル ID は [`/model` ピッカーと同じマッピング](#map-each-model-version-to-an-inference-profile) を通じて解決されます。Claude Code は次の 2 つのケースでも変数を無視します。
+ 
+ * AWS GovCloud リージョンでは、Claude Code は常に `us-gov.` を使用します。これは GovCloud パーティション内でルーティングする唯一のプレフィックスです。
+```
+
+</details>
+
+<details>
+<summary>artifacts-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
+index 99f86d2..c8344e1 100644
+--- a/docs-ja/pages/artifacts-ja.md
++++ b/docs-ja/pages/artifacts-ja.md
+@@ -65,5 +65,5 @@ Claude が公開できないと応答した場合、またはリンクなしで
+ | セッションが [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)になっている | 各アーティファクトの最初の公開前に確認する |
+ | 公開が、[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)など、ページのランタイム機能を宣言している | その公開の前に確認する |
+-| アーティファクトを公開共有している | 変更前に会話ごとに 1 回確認する |
++| アーティファクトを公開共有している | 変更前に会話ごとに 1 回確認し、アーティファクトへのコメントに返信する前にも毎回確認する |
+ | 入力したプロンプトではなく、セッション内で実行された[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)によって開始されたターンで Claude が公開する | 各アーティファクトの最初の公開前に確認する |
+ | Claude がユーザーの承認なしではファイルを読み取れない | 公開前に確認する。`Artifact` ツールの許可ルールがあっても、このプロンプトはスキップされない |
+@@ -90,4 +90,20 @@ https://claude.ai/code/artifact/5fbea6f3-... を本日の数値で更新しま
+ ```
+ 
++### ワンステップのアーティファクト更新をオフにする
++
++ワンステップ更新とは、Claude が `Edit` や `Write` の呼び出しを介さずに、公開処理の一部としてアーティファクトのファイルに加える小さな変更です。
++
++ワンステップ更新をオフにするには、[`CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS`](https://code.claude.com/docs/ja/env-vars) を `0` に設定します。次の例では、`~/.claude/settings.json` の `env` ブロックにこの変数を追加しています。
++
++```json theme={null}
++{
++  "env": {
++    "CLAUDE_CODE_ARTIFACT_PUBLISH_EDITS": "0"
++  }
++}
++```
++
++その後、Claude Code を終了して再起動してください。実行中のセッションは変数を再読み込みしないためです。
++
+```
+
+</details>
+
+<details>
+<summary>auto-mode-classifier-billing-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/auto-mode-classifier-billing-ja.md b/docs-ja/pages/auto-mode-classifier-billing-ja.md
+index 7b230e0..9cf94c6 100644
+--- a/docs-ja/pages/auto-mode-classifier-billing-ja.md
++++ b/docs-ja/pages/auto-mode-classifier-billing-ja.md
+@@ -35,5 +35,5 @@ We're changing auto mode to no longer charge for classifier requests in Claude C
+ * **レスポンス**: ゲートウェイは、フィールドをドロップしたり tool-use ID を書き換えたりせずに、レスポンスとストリーミングイベントを返します。チェックの結果を通すために、`safeguard_results` フィールドを保持します。
+ 
+-このようにトラフィックを通すゲートウェイは、この機能と将来の機能で動作し続けます。その後、新しいセッションはサーバーのチェックを再度使用します。
++ゲートウェイがこのように動作するようになると、新しいセッションはサーバーのチェックを再度使用します。
+ 
+ ゲートウェイがサーバーのチェックを提供できないことが既にわかっている場合、セッションを開始する前に、シェルまたは [`env` 設定キー](https://code.claude.com/docs/ja/settings-reference#env)で `CLAUDE_CODE_AUTO_MODE_SERVER` を `0` に設定して、Claude Code にそこでチェックを要求しないよう指示してください。
+```
+
+</details>
+
+<details>
+<summary>auto-mode-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
+index 64c9a47..4285381 100644
+--- a/docs-ja/pages/auto-mode-config-ja.md
++++ b/docs-ja/pages/auto-mode-config-ja.md
+@@ -181,5 +181,5 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間
+ Claude Code はバックグラウンドでスキャンを行い、その後草案を表示します。草案は全体として承認または破棄するため、個々のエントリを調整するには後で `~/.claude/settings.json` を編集してください。承認すると、Claude Code は草案を書き込み、既存の設定と整合させます。
+ 
+-* Claude Code は `environment` リストを `"$defaults"` なしで書き込みます。草案には、変更されなかった組み込みエントリが明記されているためです
++* `~/.claude/settings.json` の `environment` リストへの追加を選んだ場合、リスト内の `"$defaults"` エントリは保持されます。そのリストの置き換えを選んだ場合はそのエントリが失われるため、デフォルトのエントリが必要な場合は `"$defaults"` を追加し直してください
+ * Claude Code は、草案がエントリを追加する `allow`、`soft_deny`、`hard_deny` の各リストに `"$defaults"` を含めます（ただし、`"$defaults"` を含まない `allow` リストをすでに書いている場合を除きます）。これにより、置き換えていない[組み込みルール](#override-the-block-and-allow-rules)が引き続き有効になります
+ * 保存後、Claude Code は `~/.claude/settings.json` 内の `permissions.allow` ルールのうち、`Bash(*)` のように auto モードが無視するもの、または破壊的なコマンドを自動承認するものを削除するよう提案します
+@@ -217,5 +217,5 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
+ 3 つの追加フィールドを使用すると、分類器の組み込みルールリストを置き換えることができます。
+ 
+-* `autoMode.hard_deny`：無条件のセキュリティ境界
++* `autoMode.hard_deny`：ユーザーが求めた場合でもブロックするアクション
+ * `autoMode.soft_deny`：ユーザーの意図でクリアできる破壊的なアクション
+ * `autoMode.allow`：ソフトブロックルールの例外
+@@ -232,5 +232,5 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
+ 一般的なリクエストは明示的な意図としてカウントされません。Claude に「リポジトリをクリーンアップする」ように依頼することは force push を認可しませんが、「このブランチを force push する」ように依頼することは認可します。
+ 
+-緩和するには、分類器がデフォルトの例外がカバーしていないルーチンパターンを繰り返しフラグする場合、`allow` に追加します。厳しくするには、環境に固有で、デフォルトが見落としているリスクについて `soft_deny` に追加するか、絶対に越えてはいけないセキュリティ境界について `hard_deny` に追加します。
++緩和するには、分類器がデフォルトの例外がカバーしていない日常的なパターンを繰り返し警告する場合、`allow` に追加します。厳しくするには、環境に固有でデフォルトが見落としている破壊的なリスクについて `soft_deny` に追加するか、ユーザーが求めた場合でもブロックするアクションについて `hard_deny` に追加します。
+ 
+ 組み込みルールを保持しながら独自のルールを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトルールはその位置に挿入されるため、カスタムルールはそれらの前後に配置でき、リリース全体でビルトインリストが変更されるにつれて更新を継続して継承します。
+@@ -253,5 +253,5 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
+       "$defaults",
+       "Never run database migrations outside the migrations CLI, even against dev databases",
+-      "Never modify files under infra/terraform/prod/: production infrastructure changes go through the review workflow"
++      "Running terraform apply in infra/terraform/prod/ needs an explicit request: production infrastructure changes go through the review workflow"
+```
+
+</details>
+
+<details>
+<summary>channels-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
+index 1a7f3cd..ef92105 100644
+--- a/docs-ja/pages/channels-reference-ja.md
++++ b/docs-ja/pages/channels-reference-ja.md
+@@ -323,5 +323,5 @@ instructions: 'Messages arrive as <channel source="webhook" chat_id="...">. Repl
+ 以下は、双方向サポート付きの完全な `webhook.ts` です。アウトバウンド返信は [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)（SSE）を使用して `GET /events` でストリーミングされるため、`curl -N localhost:8788/events` はそれらをライブで見ることができます。インバウンドチャットは `POST /` に到着します：
+ 
+-```ts title="返信ツール付きの完全な webhook.ts' expandable theme={null}
++```ts title="返信ツール付きの完全な webhook.ts" expandable theme={null}
+ #!/usr/bin/env bun
+ import { Server } from '@modelcontextprotocol/sdk/server/index.js'
+```
+
+</details>
+
+<details>
+<summary>claude-apps-gateway-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/claude-apps-gateway-config-ja.md b/docs-ja/pages/claude-apps-gateway-config-ja.md
+index d30d7cd..681492b 100644
+--- a/docs-ja/pages/claude-apps-gateway-config-ja.md
++++ b/docs-ja/pages/claude-apps-gateway-config-ja.md
+@@ -58,5 +58,9 @@ Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` と
+ | `public_url` | `host` がループバックでない場合 | 外部から見える `https://` オリジンで、IdP の `redirect_uri` とディスカバリメタデータの構築に使用されます。`host` がループバックアドレスでない場合は常に必須です。これは、TLS が ALB、Ingress、Cloud Run などのプロキシで終端される場合も、`tls` を通じてゲートウェイ自体で終端される場合も同様です。ゲートウェイは自身のオリジンを `X-Forwarded-*` ヘッダーから導出することがないためです。これらのヘッダーはクライアントが偽装できます。これがないと起動に失敗します。下記の `trusted_proxies` はクライアント IP の解決のみを制御します。また、ゲートウェイはクライアントにプッシュする OTLP エンドポイントをこの URL から構築するため、[テレメトリ](#telemetry)を有効にする場合にも必須です。 |
+ | `tls.cert` / `tls.key` | いいえ | ゲートウェイ自体が TLS を終端する場合の PEM パス |
+-| `trusted_proxies` | いいえ | ゲートウェイの前段にあるロードバランサーの CIDR または IP。設定すると、ゲートウェイはこれらのピアからの `X-Forwarded-For` のみを信頼し、IP ごとのレート制限と監査のために実際のクライアント IP を記録します。nginx の `set_real_ip_from` に相当します。一部のロードバランサーが行うように `ipv4:port` または `[ipv6]:port` の形式で書かれた `X-Forwarded-For` エントリは、ポートを除いて読み取られます。角括弧なしでポートが付加された IPv6 アドレスは、別のアドレスとして読み取られるか、まったく読み取られない可能性があるため、その形式で書き込むプロキシではポートオプションをオフにしてください。 |
++| `trusted_proxies` | いいえ | 信頼するフロントエンドの CIDR または IP。設定すると、ゲートウェイはこれらのピアからの `X-Forwarded-For` のみを信頼し、IP ごとのレート制限と監査のために実際のクライアント IP を記録します。 |
++
++`trusted_proxies` にフロントエンドを記載するのは、そのフロントエンドが渡す最後の `X-Forwarded-For` エントリが、どの開発者も書き込んでいないものである場合に限ってください。開発者の接続元となるアドレスや範囲は記載しないでください。受信した各接続のアドレスを追記するフロントエンドは条件を満たします。開発者が送信したままの状態でヘッダーを渡すフロントエンドは条件を満たしません。
++
++一部のロードバランサーのように `ipv4:port` または `[ipv6]:port` の形式で書かれた `X-Forwarded-For` エントリは、ポートを除いて読み取られます。角括弧なしでポートが付加された IPv6 アドレスは、別のアドレスとして読み取られるか、まったく読み取られない可能性があります。その形式で書き込むプロキシでは、ポートのオプションをオフにしてください。
+ 
+ ### `oidc`
+@@ -1658,5 +1662,5 @@ Claude Code はシグナルを直接エクスポートする前にエンドポ
+ どちらのシグナルも、ゲートウェイが解決したクライアントアドレスを使用します。ロードバランサー、ポートフォワード、またはトンネルがトラフィックをリレーしていて、`listen.trusted_proxies` にリストされていない場合、ゲートウェイにはリレーのアドレス（通常はプライベート）が見えるため、実行時の警告もプライベートの許可リストも、それを経由してリレーされたトラフィックを検出できません。
+ 
+-そのようなフロントエンドの背後では、まず [`listen.trusted_proxies`](#listen) を設定してゲートウェイが実際のクライアントアドレスを見られるようにし、いずれにしてもゲートウェイとその前段にあるすべてのものをパブリックインターネットから到達できないようにしてください。
++中継元が [`listen.trusted_proxies` に含めるべきもの](#listen)であれば、そこに列挙してください。いずれにしても、ゲートウェイとその前段にあるすべてのものは、パブリックインターネットから到達できないようにしてください。
+ 
+ ### `load_test_mode`
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-11-10</summary>
 
 **変更ファイル:**
@@ -2429,396 +2752,6 @@ index 75444fe..1dcbca9 100644
 +* **Cloud gateway**: 組織がセルフホストされた [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を実行している場合は、`/login` を通じて企業 SSO でサインインします。ゲートウェイが発行したトークンはセッションの唯一の認証情報です。
  
  管理者は、どのログイン方法を開発者が使用するかを指定し、claude.ai ログインが特定の組織に属することを要求できます。[ログインを組織に制限する](#restrict-login-to-your-organization)を参照してください。
-```
-
-</details>
-
-<details>
-<summary>changelog.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/changelog.md b/docs-ja/pages/changelog.md
-index 6430cae..d4e57ac 100644
---- a/docs-ja/pages/changelog.md
-+++ b/docs-ja/pages/changelog.md
-@@ -1,4 +1,126 @@
- # Changelog
- 
-+## 2.1.314
-+
-+- Added `permissions.blockWritesOutsideWorkingDirectories`: Write, Edit and NotebookEdit refuse paths outside the working directories in every permission mode
-+- Added an optional `groups` list to Claude apps gateway upstreams: only developers in the listed IdP groups are sent to that upstream, on failover too
-+- Added `guardrail_trace` to Claude apps gateway Bedrock upstreams, to log which Amazon Bedrock guardrail filter fired on a request, without the matched text
-+- Added idle compaction to VS Code and Claude Desktop's Code tab: a 200K+ token conversation left idle is summarized, and the summary is used on your next message if the prompt cache has expired
-+- Fixed sessions failing turn after turn with "Invalid effort level" when an organization's admin caps a model's effort: Claude Code now lowers the effort, retries, and says which level it uses
-+- Fixed `claude -p` exiting with code 0 and no output when startup failed; it now prints the error and exits 1
-+- Fixed Bedrock sessions with many images failing every turn and `/compact` with "400 Input is too long." instead of removing older images and compacting
-+- Fixed Microsoft Foundry sessions failing when the resource has no deployment for the default Sonnet, Opus or Haiku model: Claude Code now falls back to an older model of that family
-+- Fixed repeated refused requests behind a gateway that doesn't accept tool search's `tool_reference` blocks: the request is sent again once without tool search, and the session remembers
-+- Fixed TLS connections failing with `UNABLE_TO_GET_ISSUER_CERT` when the system certificate store holds a renewed root certificate that is cross-signed with its predecessor
-+- Fixed MCP servers that also work without sign-in showing "needs authentication" after their stored sign-in stopped working; they are now used signed out
-+- Fixed `claude mcp logout` reporting success when the MCP sign-in was not removed, for example while the macOS keychain is locked over SSH
-+- Fixed extra sign-in renewals when several sessions share an Anthropic profile login and the credentials lock is busy
-+- Fixed `claude ultrareview` and `claude remote-control` asking the workspace trust question in a CI job that has a terminal; with `CI` set they now refuse an untrusted folder at once
-+- Fixed an administrator's TLS trust settings in managed settings not being applied in Claude Desktop sessions
-+- Fixed model switching being refused on machines with managed plugin settings when one of your own `--plugin-dir` or `--plugin-url` plugins had a broken manifest or failed to download
-+- Fixed the Bedrock and Vertex model upgrade offer coming back at every start when managed settings pin the model
-+- Fixed `forceRemoteSettingsRefresh` set only in remote managed settings no longer applying once the stored copy had expired, which let sessions start without policy when the server could not be reached
-+- Fixed "Continue automatically at usage limit" continuing more than three times without a prompt from you when a task restarted itself between waits (a /goal check-in, a background or scheduled task)
-+- Fixed background and cloud sessions started with Ultracode turning it back on at their next start after it had been switched off
-+- Fixed the last broken reply and its retry prompts staying in the conversation after Claude gave up on a tool call that could not be parsed
-```
-
-</details>
-
-<details>
-<summary>channels-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-ja.md b/docs-ja/pages/channels-ja.md
-index eeda3e9..3b501f8 100644
---- a/docs-ja/pages/channels-ja.md
-+++ b/docs-ja/pages/channels-ja.md
-@@ -354,8 +354,8 @@ Claude Code のいくつかの機能はターミナルの外のシステムに
- | 機能 | 何をするか | 適している用途 |
- | - | - | - |
--| [ウェブ上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | GitHub からクローンされた新しいクラウドサンドボックスでタスクを実行 | 後で確認する自己完結型の非同期作業を委任する |
-+| [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | GitHub からクローンされた新しいクラウドサンドボックスでタスクを実行 | 後で確認する自己完結型の非同期作業を委任する |
- | [Slack の Claude](https://code.claude.com/docs/ja/slack.md) | チャネルまたはスレッドの `@Claude` メンションからクラウドセッションを生成 | チームの会話コンテキストから直接タスクを開始する |
- | 標準 [MCP サーバー](https://code.claude.com/docs/ja/mcp.md) | Claude はタスク中にそれをクエリします。セッションには何もプッシュされません | Claude にシステムを読み取るまたはクエリするオンデマンドアクセスを提供する |
--| [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) | claude.ai または Claude モバイルアプリからローカルセッションを駆動 | デスクから離れている間に進行中のセッションを操舵する |
-+| [Remote Control](https://code.claude.com/docs/ja/remote-control.md) | claude.ai または Claude モバイルアプリからローカルセッションを駆動 | デスクから離れている間に進行中のセッションを操舵する |
- 
- チャネルは、Claude 以外のソースからのイベントをすでに実行中のローカルセッションにプッシュすることで、そのリストのギャップを埋めます。
-@@ -369,4 +369,4 @@ Claude Code のいくつかの機能はターミナルの外のシステムに
- 
- * [独自のチャネルを構築](https://code.claude.com/docs/ja/channels-reference.md)して、まだプラグインがないシステムに対応する
--* [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)を使用して、イベントをそれに転送する代わりに電話からローカルセッションを駆動する
-+* [Remote Control](https://code.claude.com/docs/ja/remote-control.md) を使用して、イベントをそれに転送する代わりに電話からローカルセッションを駆動する
- * [セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)を使用して、プッシュされたイベントに対応する代わりにタイマーでポーリングする
-```
-
-</details>
-
-<details>
-<summary>chrome-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/chrome-ja.md b/docs-ja/pages/chrome-ja.md
-index 46d4883..7696123 100644
---- a/docs-ja/pages/chrome-ja.md
-+++ b/docs-ja/pages/chrome-ja.md
-@@ -77,5 +77,5 @@ type "hooks", and tell me what results appear
- いつでも `/chrome` を実行して、接続ステータスの確認、権限の管理、拡張機能の再接続、または使用する接続済みブラウザの選択を行えます。ステータスパネルに「ステータス: 有効」と「拡張機能: インストール済み」が表示されていれば、統合は正常に動作しています。
- 
--複数のブラウザが接続されている場合は、Claude が使用するブラウザを選択します。選択する前にブラウザアクションが開始されると、Claude はいずれかを選択するよう促します。後でブラウザを切り替えるには、`/chrome` を実行して **ブラウザを選択…** を選びます。別のブラウザが接続された場合でも、Claude は選択したブラウザを使い続けます。
-+複数のブラウザが接続されている場合は、Claude が使用するブラウザを選択します。選択する前にブラウザアクションが開始されると、Claude はいずれかを選択するよう促します。後でブラウザを切り替えるには、`/chrome` を実行して **Select browser…** を選びます。別のブラウザが接続された場合でも、Claude は選択したブラウザを使い続けます。
- 
- VS Code については、[VS Code でのブラウザ自動化](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome) を参照してください。
-@@ -83,11 +83,11 @@ VS Code については、[VS Code でのブラウザ自動化](https://code.cla
- ### Claude から求められたときに拡張機能をインストールする
- 
--対話型セッションで Claude がブラウザを必要とし、Claude Code が拡張機能を検出できない場合、Claude Code は「Claude がブラウザの使用を求めています」というタイトルのインストールプロンプトを表示します。Claude Code が確認するのは 1 セッションにつき最大 1 回です。
-+対話型セッションで Claude がブラウザを必要とし、Claude Code が拡張機能を検出できない場合、Claude Code は「Claude wants to use your browser」というタイトルのインストールプロンプトを表示します。Claude Code が確認するのは 1 セッションにつき最大 1 回です。
- 
- プロンプトには 3 つの選択肢があります。
- 
--* **拡張機能をインストール**: ブラウザで拡張機能のインストールページを開き、ガイド付きセットアップを開始します。Claude Code はインストールを待機し、拡張機能を接続して、同じセッション内でブラウザツールを有効にします。接続の準備ができたら「ブラウザツールを使用して続行」を選択すると、Claude はブラウザでタスクを再開します。「ブラウザツールなしで続行」を選択してセットアップを中断し、後で `/chrome` で完了することもできます。
--* **今はしない**: ブラウザツールなしでタスクを続行します。Claude Code は後のセッションで再度確認することがあります。
--* **今後確認しない**: 今後のセッションでプロンプトを表示しないようにします。`/chrome` を使えば、いつでも統合をセットアップできます。
-+* **Install extension**: ブラウザで拡張機能のインストールページを開き、ガイド付きセットアップを開始します。Claude Code はインストールを待機し、拡張機能を接続して、同じセッション内でブラウザツールを有効にします。接続の準備ができたら「Continue with browser tools」を選択すると、Claude はブラウザでタスクを再開します。「Continue without browser tools」を選択してセットアップを中断し、後で `/chrome` で完了することもできます。
-+* **Not now**: ブラウザツールなしでタスクを続行します。Claude Code は後のセッションで再度確認することがあります。
-+* **Don't ask again**: 今後のセッションでプロンプトを表示しないようにします。`/chrome` を使えば、いつでも統合をセットアップできます。
- 
- 次の 2 つの管理 MCP ポリシーによってプロンプトはオフになります。
-@@ -108,4 +108,13 @@ Chrome が実行されていない場合でも、Claude Code は通常どおり
- > Chrome をデフォルトで有効にすると、ブラウザツールとその指示が常にロードされるため、コンテキスト使用量が増加します。コンテキスト消費の増加に気付いた場合は、この設定をオフにして、必要なときにのみ接続してください。CLI では `--chrome` を使用し、VS Code ではプロンプトボックスに [`@browser`](https://code.claude.com/docs/ja/vs-code#automate-browser-tasks-with-chrome) と入力します。
- 
-```
-
-</details>
-
-<details>
-<summary>claude-apps-gateway-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-ja.md b/docs-ja/pages/claude-apps-gateway-ja.md
-index fda094b..1799c3f 100644
---- a/docs-ja/pages/claude-apps-gateway-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-ja.md
-@@ -36,5 +36,5 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
- * **アップストリームルーティング**：クライアントは Anthropic Messages API をゲートウェイに話しかけ、ゲートウェイは各アップストリーム（Amazon Bedrock、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic API）に対して変換し、それらの間でフェイルオーバーします。開発者が気付いたり再設定したりすることなく、リージョン、プロバイダー、またはフェイルオーバー順序を変更できます。
- 
--![Claude Code クライアントと Claude Desktop の Chat、Cowork、Code タブがベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps ゲートウェイに接続し、IdP に対してユーザーにサインインし、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図](https://mintcdn.com/claude-code/VbyXug8hBU9UK6oT/images/claude-gateway-architecture.svg?fit=max\&auto=format\&n=VbyXug8hBU9UK6oT\&q=85\&s=9e4f1190fc56718144190a3db61c63af)
-+![Claude Code クライアントと Claude Desktop がベアラートークンを使用して HTTPS 経由でインフラストラクチャ内の自己ホスト型 Claude apps gateway に接続し、ゲートウェイが IdP に対してユーザーをサインインさせ、PostgreSQL に認証状態を保存し、テレメトリを OTLP コレクターにリレーし、Amazon Bedrock、Claude Platform on AWS、Google Cloud、Microsoft Foundry、または Anthropic API に推論を転送する図](https://mintcdn.com/claude-code/VbyXug8hBU9UK6oT/images/claude-gateway-architecture.svg?fit=max\&auto=format\&n=VbyXug8hBU9UK6oT\&q=85\&s=9e4f1190fc56718144190a3db61c63af)
- 
- > [!NOTE]
-@@ -351,5 +351,5 @@ Claude Code はゲートウェイに接続する前に `/login` でリストを
- ### Claude Desktop セッションにポリシーを配信する
- 
--Claude Desktop は Cowork タブと Code タブ、および有効にした場合は Chat タブを、埋め込み Claude Code セッションで実行し、それらのモデルリクエストをゲートウェイを通じて送信します。ゲートウェイが `/user/bootstrap` で提供する設定から構築されたポリシーを各セッションに渡します。モデル許可リスト、無効化されたツール、および一致したポリシーの `cli` または `code` ブロックから派生した出力許可リスト、および[`desktop` オーバーレイ](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)です。
-+Claude Desktop は、Cowork タブと Code タブ、および有効にした場合は Chat を、組み込みの Claude Code セッション上で実行し、それらのモデルリクエストをゲートウェイ経由で送信します。Claude Desktop は、ゲートウェイが `/user/bootstrap` で提供する設定から構築したポリシーを、これらの各セッションに渡します。このポリシーには、一致したポリシーの `cli` ブロックまたは `code` ブロックから導出されるモデル許可リスト、無効化されたツール、エグレス許可リストに加えて、[`desktop` オーバーレイ](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)が含まれます。
- 
- フック、`env`、および `Bash(npm *)` のようなスコープ付き権限ルールなど、ブロックの他のキーは、`/login` を通じてサインインするクライアントに到達します。`code` の下にある場合、[Code タブの条件](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#apply-code-settings-in-the-code-tab)が満たされていれば、Code タブのセッションにも到達します。Cowork セッションや Chat セッションには到達しません。Claude Desktop はゲートウェイ URL を独自の管理設定から読み取り、[ゲートウェイ URL を設定する](#set-the-gateway-url)の `forceLoginMethod` と `forceLoginGatewayUrl` キーとは別の独自のフローでサインインします。
-@@ -481,5 +481,5 @@ OS ポリシー（HKLM レジストリポリシーまたは管理設定プリス
- Claude Desktop は同じブラウザ SSO ステップでゲートウェイのアイデンティティプロバイダーを通じて開発者にサインインし、Anthropic ではなくゲートウェイから設定をフェッチします。モデルアクセスとポリシーは CLI と同じグループごとのルールに従います。CLI と Claude Desktop の両方を使用する開発者は各々に個別にサインインします。ゲートウェイセッションはそれらの間で共有されません。
- 
--接続すると、Claude Desktop は有効なすべてのタブからモデルリクエストをゲートウェイを通じて送信します。デフォルトで Cowork タブと Code タブを表示します。Chat タブもオンにするには、Claude Desktop の[管理設定](https://claude.com/docs/third-party/claude-desktop/configuration)で `chatTabEnabled` を `true` に設定するか、Claude Code v2.1.227 以降を実行しているゲートウェイのポリシーの [`desktop` ブロック](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)で設定します。
-+接続すると、Claude Desktop は有効なすべてのタブからモデルリクエストをゲートウェイを通じて送信します。デフォルトで Cowork タブと Code タブを表示します。Chat も利用できるようにするには、Claude Code v2.1.227 以降を実行しているゲートウェイで、ポリシーの [`desktop` ブロック](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)で `chatTabEnabled` を `true` に設定します。Cowork がオンの場合、Claude Desktop は Chat と Cowork を 1 つのタブにまとめて表示します。
- 
- ### CI パイプラインとリモートマシン
-@@ -524,5 +524,5 @@ Claude Desktop は同じブラウザ SSO ステップでゲートウェイのア
- | 100 万トークンのコンテキストウィンドウ | 利用可能 | Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、デフォルトで 100 万トークンのウィンドウで動作します。[拡張コンテキスト](https://code.claude.com/docs/ja/model-config.md#extended-context)を参照してください。Fable モデルと Opus モデルで 100 万トークンをデフォルトにするには、開発者のマシン上で Claude Code v2.1.287 以降が必要です |
- | IdP グループごとのモデルアクセスと管理設定 | 利用可能 | モデルアクセスはサーバー側で適用されます。管理設定は IdP グループごとに配信され、CLI によって[管理設定の階層](https://code.claude.com/docs/ja/settings.md#settings-precedence)で適用されます |
--| Claude Desktop | オプトインで利用可能 | ポリシーで [`desktop` キーによりオプトイン](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)すると、ゲートウェイは `/user/bootstrap` で Claude Desktop の設定を提供し、Claude Desktop は Cowork タブと Code タブから、および有効にした場合は Chat タブから、ゲートウェイ経由でモデルリクエストを送信します。Chat タブをオンにするには、[Claude Desktop を接続する](#connect-claude-desktop)を参照してください。ゲートウェイサーバー上で Claude Code v2.1.203 以降が必要です。 |
-+| Claude Desktop | オプトインで利用可能 | ポリシーで [`desktop` キーによりオプトイン](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)すると、ゲートウェイは `/user/bootstrap` で Claude Desktop の設定を提供し、Claude Desktop はゲートウェイ経由でモデルリクエストを送信します。Chat をオンにするには、[Claude Desktop を接続する](#connect-claude-desktop)を参照してください。ゲートウェイサーバー上で Claude Code v2.1.203 以降が必要です。 |
-```
-
-</details>
-
-<details>
-<summary>claude-code-on-the-web-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-code-on-the-web-ja.md b/docs-ja/pages/claude-code-on-the-web-ja.md
-index c1b02d3..496ffce 100644
---- a/docs-ja/pages/claude-code-on-the-web-ja.md
-+++ b/docs-ja/pages/claude-code-on-the-web-ja.md
-@@ -202,5 +202,5 @@ View: https://claude.ai/code/session_01DiUkqY2kzbUbDmW1w96rfi?from=cli&m=0
- 次のいずれかの方法で、クラウドセッションをターミナルに取り込みます。
- 
--* **`--teleport` を使用する**: コマンドラインから `claude --teleport` を実行すると対話型のセッション選択画面が開き、`claude --teleport <session-id>` を実行すると特定のセッションを直接再開できます。コミットされていない変更がある場合は、先に stash するよう求められます。
-+* **`--teleport` を使用する**: コマンドラインから `claude --teleport` を実行すると対話型のセッション選択画面が開き、`claude --teleport <session-id>` を実行すると特定のセッションを直接再開できます。コミットされていない変更がある場合は、先に stash するよう求められます。[`--resume`](https://code.claude.com/docs/ja/sessions#resume-a-session) はこのマシンのローカル履歴から会話を再開するもので、クラウドセッションは一覧に表示されません。
- * **`/teleport` を使用する**: 既存の CLI セッション内で `/teleport` または `/tp` を実行すると、Claude Code を再起動せずに同じセッション選択画面を開けます。
- * **`/tasks` から**: `/tasks` を実行してバックグラウンドセッションを表示し、`t` を押してセッションに teleport します。
-@@ -208,7 +208,11 @@ View: https://claude.ai/code/session_01DiUkqY2kzbUbDmW1w96rfi?from=cli&m=0
- * **クラウドセッション内から**: `/teleport` と入力すると、Claude Code がそのセッション用の正確な `claude --teleport <session-id>` コマンドを返します。このコマンドはリポジトリのチェックアウトからすぐに実行できます。セッションの環境に Claude Code v2.1.223 以降が必要です。
- 
--セッションを teleport すると、Claude は正しいリポジトリにいることを確認し、クラウドセッションのブランチをフェッチしてチェックアウトし、会話の全履歴をターミナルに読み込みます。ターミナルはセッションの独自のコピーを取得します。そこで行った新しい作業はローカルにとどまり、claude.ai や Claude モバイルアプリのクラウドセッションには表示されません。teleport 後もスマートフォンから操作を続けるには、ローカルセッションで [`/remote-control`](https://code.claude.com/docs/ja/remote-control) を開始してください。
-+セッションを teleport すると、Claude は正しいリポジトリにいることを確認し、クラウドセッションのブランチをフェッチしてチェックアウトし、会話をターミナルに読み込みます。
- 
--`--teleport` は `--resume` とは異なります。`--resume` はこのマシンのローカル履歴から会話を再開するもので、クラウドセッションは一覧に表示されません。`--teleport` はクラウドセッションとそのブランチを取り込みます。
-+> [!NOTE]
-+>
-+> Claude Code がクラウドセッションを[コンパクト化](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)している場合（長いセッションでは自動的に行われます）、要約された以前のメッセージはターミナルにコピーされません。Claude は要約から続行します。元のメッセージを読むには、claude.ai または Claude モバイルアプリのクラウドセッションで上にスクロールしてください。
-+
-+ターミナルはセッションの独自のコピーを取得します。そこで行った新しい作業はローカルにとどまり、claude.ai や Claude モバイルアプリのクラウドセッションには表示されません。teleport 後もスマートフォンから操作を続けるには、ローカルセッションで [`/remote-control`](https://code.claude.com/docs/ja/remote-control) を開始してください。
- 
- #### Teleport の要件
-@@ -496,5 +500,6 @@ v2.1.274 から v2.1.289 までは、サインインメッセージは `Claude C
- * **時間制限**: Claude が実行するコマンドと SessionStart フックにはデフォルトのタイムアウトがあり、変更できます。セットアップスクリプトはおよそ 5 分以内に完了した場合のみキャッシュされます。[時間制限](https://code.claude.com/docs/ja/cloud-environments.md#time-limits) を参照してください。
- * **リポジトリ認証**: クラウドセッションをターミナルに取り込むことができるのは、同じアカウントで認証されている場合のみです。
--* **プラットフォーム制限**: リポジトリのクローンとプルリクエストの作成には GitHub が必要です。自己ホスト型の [GitHub Enterprise Server](https://code.claude.com/docs/ja/github-enterprise-server.md) インスタンスは Team および Enterprise プランでサポートされています。GitLab、Bitbucket、またはその他の非 GitHub リポジトリをクラウドセッションに [ローカルバンドル](#send-local-repositories-without-github) として送信できます。これは `CCR_FORCE_BUNDLE=1` を設定することで実現できますが、セッションはその結果をリモートにプッシュバックできません。
-+* **プラットフォーム制限**: Anthropic ホスト環境でのリポジトリのクローンとプルリクエストの作成には GitHub が必要です。自己ホスト型の [GitHub Enterprise Server](https://code.claude.com/docs/ja/github-enterprise-server.md) インスタンスは Team および Enterprise プランでサポートされています。GitLab、Bitbucket、またはその他の非 GitHub リポジトリをクラウドセッションに [ローカルバンドル](#send-local-repositories-without-github) として送信できます。これは `CCR_FORCE_BUNDLE=1` を設定することで実現できますが、セッションはその結果をリモートにプッシュバックできません。
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-10-29</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/authentication-ja.md                 |  17 ++-
- docs-ja/pages/auto-mode-config-ja.md               |  52 +++----
- docs-ja/pages/channels-reference-ja.md             |  74 ++++-----
- docs-ja/pages/checkpointing-ja.md                  |  50 +++---
- docs-ja/pages/claude-apps-gateway-config-ja.md     |  19 ++-
- docs-ja/pages/claude-apps-gateway-ja.md            |   6 +-
- docs-ja/pages/claude-code-on-the-web-ja.md         |   5 +-
- docs-ja/pages/claude-directory-ja.md               |   2 +-
- docs-ja/pages/cloud-environments-ja.md             |  11 +-
- docs-ja/pages/context-window-ja.md                 |  20 +--
- docs-ja/pages/corporate-launcher-ja.md             |   2 +-
- docs-ja/pages/debug-your-config-ja.md              |  10 +-
- docs-ja/pages/deep-links-ja.md                     |   4 +-
- docs-ja/pages/desktop-ja.md                        |  12 +-
- docs-ja/pages/desktop-quickstart-ja.md             |   2 +-
- docs-ja/pages/devcontainer-ja.md                   |   2 +-
- docs-ja/pages/env-vars-ja.md                       |   6 +-
- docs-ja/pages/errors-ja.md                         |  60 ++++++--
- docs-ja/pages/fast-mode-ja.md                      |  18 ++-
- docs-ja/pages/feature-availability-ja.md           |   4 +-
- docs-ja/pages/github-actions-ja.md                 |   4 +-
- docs-ja/pages/github-enterprise-server-ja.md       |   9 ++
- docs-ja/pages/hooks-guide-ja.md                    |  94 ++++++------
- docs-ja/pages/interactive-mode-ja.md               |   6 +-
- docs-ja/pages/managed-settings-ja.md               | 170 +++++++++++----------
- docs-ja/pages/mcp-ja.md                            |  65 +++++---
- docs-ja/pages/mcp-quickstart-ja.md                 |   1 +
- docs-ja/pages/model-config-ja.md                   |  21 ++-
- docs-ja/pages/monitoring-usage-ja.md               |   1 +
- docs-ja/pages/permission-modes-ja.md               |  36 ++---
- .../self-hosted-environments-configuration-ja.md   |  37 ++++-
- .../pages/self-hosted-environments-deploy-ja.md    |  21 ++-
- .../self-hosted-environments-quickstart-ja.md      |   2 +-
- .../pages/self-hosted-environments-reference-ja.md |  31 ++--
- docs-ja/pages/server-managed-settings-ja.md        |   1 +
- docs-ja/pages/settings-ja.md                       | 130 ++++++++--------
- docs-ja/pages/settings-reference-ja.md             |  17 ++-
- docs-ja/pages/skills-ja.md                         |  13 +-
- docs-ja/pages/sub-agents-ja.md                     |   2 +-
- docs-ja/pages/terminal-config-ja.md                | 110 ++++++-------
- docs-ja/pages/troubleshoot-install-ja.md           |  24 ++-
- docs-ja/pages/vs-code-ja.md                        |  21 ++-
- docs-ja/pages/worktrees-ja.md                      |  16 +-
- 43 files changed, 709 insertions(+), 499 deletions(-)
-```
-
-<details>
-<summary>authentication-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/authentication-ja.md b/docs-ja/pages/authentication-ja.md
-index 3819766..75444fe 100644
---- a/docs-ja/pages/authentication-ja.md
-+++ b/docs-ja/pages/authentication-ja.md
-@@ -18,5 +18,5 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ
- ブラウザが自動的に開かない場合は、`c` を押してログイン URL をクリップボードにコピーし、ブラウザに貼り付けます。
- 
--ブラウザがサインイン後にリダイレクトされずにログインコードを表示する場合は、`Paste code here if prompted` プロンプトでそれをターミナルに貼り付けます。これは、ブラウザが Claude Code のローカルコールバックサーバーに到達できない場合に発生します。これは WSL2、SSH セッション、およびコンテナで一般的です。
-+ブラウザがサインイン後にリダイレクトされずにログインコードを表示する場合は、`Paste code here if prompted` プロンプトでそれをターミナルに貼り付けます。
- 
- ログインが完了すると、ターミナルに `Login successful` と表示され、`Enter` キーを押して続行するよう求められます。
-@@ -128,5 +128,6 @@ API キーを作成しなくても Console アカウントにサインインで
- 
- * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などの [クラウドプロバイダーに対して実行](https://code.claude.com/docs/ja/third-party-integrations.md)するか、[AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md) に対して実行する
--* 任意の設定ファイルが [`forceLoginOrgUUID`](#restrict-login-to-your-organization) を設定するか、`forceLoginMethod` を `"claudeai"` または `"console"` に設定する
-+* 任意の設定ファイルが [`forceLoginOrgUUID`](#restrict-login-to-your-organization) を設定するか、`forceLoginMethod` を `"claudeai"` に設定する
-+* `forceLoginMethod` が `"console"` で、どの設定ファイルも `forceLoginOrgUUID` を設定していない場合（サインインに失敗した後にエラー画面から再試行するまで）
- * マシン上に管理設定ファイル、MDM プロファイル、キャッシュされたサーバー管理設定などの管理設定ソースが存在しますが、Claude Code が [それを読み取ることができず](https://code.claude.com/docs/ja/managed-settings.md#invalid-entries-in-managed-settings)、他の管理ソースがポリシーを提供していない
- 
-@@ -141,4 +142,14 @@ API キーを作成しなくても Console アカウントにサインインで
- プロファイルに関するその他すべてのことがこのサインインに適用されます。これには、他の認証情報に対するランク付け、`/status` で取得される `Profile` 行、および claude.ai ログインが必要な機能が含まれます。[Anthropic プロファイルとフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)を参照してください。
- 
-+#### 管理対象マシンでキーレスサインインの提供を停止する
-+
-+Claude Code が [キーレスサインイン](#sign-in-without-an-api-key)を提供しないようにするには、デバイス管理ツールを使用して、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)の [`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid) を各開発者のマシンにデプロイします。値には [Console の組織 ID](https://platform.claude.com/settings/organization) を設定します。デプロイする前に、各開発者が [API キーを作成できるロール](#claude-console-authentication)を持っていることを確認してください。デプロイ後は、そのロールを持たない開発者は `/login` で Console にサインインできなくなります。
-+
-+`forceLoginMethod` を `"console"` に設定しただけの場合、開発者は失敗したサインインを再試行してキーレスのオプションを選択できます。`forceLoginOrgUUID` をデプロイすると、ログイン画面からそのオプションはなくなりますが、開発者は既に持っている、または [`ant auth login`](https://platform.claude.com/docs/en/cli-sdks-libraries/cli/authentication) で作成した [Anthropic プロファイル](#anthropic-profiles-and-federation-credentials)を引き続き使用できます。デプロイ後は、各マシンで以下の認証情報とログインに対処してください。
-+
-+* **キーレスサインイン**: 開発者を API キーに移行するには、いったんログアウトしてから Console に再度ログインしてもらいます。これによりキーが作成されます。キーレスサインインの場合は、シェルで `claude auth logout` を実行します。`ant auth login` のプロファイルの場合は、`ant auth logout` を実行します。プロファイルと API キーの両方がマシン上にあると Claude Code はセッションを拒否するため、先にログアウトしてもらいます。
-+* **環境変数およびヘルパーの認証情報**: Claude Code は、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` で認証するセッションを、管理設定がそれらを提供している場合でも拒否します。これらの認証情報を削除してから、開発者に `/login` を実行して保存済みの API キーを作成してもらいます。
-```
-
-</details>
-
-<details>
-<summary>auto-mode-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
-index 6ff722a..ca5060f 100644
---- a/docs-ja/pages/auto-mode-config-ja.md
-+++ b/docs-ja/pages/auto-mode-config-ja.md
-@@ -156,40 +156,40 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間
- すべてを一度に入力する必要はありません。合理的なロールアウト: デフォルトから始めて、ソース管理組織と主要な内部サービスを追加します。これにより、独自のリポジトリへのプッシュなど、最も一般的な誤検知が解決されます。次に信頼できるドメインとクラウドバケットを追加します。ブロックが発生したら残りを入力します。
- 
--## `/auto-mode-setup` で環境エントリを生成する
-+## `/auto-mode-setup` で environment エントリを生成する
- 
--`/auto-mode-setup` を実行すると、Claude Code がプロジェクトと最近のセッションから `autoMode.environment` エントリを作成し、時には[ルールエントリ](#override-the-block-and-allow-rules)も作成します。ドラフトを承認すると、Claude Code は `~/.claude/settings.json` に書き込みます。
-+`/auto-mode-setup` を実行すると、Claude Code がプロジェクトとそのプロジェクトでの最近のセッションから `autoMode.environment` エントリの草案を作成し、場合によっては[ルールエントリ](#override-the-block-and-allow-rules)の草案も作成します。草案を承認すると、Claude Code はそれを `~/.claude/settings.json` に書き込みます。
- 
- > [!NOTE]
- >
--> `/auto-mode-setup` は Pro、Max、Team、Enterprise プラン、および Claude Console API キーで利用できます。Pro、Max、または Team プランでは v2.1.228 以降が必要です。ネイティブ Windows では v2.1.233 以降が必要です。Enterprise プランまたは Claude Console API キーでは v2.1.283 以降が必要です。セッションにこのコマンドが見当たらない場合は、[`/auto-mode-setup` が "Unknown command" を返す](#auto-mode-setup-returns-unknown-command)を参照してください。
-+> `/auto-mode-setup` は Pro、Max、Team、Enterprise プラン、および Claude Console の API キーで利用できます。Pro、Max、Team プランでは v2.1.228 以降（ネイティブ Windows では v2.1.233 以降）が必要です。Enterprise プランまたは Claude Console の API キーでは v2.1.283 以降が必要です。セッションでこのコマンドが見つからない場合は、[`/auto-mode-setup` が「Unknown command」を返す](#auto-mode-setup-returns-unknown-command)を参照してください。
- 
--### `/auto-mode-setup` が読み込むもの
-+### `/auto-mode-setup` が読み取る内容
- 
--`~/.claude/settings.json` に既に `autoMode` エントリが含まれている場合、Claude Code はまず環境リストに追加するか置き換えるかを尋ね、どちらの場合でも作成したルールを保持します。その後、Claude Code はこのプロジェクトの使用方法を尋ね、スキャンの前に 2 つのオプションスキャンを提供します。スキャンでは、Claude Code は常にこれらのソースを読み込みます：
-+`~/.claude/settings.json` にすでに `autoMode` エントリがある場合、Claude Code はまず environment リストに追加するか置き換えるかを尋ねます。どちらの場合も、ユーザーが書いたルールは保持されます。次に Claude Code はこのプロジェクトの使い方を尋ね、スキャンを始める前に 2 つの任意のスキャンを提示します。スキャンでは、Claude Code は常に次のソースを読み取ります。
- 
--* このプロジェクトの `CLAUDE.md`、`README.md`、設定ファイル、および git リモート
--* `autoMode` および `permissions.allow` 設定
--* Claude がこのプロジェクトの最近のセッションで実行したコマンドのホスト、バケット、コマンド名（メッセージは含まない）
-+* このプロジェクトの `CLAUDE.md`、`README.md`、設定ファイル、git リモート
-+* `autoMode` および `permissions.allow` の設定
-+* このプロジェクトでの最近のセッションで Claude が実行したコマンドに含まれるホスト、バケット、コマンド名（ユーザーのメッセージは読み取りません）
-```
-
-</details>
-
-<details>
-<summary>channels-reference-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/channels-reference-ja.md b/docs-ja/pages/channels-reference-ja.md
-index ebb471a..1a7f3cd 100644
---- a/docs-ja/pages/channels-reference-ja.md
-+++ b/docs-ja/pages/channels-reference-ja.md
-@@ -51,13 +51,13 @@
- リサーチプレビュー中、カスタムチャネルは[承認許可リスト](https://code.claude.com/docs/ja/channels.md#supported-channels)にありません。ローカルでテストするには `--dangerously-load-development-channels` を使用してください。詳細については、[リサーチプレビュー中のテスト](#test-during-the-research-preview)を参照してください。
- 
--## 例：webhook レシーバーを構築
-+## 例：webhook レシーバーを構築する
- 
--このウォークスルーでは、HTTP リクエストをリッスンして Claude Code セッションに転送する単一ファイルサーバーを構築します。終了時には、CI パイプライン、監視アラート、または `curl` コマンドなど、HTTP POST を送信できるものはすべて、Claude にイベントをプッシュできます。
-+このウォークスルーでは、HTTP リクエストを待ち受けて Claude Code セッションに転送する単一ファイルのサーバーを構築します。最終的には、CI パイプライン、監視アラート、`curl` コマンドなど、HTTP POST を送信できるものであれば何でも Claude にイベントをプッシュできるようになります。
- 
--この例では、組み込み HTTP サーバーと TypeScript サポートのために [Bun](https://bun.sh) をランタイムとして使用しています。代わりに [Node](https://nodejs.org) または [Deno](https://deno.com) を使用できます。唯一の要件は [MCP SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk) です。
-+この例では、組み込みの HTTP サーバーと TypeScript サポートを備えた [Bun](https://bun.sh) をランタイムとして使用します。代わりに [Node](https://nodejs.org) や [Deno](https://deno.com) を使用することもできます。唯一の要件は [MCP SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk) です。
- 
--**1. プロジェクトを作成**
-+**1. プロジェクトを作成する**
- 
--[権限リレー](#relay-permission-prompts) の例は `zod` を直接インポートするため、MCP SDK と一緒にインストールされます。新しいディレクトリを作成して両方をインストールします：
-+[権限リレー](#relay-permission-prompts)の例では `zod` を直接インポートするため、MCP SDK と一緒にインストールします。新しいディレクトリを作成し、両方をインストールします。
- 
- ```bash theme={null}
-@@ -66,7 +66,7 @@ bun add @modelcontextprotocol/sdk zod
- ```
- 
--**2. チャネルサーバーを記述**
-+**2. チャネルサーバーを作成する**
- 
--`webhook.ts` というファイルを作成します。これはチャネルサーバー全体です：stdio 経由で Claude Code に接続し、ポート 8788 で HTTP POST をリッスンします。リクエストが到着すると、本文をチャネルイベントとして Claude にプッシュします。
-```
-
-</details>
-
-<details>
-<summary>checkpointing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
-index 6be6271..f61b283 100644
---- a/docs-ja/pages/checkpointing-ja.md
-+++ b/docs-ja/pages/checkpointing-ja.md
-@@ -11,53 +11,53 @@ Claude Code は、作業中に Claude が行ったファイルエディットを
- ## チェックポイントの仕組み
- 
--Claude で作業する際、チェックポイント機能は送信する各プロンプトがターンを開始する前のコード状態を自動的にキャプチャします。
-+Claude と作業する際、チェックポイント機能は、ターンを開始するプロンプトを送信するたびに、その前のコードの状態を自動的に保存します。
- 
- ### 自動追跡
- 
--Claude Code は、ファイル編集ツールで行われたすべての変更を追跡します。
-+Claude Code は、ファイル編集ツールによって行われたすべての変更を追跡します。
- 
--* 送信する各プロンプトがターンを開始するたびに新しいチェックポイントが作成されます
--* Claude Code はセッション内の最新 100 個のチェックポイントのファイルスナップショットを保持します。古いチェックポイントを破棄すると、残りのチェックポイントが参照しないスナップショットファイルが削除されます。ただし、各ファイルの最初のスナップショットは除外されます。これは VS Code 拡張機能がセッション diff のベースラインとして使用します。
--* チェックポイントはセッションと共に保存されるため、再開したセッションでも `/rewind` で戻ることができます
--* Claude Code は[保持期間スイープ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)でセッションのファイルスナップショットを削除します。デフォルトではセッションが最後に保存されてから約 30 日後です。スナップショットが削除されたチェックポイントに巻き戻すと、[`No files were restored`](https://code.claude.com/docs/ja/errors#no-files-were-restored) エラーで失敗する可能性があります。スナップショットをより長く保持するには、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) を設定してください。
-+* ターンを開始するプロンプトを送信するたびに、新しいチェックポイントが作成されます
-+* Claude Code は、セッション内の直近 100 個のチェックポイントについてファイルのスナップショットを保持します。古いチェックポイントを破棄すると、残っているどのチェックポイントからも参照されていないスナップショットファイルが削除されます。ただし、各ファイルの最初のスナップショットは、VS Code 拡張機能がセッションの差分のベースラインとして使用するため削除されません。
-+* Claude Code はチェックポイントを会話とともに保存するため、セッションを再開した後でも `/rewind` を実行できます
-+* Claude Code は、[保持期間のクリーンアップ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)でセッションのファイルスナップショットを削除します。デフォルトでは、セッションが最後にスナップショットを保存してから約 30 日後に削除されます。スナップショットが削除されたチェックポイントに巻き戻そうとすると、[`No files were restored`](https://code.claude.com/docs/ja/errors#no-files-were-restored) で失敗することがあります。スナップショットをより長く保持するには、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) を設定してください。
- 
- ### 巻き戻しと要約
- 
--`/rewind` を実行するか、プロンプト入力が空の状態で `Esc` キーを 2 回押して、巻き戻しメニューを開きます。
-+`/rewind` を実行するか、プロンプト入力が空のときに `Esc` を 2 回押すと、巻き戻しメニューが開きます。
- 
- > [!NOTE]
 ```
 
 </details>

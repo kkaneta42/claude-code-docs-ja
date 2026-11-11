@@ -80,7 +80,7 @@ GitHub への接続は 1 回限りのステップです。既に GitHub CLI を�
 * **Pro、Max、および Ultra**：**Default** という名前の環境が自動的に用意されます。
 * **Team および Enterprise**：オンボーディングは **Create your first cloud environment** フォームを表示します。事前入力された名前とネットワークアクセスを変更せず、**Create & finish** をクリックして **Default** 環境を作成します。Owner が [Quick setup](https://code.claude.com/docs/ja/claude-code-on-the-web.md#quick-setup-for-team-and-enterprise) をオンにしている場合、オンボーディングは代わりに **Default** を作成します。
 
-**Default** は [`Trusted` ネットワークアクセス](https://code.claude.com/docs/ja/cloud-environments#access-levels) を使用します。セッションは [common package registries](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains) およびその他のホワイトリストに登録されたドメインに到達し、セッションのネットワークを通じて他には何も到達しません。設定なしで利用可能な内容については、[Installed tools](https://code.claude.com/docs/ja/cloud-environments.md#installed-tools) を参照してください。
+**Default** は [**Limited** ネットワークアクセス](https://code.claude.com/docs/ja/cloud-environments.md#access-levels) を使用します。セッションは [一般的なパッケージレジストリ](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains) およびその他の許可リストに登録されたドメインに到達できます。設定なしで利用可能な内容については、[Installed tools](https://code.claude.com/docs/ja/cloud-environments.md#installed-tools) を参照してください。
 
 最初のプロジェクトの場合、**Default** 環境はそのまま機能します。ネットワークアクセスを変更したり、環境変数を追加したり、セッション開始前に [setup script](https://code.claude.com/docs/ja/cloud-environments.md#setup-scripts) を実行したりするには、[環境を編集するか、追加の環境を作成](https://code.claude.com/docs/ja/cloud-environments.md#configure-your-environment) してください。
 
@@ -116,7 +116,9 @@ Claude Code CLI で以下を実行します：
 /web-setup
 ```
 
-`gh` トークンを Claude アカウントに送信するプロンプトを確認します。成功すると、Claude Code は `Connected as <your-github-username>` を出力し、[claude.ai/code](https://claude.ai/code) をブラウザで開きます。cloud 環境がまだない場合、`/web-setup` は Trusted ネットワークアクセスと setup script なしで環境を作成します。後で [環境を編集したり、変数を追加](https://code.claude.com/docs/ja/cloud-environments.md#configure-your-environment) できます。`/web-setup` が完了したら、[`--cloud`](https://code.claude.com/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) でターミナルから cloud セッションを開始するか、[`/schedule`](https://code.claude.com/docs/ja/routines) で定期的なタスクをセットアップできます。
+`gh` トークンを Claude アカウントに送信するプロンプトを確認します。成功すると、Claude Code は `Connected as <your-github-username>` を出力し、[claude.ai/code](https://claude.ai/code) をブラウザで開きます。
+
+クラウド環境がまだない場合、`/web-setup` はデフォルトの **Limited** ネットワークアクセスで、setup script なしの環境を作成します。後で [環境を編集したり、変数を追加](https://code.claude.com/docs/ja/cloud-environments.md#configure-your-environment) できます。`/web-setup` が完了したら、[`--cloud`](https://code.claude.com/docs/ja/claude-code-on-the-web#from-terminal-to-cloud) でターミナルからクラウドセッションを開始するか、[`/schedule`](https://code.claude.com/docs/ja/routines) で定期的なタスクをセットアップできます。
 
 #### `/web-setup` トークンを削除
 
@@ -246,7 +248,7 @@ Team および Enterprise プランでは、コマンドはデフォルトで非
 
 一般的な原因は以下の通りです。
 
-* パッケージインストールが失敗しました。レジストリが[ネットワークアクセスレベル](https://code.claude.com/docs/ja/cloud-environments.md#access-levels)にないためです。`Trusted` はほとんどのパッケージマネージャーをカバーしており、`None` はすべてをブロックします。
+* パッケージインストールが失敗しました。レジストリが[ネットワークアクセスレベル](https://code.claude.com/docs/ja/cloud-environments.md#access-levels)に含まれていないためです。**Allow package managers** にチェックを入れた **Limited** はほとんどのパッケージマネージャーをカバーしており、**None** はすべてをブロックします。
 * スクリプトが新しいクローンに存在しないファイルまたはパスを参照しています。
 * ローカルで機能するコマンドが Ubuntu では異なる呼び出しが必要です。
 
