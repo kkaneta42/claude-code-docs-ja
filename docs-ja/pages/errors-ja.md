@@ -2349,7 +2349,7 @@ Couldn't send feedback: Feedback has not been enabled for your organization. To 
 **対応方法：**
 
 * **サインインしていない場合**：メッセージは `: not signed in. Run /login, then retry.` と続きます。`/login` を実行してから、再度送信してください。
-* **組織による拒否**：例えば `: Feedback has not been enabled for your organization.` や `: Feedback collection is not available for organizations with custom data retention policies.` です。メッセージに `To report a bug, open an issue` が追加されている場合は、[github.com/anthropics/claude-code/issues](https://github.com/anthropics/claude-code/issues) で issue を作成してください。その後 7 日間、`/feedback` は [組織のポリシーによって無効になっている](#feedback-is-disabled-by-your-organizations-policy) と応答することがあります。キューに入っているドラフトはキューに残り、引き続き [予定どおり期限切れになります](https://code.claude.com/docs/ja/tools-reference.md#discard-or-keep-a-draft)。
+* **組織による拒否**：例えば `: Feedback has not been enabled for your organization.` や `: Feedback collection is not available for organizations with custom data retention policies.` です。その後 7 日間、`/feedback` は [組織のポリシーによって無効になっている](#feedback-is-disabled-by-your-organizations-policy) と応答することがあります。キューに入っているドラフトはキューに残り、引き続き [予定どおり期限切れになります](https://code.claude.com/docs/ja/tools-reference.md#discard-or-keep-a-draft)。
 * **拒否された認証情報**：メッセージは `: the sign-in this session uses is not allowed to send feedback` または `: the server did not accept the credentials this session uses` と続きます。Claude Code のプロンプトで `/status` を実行して、このセッションが送信するログイン、トークン、または API キーを確認してください。
 * **`Couldn't send feedback` の直後に `(request timed out)` または `(couldn't reach the service)` がある場合**：レポートまたはキューに入っているドラフトを再度送信してください。ダイアログはテキストを保持し、キューに入っているドラフトのメッセージには `The draft is still queued.` と表示されます。他のリクエストも失敗している場合は、ネットワーク接続を確認し、[Unable to connect to API](#unable-to-connect-to-api) を参照してください。失敗し続ける場合は、[github.com/anthropics/claude-code/issues](https://github.com/anthropics/claude-code/issues) でレポートを提出してください。
 * **`Couldn't send feedback` の直後に `(server returned <status>)` がある場合、または理由がない場合**：ステータスはサービスの応答コードです。サービス独自のメッセージが送信された場合は、`(server returned 403: Access Forbidden)` のようにステータスの後に続きます。失敗し続ける場合は、[github.com/anthropics/claude-code/issues](https://github.com/anthropics/claude-code/issues) でレポートを提出してください。
@@ -6622,7 +6622,7 @@ Windows では、`grep` コマンドを含む文の代わりに `The one with ha
 
 **2. ホームディレクトリを共有するすべてのホストを更新する**
 
-複数のホストがこのホームディレクトリを共有している場合は、まずすべてのホストで Claude Code をメッセージに示されたバージョン以降に更新します。古いバージョンでは、移動した `.config.json` が書き戻される可能性があります。
+複数のホストがこのホームディレクトリを共有している場合は、まずすべてのホストで Claude Code をメッセージに示されたバージョン以降に更新します。
 
 **3. Claude Code を停止する**
 

@@ -168,7 +168,7 @@ v2.1.144 から v2.1.152 では、`/model` は現在のセッションにのみ�
 
 メッセージについては、[Model is not a recognized model id](https://code.claude.com/docs/ja/errors.md#model-is-not-a-recognized-model-id) および [Model not found](https://code.claude.com/docs/ja/errors.md#model-not-found) を参照してください。
 
-`--model` フラグ、`ANTHROPIC_MODEL` 環境変数、または `model` 設定でモデルを設定した場合、Claude Code は誤入力された値を事前に拒否しません。セッションは開始され、最初のリクエストで [There's an issue with the selected model](https://code.claude.com/docs/ja/errors.md#theres-an-issue-with-the-selected-model) が発生します。Anthropic API では、`claude-` で始まらず、モデル名またはエイリアスに近いつづりの値の場合、[正しい候補を示す起動時の警告](#fix-a-mistyped-model-name)が表示されることもあります。
+`--model` フラグ、`ANTHROPIC_MODEL` 環境変数、または `model` 設定でモデルを設定した場合、Claude Code は誤入力された値を事前に拒否しません。セッションは開始され、最初のリクエストで [There's an issue with the selected model](https://code.claude.com/docs/ja/errors.md#theres-an-issue-with-the-selected-model) が発生します。Anthropic API では、`claude-` で始まらず、モデル名またはエイリアスに近いつづりの値の場合、[最も近い名前を提案する警告](#fix-a-mistyped-model-name)が表示されることがあります。
 
 要求されたモデルに廃止予定日が設定されている場合、または新しいバージョンに自動的に再マッピングされる場合、Claude Code は要求されたモデル名を示す警告を表示します。対話セッションでは、起動時の通知として表示されます。v2.1.182 以降、デフォルトのテキスト出力形式を使用している場合、[非対話モード](https://code.claude.com/docs/ja/headless.md)でも同じ警告が stderr に書き込まれます。このチェックは、[サブエージェントのフロントマター](https://code.claude.com/docs/ja/sub-agents.md)で設定された `model` も対象とします。`--output-format json` および `stream-json` では stderr への警告は抑制されます。代わりに、[結果メッセージ](https://code.claude.com/docs/ja/headless.md#get-structured-output)の `modelUsage` フィールドから実際のモデルを読み取ってください。
 
@@ -194,6 +194,18 @@ claude --model opus
     "model": "opus"
 }
 ```
+
+#### 誤入力されたモデル名を修正する
+
+次のいずれかの警告は、設定したモデル ID を Claude Code が認識しておらず、その ID が Claude Code が認識するモデル名またはエイリアスに近いつづりであることを意味します。
+
+```text theme={null}
+⚠ Model "<model>" isn't recognized · did you mean "<suggestion>"?
+Claude Code doesn't recognize the model "<model>". Did you mean "<suggestion>"?
+```
+
+* **ID を誤入力した場合**: [モデルを設定した場所](#setting-your-model)で、提案された値に変更します
+* **ID が意図的なものである場合**: そのままにしておきます。セッションは記述したとおりにその ID を送信します。Claude Code がその ID に対して想定するコンテキストウィンドウが誤っている場合は、[ウィンドウを修正](#correct-the-window-for-a-gateway-or-custom-model-id)します
 
 #### 新しいセッションのデフォルトモデルを設定する
 
@@ -772,11 +784,18 @@ Opus 4.6 と Sonnet 4.6 では、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を�
 | :- | :- |
 | 現在のセッションで切り替える | macOS では `Option+T`、Windows と Linux では `Alt+T` を押します |
 | グローバルのデフォルトを設定する | `/config` を実行して思考モードを切り替えます。`~/.claude/settings.json` に `alwaysThinkingEnabled` として保存されます |
-| 環境変数で無効にする | [`MAX_THINKING_TOKENS=0`](https://code.claude.com/docs/ja/env-vars) を設定します。これにより、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルを除き、Anthropic API で思考がオフになります。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)では、Claude Code は代わりに `thinking` パラメータを省略するため、アダプティブ推論モデルは引き続き思考する場合があります |
+| 環境変数で無効にする | [`MAX_THINKING_TOKENS=0`](https://code.claude.com/docs/ja/env-vars) を設定します |
+
+Claude Code はデフォルトで思考の出力を折りたたみます。`Ctrl+O` を押して詳細モードを切り替えると、推論がグレーの斜体テキストで表示されます。Anthropic API 上の対話セッションはデフォルトで編集済みの思考ブロックを受け取るため、展開時に完全な要約を表示したい場合は、設定で [`showThinkingSummaries: true`](https://code.claude.com/docs/ja/settings-reference#showthinkingsummaries) を設定してください。折りたたまれていても編集済みであっても、生成されたすべての思考トークンに対して課金されます。
+
+#### 思考をオフにできない場合
 
 Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルでは思考をオフにできません。これらのモデルでは、セッションのトグルと `/config` の行に切り替えの代わりに `Thinking can't be turned off` が表示され、保存済みの `alwaysThinkingEnabled: false` や `MAX_THINKING_TOKENS=0` は効果がありません。これらのモデルでは、effort レベルに基づいて、モデルがステップごとにどの程度思考するかを判断します。保存済みの設定は、それを受け付けるモデルに切り替えると再び適用されます。
 
-Claude Code はデフォルトで思考の出力を折りたたみます。`Ctrl+O` を押して詳細モードを切り替えると、推論がグレーの斜体テキストで表示されます。Anthropic API 上の対話セッションはデフォルトで編集済みの思考ブロックを受け取るため、展開時に完全な要約を表示したい場合は、[設定](https://code.claude.com/docs/ja/settings.md)で `showThinkingSummaries: true` を設定してください。折りたたまれていても編集済みであっても、生成されたすべての思考トークンに対して課金されます。
+思考を停止または削減するには、プロバイダーに応じた手順を使用します。
+
+* **Anthropic API**：`claude-opus-5`、`claude-sonnet-5`、`claude-haiku-4-5` などのモデルでは思考をオフにできます。`sonnet` などの[エイリアス](#model-aliases)は思考をオフにできないモデルを選択するため、ID で[モデルを設定](#setting-your-model)してください。
+* **[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)**：Amazon Bedrock や Microsoft Foundry などのプロバイダーでは、[アダプティブ推論](#adaptive-reasoning-and-fixed-thinking-budgets)を備えたモデルは思考をオフにしていても思考する場合があります。思考を減らすには、[effort レベルを下げて](#set-the-effort-level)ください。
 
 ### 拡張コンテキスト
 
@@ -899,18 +918,6 @@ Claude Code は想定した 200K で会話を[自動圧縮](#default-auto-compac
 * **その他のウィンドウ**：Claude Code を起動する環境で、[`CLAUDE_CODE_MAX_CONTEXT_TOKENS`](https://code.claude.com/docs/ja/env-vars) にウィンドウサイズをトークン数で設定します（例：`CLAUDE_CODE_MAX_CONTEXT_TOKENS=400000`）。`claude-` で始まらず `[1m]` 接尾辞もない認識できない ID の場合、この変数は単独で有効になります。それ以外の ID の場合は、まず[この変数がどの ID に適用されるか](#which-ids-claude_code_max_context_tokens-applies-to)を確認してください。
 
 Claude Code が ID を認識するか、指定したウィンドウを使用するようになると、その ID でセッションを開始しても警告は表示されなくなります。
-
-#### 入力ミスしたモデル名を修正する
-
-次の警告のいずれかが表示された場合、設定したモデル ID を Claude Code が認識しておらず、その ID が Claude Code の認識するモデル名またはエイリアスとほぼ同じ綴りであることを意味します。
-
-```text theme={null}
-⚠ Model "<model>" isn't recognized · did you mean "<suggestion>"?
-Claude Code doesn't recognize the model "<model>". Did you mean "<suggestion>"?
-```
-
-* **ID を入力ミスした場合**：[モデルを設定した箇所](#setting-your-model)で、ID を提案された値に変更します
-* **ID が意図したものである場合**：そのままにしておきます。セッションは記述どおりの ID を送信します。Claude Code がその ID に対して想定するコンテキストウィンドウが誤っている場合は、[ウィンドウを修正](#correct-the-window-for-a-gateway-or-custom-model-id)してください
 
 #### `CLAUDE_CODE_MAX_CONTEXT_TOKENS` が適用される ID
 

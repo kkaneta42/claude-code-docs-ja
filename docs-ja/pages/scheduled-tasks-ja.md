@@ -229,7 +229,7 @@ cancel the deploy check job
 
 ## セッションスコープのスケジュールタスクを無効にする
 
-環境で `CLAUDE_CODE_DISABLE_CRON=1` を設定して、スケジューラ全体を無効にします。cron ツールと `/loop` は利用できなくなり、既にスケジュール済みのタスクは実行を停止します。無効化フラグの完全なリストについては、[環境変数](https://code.claude.com/docs/ja/env-vars.md) を参照してください。
+環境で `CLAUDE_CODE_DISABLE_CRON=1` を設定して、スケジューラ全体を無効にします。`CronCreate` と `/loop` は利用できなくなり、既にスケジュールされているタスクは実行を停止します。プロジェクトの `.claude/scheduled_tasks.json` ファイルにタスクが保持されている間は、`CronList` と `CronDelete` は引き続き利用できるため、Claude にタスクの一覧表示やキャンセルを依頼できます。無効化フラグの完全なリストについては、[環境変数](https://code.claude.com/docs/ja/env-vars.md) を参照してください。
 
 ## 制限事項
 

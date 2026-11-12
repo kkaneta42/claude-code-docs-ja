@@ -91,6 +91,7 @@ Claude は、失敗したコマンドや欠落したステップなど、実行�
 | `managed-agents-secure [<agent-id>]` | 1 つの Managed Agent の設定を読み取り、[Secure your Managed Agents deployment](https://platform.claude.com/docs/en/managed-agents/secure-deployment) ガイドと一致する点と異なる点を報告する。[`ant` CLI](https://platform.claude.com/docs/en/cli-sdks-libraries/cli/quickstart) が必要です | v2.1.304 以降 |
 | `prompt-audit` | プロンプト、スキル、ツール説明に書かれた古いモデル向けの指示にフラグを立て、差分として修正を提案する | v2.1.221 以降 |
 | `cost-optimize` | プロジェクトの Claude API 支出がどこに行くかをプロファイルし、プロンプトキャッシング、不要な入出力トークンの削減、バッチ処理、努力、モデル選択などのオプションから節約を提案します。一度に 1 つの変更 | v2.1.247 以降 |
+| `latency-optimize` | 既存の Claude API コードのどこで時間がかかっているかを見つけ、待ち時間を短縮する変更を提案する | v2.1.319 以降 |
 | `build-eval` | Claude を搭載したアプリ用の eval セットをビルドする | v2.1.259 以降 |
 | `hillclimb` | 既存の eval に対してアプリを反復的に改善する | v2.1.259 以降 |
 | `preserved-thinking-migration` | 統合が以前のターン、システムプロンプト、またはツールリストに対して行う編集を見つけます。これは [preserved thinking](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking) ブロックを無効にし、各ブロックがどの程度の推論を削除するかを測定し、一度に 1 つずつ修正を提案します。各変更後に再測定します | v2.1.282 以降 |

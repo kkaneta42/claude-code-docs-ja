@@ -54,7 +54,7 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定�
 
 ### Auto mode
 
-[permission mode](#permission-mode) の一種。ユーザーの代わりに別の分類器モデルがアクションをレビューするため、Claude Code はほとんどのアクションを確認なしで実行します。明示的な ask ルールに一致するアクションについては、Claude Code は引き続き実行前に確認を求めます。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。分類器が見る内容からはツール結果が除去されるため、ファイルや Web ページ内の悪意のあるコンテンツが分類器を直接操作することはできません。
+[permission mode](#permission-mode) の一種。ユーザーの代わりに別の分類器モデルがアクションをレビューするため、Claude Code はほとんどのアクションを確認なしで実行します。明示的な ask ルールに一致するアクションについては、Claude Code は引き続き実行前に確認を求めます。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。
 
 * **Claude Code v2.1.283 以降**: auto モードは、インタラクティブなターミナルセッションと VS Code セッションの [built-in starting permission mode](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in) です
 * **それ以前のバージョン**: auto モードが組み込みの開始権限モードとなるのは、Pro、Max、Ultra、Team プランのみです
@@ -261,7 +261,7 @@ Claude Code がその設定をロードする前に、ディレクトリを受�
 
 ### Prompt injection
 
-ファイル、ウェブページ、またはツール結果に埋め込まれた敵対的な指示。Claude を、あなたが決して求めなかったアクションにリダイレクトしようとします。Claude Code の防御には、権限システム、コマンドインジェクション検出、信頼検証が含まれます。[Auto mode](#auto-mode) は、ツール結果の疑わしいコンテンツをスキャンするサーバー側プローブと、ツール結果を見ない分類器を追加します。そのため、注入されたテキストが直接それを操作することはできません。
+ファイル、ウェブページ、またはツール結果に埋め込まれた敵対的な指示で、ユーザーが求めていないアクションへ Claude を誘導しようとするもの。Claude Code の防御には、権限システム、コマンドインジェクション検出、信頼検証が含まれます。[auto モード](#auto-mode) では、サーバー側のプローブがツール結果をスキャンして疑わしいコンテンツを検出し、分類器がアクションをレビューします。
 
 詳細情報: [Prompt injection から保護する](https://code.claude.com/docs/ja/security.md#protect-against-prompt-injection)
 

@@ -2341,7 +2341,7 @@ v2.1.319 より前では、メッセージでターンを中断した後にフ�
 
 #### auto モードの分類器向けに結果に注釈を付ける
 
-`classifierContext` を返すと、ツール呼び出しの結果に関する短いメモを、Claude ではなく [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器に送信できます。分類器は[ツールの結果そのものを受け取ることはない](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)ため、このフィールドは、分類器が後続のアクションを審査する前に、呼び出しが返した内容について伝えるためのサポートされた方法です。このフィールドには Claude Code v2.1.236 以降が必要です。
+`classifierContext` を返すと、ツール呼び出しの結果に関する短い注記を Claude ではなく [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)分類器に送信できます。この注記は、分類器が後続のアクションをレビューする際に使用されます。このフィールドには Claude Code v2.1.236 以降が必要です。
 
 次の例は、クエリの出力がどこから得られたかを分類器に伝えます。
 

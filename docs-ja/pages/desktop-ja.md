@@ -148,9 +148,13 @@ Browser の保存データをクリアするには、Browser ペインの **⋮*
 
 #### 組織の SSH および WSL プレビューでスクリプトをオフにする
 
-[SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableBrowserExternalNavigation` 管理設定](#managed-settings)を `true` に設定します。この設定を有効にすると、ユーザーは Browser ペインで[外部サイトを閲覧する](#restrict-external-browsing-for-your-organization)こともできなくなります。
+[SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableRemotePreviewScripts` 管理設定](#managed-settings)を `true` に設定します。ユーザーは引き続き外部サイトを閲覧できます。Claude Desktop v5.1231.0 以降が必要です。
 
-この設定は、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で行うか、Desktop を実行するコンピューター上の [Claude Code MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)で行います。Desktop はリモートマシンや WSL ディストリビューションからこの設定を読み取りません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合は、MDM ポリシーまたはファイルを使用します。
+> [!NOTE]
+>
+> 以前のバージョンは `disableRemotePreviewScripts` を無視します。それらのバージョンでスクリプトを停止するには、Desktop を更新するか、`disableBrowserExternalNavigation` も `true` に設定します。その場合、`disableBrowserExternalNavigation` を受け取るすべてのコンピューターで、ユーザーは[外部サイトを閲覧できなくなります](#restrict-external-browsing-for-your-organization)。
+
+各キーは、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で設定するか、Desktop を実行するコンピューター上の [Claude Code MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)で設定します。Desktop は、リモートマシン、WSL ディストリビューション、[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper)、または [Desktop 独自のポリシー](#device-management-policies)からこれらのキーを読み取りません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合は、MDM ポリシーまたはファイルを使用します。
 
 > [!WARNING]
 >
@@ -160,9 +164,13 @@ Browser の保存データをクリアするには、Browser ペインの **⋮*
 
 その後、設定が確実に適用されるようにユーザーに Desktop を再起動してもらい、次の動作について伝えます：
 
-* **ユーザーが開くファイル**：プレビューでスクリプトが実行されないため、スクリプトで描画されるグラフや表は空のままになります
+* **ユーザーが開くファイル**：プレビューでスクリプトが実行されないため、スクリプトで描画されるグラフや表は空のままになります。通知は `This preview doesn't run scripts` で始まります。
 * **スクリプトを実行中のプレビュー**：再起動前に Desktop が設定を取得した場合、プレビューは閉じます。ユーザーには `This preview closed because scripts are turned off for previews. Open the file again to view it without scripts.` と表示されます
 * **ユーザーがエクスポートするファイル**：ユーザーが[ファイルをエクスポート](#preview-html-files-in-ssh-and-wsl-sessions)してブラウザで開いた場合、この設定の有無にかかわらず、そのファイルのスクリプトはブラウザで実行されます
+
+##### スクリプトがまだ実行されるコンピューターを確認する
+
+再起動後、そのコンピューターで SSH または WSL セッションから HTML ファイルを開きます。プレビューの上の通知が `This preview doesn't load anything from the web` で始まる場合、そのコンピューターではまだスクリプトが実行されています。[Desktop のバージョン](#check-your-version)、キーを配置した場所、およびその値が JSON のブール値 `true` であることを確認してください。
 
 ### 外部サイトを閲覧する
 
@@ -2037,6 +2045,7 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `browserExternalPageTools` | Claude が[Browser ペイン](#browse-external-sites)の外部ページを読み取るまたは操作するためのツールを使用するのを防ぐには`"disabled"`に設定します。ユーザーは引き続き外部サイトに自分でナビゲートできます。ローカル開発サーバープレビューは影響を受けません。 |
 | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](https://code.claude.com/docs/ja/desktop-ios-simulator.md#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。SSH および WSL セッションの HTML プレビューでは[スクリプトは実行されません](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
+| `disableRemotePreviewScripts` | SSH および WSL セッションの HTML プレビューで[スクリプトのみをオフにする](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)には`true`に設定します。Desktop はこれをリモートマシンや WSL ディストリビューションからは読み取りません。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。Claude Desktop v5.1231.0 以降が必要です。 |
 | `sshConfigs` | 環境セレクタに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を削除できず、自分の **Worktree folder** 以外は編集できません。 |
 | `sshHostCommands` | ユーザー自身の接続に加えて、[ホストがコマンドから取得される SSH 接続](#distribute-commands-to-your-team)をユーザーに提供します。Desktop はこれをコンピューター上の管理設定ファイルまたは MDM ポリシーから読み取り、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)では無視します。macOS または Linux では Claude Desktop v3.6556.0 以降、Windows では v4.16336.0 以降が必要で、Claude アカウントでサインインしている必要があります。Windows では、Desktop が[OpenSSH クライアントを通じて接続する](#use-your-ssh-configuration)必要もあります。 |
 | `sshHostAllowlist` | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。管理設定からのみ読み取られます。 |
@@ -2044,7 +2053,12 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `disableSshSavedPasswords` | Desktop が SSH パスワードの保存を提案したり、以前に保存したパスワードを使用または表示したりしないようにするには`true`に設定します。オンにしても、保存済みのパスワードは削除されません。管理設定からのみ読み取られます。Claude Desktop v1.49585.0 以降が必要です。 |
 | `managedMcpServers` | MCP サーバー設定をすべてのユーザーにプッシュします。サードパーティ（3P）Desktop デプロイでのみ利用可能です。各エントリで、`"http"`、`"sse"`、または`"stdio"`のトランスポート、接続詳細、およびオプションで、そのサーバーのどのツールをユーザーが呼び出せるかを制限する`toolPolicy`マップを設定します。管理設定ファイル、MDM、または Claude apps gateway ポリシーの[`desktop`ブロック](https://code.claude.com/docs/ja/claude-apps-gateway-config#claude-desktop-overlay)を通じて配信します。3P デプロイは管理コンソール設定を受け取らないためです。ゲートウェイを通じて配信するには、ゲートウェイサーバーで Claude Code v2.1.232 以降が必要です。これはデスクトップアプリ自体のキーです。Claude Code は、異なるエントリ形状を持つ、同じ名前の[管理設定](https://code.claude.com/docs/ja/managed-mcp.md#provide-servers-through-managed-settings)を読み取ります。 |
 
-コンピューターの[最上位の MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)で`browserExternalPageTools`、`disableMobileSimulatorTools`、または`disableBrowserExternalNavigation`を使用して機能をオフにすると、そのコンピューターではその機能がオフのままになります。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)でそのキーが未設定の場合や、その機能が許可されている場合でも、オフのままです。この目的でユーザーレベルの`HKCU`レジストリ値を使用しないでください。機能をオンに戻すには、値を設定した場所からその値を削除してください。Claude Desktop v4.4212.0 以降が必要です。
+コンピューターの[最上位の MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)でこれら 4 つのキーのいずれかを使用して機能をオフにすると、そのコンピューターではその機能がオフのままになります：
+
+* **`browserExternalPageTools`、`disableMobileSimulatorTools`、`disableBrowserExternalNavigation`**：Claude Desktop v4.4212.0 以降が必要です
+* **`disableRemotePreviewScripts`**：Claude Desktop v5.1231.0 以降が必要です
+
+[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)でそのキーが未設定の場合や、その機能が許可されている場合でも、オフのままです。この目的でユーザーレベルの`HKCU`レジストリ値を使用しないでください。機能をオンに戻すには、値を設定した場所からその値を削除してください。
 
 Desktop セッションがどこで実行されるかに応じて、どの管理設定がそのセッションに到達するかが異なります。[`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection)などのモデル制限は、Desktop の Claude Code セッションでターミナル CLI と同じ方法で適用されます。[surface coverage](https://code.claude.com/docs/ja/model-config.md#surface-coverage)を参照してください。
 
@@ -2109,7 +2123,14 @@ Linux では、このキーのみを設定するポリシーファイルは次�
 >
 > デプロイする前に`forceLoginOrgUUID`の値を確認してください。ID が自組織のものでない場合、組織のメンバーは、その ID を持つ組織にも所属していない限り Claude Desktop を使用できません。復旧するには、正しい ID をデプロイし、メンバーに Claude Desktop を再起動してもらってください。
 
-Claude Code の[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で`forceLoginMethod`と`forceLoginOrgUUID`を設定しても、Claude Desktop のサインイン画面は変わりません。
+Claude Code の[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で`forceLoginMethod`と`forceLoginOrgUUID`を設定しても、Claude Desktop のサインイン画面は変わりません。ユーザーは引き続き、自分の Claude API キーまたは[Claude Console アカウント](https://claude.com/docs/third-party/claude-desktop/claude-api#which-devices-offer-the-claude-api-account-sign-in)で Claude Desktop を使用し、その方法で Code タブセッションを実行できます。
+
+これを防ぐには、Claude Desktop ポリシー（Windows では`HKLM`）にも、claude.ai 組織 ID を指定して`forceLoginOrgUUID`をデプロイしてください。ポリシー自体が[Claude API を選択](https://claude.com/docs/third-party/claude-desktop/claude-api#choose-an-authentication-approach)している場合を除き、Claude Desktop はアプリの次回起動時から、ユーザー自身の API キーまたは Console アカウントを使用しなくなります。
+
+デプロイする前に、次の 2 つのケースを確認してください：
+
+* **Claude Console 組織**：Claude Console 組織の ID を指定して`forceLoginOrgUUID`を単独でデプロイしないでください。そうすると、組織のメンバーが Claude Desktop を使用できなくなります。代わりに[Which devices offer the Claude API account sign-in](https://claude.com/docs/third-party/claude-desktop/claude-api#which-devices-offer-the-claude-api-account-sign-in)を参照してください。
+* **Enterprise Admin Console**：これがコンピューターの Claude Desktop 設定を配信している場合は、先にそれらのコンピューターを Claude Desktop v2.37337.0 以降に更新してください。それより前のバージョンでは、このキーが設定されるとその設定が無視されるためです。[Keep a device on its managed profile](https://claude.com/docs/third-party/claude-desktop/admin-console#keep-a-device-on-its-managed-profile)を参照してください。
 
 ### ネットワークアクセス要件
 

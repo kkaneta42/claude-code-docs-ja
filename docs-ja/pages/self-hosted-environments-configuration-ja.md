@@ -183,10 +183,10 @@ exec "$CLAUDE_RUNNER_CLAUDE_BIN" "$@"
 
 * **セッションが結果をプッシュするリポジトリ**：ランナーはセッションを失敗させ、0 以外の終了時にスクリプトの stderr の末尾をユーザーに表示します。理由は短い 1 行として stderr に書き込み、最後に書き込んでから 0 以外で終了してください。stderr にシークレットを出力せず、フックをデプロイする前に `set -x` を削除してください。
 
-  git の `couldn't find remote ref` がフックの stderr の末尾約 4 KB 以内に現れた場合、ランナーは代わりにブランチが削除されたものとして報告します。その場合、セッションのエラーメッセージは、ブランチがリモートにもう存在しないことを示し、ユーザーにそのブランチを復元するよう求めます。そのブランチが存在する場合は、[セッションが `no longer exists on the remote` または `couldn't find remote ref` で失敗する](https://code.claude.com/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。
+  git の `couldn't find remote ref` がフックの stderr の末尾約 4 KB 以内に現れた場合、ランナーは代わりにブランチが見つからないものとして報告します。そのブランチが存在する場合は、[セッションが `couldn't be found in the remote repository` または `couldn't find remote ref` で失敗する](https://code.claude.com/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。
 * **セッションが読み取りのみを行うリポジトリ**（実行中のセッションに追加されたリポジトリなど）：ランナーはそのリポジトリをスキップし、残りのリポジトリで続行します。ランナーは `Skipped` ステップをセッションにポストし、フックがチェックアウトパスに残したものを削除します。
 
-  `Skipped` ステップがチェックアウトフックに言及している場合は、ランナーのログの `[runner:warn] checkout hook failed` 行で失敗の詳細を確認してください。ステップがソース ref が `no longer exists on remote` であると示している場合は、[セッションが `no longer exists on the remote` または `couldn't find remote ref` で失敗する](https://code.claude.com/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。スキップによってセッションにリポジトリがまったくなくなった場合、ランナーはとにかくセッションを失敗させます。
+  `Skipped` ステップがチェックアウトフックに言及している場合は、ランナーのログの `[runner:warn] checkout hook failed` 行で失敗の詳細を確認してください。ステップがソース ref が `no longer exists on remote` であると示している場合は、[セッションが `couldn't be found in the remote repository` または `couldn't find remote ref` で失敗する](https://code.claude.com/docs/ja/self-hosted-environments-deploy#no-longer-exists-on-the-remote)を参照してください。スキップによってセッションにリポジトリがまったくなくなった場合、ランナーはとにかくセッションを失敗させます。
 
 フックが成功した場合、ランナーはセッション終了後にチェックアウトパスを削除します。
 

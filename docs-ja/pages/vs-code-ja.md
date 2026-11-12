@@ -399,6 +399,8 @@ Claude が新しいエディターグループでタブを開くと、拡張機�
 
 リロードによって Claude がステップの途中で中断された場合、会話が復元されると Claude はそのステップを続行し、チャット内の通知で続行であることが示されます。Claude Code v2.1.274 以降が必要です。ステップが中断されてから 1 時間以上経過している場合や、セッションが別の場所で開かれている場合は、代わりに会話はアイドル状態で復元されます。
 
+チャット内の通知に `plan mode is now off, so Claude did not continue on its own` が含まれている場合、そのステップは plan モードで中断されています。計画を続けるには、次のメッセージを送信する前にモードインジケーターで **Plan** を選択してください。
+
 #### リロード後の続行をオフにする
 
 リロード後に Claude が中断されたステップを続行しないようにするには、[Continue After Reload 設定](vscode://settings/claudeCode.continueAfterReload)を開いてチェックを外します。
@@ -626,7 +628,7 @@ VS Code では、デフォルトでサブエージェントにこのアクショ
 
 ## VS Code のコマンドとショートカット
 
-コマンドパレットを開くには、Mac では `Cmd+Shift+P`、Windows/Linux では `Ctrl+Shift+P` を押します。そこで「Claude Code」と入力すると、Claude Code 拡張機能で使用できるすべての VS Code コマンドが表示されます。
+コマンドパレットを開くには、Mac では `Cmd+Shift+P`、Windows/Linux では `Ctrl+Shift+P` を押します。そこで「Claude Code」と入力すると、拡張機能のコマンドパレットコマンドが表示されます。
 
 一部のショートカットは、どのパネルが「フォーカス」されているか（キーボード入力を受け付けているか）によって動作が変わります。カーソルがコードファイル内にあるときはエディターがフォーカスされています。カーソルが Claude のプロンプトボックス内にあるときは Claude がフォーカスされています。`Cmd+Esc` / `Ctrl+Esc` を使用して両者を切り替えます。
 
@@ -651,6 +653,7 @@ VS Code では、デフォルトでサブエージェントにこのアクショ
 | Rename Session Tab | - | アクティブな Claude タブのセッション名を変更します。Claude Code v2.1.257 以降が必要です |
 | Add Session Tab to Group | - | アクティブな Claude タブのセッションを、選択または作成した[セッショングループ](#organize-sessions-into-groups)に追加します。Claude Code v2.1.257 以降が必要です |
 | Mark Session as Unread | - | アクティブな Claude タブのセッションを、セッション一覧で未読としてマークします。Claude Code v2.1.257 以降が必要です |
+| `claude-vscode.toggleDictation` | `Cmd+D`（Mac）/ `Ctrl+D`（Windows/Linux） | [音声入力](https://code.claude.com/docs/ja/voice-dictation.md)を開始または停止します。ショートカットを使用するには Claude がフォーカスされている必要があります。このコマンドはコマンドパレットにはありません |
 | Show Logs | - | 拡張機能のデバッグログを表示します |
 | Logout | - | Anthropic アカウントからサインアウトします |
 

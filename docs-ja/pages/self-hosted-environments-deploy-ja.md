@@ -916,15 +916,21 @@ claude self-hosted-runner doctor
 * **ランナーが `rejecting the malformed poll response` を含む `Poll failed` 行をログに記録する**: ランナーが受け取ったワークポーリングのレスポンスのボディが、キューが想定する JSON ではありません。原因の 1 つは、インターセプトプロキシやキャプティブポータルが独自のページで応答したことです。ランナーがプロキシ経由で接続している場合は、`api.anthropic.com` からのレスポンスを変更せずに通過させるようにプロキシを設定してください。
 
   ランナーはその不正なレスポンスを拒否し、`claude_code_self_hosted_runner_poll_errors_total` [メトリクス](https://code.claude.com/docs/ja/self-hosted-environments-reference.md#prometheus-metrics)の `transport` 種別としてカウントし、[セッションのライフサイクル](https://code.claude.com/docs/ja/self-hosted-environments#session-lifecycle)で説明されているポーリング失敗時のスケジュールで再試行します。ランナーは稼働中のセッションの処理を続けます。v2.1.246 より前は、ランナーはこのようなレスポンスを空のワークキューとして読み取っていたため、稼働中のセッションが終了したり、ランナーが終了したりすることがありました。
-* **セッションが `no longer exists on the remote` または `couldn't find remote ref` で失敗する**: ランナーは git の `couldn't find remote ref` を、ブランチが削除されたものとして解釈します。ブランチはまだ存在している可能性があります。メッセージ内の名前そのままで git ホスト上のブランチを探し、当てはまる各原因を確認してください:
+* **セッションが `couldn't be found in the remote repository` または `couldn't find remote ref` で失敗する**: git ホスト上でブランチを探してください。メッセージ内の名前そのままで検索します。
 
-  * **ブランチが存在しない**: メッセージの求めに従ってブランチを復元してください。
+  セッションのエラーには `Retrying will fail the same way until you fix the missing branch described below.` が含まれます。エラーがブランチ名を示している場合、`Last output before exit:` の下のテキストは次のようになります:
+
+  ```text theme={null}
+  The branch '<ref>' couldn't be found in the remote repository <repo>. If it was never pushed, push it. If it was deleted after a merge, restore it from its pull request. Then send a new message, or start a new session from a branch that has been pushed. (couldn't find remote ref)
+  ```
+
+  * **ブランチがホスト上にない**: 一度もプッシュされていない場合はプッシュし、マージ後に削除された場合はそのプルリクエストから復元してください。
   * **ブランチは存在し、自分はランナーを管理していない**: ランナーの管理者にメッセージ全文を送り、ブランチが存在することを伝えてください。
   * **ブランチは存在し、ランナーに `checkout` フックがある**: フック内の git コマンドが、フックが 0 以外で終了する前に `couldn't find remote ref` を stderr に出力することがあります。そのコマンドを見つけ、要求している ref またはフェッチ元のリモートを修正してください。ランナーは、セッションが要求したリビジョンを [`CLAUDE_RUNNER_REPO_REF`](https://code.claude.com/docs/ja/self-hosted-environments-configuration#checkout) としてフックに渡します。
   * **ブランチは存在し、ランナーに `checkout` フックがない**: ランナー自身がブランチをフェッチします。リポジトリに [`--git-host-rewrite`](#rewrite-git-urls-for-private-networks) が適用される場合は、書き換え先のホストに同じ名前のブランチがあることを確認し、ない場合はそこにブランチをプッシュしてください。
   * **ブランチは存在し、ランナーが v2.1.301 より古い**: 別の失敗がそれ自体のエラーを表示するように、[バージョンを固定する](#pin-the-version)で説明しているとおりランナーをアップグレードしてください。v2.1.301 より前は、エラー出力に `couldn't find remote ref` を含むその他の失敗も、ブランチの削除として報告されていました。
 
-  ランナーをアップグレードするか原因を修正したら、セッションを再試行するか、新しいセッションを開始してください。これらのチェックで原因が見つからない場合は、[問題を報告](#report-an-issue)してください。
+  ランナーをアップグレードするか原因を修正したら、セッションに新しいメッセージを送信するか、プッシュ済みのブランチから新しいセッションを開始してください。これらのチェックで原因が見つからない場合は、[問題を報告](#report-an-issue)してください。v2.1.314 より前は、メッセージはブランチが `no longer exists on the remote` と示していました。そのメッセージについても同じチェックを行ってください。
 
   セッションが結果をプッシュするソースでは、ブランチが削除されているとセッションが失敗します。セッションが読み取るだけの git ソースでは、ランナーはそのソースをスキップして残りのソースで続行します。スキップするとリポジトリがまったくなくなる場合、ランナーはセッションを失敗させます。v2.1.228 より前は、そのようなセッションは空のディレクトリで開始されていました。
 * **Claude Tag が Slack に返信を投稿しないことがある**: 返信のリマインダーは、[コントロールプレーンが提供するフック](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)です。古いランナーは提供されたフックを無視するため、`claude --version` でランナーが Claude Code v2.1.229 以降であることを確認してください。フックは `python3` を実行するため、ランナーイメージ内で `python3 --version` が成功することを確認してください。また、フックをオフにする設定ファイルがないことを確認してください。対象は、`managed-settings.json`、ランナーユーザーの `~/.claude/settings.json`、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` にある `disableAllHooks`、および管理設定内の `allowManagedHooksOnly` またはフックを対象とする [`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization) です。
