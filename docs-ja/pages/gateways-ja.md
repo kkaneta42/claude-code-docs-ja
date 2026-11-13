@@ -63,7 +63,7 @@ Claude apps ゲートウェイは Anthropic の自社ホスト型ゲートウェ
 * **クライアントテレメトリ**: Claude Code はセッションが Claude apps ゲートウェイにサインインするとき、Anthropic バウンドクライアント分析を無効にします。サインイン前のスタートアップ分析もオフに保つには、各デバイスの [クライアント側マネージドセッティング](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#client-side-managed-settings) で [`DISABLE_TELEMETRY`](https://code.claude.com/docs/ja/managed-settings#turn-telemetry-off-for-your-organization) を配信します。
 * **他のゲートウェイ上のクライアントテレメトリ**: Claude Code がオプションのクライアントテレメトリストリームを送信するかどうかはプロバイダーに依存し、[テレメトリデフォルトテーブル](https://code.claude.com/docs/ja/data-usage.md#default-behaviors-by-api-provider) は各ケースについて説明しています。
 * **テレメトリの宛先**: Claude Code がゲートウェイセッションのテレメトリを送信する場所は、セッションがどのようにサインインしたかに依存し、[開発者に対して何が強制されるか](https://code.claude.com/docs/ja/claude-apps-gateway#whats-enforced-on-developers) は各種類のセッションのエクスポート先を示しています。
-* **企業 HTTP プロキシ**: `HTTPS_PROXY` は Claude Code とそれが通信するすべてのサーバー（ゲートウェイを含む）の間に位置します。ネットワークが必要な場合、ゲートウェイに加えて [プロキシを設定](https://code.claude.com/docs/ja/network-config.md) してください。Claude apps ゲートウェイをホストする場合、[サインインはプロキシホストもプライベートネットワーク上にあることを確認します](https://code.claude.com/docs/ja/claude-apps-gateway#prerequisites)。そうでない場合、ゲートウェイホストを `NO_PROXY` に追加して、CLI がそれに直接接続するようにします。
+* **企業 HTTP プロキシ**: Claude Code は、ゲートウェイへのリクエストを含むリクエストを `HTTPS_PROXY` のプロキシ経由で送信します。ネットワークでプロキシが必要な場合は、[プロキシを設定](https://code.claude.com/docs/ja/network-config.md)してください。ホストしている Claude apps ゲートウェイにプロキシが適用される場合、[サインイン](https://code.claude.com/docs/ja/claude-apps-gateway#prerequisites)には、プロキシのホスト名がプライベートアドレスに解決されるか、ゲートウェイホストが `NO_PROXY` に含まれている必要があります。
 
 ## 次のステップ
 

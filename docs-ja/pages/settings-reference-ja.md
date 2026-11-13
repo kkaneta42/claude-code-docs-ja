@@ -86,6 +86,7 @@
 | [`disabledMcpjsonServers`](#disabledmcpjsonservers) | プロジェクトの [`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-scope) にある特定のサーバーを拒否します | MCP | Any file |
 | [`disableMobileSimulatorTools`](#disablemobilesimulatortools) | [デスクトップ](https://code.claude.com/docs/ja/desktop.md)の iOS Simulator ペインで Claude のツールをブロックします | ツール | Managed |
 | [`disableRemoteControl`](#disableremotecontrol) | [Remote Control](https://code.claude.com/docs/ja/remote-control.md) を、起動可能なすべての場所でオフにします | リモート、デスクトップ、通知 | Any file |
+| [`disableRemotePreviewScripts`](#disableremotepreviewscripts) | SSH および WSL セッションで、[デスクトップ](https://code.claude.com/docs/ja/desktop.md#preview-html-files-in-ssh-and-wsl-sessions)アプリの HTML プレビュー内のスクリプトをオフにします | リモート、デスクトップ、通知 | Managed |
 | [`disableSideloadFlags`](#disablesideloadflags) | [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)をサイドロードする CLI フラグを拒否します | エンタープライズと管理設定 | Managed |
 | [`disableSkillShellExecution`](#disableskillshellexecution) | [スキル](https://code.claude.com/docs/ja/skills.md)とカスタムコマンドがインラインでシェルを実行しないようにします | プラグインとスキル | Any file |
 | [`disableWorkflows`](#disableworkflows) | 全員に対して[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)をオフにします。自分だけに適用する場合は `enableWorkflows` を使用します | フックと自動化 | Any file |
@@ -147,6 +148,7 @@
 | [`permissions.blockWritesOutsideWorkingDirectories`](#permissions-blockwritesoutsideworkingdirectories) | [Claude Code 自身の一部のファイル](#what-the-write-block-refuses-and-what-stays-writable)を除き、すべての権限モードで `Write`、`Edit`、`NotebookEdit` ツールが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスを拒否するようにします | 権限設定 | Any file |
 | [`permissions.defaultMode`](#permissions-defaultmode) | 新しいセッションのデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を設定します | 権限設定 | Any file |
 | [`permissions.deny`](#permissions-deny) | シークレットを含むファイルの読み取りなど、列挙した[ツールの使用](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)をブロックします | 権限設定 | Any file |
+| [`permissions.denyInsteadOfPrompting`](#permissions-denyinsteadofprompting) | [権限プロンプト](https://code.claude.com/docs/ja/permissions.md#permission-system)で待機することになるツール呼び出しを拒否し、誰も見ていないセッションでも作業を続けられるようにします | 権限設定 | User or managed |
 | [`permissions.disableBypassPermissionsMode`](#permissions-disablebypasspermissionsmode) | 誰も [bypassPermissions モード](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)に入れないようにします | 権限設定 | Any file |
 | [`plansDirectory`](#plansdirectory) | [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)がプランファイルを書き込む場所を選択します | メモリとコンテキスト | Any file |
 | [`pluginConfigs`](#pluginconfigs) | [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)の設定ダイアログで入力した回答を保存します | プラグインとスキル | User or managed |
@@ -228,10 +230,10 @@
 | [`statusLine`](#statusline) | 独自のコマンドを実行して、プロンプトの下に[ステータスライン](https://code.claude.com/docs/ja/statusline.md)をレンダリングします | インターフェースとターミナル | Any file |
 | [`strictKnownMarketplaces`](#strictknownmarketplaces) | ユーザーが追加してインストール元にできる[マーケットプレイス](https://code.claude.com/docs/ja/plugins/overview.md)のソースの許可リストを指定します | プラグインとスキル | Managed |
 | [`strictPluginOnlyCustomization`](#strictpluginonlycustomization) | ユーザーとプロジェクトのソースからの[スキル](https://code.claude.com/docs/ja/skills.md)、[エージェント](https://code.claude.com/docs/ja/sub-agents.md)、[フック](https://code.claude.com/docs/ja/hooks.md)、[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)をブロックします | プラグインとスキル | Managed |
-| [`strictPluginOnlyCustomization.agents`](#strictpluginonlycustomization-agents) | [エージェント](https://code.claude.com/docs/ja/sub-agents.md)をプラグインと管理ソースに限定します | プラグインとスキル | Managed |
-| [`strictPluginOnlyCustomization.hooks`](#strictpluginonlycustomization-hooks) | [フック](https://code.claude.com/docs/ja/hooks.md)をプラグインと管理ソースに限定します | プラグインとスキル | Managed |
-| [`strictPluginOnlyCustomization.mcp`](#strictpluginonlycustomization-mcp) | [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)をプラグインと管理ソースに限定します | プラグインとスキル | Managed |
-| [`strictPluginOnlyCustomization.skills`](#strictpluginonlycustomization-skills) | [スキル](https://code.claude.com/docs/ja/skills.md)をプラグインと管理ソースに限定します | プラグインとスキル | Managed |
+| [`strictPluginOnlyCustomization.agents`](#strictpluginonlycustomization-agents) | ユーザーとプロジェクトのソースからの[エージェント](https://code.claude.com/docs/ja/sub-agents.md)をブロックします | プラグインとスキル | Managed |
+| [`strictPluginOnlyCustomization.hooks`](#strictpluginonlycustomization-hooks) | ユーザーとプロジェクトのソースからの[フック](https://code.claude.com/docs/ja/hooks.md)をブロックします | プラグインとスキル | Managed |
+| [`strictPluginOnlyCustomization.mcp`](#strictpluginonlycustomization-mcp) | ユーザーとプロジェクトのソースからの [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)をブロックします | プラグインとスキル | Managed |
+| [`strictPluginOnlyCustomization.skills`](#strictpluginonlycustomization-skills) | ユーザーとプロジェクトのソースからの[スキル](https://code.claude.com/docs/ja/skills.md)をブロックします | プラグインとスキル | Managed |
 | [`subagentPromptCacheTtl`](#subagentpromptcachettl) | サブエージェントおよびメイン会話以外のリクエストの[プロンプトキャッシュの有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)を選択します | モデルと応答 | Any file |
 | [`subagentStatusLine`](#subagentstatusline) | 独自のコマンドで、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)のタスク表示の行を書き換えます | インターフェースとターミナル | Any file |
 | [`switchModelsOnFlag`](#switchmodelsonflag) | [安全性分類器](https://code.claude.com/docs/ja/model-config.md#ask-before-switching)がリクエストを警告したときに、モデルを自動で切り替えるか一時停止します | モデルと応答 | Any file |
@@ -288,7 +290,7 @@ Claude がサーバー側の [advisor ツール](https://code.claude.com/docs/ja
 }
 ```
 
-このキーは、Amazon Bedrock や Claude Platform on AWS など、advisor が[利用できない](https://code.claude.com/docs/ja/advisor.md#requirements)プロバイダーでは効果がありません。`"fable"` には [Fable へのアクセス](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)が必要です。
+このキーは、Amazon Bedrock など、advisor が[利用できない](https://code.claude.com/docs/ja/advisor.md#requirements)プロバイダーでは効果がありません。Claude Platform on AWS では、このキーには Claude Code v2.1.300 以降が必要です。`"fable"` には [Fable へのアクセス](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)が必要です。
 
 ### `alwaysThinkingEnabled`
 
@@ -448,7 +450,7 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 
 利用可能なセッションで [fast mode](https://code.claude.com/docs/ja/fast-mode.md) をオンにします。トークンあたりのコストが高くても速度を優先したい、迅速な反復作業やライブデバッグなどの対話的な作業向けです。通常、このキーを手動で編集することはありません。`/fast` を実行すると `~/.claude/settings.json` に `fastMode: true` が書き込まれ、もう一度実行して fast mode をオフにするとキーが削除されます。
 
-fast mode をサポートしているのは Fable 5.2、Opus 5.5、Opus 5、Opus 4.8 のみです。他のモデルで `/fast` を実行すると Opus に切り替わり、サポートされていないモデルに切り替えると fast mode はオフになります。[fast mode がオンの状態でモデルを切り替える](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。
+Anthropic API で fast mode をサポートしているのは Fable 5.2、Opus 5.5、Opus 5、Opus 4.8 のみです。他のモデルで `/fast` を実行すると Opus に切り替わり、サポートされていないモデルに切り替えると fast mode はオフになります。[fast mode がオンの状態でモデルを切り替える](https://code.claude.com/docs/ja/fast-mode.md#switch-models-while-fast-mode-is-on)を参照してください。Google Cloud's Agent Platform では、代わりに [`/fast` によって Fable 5.2 に切り替わり](https://code.claude.com/docs/ja/fast-mode#use-fast-mode-on-agent-platform)、このキーは書き込まれません。また、Claude Code は保存された `true` を無視します。
 
 * **スコープ**: [`Any file`](#scopes)
 * **型**: Boolean
@@ -904,7 +906,7 @@ auto モードがアクティブな間、すべての Bash および PowerShell 
 Claude が確認なしで使用できるツール、プロンプトを表示するツール、ブロックされるツールを制御します。また、新しいセッションのデフォルトの[権限モード](https://code.claude.com/docs/ja/permission-modes.md)も設定します。以下のすべての `permissions.*` キーはこのオブジェクトの下にネストされます。
 
 * **スコープ**: [`Any file`](#scopes)
-* **タイプ**: `allow`、`ask`、`deny`、`additionalDirectories`、`blockReadsOutsideWorkingDirectories`、`blockWritesOutsideWorkingDirectories`、`defaultMode`、`disableBypassPermissionsMode`、`disableAutoMode` を含むオブジェクト
+* **タイプ**: `allow`、`ask`、`deny`、`additionalDirectories`、`blockReadsOutsideWorkingDirectories`、`blockWritesOutsideWorkingDirectories`、`defaultMode`、`denyInsteadOfPrompting`、`disableBypassPermissionsMode`、`disableAutoMode` を含むオブジェクト
 * **デフォルト**: 未設定
 
 この例は `npm run` コマンドを確認なしで承認し、`git push` の前にプロンプトを表示し、`.env` の読み取りをブロックし、セッションを `acceptEdits` で開始します。
@@ -1163,6 +1165,66 @@ Claude Code 自身の一部のファイルは書き込み可能なままです�
 
 権限ルールはすべてのモードの上に重ねて適用されます。`deny` ルールは `bypassPermissions` を含むすべてのモードでブロックします。[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を参照してください。クラウドセッションでは、Claude Code はこのキーのうち `acceptEdits`、`plan`、`default`、`auto` のみを尊重します。VS Code 拡張機能が開始する会話については、[拡張機能が開始権限モードとして読み取る設定](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。
 
+### `permissions.denyInsteadOfPrompting`
+
+権限プロンプトに応答する人がいないときにセッションを実行し続けるには、これを `true` に設定します。Claude Code は、本来であればプロンプトを待つツール呼び出しを拒否し、ターンは続行されます。Claude Code v2.1.319 以降が必要です。
+
+許可ルール、[権限モード](https://code.claude.com/docs/ja/permission-modes.md)、または auto モードの分類器が承認した呼び出しは実行されます。本来であればプロンプトを表示するほとんどの呼び出しを許可するには、[`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest)から応答します。
+
+* **スコープ**: [`User or managed`](#scopes)、および `--settings`。リポジトリがこれを設定することはできません。
+* **タイプ**: ブール値
+  * `true`: Claude Code は本来であればプロンプトを表示する呼び出しを拒否します
+  * `false`: 未設定と同じです。これらのソースの別のものが `true` を設定している場合、呼び出しは引き続き拒否されます
+* **デフォルト**: 未設定。承認が必要な呼び出しではプロンプトが表示されます
+
+`~/.claude/settings.json` でのこの例は、セッションを auto モードで開始し、それでもプロンプトにフォールバックするものをすべて拒否します。
+
+```json settings.json theme={null}
+{
+  "permissions": {
+    "defaultMode": "auto",
+    "denyInsteadOfPrompting": true
+  }
+}
+```
+
+このキーは、`-p` 実行、対話型ターミナルセッション、[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[Desktop アプリ](https://code.claude.com/docs/ja/desktop.md)のローカルセッション、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)に適用されます。代わりに単一の[非対話型](https://code.claude.com/docs/ja/headless.md)実行でプロンプトを表示するものを拒否するには、`-p` とともに [`--permission-prompts none`](https://code.claude.com/docs/ja/headless#turn-off-permission-prompts-in-unattended-runs) を渡します。
+
+#### `denyInsteadOfPrompting` が他に停止するもの
+
+この設定がオンの場合、Claude Code は応答を求める次のリクエストも停止します。
+
+* **質問ツールと計画ツール**: Claude Code は [`AskUserQuestion`](https://code.claude.com/docs/ja/tools-reference#askuserquestion-tool-behavior)、`EnterPlanMode`、`ExitPlanMode` を除外するため、plan モードのセッションは自力で plan モードを終了できません。エージェントチームのチームメイトは `EnterPlanMode` と `ExitPlanMode` を保持します
+* **MCP elicitation**: [`Elicitation` フック](https://code.claude.com/docs/ja/hooks#elicitation)が応答しない限り、Claude Code は [elicitation リクエスト](https://code.claude.com/docs/ja/mcp.md#respond-to-mcp-elicitation-requests)をキャンセルします
+* **権限ホスト**: Claude Code は [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input)や [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) に問い合わせません。コードから呼び出しを承認するには、`PermissionRequest` フックから応答します。一部の呼び出しは、フックに問い合わせる前に拒否されます。たとえば、どの確認ルールも対象としていない、`auto` モードでの[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-path-removals-in-each-permission-mode)などです。
+* **分類器の課金通知**: [課金される分類器リクエストに関する通知](https://code.claude.com/docs/ja/auto-mode-classifier-billing.md)がダイアログを開く場合、Claude Code はそれを表示せず、それらのリクエストを必要とするアクションを拒否します
+
+セッションは、[ワークスペース信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)と[プロジェクト MCP サーバーの承認](https://code.claude.com/docs/ja/mcp.md#project-server-approvals-and-workspace-trust)では引き続き待機する可能性があります。セッションを実行したまま離れる前に、両方に応答してください。
+
+#### `denyInsteadOfPrompting` からのメッセージ
+
+これらのメッセージは拒否された呼び出しを報告します。プロンプトではないため、応答を待つものはありません。
+
+Claude が読み取る拒否は、次のテキストで始まる場合があります。
+
+```text theme={null}
+Permission for this tool use was denied. It requires approval, and this session has no approval surface
+```
+
+`stream-json` 出力では、[`permission_denied` メッセージを出力する実行](https://code.claude.com/docs/ja/agent-sdk/typescript#sdkpermissiondeniedmessage)は次の `decision_reason` を報告します。
+
+```text theme={null}
+no approval surface in this session; permission request denied automatically
+```
+
+この設定がオンの auto モードでは、分類器がブロックした、または[安全性チェックが拒否した](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)呼び出しが 20 回連続するとターンが終了し、次のメッセージが表示されます。
+
+```text theme={null}
+20 actions were refused and no work went ahead in between, so Claude stopped.
+```
+
+`-p` 実行は、そのターンを `error_during_execution` として報告します。
+
 ### `permissions.disableBypassPermissionsMode`
 
 誰も `bypassPermissions` モードに入れないようにします。Claude Code は `--dangerously-skip-permissions` フラグを拒否し、[エージェント定義](https://code.claude.com/docs/ja/sub-agents.md#permission-modes)の `permissionMode: bypassPermissions` を無視するため、サブエージェントは親セッションの権限モードで実行されます。
@@ -1202,7 +1264,7 @@ v2.1.223 より前では、Claude Code はバイパスが無効になってい�
 
 `--dangerously-skip-permissions` からか `defaultMode: "bypassPermissions"` からかに関わらず、セッションが `bypassPermissions` モードに入る前に Claude Code が表示する確認ダイアログをスキップします。そのダイアログを一度受け入れると、Claude Code はユーザー設定のこのキーに `true` を書き込みます。
 
-* **スコープ**: [`User, local, or managed`](#scopes)。信頼されていないリポジトリがダイアログをスキップさせることはできません。
+* **スコープ**: [`User, local, or managed`](#scopes)、および `--settings` で渡されたファイル。[バックグラウンドセッション](https://code.claude.com/docs/ja/permission-modes.md#bypass-permissions-ignored-in-a-background-session)ではユーザー設定と管理設定のみが考慮されます。信頼されていないリポジトリがダイアログをスキップさせることはできません。
 * **タイプ**: ブール値
   * `true`: Claude Code はセッションが `bypassPermissions` モードに入る前の確認ダイアログをスキップします
   * `false`: 未設定と同じです。これらのファイルのいずれかが `true` を設定しない限り、ダイアログが表示されます
@@ -1470,6 +1532,8 @@ app/
   }
 }
 ```
+
+Linux と WSL2 では、まだ存在しないパスのエントリは効果がないため、先にパスを作成してください。
 
 Claude Code は `allowWrite` エントリと `Edit(...)` 許可権限ルールからのパスをセッションが読み込むすべての設定スコープ全体でマージし、[`permissions.blockReadsOutsideWorkingDirectories`](#sandboxed-commands-under-the-block)がオンの間、リポジトリ設定からのものを除外します。[リポジトリロック](https://code.claude.com/docs/ja/sandboxing.md#repository-settings-under-an-admin-required-sandbox)によってリポジトリのエントリが除外されることもあります。`allowWrite` エントリは[保護されたパス](https://code.claude.com/docs/ja/sandboxing.md#protected-paths)を解除できません。
 
@@ -3132,7 +3196,7 @@ Claude が[サブエージェント](https://code.claude.com/docs/ja/sub-agents.
 
 ### `syntaxHighlightingDisabled`
 
-Claude Code は、ターミナルに表示する差分、コードブロック、ファイルプレビューのコードを、組み込みのハイライターで言語ごとに色分けします。プラグインや言語サーバーは関与しません。代わりにプレーンテキストとして表示するには、このキーを `true` に設定します。たとえば、色がターミナルのテーマと合わない場合や、スクリーンリーダーの動作が遅くなる場合に使用します。
+Claude Code は、ターミナルに表示する差分、コードブロック、ファイルプレビューのコードを、組み込みのハイライターで言語ごとに色分けします。代わりにプレーンテキストとして表示するには、このキーを `true` に設定します。たとえば、色がターミナルのテーマと合わない場合や、スクリーンリーダーの動作が遅くなる場合に使用します。
 
 * **スコープ**: [`Any file`](#scopes)
 * **型**: Boolean
@@ -4110,10 +4174,10 @@ owner ワイルドカードの `github` エントリと、正規表現で照合�
 
 ### `strictPluginOnlyCustomization`
 
-ユーザーソースとプロジェクトソースからのスキル、エージェント、フック、MCP サーバーをブロックし、それらがプラグインまたは管理設定からのみ提供されるようにします。[`strictKnownMarketplaces`](#strictknownmarketplaces) と組み合わせると、カスタマイズのサプライチェーン全体を制御できます。マーケットプレイスの許可リストは、ユーザーがインストールできるプラグインを制御します。
+ユーザーソースとプロジェクトソースからのスキル、エージェント、フック、MCP サーバーをブロックします。[`strictKnownMarketplaces`](#strictknownmarketplaces) と組み合わせると、ユーザーがプラグインをインストールできるマーケットプレイスを選択できます。[`disableSideloadFlags`](#disablesideloadflags) を追加すると、1 回の実行に限ってプラグイン、エージェント、MCP サーバーをサイドロードする CLI フラグを拒否できます。
 
 * **スコープ**: [`管理`](#scopes)
-* **型**: 4 種類のカスタマイズすべてをロックする場合は `true`、またはロックする種類を `"skills"`、`"agents"`、`"hooks"`、`"mcp"` から指定する配列
+* **型**: すべてをロックする場合は `true`、またはロックするものを `"skills"`、`"agents"`、`"hooks"`、`"mcp"` から指定する配列
 * **デフォルト**: 未設定。何もロックされません
 
 この例では、スキルとフックをロックし、エージェントと MCP サーバーはロックしません。
@@ -4216,17 +4280,15 @@ owner ワイルドカードの `github` エントリと、正規表現で照合�
 各スコープはそれぞれ異なる目的を持ちます。
 
 * **ユーザー設定**: 個人のプラグインの設定
-* **プロジェクト設定**: リポジトリの全員と共有するプラグイン
+* **プロジェクト設定**: リポジトリの全員に対してオンにするプラグイン。これによってプラグインがインストールされるわけではないため、各ユーザーが[それらをインストールします](https://code.claude.com/docs/ja/plugins/org.md#require-plugins-per-repository)。
 * **ローカル設定**: マシンごとの上書き。Claude Code がここに設定を保存するときに gitignore されます
 * **管理設定**: 組織全体のポリシー。ここで `false` に設定されたプラグインは、すべてのスコープでインストールがブロックされ、マーケットプレイスから非表示になります
 
 プロジェクト設定はユーザー設定より優先されるため、`~/.claude/settings.json` でプラグインを `false` に設定しても、プロジェクトの `.claude/settings.json` で有効にされているプラグインは無効になりません。自分のマシンでプロジェクトが有効にしたプラグインを使わないようにするには、代わりに `.claude/settings.local.json` で `false` に設定してください。管理設定によって強制的に有効にされたプラグインは、管理設定がローカル設定を上書きするため、この方法では無効にできません。
 
-プロジェクトの `.claude/settings.json` で GitHub リポジトリや npm パッケージなどの外部ソースのプラグインを有効にしても、他のユーザーにはインストールされません。プラグインを読み込むすべての経路で、各ユーザーが[自分でインストールする](https://code.claude.com/docs/ja/plugins/org.md#require-plugins-per-repository)まで、Claude Code はそのプラグインを未インストールとして報告します。
-
 ### `extraKnownMarketplaces`
 
-追加のプラグインマーケットプレイスを名前で登録し、リポジトリを開いたユーザーや管理設定が届くすべてのユーザーが、自分で追加しなくてもマーケットプレイスを利用できるようにします。Claude Code は、まだ認識していない各マーケットプレイスを登録します。そこから [`enabledPlugins`](#enabledplugins) が指定したプラグインがインストールされるかどうかは、プラグインのソースとそれを有効にしているファイルによって異なります。ルールについてはそのエントリを参照してください。
+追加のプラグインマーケットプレイスを名前で登録し、リポジトリを開いたユーザーや管理設定が届くすべてのユーザーが、自分で追加しなくてもマーケットプレイスを利用できるようにします。Claude Code は、まだ認識していない各マーケットプレイスを登録します。そこから [`enabledPlugins`](#enabledplugins) が指定したプラグインがインストールされるかどうかは、プラグインのソースとそれを有効にしているファイルによって異なります。ルールについては[プロジェクト設定で有効になっているがインストールされていない](https://code.claude.com/docs/ja/plugins/loading.md#enabled-in-project-settings-but-not-installed)を参照してください。
 
 * **スコープ**: [`任意のファイル`](#scopes)。Claude Code は、リポジトリの `.claude/settings.json` または `.claude/settings.local.json` のエントリを、そのフォルダのワークスペースの信頼ダイアログを承認した後にのみ反映します。信頼していないフォルダ（そこでの `-p` 実行を含む）では、メッセージを表示せずにそれらを無視します。
 * **型**: マーケットプレイス名を、`source` オブジェクトとオプションの `autoUpdate` Boolean を持つオブジェクトにマッピングするオブジェクト
@@ -4354,7 +4416,7 @@ Claude Code はプロジェクトとローカルのエントリを無視しま�
 
 ユーザーがインストールしたすべての mod より前に、記載順で [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が実行される管理対象プラグインを列挙します。このキーを管理設定で設定する場合は、組み込みガードを維持するためにリストに `sec-default@builtin` を含めてください。管理設定では、Claude Code は組織のものとみなされないプラグインの id をスキップします。その条件と、2 つの順序指定キーがどのように連携するかについては、[組織の mod をインストールして順序を設定する](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)を参照してください。
 
-* **スコープ**: [`ユーザーまたは管理`](#scopes)。Claude Code は管理設定からこのキーを読み込みます。ユーザー設定からこのキーを読み込むのは、管理設定のないマシンで、認証情報が Team または Enterprise の `/login` ではないセッションの場合のみです。プロジェクト設定、ローカル設定、および `--settings` ファイル内のこのキーは無視します。
+* **スコープ**: [`ユーザーまたは管理`](#scopes)。Claude Code は管理設定からこのキーを読み込みます。ユーザー設定からこのキーを読み込むのは、管理設定も `managed-mcp.json` ファイルもないマシンで、認証情報が Team または Enterprise の `/login` ではないセッションの場合のみです。プロジェクト設定、ローカル設定、および `--settings` ファイル内のこのキーは無視します。
 * **型**: `plugin-name@marketplace-name` 文字列の配列
 * **デフォルト**: 未設定
 
@@ -4374,7 +4436,7 @@ Claude Code はプロジェクトとローカルのエントリを無視しま�
 
 ユーザーがインストールしたすべての mod の後に、記載順で [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が実行される管理対象プラグインを列挙します。`prependPlugins` と `appendPlugins` の両方に記載された id は先頭に追加されます。管理設定では、Claude Code は[組織のものとみなされない](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)プラグインの id をスキップします。
 
-* **スコープ**: [`ユーザーまたは管理`](#scopes)。Claude Code は管理設定からこのキーを読み込みます。ユーザー設定からこのキーを読み込むのは、管理設定のないマシンで、認証情報が Team または Enterprise の `/login` ではないセッションの場合のみです。プロジェクト設定、ローカル設定、および `--settings` ファイル内のこのキーは無視します。
+* **スコープ**: [`ユーザーまたは管理`](#scopes)。Claude Code は管理設定からこのキーを読み込みます。ユーザー設定からこのキーを読み込むのは、管理設定も `managed-mcp.json` ファイルもないマシンで、認証情報が Team または Enterprise の `/login` ではないセッションの場合のみです。プロジェクト設定、ローカル設定、および `--settings` ファイル内のこのキーは無視します。
 * **型**: `plugin-name@marketplace-name` 文字列の配列
 * **デフォルト**: 未設定
 
@@ -4612,7 +4674,7 @@ Claude Code は、承認ダイアログでサーバーを拒否すると、こ�
 
 ### `crossSessionInbound`
 
-このセッションが[他の Claude Code セッションから到着するメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md#control-inbound-messages)に対して何を行うかを選択します。値が適用されない場合、Claude Code は 2 つのセッションの権限モードクラスからメッセージごとに決定します。Claude Code v2.1.224 以降が必要です。
+このセッションが[他の Claude Code セッションから到着するメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md#control-inbound-messages)に対して何を行うかを選択します。値が適用されない場合、Claude Code は 2 つのセッションの権限モードクラスからメッセージごとに決定します。
 
 * **スコープ**: [`任意のファイル`](#scopes)。プロジェクトまたはローカル値は、管理設定、`--settings` フラグ、またはユーザー設定が提供する値より厳密な場合にのみ適用されます。
 * **タイプ**: 文字列、以下のいずれか：
@@ -4946,6 +5008,30 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 }
 ```
 
+### `disableRemotePreviewScripts`
+
+デスクトップアプリで SSH または WSL セッションから [HTML ファイルをプレビュー](https://code.claude.com/docs/ja/desktop.md#preview-html-files-in-ssh-and-wsl-sessions) するときに、スクリプトが実行されないようにします。Browser ペインでの外部ブラウジングには影響しません。
+
+デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。Claude Desktop v5.1231.0 以降が必要です。それより前のバージョンはこのキーを無視します。それらのバージョンでスクリプトを停止するには、[`disableBrowserExternalNavigation`](#disablebrowserexternalnavigation) も設定してください。これにより外部ブラウジングもオフになります。
+
+* **Scope**: [`Managed`](#scopes)。デスクトップアプリは、リモートマシンや WSL ディストリビューションからはこのキーを読み取りません。
+* **Type**: Boolean。JSON Boolean `true` のみが有効です
+  * `true`: SSH および WSL セッションの HTML プレビューではスクリプトが実行されません
+  * `false`: このキーはスクリプトをオフにしません
+* **Default**: 未設定なので、このキーは効果がありません
+
+デスクトップアプリを実行するコンピューターが他の Claude Code 管理設定を受け取っていない場合は、作成する管理設定で [`parentSettingsBehavior`](#parentsettingsbehavior) も `"merge"` に設定してください。Windows では、管理設定ファイルを作成すると、[許可する](https://code.claude.com/docs/ja/admin-setup.md#wsl-sessions-in-claude-code-desktop) までユーザーは WSL セッションも使用できなくなります。[Turn off scripts in SSH and WSL previews for your organization](https://code.claude.com/docs/ja/desktop.md#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization) では、この両方について説明し、キーを設定する場所を示しています。
+
+この例は、コンピューターがすでに受け取っている管理設定に追加する場合のように、キーのみを示しています：
+
+```json managed-settings.json theme={null}
+{
+  "disableRemotePreviewScripts": true
+}
+```
+
+デスクトップアプリは他の値を無視し、文字列 `"true"` や `1` などの Boolean ではない値の場合は警告もログに記録します。
+
 ### `enableArtifact`
 
 セッション出力を claude.ai 上のプライベート Web ページとして公開する [Artifact](https://code.claude.com/docs/ja/artifacts.md) ツールをオフにします。`/config` で **Artifacts** 行をオフにすると、Claude Code はこのキーをユーザー設定に書き込むため、通常は手動で編集しません。
@@ -5219,14 +5305,14 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 ### `forceLoginMethod`
 
-ユーザーがログインできるアカウントの種類を制限します。`"claudeai"` を設定して claude.ai アカウントのみを許可するか、`"console"` を設定して Claude Console アカウントのみを許可するか、`"gateway"` を設定してファーストパーティログインの代わりに [クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)にユーザーを送信します。管理者は管理設定で設定し、[`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせて開発者の claude.ai ログインを 1 つの組織内に保つことができます。
+ユーザーがログインに使用できるアカウントの種類を制限します。claude.ai サインインには `"claudeai"`、Claude Console サインインには `"console"` を指定します。`"gateway"` を設定すると、ファーストパーティログインの代わりに [クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)にユーザーを送信します。管理者は管理設定で設定し、[`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせて開発者の claude.ai ログインを 1 つの組織内に保ちます。
 
 任意の設定ファイルで `"claudeai"` に設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)の提供も停止します。`"console"` のみの場合、ユーザーはログインに失敗した後も引き続きキーレスサインインに到達できます。Claude Code による提供を停止するには、[管理対象マシンでキーレスサインインの提供を停止する](https://code.claude.com/docs/ja/authentication.md#stop-offering-the-keyless-sign-in-on-managed-machines)を参照してください。このセクションには、`forceLoginOrgUUID` が他に何を変更するかも記載されています。
 
 * **スコープ**: [`Any file`](#scopes)。Claude Code は `"gateway"` を [`forceLoginGatewayUrl`](#forcelogingatewayurl) と同じソースからのみ受け入れ、それ以外の場所では未設定として扱います。
 * **タイプ**: 文字列、以下のいずれか：
-  * `"claudeai"`: claude.ai アカウントのみがログインできます
-  * `"console"`: Claude Console アカウントのみがログインできます
+  * `"claudeai"`: claude.ai サインイン
+  * `"console"`: Claude Console サインイン
   * `"gateway"`: Claude Code はユーザーをファーストパーティログインの代わりにクラウドゲートウェイに送信します
 * **デフォルト**: 未設定。ユーザーはログイン方法を選択します
 
@@ -5471,6 +5557,8 @@ Claude Code がセッションデータをどのくらいの期間保持し、�
 
 Claude Code が [セッショントランスクリプトおよび他のアプリケーションデータ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically) を削除する前に保持する日数を設定します。Claude Code はセッション開始後にバックグラウンド削除を実行します。保持期間を安全に判定できる限り実行されます。削除スイープはメッセージを表示せずにトランスクリプトを削除するため、保持期間より長く使用していないセッションは [`/resume`](https://code.claude.com/docs/ja/sessions#resume-a-session) ピッカーに表示されなくなります。
 
+デフォルトでは、Claude Code は Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトを、このキーを自分で設定した場合でも、この期間を過ぎても保持します。HIPAA 設定の場合など、[一部のケースではこの期間が引き続き適用されます](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)。v2.1.248 より前は、Claude Code はこの期間の経過後にそれらを削除していました。
+
 * **スコープ**: [`Any file`](#scopes)
 * **タイプ**: 日数、整数、最小値 `1`
 * **デフォルト**: `30`
@@ -5485,7 +5573,9 @@ Claude Code が [セッショントランスクリプトおよび他のアプリ
 
 ### `desktopSessionCleanupPeriodDays`
 
-Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトに対して、日数での年齢制限を設定します。このキーがない場合、Claude Code は [それらのトランスクリプトを任意の年齢で保持します](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)。Claude Code は各トランスクリプトが、この制限と [`cleanupPeriodDays`](#cleanupperioddays) の両方より古い場合に削除します。したがって、`cleanupPeriodDays` がデフォルトの 30 の場合、`7` の値でも 30 日間保持されます。[自動クリーンアップ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically) には、代わりに `cleanupPeriodDays` が適用され、Claude Code がこのキーを無視するケースが記載されています。Claude Code v2.1.248 以降が必要です。
+Claude Desktop または Cowork で開始または最後に続行したセッションのトランスクリプトに対して、日数での年齢制限を設定します。このキーがない場合、Claude Desktop で削除したセッションなどのケースを除き、Claude Code は [それらのトランスクリプトを任意の年齢で保持します](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)。Claude Code v2.1.248 以降が必要です。
+
+Claude Code は各トランスクリプトが、この制限と [`cleanupPeriodDays`](#cleanupperioddays) の両方より古い場合に削除します。したがって、`cleanupPeriodDays` がデフォルトの 30 の場合、`7` の値でも 30 日間保持されます。[自動クリーンアップ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically) には、代わりに `cleanupPeriodDays` が適用され、Claude Code がこのキーを無視するケースが記載されています。
 
 * **スコープ**: [`User or managed`](#scopes)。Claude Code は `--settings` で渡すファイルからキーを読み込み、プロジェクトおよびローカル設定では無視します。
 * **タイプ**: 日数、整数、最小値 `0`

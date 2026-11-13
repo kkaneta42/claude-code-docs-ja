@@ -50,7 +50,7 @@ Hook を作成するには、[設定ファイル](#configure-hook-location) に 
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "hooks": [{ "type": "command", "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write" }]
+        "hooks": [{ "type": "command", "command": "f=$(jq -r '.tool_input.file_path') && npx prettier --write --ignore-unknown \"$f\"" }]
       }
     ],
     "Notification": [
@@ -221,7 +221,7 @@ Claude が編集するすべてのファイルに対して [Prettier](https://pr
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path' | xargs npx prettier --write"
+            "command": "f=$(jq -r '.tool_input.file_path') && npx prettier --write --ignore-unknown \"$f\""
           }
         ]
       }
@@ -336,7 +336,7 @@ Claude Code は、コマンドが stdout に書き込んだプレーンテキス
 
 セッション中に設定ファイルやスキルファイルが変更されたタイミングを追跡します。`ConfigChange` イベントは、外部プロセスやエディタが設定ファイルを変更したときに発火するため、コンプライアンスのために変更をログに記録したり、許可されていない変更をブロックしたりできます。
 
-この例では、各変更を監査ログに追記します。これを `~/.claude/settings.json` に追加します。
+この例では、各イベントを監査ログに追記します。以下を `~/.claude/settings.json` に追加します：
 
 ```json theme={null}
 {

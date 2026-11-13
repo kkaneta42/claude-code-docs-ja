@@ -349,11 +349,16 @@ Claude Code は、次のピンについてはチェックも更新の促しも�
 
 ### モデルがセッション中に無効化される場合
 
-セッションが実行されているモデルへのアカウントアクセスが失われた場合（例えば、管理者が Amazon Bedrock アカウントでそれを無効化した場合）、Claude Code は各リクエストが失敗する代わりにセッションを別のモデルに切り替え、`Switched to <fallback> because <model> is not available` を表示します。スタートアップフォールバックと同じモデルを試します。同じティアの以前のバージョンを最初に試し、Opus セッションで Opus バージョンが利用できない場合、デフォルト Sonnet モデルを試します。
+Amazon Bedrock がセッションのモデルをアカウントで利用できないとして拒否した場合、Claude Code はセッションを別のモデルに切り替えるため、作業を続けられます。`Switched to <fallback> because <model> is not available` で始まるメッセージが表示されます。これは、例えば管理者がモデルを無効化した場合や、最新のモデルがまだアカウントで利用できない場合に発生します。
 
-切り替えは、ピン留めしていないティアにのみ適用されます。これはスタートアップフォールバックと同じ条件です。選択した特定のバージョン、または[アプリケーション推論プロファイル ARN](#map-each-model-version-to-an-inference-profile)でセッションを実行している場合、そのモデルを保持し、フォールバックモデルチェーンがないため、リクエストは失敗します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)では、Claude Code は Amazon Bedrock で auto モードがサポートするモデルにのみ切り替えます。それらのモデルも利用できない場合、リクエストは[AWS 認証失敗](https://code.claude.com/docs/ja/errors.md#aws-authentication-failed)で失敗し、モデルを有効にするためのヒントが表示されます。
+[フォールバックモデルチェーン](https://code.claude.com/docs/ja/model-config.md#fallback-model-chains)を設定している場合、Claude Code は代わりに設定したフォールバックに切り替えます。チェーンがない場合、次のようなケースではリクエストが失敗します。
 
-設定した[フォールバックモデルチェーン](https://code.claude.com/docs/ja/model-config.md#fallback-model-chains)はティア切り替えを置き換えます。これらの拒否では Claude Code は設定したフォールバックに切り替えます。拒否されたリクエストが切り替わるのではなく失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。設定したフォールバックチェーンはこれらの拒否で切り替わります。すべての拒否されたリクエストが失敗するようにしたい場合は、チェーンも削除してください。
+* セッションが、ピン留めされたモデル、選択した特定のバージョン、または[アプリケーション推論プロファイル ARN](#map-each-model-version-to-an-inference-profile) で実行されている
+* [Claude Code が試すモデル](#startup-model-checks)がどれも利用できない。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)では、Claude Code は Amazon Bedrock で auto モードがサポートするモデルにのみ切り替えます。
+
+作業を続けるには、セッションで `/model` を実行し、アカウントで使用できるモデル上で `s` を押してください。この操作ではデフォルトは変更されません。`403` は [AWS authentication failed](https://code.claude.com/docs/ja/errors.md#aws-authentication-failed) として表示されます。
+
+拒否されたリクエストが切り替わるのではなく失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。フォールバックモデルチェーンを設定している場合は、Claude Code が引き続きそのフォールバックに移行するため、チェーンも削除してください。
 
 ## クロスリージョン推論プロファイルプレフィックス
 
@@ -513,7 +518,7 @@ claude --model anthropic.claude-haiku-4-5
 
 ### Mantle を Invoke API と並行して実行する
 
-Mantle で利用可能なモデルは、今日使用するすべてのモデルを含まない場合があります。`CLAUDE_CODE_USE_BEDROCK` と `CLAUDE_CODE_USE_MANTLE` の両方を設定すると、Claude Code は同じセッションから両方のエンドポイントを呼び出せます。Mantle 形式に一致するモデル ID は Mantle にルーティングされ、他のすべてのモデル ID は Amazon Bedrock Invoke API に移動します。
+Mantle で利用可能なモデルは、今日使用するすべてのモデルを含まない場合があります。ゲートウェイを介さずに接続する場合は、`CLAUDE_CODE_USE_BEDROCK` と `CLAUDE_CODE_USE_MANTLE` の両方を設定すると、同じセッションから Mantle と Invoke API の両方を呼び出せます。Mantle 形式に一致するモデル ID は Mantle にルーティングされ、他のすべてのモデル ID は Amazon Bedrock Invoke API に移動します。
 
 ```bash theme={null}
 export CLAUDE_CODE_USE_BEDROCK=1
@@ -557,69 +562,74 @@ export ANTHROPIC_BEDROCK_MANTLE_BASE_URL=https://your-gateway.example.com
 
 ### SSO と企業プロキシでの認証ループ
 
-AWS SSO を使用しているときにブラウザのサインインタブが繰り返し開く場合は、[settings file](https://code.claude.com/docs/ja/settings.md) から `awsAuthRefresh` 設定を削除してください。
+AWS SSO を使用しているときにブラウザのサインインタブが繰り返し開く場合は、[設定ファイル](https://code.claude.com/docs/ja/settings.md)から `awsAuthRefresh` 設定を削除してください。
 
-このループは、企業 VPN または TLS 検査プロキシが SSO ブラウザフローを中断した場合に発生する可能性があります。Claude Code は中断された接続を認証失敗として扱います。後続のリクエストで認証情報がまだ期限切れであることが判明すると、Claude Code は `awsAuthRefresh` を再実行し、別のタブが開きます。
+このループは、企業の VPN や TLS インスペクションプロキシが SSO のブラウザフローを中断した場合に発生することがあります。Claude Code は中断された接続を認証の失敗として扱います。後続のリクエストで認証情報がまだ期限切れであることが判明すると、Claude Code は `awsAuthRefresh` を再実行し、別のタブが開きます。
 
-ネットワーク環境が自動ブラウザベースの SSO フローに干渉する場合は、`awsAuthRefresh` に依存する代わりに、Claude Code を開始する前に手動で `aws sso login` を使用してください。
+ネットワーク環境がブラウザベースの自動 SSO フローに干渉する場合は、`awsAuthRefresh` に頼らず、Claude Code を起動する前に手動で `aws sso login` を使用してください。
 
-### TLS 検査プロキシの背後での証明書エラー
+### TLS インスペクションプロキシ配下での証明書エラー
 
-Claude Code は、[CA certificate store](https://code.claude.com/docs/ja/network-config.md#ca-certificate-store) 設定を AWS へのリクエストに適用します。これには以下が含まれます：
+Claude Code は、AWS へのリクエストに [CA 証明書ストア](https://code.claude.com/docs/ja/network-config.md#ca-certificate-store)の設定を適用します。対象には次のものが含まれます。
 
-* モデル検出
-* トークンカウント
-* AWS 認証情報を解決する STS および SSO ロール認証情報呼び出し
-* [setup wizard](#sign-in-with-bedrock) の認証情報検証とモデルチェック
+* モデルの検出
+* トークンのカウント
+* AWS 認証情報を解決する STS および SSO のロール認証情報の呼び出し
+* [セットアップウィザード](#sign-in-with-bedrock)の認証情報の検証とモデルのチェック
 
-これらのリクエストについては、OS トラストストアまたは `NODE_EXTRA_CA_CERTS` バンドル内の企業ルート証明書には、Amazon Bedrock 固有のセットアップは必要ありません。
+これらのリクエストについては、OS のトラストストアまたは `NODE_EXTRA_CA_CERTS` バンドルにある企業のルート証明書に、Amazon Bedrock 固有の設定は必要ありません。
 
-v2.1.260 より前では、Claude Code は設定されたプロキシを通過するリクエストにのみ CA 設定を適用し、直接接続では実行時のデフォルト証明書ストアのみを信頼していました。
+v2.1.260 より前では、Claude Code はこれらのリクエストが設定済みのプロキシを経由する場合にのみ CA 設定を適用しており、直接接続ではランタイムのデフォルトの証明書ストアのみを信頼していました。
 
-v2.1.261 より前では、**Use credentials already in my environment** オプションを使用した setup wizard のモデルチェックの背後での認証情報ルックアップは、実行時のデフォルト証明書ストアのみを信頼していました。ルート証明書が OS ストアにのみある TLS 検査プロキシの背後では、影響を受けるリクエストは `unable to get local issuer certificate` で失敗するか、ウィザードはモデルを `unreachable` として表示していましたが、推論リクエストは成功していました。v2.1.261 以降に更新してください。
+v2.1.261 より前では、**Use credentials already in my environment** オプションを使用した場合のセットアップウィザードのモデルチェックの背後にある認証情報の検索は、引き続きランタイムのデフォルトの証明書ストアのみを信頼していました。ルート証明書が OS のストアにのみ存在する TLS インスペクションプロキシ配下では、推論リクエストは成功する一方で、影響を受けるリクエストが `unable to get local issuer certificate` で失敗するか、ウィザードでモデルが `unreachable` と表示されていました。v2.1.261 以降に更新してください。
 
 ### リージョンの問題
 
-リージョンの問題が発生した場合：
+リージョンの問題が発生した場合:
 
-* モデルの可用性を確認：`aws bedrock list-inference-profiles --region your-region`
-* サポートされているリージョンに切り替え：`export AWS_REGION=us-east-1`
-* クロスリージョンアクセスに推論プロファイルの使用を検討
+* モデルの利用可能性を確認します: `aws bedrock list-inference-profiles --region your-region`
+* サポートされているリージョンに切り替えます: `export AWS_REGION=us-east-1`
+* クロスリージョンアクセスには推論プロファイルの使用を検討してください
 
-「on-demand throughput isn't supported」エラーが表示される場合：
+「on-demand throughput isn't supported」というエラーが表示された場合:
 
-* モデルを [inference profile](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html) ID として指定します
+* モデルを[推論プロファイル](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html) ID として指定してください
 
-### ゲートウェイまたはプロキシの背後でのストリーミングエラー
+### ゲートウェイまたはプロキシ配下でのストリーミングエラー
 
-Amazon Bedrock は `InvokeModelWithResponseStream` レスポンスをバイナリイベントストリーム形式でストリーミングし、ヘッダー `Content-Type: application/vnd.amazon.eventstream` を含みます。Claude Code と Amazon Bedrock の間のゲートウェイまたはプロキシは、Amazon Bedrock が送信したレスポンスボディとそのヘッダー（`Content-Type` を含む）を変更されずに転送する必要があります。
+Amazon Bedrock は、`InvokeModelWithResponseStream` のレスポンスを、ヘッダー `Content-Type: application/vnd.amazon.eventstream` を持つバイナリのイベントストリーム形式でストリーミングします。Claude Code と Amazon Bedrock の間にあるゲートウェイやプロキシは、レスポンスボディとそのヘッダー（`Content-Type` を含む）を Amazon Bedrock が送信したとおりに転送する必要があります。
 
-ゲートウェイが `Content-Type` を別の値に書き換える場合、Claude Code は `Bedrock streaming response has content-type` で始まるエラーでレスポンスを拒否し、受け取った値を名前付けます。一般的な書き換えは `text/event-stream` で、ストリームをサーバー送信イベントとして再発行する統合からのものです。エラーメッセージに示される `CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD` 変数については、[Bedrock streaming response has an unexpected content-type](https://code.claude.com/docs/ja/errors.md#bedrock-streaming-response-has-an-unexpected-content-type) を参照してください。
+ゲートウェイが `Content-Type` を別の値に書き換えると、Claude Code は `Bedrock streaming response has content-type` で始まるエラーでレスポンスを拒否し、受信した値をエラー内に示します。よくある書き換えは `text/event-stream` で、これはストリームを server-sent events として再送出するインテグレーションによるものです。エラーメッセージで示される `CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_GUARD` 変数については、[Bedrock streaming response has an unexpected content-type](https://code.claude.com/docs/ja/errors.md#bedrock-streaming-response-has-an-unexpected-content-type) を参照してください。
 
-ゲートウェイがヘッダーをドロップまたは空白にする代わりに、Claude Code は本体が Amazon Bedrock のイベントストリームであると仮定してデコードするため、ゲートウェイが変更されずに通した本体はストリーミングを続けます。
+一方、ゲートウェイが書き換えではなくヘッダーを削除するか空にする場合、Claude Code はボディを Amazon Bedrock のイベントストリームとみなしてデコードするため、ゲートウェイが変更せずに通過させたボディはストリーミングを継続します。
 
-ヘッダーをドロップするゲートウェイがストリームをサーバー送信イベントとして再発行する場合、Claude Code は本体をデコードできず、すべてのターンで遅いノンストリーミングパスにフォールバックします。各レスポンスはストリーミングされるのではなく、完全になった後にのみ表示されます。その場合、[`CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_DEFAULT=1`](https://code.claude.com/docs/ja/env-vars) を設定して、Claude Code が本体をサーバー送信イベントとして読み取るようにしてください。
+ヘッダーを削除するゲートウェイがストリームを server-sent events として再送出もする場合、Claude Code はボディをデコードできず、毎ターンより低速な非ストリーミングの経路にフォールバックします。その結果、各応答はストリーミングで表示されるのではなく、完了した時点でのみ表示されます。この場合は、[`CLAUDE_CODE_DISABLE_BEDROCK_CONTENT_TYPE_DEFAULT=1`](https://code.claude.com/docs/ja/env-vars) を設定して、Claude Code が代わりにボディを server-sent events として読み取るようにしてください。
 
-エラーまたはフォールバックを修正するには、ゲートウェイを設定して `InvokeModelWithResponseStream` レスポンスボディとその `Content-Type` ヘッダーを変更されずに転送するようにしてください。
+エラーまたはフォールバックを解消するには、`InvokeModelWithResponseStream` のレスポンスボディとその `Content-Type` ヘッダーを変更せずに転送するようゲートウェイを設定してください。
 
-ストリームをサーバー送信イベントに変換するゲートウェイは、Amazon Bedrock API を提供していません。Anthropic Messages API リクエストも受け入れる場合は、`CLAUDE_CODE_USE_BEDROCK` の代わりに `ANTHROPIC_BASE_URL` を使用して [LLM gateway](https://code.claude.com/docs/ja/llm-gateway-connect.md) として接続してください。
+ストリームを server-sent events に変換するゲートウェイは、もはや Amazon Bedrock API を提供していることにはなりません。そのゲートウェイが Anthropic Messages API のリクエストも受け付ける場合は、`CLAUDE_CODE_USE_BEDROCK` ではなく `ANTHROPIC_BASE_URL` を使用して [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway-connect.md)として接続してください。
 
-### /context でのゼロトークンカウント
+### /context でトークン数がゼロになる
 
-`/context` コマンドは、ツールスキーマを Amazon Bedrock count-tokens API に送信することで、各ツールグループのトークンをカウントします。Claude Code v2.1.196 より前のバージョンでは、スキーマが count-tokens API が受け入れないフィールドを含んでいたため、Amazon Bedrock がそのリクエストを拒否し、すべてのツールグループが 0 トークンを表示していました。メッセージやメモリファイルなど、内訳の他の行は影響を受けません。
+`/context` コマンドは、ツールのスキーマを Amazon Bedrock の count-tokens API に送信して、ツールグループごとのトークン数をカウントします。v2.1.196 より前の Claude Code バージョンでは、スキーマに count-tokens API が受け付けないフィールドが含まれていたため、Amazon Bedrock がそのリクエストを拒否し、すべてのツールグループで 0 トークンと表示されていました。メッセージやメモリファイルなど、内訳の他の行は影響を受けません。
 
 v2.1.196 以降に更新してください。
 
-### Mantle エンドポイントエラー
+### Mantle エンドポイントのエラー
 
-`CLAUDE_CODE_USE_MANTLE` を設定した後、`/status` が `Amazon Bedrock (Mantle)` を表示しない場合、変数がプロセスに到達していません。`claude` を起動したシェルでエクスポートされているか確認するか、[設定ファイル](https://code.claude.com/docs/ja/settings.md)の `env` ブロックで設定してください。
+`CLAUDE_CODE_USE_MANTLE` を設定した後に `/status` で `Amazon Bedrock (Mantle)` が表示されない場合、変数がプロセスに届いていません。`claude` を起動したシェルで変数がエクスポートされていることを確認するか、[設定ファイル](https://code.claude.com/docs/ja/settings.md)の `env` ブロックで設定してください。
 
-Mantle エンドポイントからの `403` が何を意味するかは、エラーが IAM アクションを名前付けるかどうかによって異なります：
+Mantle エンドポイントからの `403` の意味は、エラーで IAM アクションが示されているかどうかによって異なります。
 
-* エラーが `bedrock-mantle:` アクションを名前付ける場合は、IAM アイデンティティにそのアクションを付与してください。
-* エラーがアクションを名前付けず、認証情報が有効な場合は、AWS アカウントがリクエストしたモデルへのアクセスを許可されていません。AWS アカウントチームに連絡してアクセスをリクエストしてください。
+* エラーで `bedrock-mantle:` アクションが示されている場合は、IAM アイデンティティにそのアクションを付与してください。
+* エラーでアクションが示されておらず、認証情報が有効な場合は、AWS アカウントにリクエストしたモデルへのアクセスが付与されていません。AWS アカウントチームに連絡してアクセスをリクエストしてください。
 
-モデル ID を示す `400` は、そのモデルが Mantle で提供されていないことを意味します。Mantle は標準の Amazon Bedrock カタログとは別の独自のモデルラインアップを持っているため、`us.anthropic.claude-sonnet-4-6` などの推論プロファイル ID は機能しません。Mantle 形式の ID を使用するか、[両方のエンドポイント](#run-mantle-alongside-the-invoke-api)を有効にして、Claude Code が推論プロファイル ID を Invoke API に送信するようにしてください。
+モデル ID が示された `400` は、そのモデルが Mantle で提供されていないことを意味します。Mantle には標準の Amazon Bedrock カタログとは別の独自のモデルラインナップがあるため、`us.anthropic.claude-sonnet-4-6` などの推論プロファイル ID は機能しません。
+
+エラーを解消するには:
+
+* **ゲートウェイを使用しない場合**: Mantle が提供している [Mantle 形式の ID](#select-a-mantle-model) を使用するか、[Mantle を Invoke API と併用して実行](#run-mantle-alongside-the-invoke-api)し、他の形式の ID をその API に送信します。
+* **ゲートウェイを経由する場合**: 使用するモデル ID をゲートウェイの運用者に確認してください。
 
 ## 追加リソース
 

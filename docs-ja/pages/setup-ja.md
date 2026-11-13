@@ -40,7 +40,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **macOS、Linux、WSL：**
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.sh | bash
 > ```
 >
@@ -48,13 +48,13 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **Windows PowerShell：**
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > irm https://claude.ai/install.ps1 | iex
 > ```
 >
 > **Windows CMD：**
 >
-> ```batch theme={null}
+> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 > ```
 >
@@ -72,7 +72,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] Homebrew
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > brew install --cask claude-code
 > ```
 >
@@ -84,7 +84,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] WinGet
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > winget install Anthropic.ClaudeCode
 > ```
 >
@@ -141,30 +141,12 @@ WSL ディストリビューションを開き、[インストール手順](#ins
 
 ### Alpine Linux と musl ベースのディストリビューション
 
-Alpine およびその他の musl/uClibc ベースのディストリビューション上に Claude Code をインストールするには、インストールコマンド用に `bash` と `curl` が必要であり、実行時に `libgcc`、`libstdc++`、および `ripgrep` が必要です。Alpine はデフォルトで `bash` と `curl` を含まないため、ドキュメント化されたインストールコマンドは `not found` エラーで失敗します。これらをインストールするまで、ディストリビューションのパッケージマネージャーを使用してこれらのパッケージをインストールしてから、`USE_BUILTIN_RIPGREP=0` を設定します。
+Alpine およびその他の musl ベースのディストリビューションでは、[インストールコマンド](#install-claude-code)に `bash` と `curl` が必要であり、Claude Code 自体には `bash` または `zsh` が必要です。Alpine にはデフォルトで `bash` も `curl` も含まれていないため、これらをインストールするまで、ドキュメントに記載されたインストールコマンドは `not found` エラーで失敗します。
 
 この例は Alpine で必要なパッケージをインストールします。
 
 ```bash theme={null}
-apk add bash curl libgcc libstdc++ ripgrep
-```
-
-Alpine では、`ripgrep` はコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、Alpine バージョンを使用して `/etc/apk/repositories` にコミュニティリポジトリを追加します。
-
-```bash theme={null}
-echo "https://dl-cdn.alpinelinux.org/alpine/v3.22/community" >> /etc/apk/repositories
-```
-
-`apk update` を実行してパッケージインデックスを更新し、`apk add` コマンドを再試行します。
-
-次に、[`settings.json`](https://code.claude.com/docs/ja/settings-reference#all-settings)ファイルで `USE_BUILTIN_RIPGREP` を `0` に設定します。
-
-```json theme={null}
-{
-  "env": {
-    "USE_BUILTIN_RIPGREP": "0"
-  }
-}
+apk add bash curl
 ```
 
 ## インストールを確認
@@ -443,7 +425,7 @@ Claude Code は署名付き apt、dnf、および apk リポジトリを公開�
 > wget -O /etc/apk/keys/claude-code.rsa.pub \
 >   https://downloads.claude.ai/keys/claude-code.rsa.pub
 > echo "https://downloads.claude.ai/claude-code/apk/stable" >> /etc/apk/repositories
-> apk add claude-code
+> apk add bash claude-code
 > ```
 >
 > `latest` チャネルに切り替えるには、`stable` リポジトリ行を削除し、`latest` リポジトリを追加します:

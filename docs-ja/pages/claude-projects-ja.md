@@ -274,6 +274,8 @@ Claude は**デバイス上のフォルダーで作業することを Claude に
 
 スレッドは[自動モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で実行されるため、Claude はそのフォルダー内のコマンドを実行し、毎回あなたに尋ねることなくファイルを編集します。自動モードがそのコンピューターの Claude Code で利用できないか、オフになっている場合、スレッドはそれなしで実行され、発生するすべての権限プロンプトは、[承認を待機しているスレッドのブロックを解除する](#unblock-a-thread-waiting-on-approval)が説明するように、スレッドであなたの答えを待ちます。
 
+別のモードでスレッドを実行するには、[`--settings`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) を付けて `claude remote-control` を開始します。そのうえで、そのファイルまたはそのコンピューターの設定にある [`permissions.defaultMode`](https://code.claude.com/docs/ja/permission-modes#start-in-a-different-mode) で別のモードを選択できます。
+
 スレッドが実行されている間、ヘッダーのラップトップアイコンはコンピューターが接続されているかどうかを示します。クリックしてスレッドが使用しているフォルダーを確認するか、接続をオフにします。そのコンピューターがスリープ状態の間、スレッドは一時停止し、デスクトップアプリまたは `claude remote-control` が終了すると停止します。
 
 * **スレッドを再開するには**：[フォルダーとの接続を失った](#lost-contact-with-your-folder)を参照してください

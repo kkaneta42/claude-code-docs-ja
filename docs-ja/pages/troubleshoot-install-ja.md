@@ -388,7 +388,7 @@ sudo chown -R $(whoami) ~/.local
 > Get-Command claude | Select-Object Source
 > ```
 
-Linux では、不足している共有ライブラリを確認してください。`ldd` が不足しているライブラリを表示する場合は、システムパッケージをインストールする必要があるかもしれません。Alpine Linux およびその他の musl ベースのディストリビューションについては、[Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。
+Linux では、不足している共有ライブラリを確認してください。`ldd` が不足しているライブラリを表示する場合は、システムパッケージをインストールする必要があるかもしれません。Alpine Linux およびその他の musl ベースのディストリビューションについては、[Linux の musl または glibc バイナリの不一致](#linux-musl-or-glibc-binary-mismatch)を参照してください。
 
 ```bash theme={null}
 ldd "$(command -v claude)" | grep "not found"
@@ -906,13 +906,11 @@ Windows には、スタートメニューに 2 つの PowerShell エントリが
 
 ### Linux musl または glibc バイナリの不一致
 
-インストール後に `libstdc++.so.6` や `libgcc_s.so.1` などの共有ライブラリが見つからないというエラーが表示される場合、インストーラーはシステムの間違ったバイナリバリアントをダウンロードした可能性があります。
+インストール後に `ld-linux-x86-64.so.2` や `ld-linux-aarch64.so.1` などの共有ライブラリが見つからないというエラーが表示される場合、インストーラーはシステムの間違ったバイナリバリアントをダウンロードした可能性があります。
 
 ```text theme={null}
-Error loading shared library libstdc++.so.6: No such file or directory
+Error loading shared library ld-linux-x86-64.so.2: No such file or directory
 ```
-
-これは、musl クロスコンパイルパッケージがインストールされている glibc ベースのシステムで発生する可能性があり、インストーラーがシステムを musl として誤検出します。
 
 **解決策：**
 
@@ -924,11 +922,7 @@ Error loading shared library libstdc++.so.6: No such file or directory
 
 2. **glibc にいるが musl バイナリを取得した場合**、インストールを削除して再インストールしてください。`https://downloads.claude.ai/claude-code-releases/{VERSION}/manifest.json` のマニフェストを使用して正しいバイナリを手動でダウンロードすることもできます。`ldd --version` と `ls /lib/libc.musl*` の出力を含む [GitHub issue](https://github.com/anthropics/claude-code/issues) をファイルしてください。
 
-3. **実際に musl にいる場合**（Alpine Linux など）、必要なパッケージをインストールしてください。
-   ```bash theme={null}
-   apk add libgcc libstdc++ ripgrep
-   ```
-   Alpine では、`ripgrep` はコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、[Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。
+3. **musl にいるが glibc バイナリを取得した場合**、[インストールを削除](https://code.claude.com/docs/ja/setup.md#uninstall-claude-code)してください。Alpine Linux では、まず [Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)に記載されているパッケージをインストールしてください。その後、[インストールコマンド](https://code.claude.com/docs/ja/setup.md#install-claude-code)を実行すると、musl バイナリがインストールされます。
 
 ### `Illegal instruction`
 

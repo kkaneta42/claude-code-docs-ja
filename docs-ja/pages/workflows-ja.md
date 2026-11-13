@@ -75,8 +75,6 @@ Claude Code には、組み込みワークフローとして `/deep-research` �
 | :- | :- |
 | `/deep-research <question>` | 複数の角度から質問に対する Web 検索を展開し、見つけたソースを取得してクロスチェックし、各クレームに投票し、クロスチェックで生き残らなかったクレームがフィルタリングされた引用されたレポートを返します。[WebSearch ツール](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)が利用可能である必要があります |
 
-`/deep-research` は、呼び出すときのみ実行されます。
-
 [自分で保存](#save-the-workflow-for-reuse)したワークフローは同じ方法でコマンドになり、バンドルされたものと一緒に `/` オートコンプリートに表示されます。
 
 ### 実行を監視する

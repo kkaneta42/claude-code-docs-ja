@@ -3000,7 +3000,7 @@ exit 0
 
 セッション中に設定ファイルが変更されたときに実行されます。設定変更の監査、セキュリティポリシーの適用、設定ファイルへの不正な変更のブロックに使用します。
 
-Claude Code は、設定ファイル、管理ポリシーファイル、またはスキルファイルが変更されたときに ConfigChange フックを実行します。管理ポリシーについては、`managed-settings.json` または `managed-settings.d/` 内のファイルが変更された場合にのみ実行します。[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)や、macOS の管理された環境設定、Windows レジストリのポリシーへの変更は、フックを実行せずに適用されます。[`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) を使用した WSL では、変更された Windows 側の管理設定ファイルも、ポリシーのポーリング時にフックを実行せずに適用されます。
+Claude Code は、設定ファイル、管理ポリシーファイル、またはスキルファイルが変更されたときに ConfigChange フックを実行します。管理ポリシーについては、`managed-settings.json` または `managed-settings.d/` 内のファイルが変更された場合にのみ実行します。
 
 matcher は設定のソースでフィルタリングします。
 
@@ -3012,7 +3012,13 @@ matcher は設定のソースでフィルタリングします。
 | `policy_settings` | `managed-settings.json` または `managed-settings.d/` 内のファイルが変更されたとき |
 | `skills` | `.claude/skills/` 内のスキルファイルが変更されたとき |
 
-次の例は、セキュリティ監査のためにすべての設定変更をログに記録します。
+次のような変更は、フックを実行せずに反映されます。
+
+* **Yes, and don't ask again**、`/permissions`、または `/model` で保存したルールと設定（保存元のセッション内）。同じファイルを別の開いているセッションが読み込む場合、そのセッションではフックが実行されます。
+* [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、macOS の管理プリファレンス、または Windows レジストリポリシーの更新
+* [`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) を使用している WSL で、Windows 側の管理設定ファイルが変更された場合（Claude Code はポリシーのポーリング時にこれを取り込みます）
+
+次の例は、セキュリティ監査のために設定の変更をログに記録します。
 
 ```json theme={null}
 {
@@ -3335,7 +3341,7 @@ Claude Code は、WorktreeCreate が返したパスをフックの入力の `wor
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'jq -r .worktree_path | xargs rm -rf'"
+            "command": "bash -c 'p=$(jq -er .worktree_path) && rm -rf -- \"$p\"'"
           }
         ]
       }

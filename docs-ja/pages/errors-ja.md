@@ -122,6 +122,7 @@
 | `A request to MCP server "<name>" was sent without your stored credentials` | [認証](#couldnt-read-the-stored-credentials-for-mcp-server) |
 | `This server's URL is missing or not a valid URL, so sign-in can't start` | [認証](#mcp-server-url-is-missing-or-not-a-valid-url) |
 | `Issuer mismatch in authorization response (RFC 9207)` | [認証](#issuer-mismatch-in-authorization-response) |
+| `Stopped an OAuth request` | [認証](#stopped-an-oauth-request) |
 | `Refusing to send credentials to non-https token endpoint` / `<short-name> from the MCP SDK for <server-url>` | [認証](#refusing-to-send-credentials-to-non-https-token-endpoint) |
 | `Cloud gateway session expired — run /login to reconnect.` | [認証](#cloud-gateway-session-expired) |
 | `Cloud gateway <url> no longer accepts this session` | [認証](#cloud-gateway-session-expired) |
@@ -251,6 +252,8 @@
 | `Ultrareview did not start` | [コマンドラインエラー](#ultrareview-did-not-start) |
 | `Remote Control did not start: "<question>" got no answer` | [コマンドラインエラー](#remote-control-did-not-start-got-no-answer) |
 | `` `<flag>` before `remote-control` is not carried over to the sessions Remote Control starts `` | [コマンドラインエラー](#not-carried-over-to-the-sessions-remote-control-starts) |
+| `Remote Control did not start, because sessions would skip part or all of the --settings file` | [コマンドラインエラー](#remote-control-did-not-start-because-of-the-settings-file) |
+| `The settings file <file> has changed since Remote Control started, so this session did not start` | [コマンドラインエラー](#settings-file-changed-since-remote-control-started) |
 | `--sandbox is not supported by claude remote-control` / `--no-sandbox is not supported by claude remote-control` | [コマンドラインエラー](#sandbox-is-not-supported-by-claude-remote-control) |
 | `` `claude import` is not yet available in this build `` | [コマンドラインエラー](#claude-import-is-not-yet-available-in-this-build) |
 | `Could not read Claude Code config` | [コマンドラインエラー](#could-not-read-claude-code-config) |
@@ -825,7 +828,7 @@ v2.1.302 より前では、Anthropic API への直接接続において、Claude
 同じ Claude の応答内の後続の呼び出しも、次の理由で拒否されることがあります。
 
 ```text theme={null}
-another call in this response was changed by a hook after auto mode reviewed it, or could not be confirmed unchanged
+another call in this response was changed after auto mode reviewed it, or could not be confirmed unchanged
 ```
 
 その後 Claude は、拒否された各呼び出しを再度発行して、サーバーにレビューさせることができます。権限プロンプトが開いた場合は、それに応答してください。Claude が応答の中で auto モードが呼び出しをチェックできなかったと述べない限り、他に何もする必要はありません。そう述べた場合は、変更を止めるか呼び出しを自分で承認してから、Claude にその呼び出しを再試行するよう依頼してください。
@@ -1822,6 +1825,19 @@ Issuer mismatch in authorization response (RFC 9207): expected "https://auth.exa
 
 v2.1.232 より前では、Claude Code は段階的なロールアウトの対象となった場合、または `MCP_SDK_GENERATION=v2` を設定した場合にのみ v2 ランタイムを使用していました。
 
+### Stopped an OAuth request
+
+このメッセージは、OAuth エンドポイントがリダイレクトを行ったため、Claude Code が [MCP サーバーの OAuth リクエスト](https://code.claude.com/docs/ja/mcp.md#authenticate-with-remote-mcp-servers)を停止したことを意味します。どちらの形式のメッセージでも、最初のアドレスがリダイレクトを送信した側です。
+
+```text theme={null}
+Stopped an OAuth request, which can hold secrets: https://auth.example.com redirected it to https://other.example.com. Ask the owner of https://auth.example.com to remove that redirect.
+Stopped an OAuth request: https://auth.example.com redirected it more than 5 times. Ask the owner of https://auth.example.com to fix those redirects.
+```
+
+**対処方法:**
+
+* MCP サーバーの運用者など、最初のアドレスを運用している人にリダイレクトの削除または修正を依頼してください。その後、`/mcp` からもう一度試します。
+
 ### 非 https のトークンエンドポイントへの認証情報の送信を拒否しました
 
 [v2 ランタイム](https://code.claude.com/docs/ja/mcp.md#mcp-client-runtimes)では、Claude Code は [MCP OAuth](https://code.claude.com/docs/ja/mcp.md#authenticate-with-remote-mcp-servers) のトークンリクエストを、HTTPS で提供されているトークンエンドポイント、または `localhost`、`127.0.0.1`、`::1` にあるトークンエンドポイントにのみ送信します。このメッセージは、サーバーのトークンエンドポイントがそのいずれでもないため、Claude Code がリクエストを送信する前に停止したことを意味します。これはブラウザでのサインイン後に発生するため、ブラウザのステップは先に成功します。また、Claude Code がサーバーのトークンを更新するたびにも発生します。
@@ -2207,7 +2223,7 @@ SSL certificate error (UNABLE_TO_GET_ISSUER_CERT_LOCALLY). If you are behind a c
 
 ### クラウドセッションでホストが許可されていません
 
-クラウドセッションまたはクラウドスケジュールタスクからのアウトバウンド HTTP リクエストが環境のネットワークポリシーによってブロックされました。
+クラウドセッションまたはクラウドスケジュールタスクでは、`403` や `ENOTFOUND` などの DNS エラーは、リクエストされたホストが [クラウド環境の許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#access-levels) に含まれていないことを意味する場合があります。確認するには、ホストをそのリストと照合してください。次のヘッダーを含む `403` はブロックを裏付けますが、ブロックされたリクエストのすべての `403` にこのヘッダーが含まれるわけではありません。
 
 ```text theme={null}
 HTTP 403
@@ -2565,6 +2581,8 @@ Unable to resize image — its pixels could not be decoded (the file may be dama
 
 Claude Code は通常、大きな画像を自動的にリサイズします。これらのエラーは、画像をデコードまたはリサイズして API 制限内に収めることができなかったことを意味します。
 
+表示されるエラーでは、これらの例の `2000x2000px` の代わりに `2576x2576px` など、異なるピクセル制限が示されることがあります。
+
 **対応方法：**
 
 * メッセージが画像を変換するよう求める場合は、PNG、JPEG、GIF、または WebP に変換して再度添付してください。Claude Code はファイルヘッダーからこれらの形式の寸法を確認でき、画像をデコードする必要はありません。
@@ -2873,7 +2891,7 @@ Model switch to Opus 4.6 was blocked by a PreModelSwitch hook: Opus 4.6 is retir
 * **フックが書いた理由**：PreModelSwitch フックが [切り替えを拒否したか確認を求めた](https://code.claude.com/docs/ja/hooks.md#premodelswitch-decision-control)際に、その理由を提供しました。求められていることに対応するか、フックが許可するモデルを選択してください。
 * **`PreModelSwitch hook <name> did not respond before its timeout`**：[タイムアウト](https://code.claude.com/docs/ja/hooks.md#timeouts)までに応答しないフックは切り替えをブロックします。ハングしているコマンドを修正するか、そのフックの `timeout` を上げてから、再度切り替えてください。
 * **`confirmation required, and this session cannot ask`**：フックが理由なしで `ask` と答えましたが、制御リクエストには確認プロンプトを表示する方法がありません。[`-p` 実行](https://code.claude.com/docs/ja/headless)での `/model` コマンドは、同じ状態を理由の後に `(run /model interactively to confirm)` を付けて報告します。対話セッションから切り替えを行うか、このモデルに対するフックの決定を変更してください。
-* **`so organization-managed PreModelSwitch hooks could not be checked`**：Claude Code は、組織の [管理プラグイン](https://code.claude.com/docs/ja/settings-reference.md#enabledplugins)が提供する PreModelSwitch フックを判断できませんでした（たとえば、管理プラグインの読み込みに失敗した場合）。それらのフックのいずれかが切り替えをブロックする可能性があるため、Claude Code は未確認のまま切り替えを適用するのではなく拒否します。理由の冒頭に失敗したものが示されます。Claude Code は切り替えを試みるたびに再チェックするため、その後解消された失敗はブロックしなくなります。失敗し続ける場合は、`claude --debug` を実行して再度切り替え、詳細をキャプチャしてから、プラグインを修正するか、管理者に修正を依頼してください。
+* **`so organization-managed PreModelSwitch hooks could not be checked`**: v2.1.323 より前の Claude Code は、[管理プラグイン](https://code.claude.com/docs/ja/settings-reference.md#enabledplugins)が提供する PreModelSwitch フックを判別できない場合に拒否します。このフレーズの前のテキストには、失敗した内容が示されます。拒否を止めるには、Claude Code をアップデートしてください。失敗したプラグインのフックも実行させるには、プラグインを修正するか管理者に依頼してください。詳細を確認するには、シェルで `claude --debug` を起動してモデルを切り替え、[デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks)を確認してください。
 * **`a PreModelSwitch hook failed before answering`** または **`PreModelSwitch hooks were cancelled (the control stream closed) before answering`**：フックの実行が判定なしで終了し、Claude Code はそれを承認として扱いません。`claude --debug` を実行して失敗したものを確認してから、再度切り替えてください。
 
 v2.1.260 より前では、管理プラグインによる拒否は `plugin hooks could not be loaded, so PreModelSwitch hooks could not be checked; see the debug log` と表示されていました。Claude Code はプラグインの読み込みを 1 回再試行した後、組織が管理プラグインを持っていない場合でも、セッション内のそれ以降の切り替えを拒否していました。これらのバージョンでは、セッションを再起動してプラグインの読み込みを再度実行してください。
@@ -3499,7 +3517,7 @@ Error: Workspace not trusted. Please run `claude` in /Users/you/project first to
 * **`Error: Workspace not trusted. <folder> is your home directory`**: ホームディレクトリの信頼は保存されないため、先にそこで `claude` を実行しても役に立ちません。代わりにプロジェクトディレクトリで一度 `claude` を実行して信頼ダイアログを承認した後、そこから `claude ultrareview` を実行するか、`--trust-workspace` を付けます。
 * **`No answer in time.` の後に `Error: Workspace not trusted` が続く場合**: `Trust <folder>? [y/N]` の質問が 5 分間回答されませんでした。`claude ultrareview` を再実行して回答します。
 * **`Ultrareview did not start: <folder> is not trusted`**: `n` と答えるか Enter を押すなどして、`Trust <folder>? [y/N]` の質問で拒否しました。レビューを開始するには、`claude ultrareview` を再実行して `y` と答えます。
-* **``Ultrareview did not start: `--trust-workspace` takes no value``**：PR 番号や `false` など、フラグ以外のものが `--trust-workspace` の後に続いています。フォルダーを信頼しない場合は、フラグを省略します。この実行でフォルダーを信頼するには、PR 番号またはベースブランチをフラグの前に置きます：`claude ultrareview 1234 --trust-workspace`。
+* **``Ultrareview did not start: `--trust-workspace` takes no value``**: `--trust-workspace` の後に、PR 番号や `false` など、フラグ以外のものが続いています。フォルダを信頼しない場合は、フラグを省略します。この実行に限り信頼する場合は、PR 番号またはベースブランチをフラグの前に置きます: `claude ultrareview 1234 --trust-workspace`。
 
 v2.1.309 より前は、`claude ultrareview` は `--trust-workspace` を受け付けませんでした。
 
@@ -3522,7 +3540,7 @@ Remote Control did not start: "Choose [1/2] (default: 1):" got no answer. You ca
 `remote-control` 動詞の前に、Remote Control が開始するセッションを制限または設定するグローバルな `claude` フラグ（`--settings`、`--setting-sources`、`--permission-mode`、`--disallowed-tools`、`--mcp-config` など）を付けて [Remote Control](https://code.claude.com/docs/ja/remote-control.md) を開始しました。動詞の前に置いたフラグは、それらのセッションには届きません。Claude Code は代わりに、フラグ名を示して開始を拒否します:
 
 ```text theme={null}
-Error: `--settings` before `remote-control` is not carried over to the sessions Remote Control starts, so Remote Control refuses to start rather than drop it — remove it, and give Remote Control's own options after the verb (see `claude remote-control --help`).
+Error: `--settings` before `remote-control` is not carried over to the sessions Remote Control starts, so Remote Control refuses to start rather than drop it — remove it, and give Remote Control's own options after the verb (see `claude remote-control --help`). Pass settings with `claude remote-control --settings <file>`.
 ```
 
 `--verbose`、`--model`、またはラッパーによって挿入された `--session-id` や `--plugin-dir` など、破棄しても問題のないグローバルフラグについては、Claude Code は拒否しません。それらを無視して Remote Control を開始します。
@@ -3535,6 +3553,31 @@ Claude Code は、まだ無害と認識していないグローバルフラグ�
 * 拒否されたフラグが `--permission-mode` の場合は、`claude remote-control --permission-mode <mode>` を実行して、Remote Control が開始するセッションの権限モードを設定します
 
 v2.1.248 より前は、グローバルフラグが先にある場合、`claude remote-control` は独自のフラグを受け付けず、コマンドは `unknown option` エラーで失敗していました。
+
+### Remote Control did not start because of the `--settings` file
+
+[`claude remote-control --settings`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) に渡したファイルに問題があります:
+
+```text theme={null}
+Error: Remote Control did not start, because sessions would skip part or all of the --settings file ./rc-settings.json: Invalid or malformed JSON
+```
+
+**対処方法:**
+
+* メッセージに示された問題を修正してから、`claude remote-control` コマンドを再度実行します
+
+### The settings file has changed since Remote Control started
+
+`claude remote-control` を実行しているターミナルに表示されるこのメッセージは、[`--settings`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) に渡したファイルの現在の内容ではセッションが開始されないことを意味します:
+
+```text theme={null}
+Session failed: Error: The settings file /path/to/settings.json has changed since Remote Control started, so this session did not start. Restart `claude remote-control` to use it as it is now.
+```
+
+**対処方法:**
+
+* ファイルを現在の内容で使用するには、`claude remote-control` を停止して同じコマンドを再度実行します。提供していたセッションを復元するには、[サーバー停止後にセッションを再開する](https://code.claude.com/docs/ja/remote-control.md#resume-sessions-after-stopping-the-server)を参照してください。
+* Remote Control の開始時の設定を維持するには、ファイルの内容を元に戻し、`claude remote-control` が終了している場合はコマンドを再度実行します
 
 ### `--sandbox` or `--no-sandbox` is not supported by claude remote-control
 
@@ -3806,8 +3849,8 @@ Claude Code は、[動的コンテキストを挿入する](https://code.claude.
 
 関連するメッセージは、コマンドが実行される前に発生します:
 
-* `Shell command permission check failed for pattern "..."`：コマンドの権限チェックで許可されませんでした。[注入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、`allowed-tools` でコマンドを事前承認する方法について説明しています
-* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``：スキルのフロントマターが、bash のないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[注入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
+* `Shell command permission check failed for pattern "..."`: コマンドの権限チェックで許可されませんでした。[挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)では、各権限モードでどの結果が中止につながるか、および `allowed-tools` でコマンドを事前承認する方法を説明しています
+* ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found``: スキルのフロントマターが、bash のないマシンで bash を要求しています。Git for Windows をインストールするか、フロントマターを `shell: powershell` に変更します。[挿入されたコマンドの実行方法](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)を参照してください
 
 **対処方法:**
 
@@ -3960,7 +4003,7 @@ Could not find merge-base with main. Pass the base branch explicitly (e.g. `/cod
 
 * **ベースブランチを渡さなかった場合**: Claude Code はリポジトリのデフォルトブランチと比較しており、上の例のようにベースブランチを明示的に渡すよう提案します
 * **クローン内に既に存在するベースブランチを渡した場合**: ヒントは ``Make sure <branch> exists locally or on origin (try `git fetch origin <branch>`)`` となります
-* **クローンに存在しないベースブランチを渡した場合**: Claude Code は比較の前にそのブランチを origin からフェッチしました。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンが shallow かどうかを Claude Code が判別できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前は、フェッチしたすべてのベースブランチに対して `git fetch --unshallow origin` を提案しており、完全なクローンではこのコマンドが `fatal: --unshallow on a complete repository does not make sense` で失敗していました。
+* **クローン内に存在しないベースブランチを渡した場合**: Claude Code は比較の前に origin からそのブランチをフェッチしました。ヒントは ``<branch> was fetched from origin but shares no history with HEAD. If another branch is your real base, pass it explicitly (`/code-review ultra <branch>`)`` となります。クローンがシャロークローンかどうかを Claude Code が判断できない場合は、代わりに `git fetch --unshallow origin` を提案します。v2.1.221 より前では、フェッチしたすべてのベースブランチに対してヒントが `git fetch --unshallow origin` を提案しており、完全なクローンではこのコマンドは `fatal: --unshallow on a complete repository does not make sense` で失敗していました。
 
 **対処方法:**
 
@@ -5466,12 +5509,13 @@ Can't open — this session is running in another terminal
 This conversation is already open in another running Claude session — use that one, or close it and try again
 ```
 
-* **`running in another terminal`**：ターミナルが会話を保持しています。例えば、`claude --resume` または `/resume` で再開したターミナル。行には `Open in a terminal` も表示されます。
-* **`already open in another running Claude session`**：別の非対話型 Claude Code プロセスがそれを保持しています。例えば、同じ会話の[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#the-supervisor-process)プロセスがまだ終了していません。
+* **`running in another terminal`**：バックグラウンドセッション以外のプロセスが会話を保持しています。例えば、`claude -p` の実行や、`claude --resume` または `/resume` で会話を再開したターミナルです。行には `Open in a terminal` も表示されます。
+* **`already open in another running Claude session`**：別の[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#the-supervisor-process)が会話を保持しています。
 
 **対処方法：**
 
-* 会話を開いているプロセスで会話を続けるか、そのプロセスを終了して行を再度開きます
+* `running in another terminal` の場合：そのターミナルで続行するか、そのプロセスを終了するか完了させてから、再度試します
+* `already open in another running Claude session` の場合：そのセッションを使用するか、そのセッションを停止してから、再度試します
 
 v2.1.248 より前では、`already open in another running Claude session` 拒否のみが存在していました：ターミナルで再開された会話は開いているとはカウントされず、行を開くと同じ会話に書き込む 2 番目の Claude Code プロセスが開始されました。
 

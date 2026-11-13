@@ -431,7 +431,7 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 各スケジュールタスクは、ネットワークアクセス、環境変数、セットアップスクリプトを制御する[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)を使用します。タスクは、すべての実行でその環境のネットワークポリシーを継承します。
 
-**Default** 環境は、**Allow package managers** がチェックされた **Limited** アクセスを使用するため、その実行は[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)にアクセスできます。ブロックされたホストへのリクエストは `403` と `x-deny-reason: host_not_allowed` で失敗します。MCP コネクタのトラフィックは Anthropic のサーバーを通じてルーティングされるため、タスクに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。不要なコネクタは[コネクタ](#connectors)で削除してください。
+**Default** 環境は、**Allow package managers** がチェックされた **Limited** アクセスを使用するため、その実行は[デフォルト許可リスト](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)にアクセスできます。ブロックされたホストへのリクエストは、[`403` や `ENOTFOUND` などのエラー](https://code.claude.com/docs/ja/errors#host-not-allowed-in-a-cloud-session)で失敗します。MCP コネクタのトラフィックは Anthropic のサーバーを通じてルーティングされるため、タスクに追加するコネクタは **Allowed domains** にホストを追加しなくても機能します。不要なコネクタは[コネクタ](#connectors)で削除してください。
 
 独自の環境のいずれかで追加のドメインを許可するには、以下の手順に従います。[組織共有環境](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments)はここでは読み取り専用で開くため、その場合は Owner が[管理設定](https://claude.ai/admin-settings)の **Cloud environments** ページからネットワークアクセスを変更します。
 

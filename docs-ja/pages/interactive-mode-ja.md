@@ -30,13 +30,13 @@
 | `Ctrl+T` | Claude のタスクチェックリストを切り替え | ステータス領域に[Claude のやることリスト](#task-list)を表示または非表示にします。これはバックグラウンドタスクビューではありません。実行中のシェルとサブエージェントを確認するには [`/tasks`](https://code.claude.com/docs/ja/commands) を使用してください |
 | `Ctrl+S` | プロンプトを保存または復元 | 入力にテキストがある場合、それを保存してプロンプトをクリアします。空のプロンプトで再度押すと、保存されたテキスト、カーソル位置、貼り付けられたコンテンツ、および入力モードが復元されるため、保存された `!` [シェルコマンド](#shell-mode-with-prefix)はシェルモードで戻ります |
 | `Ctrl+Z` | Claude Code を一時停止 | Unix のみ。プロセスをシェルに一時停止します。`fg` を実行して再開します |
-| `左/右矢印` | ダイアログタブを循環 | 権限ダイアログとメニューのタブ間を移動します。タブ付きダイアログでは、タブ行がフォーカスされている間、キーはタブを切り替えます。[タブアクション](https://code.claude.com/docs/ja/keybindings.md#tabs-actions)を参照して、フォーカスがどのように移動するかを確認してください |
+| `Left/Right arrows` | ダイアログタブを循環 | 権限ダイアログとメニューのタブ間を移動します。タブ付きダイアログでは、タブ行がフォーカスされている間、キーはタブを切り替えます。[タブアクション](https://code.claude.com/docs/ja/keybindings.md#tabs-actions)を参照して、フォーカスがどのように移動するかを確認してください |
 | `Tab` | オートコンプリート候補を受け入れるか、権限回答にコメントを追加 | プロンプト入力にオートコンプリート候補が表示されている場合、選択された候補を受け入れます。ほとんどの権限プロンプトで、**はい**または**いいえ**がフォーカスされている場合、そのオプションのコメントフィールドを開き、再度押すとフィールドを閉じます。[権限プロンプトに回答するときにコメントを追加](https://code.claude.com/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)を参照してください |
-| `上/下矢印` または `Ctrl+P`/`Ctrl+N` | カーソルを移動またはコマンド履歴を移動 | 入力が複数の視覚行にまたがる場合（ラップされているか複数行かどうか）、最初にプロンプト内でカーソルを移動します。カーソルが最初または最後の視覚行にある場合、再度押すとコマンド履歴を移動します。メッセージがキューに入っている場合、最初の行から `Up` を押すと代わりに[キューに入れたものを取り戻します](#take-back-what-you-queued) |
+| `Up/Down arrows` または `Ctrl+P`/`Ctrl+N` | カーソルを移動またはコマンド履歴を移動 | 入力が複数の視覚行にまたがる場合（ラップされているか複数行かどうか）、最初にプロンプト内でカーソルを移動します。カーソルが最初または最後の視覚行にある場合、再度押すとコマンド履歴を移動します。メッセージがキューに入っている場合、最初の行から `Up` を押すと代わりに[キューに入れたものを取り戻します](#take-back-what-you-queued) |
 | `Esc` | Claude を割り込むか、ダイアログを閉じる | 現在の応答またはツール呼び出しを途中で停止して、リダイレクトできます。Claude はこれまでの作業を保持します。[メッセージがキューに入っている](#queue-messages-while-claude-works)場合、Claude Code は次にそれらを送信します。ダイアログが開いている場合、`Esc` はダイアログを閉じます。フッター項目（[サブエージェントパネル](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)内の行など）が選択されている場合、`Esc` は割り込みの代わりに[それを選択解除](https://code.claude.com/docs/ja/keybindings.md#footer-actions)します。権限プロンプトでは、`Esc` はアクション（[コメントなしの**いいえ**](https://code.claude.com/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)と同じ）を拒否します |
 | `Esc` + `Esc` | 入力ドラフトをクリアするか、巻き戻す | プロンプト入力にテキストが含まれている場合、ダブル `Esc` はそれをクリアし、ドラフトを履歴に保存して `Up` で呼び出せるようにします。入力が空の場合、ダブル `Esc` は[巻き戻しメニュー](https://code.claude.com/docs/ja/checkpointing.md)を開いて、前の時点からコードと会話を復元または要約できます |
 | `Ctrl+Enter` または `Ctrl+X Ctrl+S` | キューに入れたメッセージを今すぐ送信 | [キューに入れたメッセージ](#queue-messages-while-claude-works)とドラフトを直ちに送信します。[Claude Code がキューに入れたものを送信するとき](#when-claude-code-sends-what-you-queued)は、Claude が作業中のターンに何が起こるかについて説明しています。[シェルモード](#shell-mode-with-prefix)では、キーはコマンドをキューに入れるだけです。拡張キーを報告しないターミナルでは、`Ctrl+Enter` は通常の `Enter` として到着します。`Ctrl+X Ctrl+S` はすべてのターミナルで機能します。Claude Code v2.1.275 以降が必要です |
-| `Shift+Tab`、または Node または Bun ランタイムが VT 入力モードを有効にしない場合は Windows で `Alt+M` | 権限モードを循環 | `default`（モード指標で Manual とラベル付け）、`acceptEdits`、`plan`、および利用可能な場合は `bypassPermissions` と `auto` を循環します。`auto` から、最初のプレスは `default` に切り替わります。[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を参照してください。ファイル権限プロンプトでは、同じキーが開いている[コメントフィールド](https://code.claude.com/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)を閉じます。フィールドが開いていない場合、プロンプトがそのオプションを提供するときに、セッションの残りの部分でアクションを許可するオプションを選択します |
+| `Shift+Tab`、または Node または Bun ランタイムが VT 入力モードを有効にしない場合は Windows で `Alt+M` | 権限モードを循環 | `default`（モード指標で Manual とラベル付け）、`acceptEdits`、`plan`、および利用可能な場合は `bypassPermissions` と `auto` を循環します。[権限モード](https://code.claude.com/docs/ja/permission-modes.md)を参照してください。ファイル権限プロンプトでは、同じキーが開いている[コメントフィールド](https://code.claude.com/docs/ja/permissions.md#add-a-comment-when-you-answer-a-permission-prompt)を閉じます。フィールドが開いていない場合、プロンプトがそのオプションを提供するときに、セッションの残りの部分でアクションを許可するオプションを選択します。プラン承認プロンプトでは、プランを承認します |
 | `Option+P`（macOS）または `Alt+P`（Windows/Linux） | モデルを切り替え | プロンプトをクリアせずにモデルを切り替え |
 | `Option+T`（macOS）または `Alt+T`（Windows/Linux） | 拡張思考を切り替え | 拡張思考モードを有効または無効にします。Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable モデルには効果がありません。これらは常に拡張思考を使用します。macOS で Option を Meta として設定せずに動作します |
 | `Option+O`（macOS）または `Alt+O`（Windows/Linux） | 高速モードを切り替え | [高速モード](https://code.claude.com/docs/ja/fast-mode.md)を有効または無効にします |
@@ -81,7 +81,7 @@
 | :- | :- | :- |
 | クイックエスケープ | `\` + `Enter` | すべてのターミナルで機能 |
 | Option キー | `Option+Enter` | macOS で[Option を Meta として](https://code.claude.com/docs/ja/terminal-config.md#enable-option-key-shortcuts-on-macos)有効にした後 |
-| Shift+Enter | `Shift+Enter` | iTerm2、WezTerm、Ghostty、Kitty、Warp、Apple Terminal、Windows Terminal でネイティブ。他のターミナルについては、[複数行プロンプトを入力](https://code.claude.com/docs/ja/terminal-config.md#enter-multiline-prompts)を参照してください |
+| Shift+Enter | `Shift+Enter` | iTerm2、WezTerm、Ghostty、Kitty、Warp、Windows Terminal でネイティブ。他のターミナルについては、[複数行プロンプトを入力](https://code.claude.com/docs/ja/terminal-config.md#enter-multiline-prompts)を参照してください |
 | 制御シーケンス | `Ctrl+J` | 設定なしで任意のターミナルで機能 |
 | ペーストモード | 直接貼り付け | コードブロック、ログの場合 |
 
@@ -136,8 +136,6 @@ Claude Code に含まれるコマンドの完全なリストについては、[�
 ## Vim エディタモード
 
 `/config` → Editor mode から vim スタイルの編集を有効にします。
-
-Claude Code は、`Ctrl+O` で[トランスクリプトビューア](#transcript-viewer)を切り替えたり、`/config` などのパネルを開いたり閉じたりするときに、vim モードとカーソル位置を保持します。プロンプトを NORMAL モードのままにしておくと、戻ってきたときも NORMAL モードのままで、カーソルは置いた場所にあります。
 
 ### モード切り替え
 
@@ -301,8 +299,6 @@ Claude Code はあなたが入力したプロンプトの履歴を保持し、�
 6. **検索をキャンセル**:
    * `Ctrl+C` を押してキャンセルし、元の入力を復元します
    * 空の検索で `Backspace` を押してキャンセルします
-
-マッチを受け入れるか検索をキャンセルすると、Claude Code がまだ履歴を読み込んでいる場合でも、直ちに有効になります。
 
 エラーログなど、以前のプロンプトに貼り付けた長い内容しか覚えていない場合にそのプロンプトを見つけるには、`Ctrl+R` を押して貼り付けた内容に含まれる単語を入力します。Claude Code v2.1.314 以降が必要です。
 
@@ -600,7 +596,7 @@ Claude Code が実行する 3 つのプログラムのうちどれを実行す�
 
 ### Claude Code が下線を引く内容
 
-入力を一時停止した直後、Claude Code は辞書が認識しない単語に下線を引きます。入力中の単語はそれを超えるまで放置し、テキストを変更することはありません。また、コードのように見えるテキストもスキップします。
+入力を一時停止した直後、Claude Code は辞書が認識しない単語に下線を引きます。入力中の単語は、カーソルがその単語を通り過ぎるまでそのままにします。また、コードのように見えるテキストもスキップします。
 
 * `/help`、`@` メンション、URL、ファイルパス、`--verbose` などのフラグなどのコマンド
 * 数字、アンダースコア、または最初の後に大文字を含む単語、およびバッククォート内のテキスト

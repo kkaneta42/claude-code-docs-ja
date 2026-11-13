@@ -177,7 +177,7 @@ claude --settings '{"model": "claude-opus-5-5"}'
 
 Claude Code は設定ファイルを監視し、変更時に再読み込みするため、`permissions`、`hooks`、および `apiKeyHelper` などの認証情報ヘルパーへの編集を含む、ほとんどの編集は再起動なしで実行中のセッションに適用されます。Claude Code は、セッションの途中で作成した設定ファイルも、そのフォルダがセッション開始時に存在していれば読み込みます。プロジェクトの `.claude/` フォルダについては、同じセッション内でフォルダを作成した場合でもファイルを読み込みます。
 
-再読み込みはユーザー、プロジェクト、ローカル、および管理設定をカバーし、Claude Code は検出した各設定ファイル変更に対して [`ConfigChange` hook](https://code.claude.com/docs/ja/hooks#configchange) を実行します。MDM または claude.ai コンソールから到達する管理設定ではありません。MDM または claude.ai コンソールから到達する管理設定は、保存時ではなくスケジュールに従って実行中のセッションに到達します。[配信テーブル](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism)はソースごとにそれを提供します。
+再読み込みはユーザー、プロジェクト、ローカル、および管理設定をカバーします。Claude Code は設定ファイルへの直接の編集に対して [`ConfigChange` フック](https://code.claude.com/docs/ja/hooks#configchange)を実行しますが、MDM または claude.ai コンソールから到達する管理設定に対しては実行しません。MDM または claude.ai コンソールから到達する管理設定は、保存時ではなくスケジュールに従って実行中のセッションに到達します。[配信テーブル](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism)はソースごとにそれを示しています。
 
 Claude Code はセッション開始時に一度だけいくつかのキーを読み込むため、そのうちの 1 つへの編集は実行中のセッションに到達しません。`requiredMinimumVersion` などの管理者側のキーも再起動を待ちます。[ポリシーが適用される場所と時期](https://code.claude.com/docs/ja/managed-settings.md#where-and-when-a-policy-applies)の下にリストされています。セッション中に編集する可能性が最も高いもの：
 

@@ -35,9 +35,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 以下の表は、Claude Code に含まれるすべてのコマンドを一覧にしています。ほとんどは組み込みコマンドで、その動作は CLI にコード化されています。2 種類のエントリが標記されています：
 
 * **[Skill](https://code.claude.com/docs/ja/skills.md#bundled-skills)**: バンドルスキル。自分で書くスキルと同じように機能します：Claude に渡されるプロンプトです。
-  * `/verify` は呼び出したときのみ実行されます。
 * **[Workflow](https://code.claude.com/docs/ja/workflows.md#bundled-workflows)**: バンドルされた[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)で、多くのサブエージェントに作業を展開し、バックグラウンドで実行されます。
-  * `/deep-research` は呼び出したときのみ実行されます。
 
 独自のコマンドを追加するには、[スキル](https://code.claude.com/docs/ja/skills.md)を参照してください。
 

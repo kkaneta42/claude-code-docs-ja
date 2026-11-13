@@ -152,7 +152,7 @@ Search ツール、`@file` メンション、カスタムエージェント、�
 > apk add ripgrep
 > ```
 >
-> `ripgrep` は Alpine のコミュニティリポジトリにあります。`apk` がパッケージが見つからないと報告する場合は、[Alpine Linux セットアップ](https://code.claude.com/docs/ja/setup.md#alpine-linux-and-musl-based-distributions)を参照してください。
+> `ripgrep` は Alpine のコミュニティリポジトリにあります。
 
 > [tab] Arch
 >

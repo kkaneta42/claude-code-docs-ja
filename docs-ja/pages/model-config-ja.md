@@ -157,9 +157,11 @@ v2.1.144 から v2.1.152 では、`/model` は現在のセッションにのみ�
 
 起動時のアクティブなモデルが自分の選択ではなくプロジェクト設定または管理設定に由来する場合、起動時のヘッダーにどの設定ファイルで設定されたかが表示されます。上書きするには `/model` を実行します。プロジェクト設定または管理設定は次回の起動時に再適用されます。Claude Code を組み込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定しているプラットフォームでは、ホストのモデル設定が管理設定のモデル設定より優先されます。一方、管理設定の `availableModels` 許可リストは、ホストが独自のものを提供しない限り有効なままです。ホストがどのキーと変数を上書きするかについては、[管理設定の優先順位の例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を参照してください。
 
-ユーザーまたは組織が [PreModelSwitch フック](https://code.claude.com/docs/ja/hooks.md#premodelswitch)を設定している場合、それらは要求された切り替えが適用される前に実行され、切り替えをブロックしたり確認を求めたりできます。
+ユーザーまたは組織が [PreModelSwitch フック](https://code.claude.com/docs/ja/hooks.md#premodelswitch)を設定している場合、それらは要求された切り替えが適用される前に実行され、切り替えをブロックしたり確認を求めたりできます。フックが切り替えをブロックした理由と対処方法については、[Model switch was blocked by a PreModelSwitch hook](https://code.claude.com/docs/ja/errors.md#model-switch-was-blocked-by-a-premodelswitch-hook) を参照してください。
 
-組織の[管理プラグイン](https://code.claude.com/docs/ja/settings-reference.md#enabledplugins)がどの PreModelSwitch フックを提供しているかを Claude Code が判断できない場合（たとえば管理プラグインの読み込みに失敗した場合）、Claude Code は確認されないまま切り替えを適用するのではなく切り替えを拒否し、新しい試行のたびに再度確認します。メッセージと復旧方法については、[Model switch was blocked by a PreModelSwitch hook](https://code.claude.com/docs/ja/errors.md#model-switch-was-blocked-by-a-premodelswitch-hook) を参照してください。
+[管理プラグイン](https://code.claude.com/docs/ja/settings-reference.md#enabledplugins)またはそのフックの読み込みに失敗した場合でも、モデルを切り替えることはできます。そのプラグインの PreModelSwitch フックは実行されないため、それらのフックがブロックしていたはずの切り替えも実行される可能性があります。読み込まれたその他の PreModelSwitch フックは引き続き実行され、切り替えをブロックできます。v2.1.323 より前の Claude Code が `so organization-managed PreModelSwitch hooks could not be checked` というメッセージで切り替えを拒否する場合は、Claude Code を更新してください。
+
+何が失敗したかを確認するには、セッションで `/plugin` を実行し、[**Errors** タブ](https://code.claude.com/docs/ja/plugins/troubleshooting.md#failed-to-load-hooks-from-and-hooks-that-dont-fire)を開きます。そこに何も表示されない場合は、シェルから `claude --debug` で新しいセッションを開始し、別のモデルに切り替えてから、[デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks)を確認してください。プラグインを修正した後、または[プラグインの更新](https://code.claude.com/docs/ja/plugins/install.md#keep-plugins-updated)によって管理者の修正がマシンに反映された後は、セッションで `/reload-plugins` を実行してそのフックを実行できるようにします。
 
 [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) の `setModel()` メソッド、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)などのアプリ、または [Remote Control](https://code.claude.com/docs/ja/remote-control.md) 経由で接続されたデバイスからモデルを切り替える場合、Claude Code は切り替え時に値を確認します。
 
@@ -903,7 +905,7 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 
 ### ゲートウェイまたはカスタムモデル ID のウィンドウを修正する
 
-次の起動時の警告のいずれかが表示された場合、Claude Code はセッションのモデル ID を認識していないため、そのモデルのコンテキストウィンドウを判別できず、200K トークンを想定しています。
+次の警告のいずれかが表示された場合、Claude Code はセッションのモデル ID を認識していないため、そのモデルのコンテキストウィンドウを判別できず、200K トークンを想定しています。
 
 ```text theme={null}
 ⚠ Model "my-gateway-opus" isn't recognized · context assumed to be 200k tokens · ...

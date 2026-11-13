@@ -581,7 +581,7 @@ ctrl+k ctrl+s   Ctrl+K を押して、リリースしてから Ctrl+S
 
 Claude Code は、`ctrl+x` プレフィックスに以下のデフォルトの chord をコンテキストごとにバインドしています。
 
-* `Chat`：`ctrl+x ctrl+k`、`ctrl+x ctrl+e`、`ctrl+x enter`、`ctrl+x ctrl+a`、`ctrl+x ctrl+s`、`ctrl+x tab`
+* `Chat`：`ctrl+x ctrl+k`、`ctrl+x ctrl+e`、`ctrl+x enter`、`ctrl+x ctrl+a`、`ctrl+x ctrl+s`、`ctrl+x tab`、`ctrl+x ctrl+=`、`ctrl+x ctrl+-`、`ctrl+x ctrl+_`、`ctrl+x =`、`ctrl+x -`
 * `Task`：`ctrl+x ctrl+b`
 * `DiffPanel`：`ctrl+x b`
 * `Pane`：`ctrl+x left`、`ctrl+x right`、`ctrl+x up`、`ctrl+x down`、`ctrl+x x`
@@ -631,6 +631,11 @@ Claude Code は、`ctrl+x` プレフィックスに以下のデフォルトの c
         "ctrl+x ctrl+a": null,
         "ctrl+x ctrl+s": null,
         "ctrl+x tab": null,
+        "ctrl+x ctrl+=": null,
+        "ctrl+x ctrl+-": null,
+        "ctrl+x ctrl+_": null,
+        "ctrl+x =": null,
+        "ctrl+x -": null,
         "ctrl+x": "chat:newline"
       }
     }

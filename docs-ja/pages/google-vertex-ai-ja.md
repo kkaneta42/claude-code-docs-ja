@@ -228,11 +228,16 @@ Claude Code が Google Cloud の Agent Platform で設定されて起動する�
 
 ### セッション中にモデルが無効化された場合
 
-プロジェクトがセッションで実行しているモデルへのアクセスを失った場合（例えば、管理者が [Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)で無効化した場合）、Claude Code は各リクエストが失敗する代わりにセッションを別のモデルに切り替え、`Switched to <fallback> because <model> is not available` を表示します。起動時フォールバックと同じモデルを試します。同じティアの以前のバージョンを最初に試し、Opus セッションで Opus バージョンが利用できない場合は、デフォルト Sonnet モデルを試します。
+Agent Platform がセッションのモデルをプロジェクトまたはリージョンで利用できないとして拒否した場合、Claude Code はセッションを別のモデルに切り替えるため、作業を続けることができます。`Switched to <fallback> because <model> is not available` で始まるメッセージが表示されます。これは、例えば管理者が [Model Garden](https://console.cloud.google.com/vertex-ai/model-garden) でモデルを無効化した場合や、リージョンでそのモデルが提供されていない場合に発生します。
 
-切り替えは、ピン留めしていないティアにのみ適用されます。これは起動時フォールバックと同じ条件です。選択した特定のバージョンでのセッションはそのモデルを保持し、フォールバックモデルチェーンがない場合、リクエストは失敗します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)では、Claude Code は Agent Platform で auto モードがサポートするモデルにのみ切り替えます。それらのモデルも利用できない場合、リクエストは失敗します。
+[フォールバックモデルチェーン](https://code.claude.com/docs/ja/model-config.md#fallback-model-chains)を設定している場合、Claude Code は代わりに設定したフォールバックに切り替えます。チェーンがない場合、次のようなケースではリクエストが失敗します。
 
-設定した[フォールバックモデルチェーン](https://code.claude.com/docs/ja/model-config.md#fallback-model-chains)はティア切り替えを置き換えます。これらの拒否時に Claude Code は設定したフォールバックに切り替えます。拒否されたリクエストが切り替わらずに失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。設定したフォールバックチェーンはこれらの拒否時に切り替わります。すべての拒否されたリクエストが失敗するようにしたい場合は、チェーンも削除してください。
+* セッションがピン留めされたモデル、または選択した特定のバージョンを使用している
+* [Claude Code が試すモデル](#startup-model-checks)のいずれも利用できない。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#enable-auto-mode-on-bedrock-agent-platform-or-foundry)では、Claude Code は Agent Platform で auto モードがサポートするモデルにのみ切り替えます。
+
+作業を続けるには、セッションで `/model` を実行し、プロジェクトとリージョンで利用可能なモデル上で `s` を押してください。この操作ではデフォルトは変更されません。
+
+拒否されたリクエストが切り替わらずに失敗するようにするには、[`CLAUDE_CODE_DISABLE_MODEL_ACCESS_FALLBACK=1`](https://code.claude.com/docs/ja/env-vars)を設定してください。フォールバックモデルチェーンを設定している場合は、それも削除してください。Claude Code はそのフォールバックには引き続き移行するためです。
 
 ## IAM 設定
 

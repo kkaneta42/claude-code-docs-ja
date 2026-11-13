@@ -147,23 +147,9 @@ Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Micr
 
 ## Azure RBAC 構成
 
-`Azure AI User` および `Cognitive Services User` デフォルトロールには、Claude モデルを呼び出すために必要なすべての権限が含まれています。
+Microsoft Entra ID、またはそれが発行したベアラートークンで認証する場合は、Foundry リソースに対して ID に `Foundry User` ロールまたは `Cognitive Services User` ロールを割り当ててください。`Foundry User` は、以前の名前である `Azure AI User` で表示される場合もあります。
 
-より制限的な権限の場合は、以下を含むカスタムロールを作成します：
-
-```json theme={null}
-{
-  "permissions": [
-    {
-      "dataActions": [
-        "Microsoft.CognitiveServices/accounts/providers/*"
-      ]
-    }
-  ]
-}
-```
-
-詳細については、[Microsoft Foundry RBAC ドキュメント](https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/rbac-azure-ai-foundry)を参照してください。
+これらのロールが要件を満たさない場合は、カスタムロールについて [Microsoft Foundry RBAC ドキュメント](https://learn.microsoft.com/en-us/azure/foundry/concepts/rbac-foundry)を参照してください。
 
 ## 1M トークンのコンテキストウィンドウ
 

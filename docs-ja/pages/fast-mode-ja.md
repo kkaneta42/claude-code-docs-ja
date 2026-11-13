@@ -98,7 +98,7 @@ fast mode の支出がどこに表示されるかは、サインイン方法に�
 
 * **Pro、Max、Ultra**：使用クレジットから fast mode の料金を支払います。claude.ai の [**設定 > 使用状況**](https://claude.ai/settings/usage)に移動します。ここで、**使用クレジット**セクションに今月の使用クレジットの支出額が表示されます。この数字には fast mode が含まれていますが、別途に分類されていません。
 * **Team と Enterprise**：組織が使用クレジットから高速モード使用の料金を支払います。自分の使用クレジット支出を確認するには、[`/usage`](https://code.claude.com/docs/ja/costs#check-your-usage-credits-spend)を実行してください。組織がその支出をどこで確認するかについては、[Claude for Teams and Enterprise](https://code.claude.com/docs/ja/costs.md#claude-for-teams-and-enterprise)を参照してください。
-* **Claude Console**：組織が API 使用の残りの部分と一緒に fast mode の料金を支払います。Console の[使用状況](https://platform.claude.com/usage)ページと[コスト](https://platform.claude.com/cost)ページで、**グループ化**メニューの **速度（リサーチプレビュー）** を選択して、fast mode を標準速度の使用から分離します。選択した日付範囲に fast mode の使用が含まれている場合にのみ、このオプションが表示されます。
+* **Claude Console**：組織が API 使用の残りの部分と一緒に fast mode の料金を支払います。Console の[使用状況](https://platform.claude.com/usage)ページと[コスト](https://platform.claude.com/cost)ページで、**グループ化**メニューの **速度** を選択して、fast mode を標準速度の使用から分離します。選択した日付範囲に fast mode の使用が含まれている場合にのみ、このオプションが表示されます。
 
 ## 高速モードの使用時期を判断する
 

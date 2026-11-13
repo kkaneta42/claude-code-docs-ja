@@ -26,7 +26,7 @@ Enter キーを押すとメッセージが送信されます。送信せずに�
 
 | ターミナル | 改行用の Shift+Enter |
 | :- | :- |
-| Ghostty、Kitty、iTerm2、WezTerm、Warp、Apple Terminal、Windows Terminal | セットアップなしで機能 |
+| Ghostty、Kitty、iTerm2、WezTerm、Warp、Windows Terminal | セットアップなしで機能 |
 | kitty キーボードプロトコルをサポートする他のターミナル（foot や Alacritty 0.16 以降など） | セットアップなしで機能。Claude Code v2.1.269 以降が必要です |
 | VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed | 1 回 `/terminal-setup` を実行 |
 | gnome-terminal、PyCharm や Android Studio などの JetBrains IDE | 利用不可。Ctrl+J または `\` の後に Enter を使用 |

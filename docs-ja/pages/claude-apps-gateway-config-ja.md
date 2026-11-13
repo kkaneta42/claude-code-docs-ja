@@ -654,7 +654,7 @@ upstreams:
 
 | セットアップ | 方法 |
 | - | - |
-| RBAC | ゲートウェイの ID に、Microsoft Foundry リソースに対する `Azure AI User` または `Cognitive Services User` を付与します |
+| RBAC | ゲートウェイの ID に、Microsoft Foundry リソースに対する `Foundry User` または `Cognitive Services User` ロールを付与します |
 | デプロイ | Microsoft Foundry は、正規のモデル ID ではなく管理者が選択したデプロイ名を使用します。各正規 ID をデプロイ名にマッピングする [`models:`](#models) ブロックを追加してください。 |
 | AKS（ワークロード ID） | ユーザー割り当てマネージド ID をクラスターの OIDC 発行者とフェデレーションし、ゲートウェイのサービスアカウントにバインドします。`use_azure_ad: true` が `WorkloadIdentityCredential` 経由でそれを取得します。 |
 | ACI / App Service | リソースでシステム割り当てまたはユーザー割り当てのマネージド ID を有効にします。`use_azure_ad: true` がそれを取得します。 |
@@ -999,6 +999,8 @@ models:
 
 `upstream_model` の各キーは、設定された上流の `name` と一致する必要があります。デフォルトはプロバイダー名です。キーが上流と一致しない場合、ブート失敗を引き起こすため、使用しないプロバイダーの行は省略してください。
 
+`auto_include_builtin_models: false` で開発者が `fable` エイリアスを使用できるようにするには、`models` に `claude-fable-5` エントリを追加します。これは、ゲートウェイにサインインした開発者に対して [`fable` エイリアス](https://code.claude.com/docs/ja/model-config#fable-alias-resolution) が解決される ID です。これがないと、メッセージは `API Error: 400 model claude-fable-5 is not in the operator's model allowlist` で始まるエラーで失敗します。
+
 ### `managed`
 
 `managed` ブロックは、IdP グループまたはメールドメインをキーとするロールベースのアクセスポリシーを定義します。ポリシーは順番に評価されます。デフォルトでは最初に一致したポリシーが選択され、`match: {}` のキャッチオールのベースにマージされます。2 つのロールポリシーに一致するユーザーには最初のポリシーのみが適用されるため、[一致するすべてのポリシーを適用](#apply-every-matching-policy)しない限り、2 番目のポリシーの拒否ルールは適用されません。ポリシーは `GET /managed/settings` でユーザーごとに提供され、ETag/304 によるキャッシュが行われます。
@@ -1023,7 +1025,11 @@ managed:
 `match: {}` キャッチオール（慣例的に最後にリストされる）は基盤層として扱われます。他のすべてのポリシーは、設定しないキーをキャッチオールから継承するため、ロールごとのエントリは組織のデフォルトと異なる内容のみをリストすれば済みます。マージルールはキータイプに依存します：
 
 * **許可リスト**：`availableModels` と `permissions.allow`。特定のポリシーのリストは基盤のリストを完全に置き換えます。
-* **拒否リストとフック配列**：`permissions.deny`、`permissions.ask`、`disabledMcpjsonServers`、`deniedMcpServers`、`blockedMarketplaces`、`deniedModels`、およびすべての `hooks` イベントタイプ配列。これらはベースとポリシーの和集合をとるため、組織全体の拒否や監査フックがロールごとの上書きによって誤って失われることはありません。
+* **拒否リストとフック配列**: ベースとポリシーの和集合になります。
+  * `permissions.deny` と `permissions.ask`
+  * `disabledMcpjsonServers` と `deniedMcpServers`
+  * `blockedMarketplaces` と `deniedModels`
+  * `hooks` のイベントタイプ配列
 * **レコード型キー**：`env`、`modelOverrides`、`skillOverrides`。これらは浅くマージされるため、ロールごとの `env` ブロックは設定するキーを上書きし、残りを基盤から継承します。
 
 `availableModels` は `/v1/messages` でサーバー側でも強制されるため、拒否されたモデルはクライアントが送信する内容に関わらず `400` を返します。空のリストはすべてのモデルを拒否します。このチェックは、デベロッパーがモデルを選択する前にセッションが開始するモデルにも適用されるため、[ポリシーが許可するモデルでセッションを開始](#start-sessions-on-a-model-the-policy-allows) してください。

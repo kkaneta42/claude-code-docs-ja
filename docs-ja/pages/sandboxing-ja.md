@@ -276,6 +276,8 @@ v2.1.260 より前は、strict sandbox モードはすべてのセッション�
 
 これらのパスは OS レベルで適用されるため、サンドボックス内で実行されるすべてのコマンドは、その子プロセスも含めてこれらに従います。ツールが特定の場所への書き込みアクセスを必要とする場合は、`excludedCommands` でツールをサンドボックスから完全に除外するのではなく、この方法を使用することを推奨します。
 
+Linux と WSL2 では、まだ存在しないパスのエントリは効果がないため、先にそのパスを作成してください。
+
 同じファイルシステム配列を複数の[設定スコープ](https://code.claude.com/docs/ja/settings.md#settings-precedence)で定義した場合、Claude Code はそれらをマージし、あるスコープの配列を別のスコープの配列で置き換えるのではなく、すべてのスコープのパスを結合します。[開発者がポリシーを広げないようにする](#keep-developers-from-widening-the-policy)で説明しているロックがエントリを対象としている場合、Claude Code はそのエントリをマージから除外します。
 
 CLI の [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference) や Agent SDK の [`settingSources`](https://code.claude.com/docs/ja/agent-sdk/claude-code-features#control-filesystem-settings-with-settingsources) で設定ソースを除外した場合、Claude Code はサンドボックス設定を構築する際に、そのソースの `sandbox.filesystem` エントリ、`Edit` 権限ルール、`Read` 拒否ルールを無視します。Claude Code v2.1.246 以降が必要です。
@@ -376,9 +378,9 @@ Claude Code は、Bash と Monitor の各呼び出しに対してエントリを
 
 ファイルシステム分離をオフにすると、サンドボックス化されたコマンドができることが広がるため、Claude Code は以下の設定ソースからの `filesystem.disabled` のみを尊重します。
 
-* ユーザー設定、管理設定、および `--settings` CLI フラグで設定できます。`.claude/settings.json` と `.claude/settings.local.json` のプロジェクト設定では設定できないため、チェックアウトしたプロジェクトがファイルシステム分離をオフにすることはできません。
-* 管理設定が `sandbox.filesystem` を何らかの形で設定している場合、または `"mode": "deny"` の `sandbox.credentials.files` エントリを記載している場合は、管理設定のみがこのキーを設定できます。これにより、そのようなデプロイで開発者がファイルシステム分離をオフにすることを防ぎます。全員に対してオフにするには、管理設定で `"disabled": true` を設定します。
-* [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](https://code.claude.com/docs/ja/env-vars) が設定されている場合、Claude Code は管理設定を含むすべてのソースからの `filesystem.disabled` を無視し、ファイルシステム分離をオンのまま維持します。
+* ユーザー設定、管理設定、および `--settings` CLI フラグで設定できます。`.claude/settings.json` と `.claude/settings.local.json` のプロジェクト設定では設定できません。
+* 管理設定が `sandbox.filesystem` を何らかの形で設定している場合、または `"mode": "deny"` の `sandbox.credentials.files` エントリを記載している場合は、管理設定のみがこのキーを設定できます。全員に対してファイルシステム分離をオフにするには、管理設定で `"disabled": true` を設定します。
+* [`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB`](https://code.claude.com/docs/ja/env-vars) が設定されている場合、Claude Code は管理設定を含むすべてのソースからの `filesystem.disabled` を無視します。
 
 [有効な](https://code.claude.com/docs/ja/settings-reference.md#invalid-credential-entries-in-managed-settings) `mask` エントリは、起動時に Claude Code がそのエントリについて [`deny` にフォールバック](#mask-credential-files)した場合でも、このキーを固定しません。認証情報ディレクトリのようにマスクできないパスは、管理設定で明示的な `deny` エントリとして記載してください。これによりキーが固定されます。
 

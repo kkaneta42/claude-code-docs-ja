@@ -84,7 +84,7 @@ GitHub がワークフローに発行する OIDC トークンを信頼するよ�
 > リポジトリ用のフェデレーション認証情報を持つ Microsoft Entra アプリケーションを作成し、[GitHub Actions から認証するための Microsoft ガイド](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect) に従います。
 >
 > * Microsoft Entra アプリケーションを登録し、GitHub がリポジトリに発行するトークンを信頼するフェデレーション ID 認証情報を追加します。ユーザー割り当てマネージドアイデンティティはアプリケーションの代わりに機能します。どちらも以下でメモするクライアント ID を持ちます
-> * Foundry リソースでアプリケーションに `Azure AI User` ロールを割り当てます。より狭いカスタムロールについては [Azure RBAC 構成](https://code.claude.com/docs/ja/microsoft-foundry.md#azure-rbac-configuration) を参照してください
+> * Foundry リソースでアプリケーションに `Foundry User` ロールを割り当てます。もう 1 つの組み込みロールとカスタムロールについては [Azure RBAC 構成](https://code.claude.com/docs/ja/microsoft-foundry.md#azure-rbac-configuration) を参照してください
 >
 > アプリケーションのクライアント ID、テナント ID、サブスクリプション ID をメモします。次のステップでシークレットとして追加します。
 

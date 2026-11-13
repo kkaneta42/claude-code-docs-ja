@@ -83,11 +83,16 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 **8. 権限モードとモデルを選択する**
 
-指示ボックスのツールバーで、[権限モード](#permissions-for-scheduled-tasks)とモデルを選択します。変更しない場合、実行には Claude Code の設定とデフォルトのモデルが使用されます。
+指示ボックスのツールバーで、[権限モード](#permissions-for-scheduled-tasks)とモデルを選択します。
+
+* **権限モード**：変更しない場合、実行には Claude Code の設定が使用されます。
+* **モデル**：モデルメニューに **Default · Set by admin** と表示されていて、別のモデルを選択しない場合、実行には組織が[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で設定したモデルが使用されます。アプリの起動時に開始される[キャッチアップ実行](#missed-runs)では、代わりに[アカウントのランタイムデフォルト](https://code.claude.com/docs/ja/model-config.md#default-model-setting)が使用される場合があります。
 
 **9. タスクを作成する**
 
 **Create** をクリックします。まだフォルダを信頼していない場合は、この時点で Desktop がフォルダを信頼するよう求めます。タスクの詳細ページが開きます。
+
+**Default · Set by admin** がどのモデルを表しているかを確認するには、詳細ページで **Run now** をクリックしてタスクをすぐに実行します。次に[その実行のセッションを開く](#find-a-runs-session)と、プロンプトボックスの下の行にモデル名が表示されます。
 
 詳細ページで鉛筆アイコンをクリックすると、[**Edit** フォーム](#manage-scheduled-tasks)が開きます。そこでは、Desktop が指示から自動入力した **Description** を変更したり、**Worktree** を選択したり、スケジュールを **Manual** または **Custom** に切り替えたりできます。
 
@@ -181,7 +186,7 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 タスクが `update_scheduled_task` MCP ツールを使用して自身のスケジュールまたはプロンプトを変更できるようにするには、**Run now** をクリックし、その呼び出しを毎回承認してください。
 
-ディスク上のタスクのプロンプトを編集するには、`~/.claude/scheduled-tasks/<task-name>/SKILL.md` を開きます（[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) が設定されている場合はその下）。ファイルは `name` と `description` の YAML frontmatter を使用し、プロンプトが本文です。変更は次の実行時に有効になります。スケジュール、フォルダ、モデル、および有効な状態はこのファイルにはありません。Edit フォームを通じて変更するか、Claude に尋ねます。
+ディスク上のタスクのプロンプトを編集するには、`~/.claude/scheduled-tasks/<task-name>/SKILL.md` を開きます（[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) が設定されている場合はその下）。ファイルは `name` と `description` の YAML フロントマターを使用し、プロンプトが本文です。変更は次の実行時に有効になります。スケジュール、フォルダ、および有効な状態はこのファイルにはありません。Edit フォームを通じて変更するか、Claude に尋ねます。
 
 ## 関連リソース
 

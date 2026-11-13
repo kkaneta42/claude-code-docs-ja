@@ -67,13 +67,14 @@ Remote Control セッションは、CLI、[Claude Desktop アプリ](https://cod
 > | `--capacity <N>` | 同時セッションの最大数です。デフォルトは 32 です。`--spawn=session` とは併用できません。 |
 > | `--[no-]create-session-in-dir` | サーバー起動時に現在のディレクトリにセッションを 1 つ事前作成し、すぐに入力できるようにします。`worktree` モードでは、このセッションは現在のディレクトリに留まり、オンデマンドのセッションは分離された worktree を取得します。デフォルトでオンです。`--no-create-session-in-dir` を渡してセッションなしで起動した場合、Claude Code はサーバーを停止したときにそのセッションをアーカイブするため、[再開](#resume-sessions-after-stopping-the-server)できるものは残りません。 |
 > | `--permission-mode <mode>` | サーバーのセッションの開始時の[権限モード](https://code.claude.com/docs/ja/permission-modes.md)（`acceptEdits` など）を設定します。`manual` は `default` のエイリアスとして受け付けます。認識できないモードを指定すると、サーバーは起動時に停止し、有効なモードを一覧表示します。 |
+> | `--settings <file>` | `claude --settings` と同じ[優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence)で、JSON 設定ファイルをサーバーのセッションに適用します。JSON 文字列ではなく、ファイルパスを指定してください。Claude Code v2.1.321 以降が必要です。 |
 > | `--chrome` / `--no-chrome` | サーバーが作成するセッションで [Chrome 統合](https://code.claude.com/docs/ja/chrome.md)をオンまたはオフにし、別のデバイスから作業している間に Claude がマシン上の Chrome を使用できるようにします。どちらのフラグも指定しない場合、サーバーが事前作成するセッションと、claude.ai/code または Claude アプリから自分で開始したセッションは、[Chrome をデフォルトで有効にした](https://code.claude.com/docs/ja/chrome.md#enable-chrome-by-default)場合でも Chrome がオフの状態で開始されます。サーバーが[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)のスレッドのために開始するセッションは、代わりにその設定に従います（`bypassPermissions` モードを除く）。Claude Code v2.1.273 以降が必要です。 |
 > | `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。必要に応じてカテゴリでフィルタリングできます。フィルターは `--debug=api,hooks` のように `=` 形式でのみ渡します。Claude Code v2.1.282 以降が必要です。 |
 > | `--debug-file <path>` | デバッグログを指定したファイルに書き込みます。 |
 > | `--verbose` | 詳細な接続ログとセッションログを表示します。 |
 > | `--sandbox`, `--no-sandbox` | v2.1.300 で削除されました。どちらかのフラグを渡すと、サーバーは起動せずに[エラーで終了](https://code.claude.com/docs/ja/errors.md#sandbox-is-not-supported-by-claude-remote-control)します。 |
 >
-> `remote-control` の前にグローバルな `claude` フラグを渡した場合、またはラッパースクリプトがフラグを追加した場合、Claude Code はそのフラグをサーバーが作成するセッションに引き継ぎません。Claude Code がフラグを通すのは、`--verbose` や `--model` のように、それを削除してもセッションでできることが変わらないとわかっている場合だけです。`--settings` などその他のフラグの場合、Claude Code は[起動を拒否](https://code.claude.com/docs/ja/errors.md#not-carried-over-to-the-sessions-remote-control-starts)し、削除すべきフラグ名を表示します。
+> `remote-control` の前にグローバルな `claude` フラグを渡した場合、またはラッパースクリプトがフラグを追加した場合、Claude Code はそのフラグをサーバーが作成するセッションに引き継ぎません。`--verbose` や `--model` など一部のフラグでは、サーバーはそのまま起動します。その他のフラグの場合、サーバーは[起動しません](https://code.claude.com/docs/ja/errors.md#not-carried-over-to-the-sessions-remote-control-starts)。設定ファイルを渡すには、`remote-control` の後に `--settings` を指定します。
 >
 > サーバーが開始するセッションをサンドボックス化するには、設定ファイルで[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)をオンにします。
 >
