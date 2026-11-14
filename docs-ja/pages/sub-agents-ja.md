@@ -36,9 +36,9 @@ Explore と Plan は、調査を高速かつ低コストに保つために、CLA
 >
 > コードベースの検索と分析に最適化された高速な読み取り専用エージェント。
 >
-> * **モデル**: メイン会話のモデル。メイン会話が Fable で実行されている場合、Explore のモデルは接続方法によって異なります。
+> * **モデル**: [親の会話](#which-model-a-nested-subagent-runs-on)のモデル。親の会話が Fable で実行されている場合、Explore は接続方法に応じて Opus で実行されるか、Fable のままになります。
 >   * Claude サブスクリプション、Anthropic Console アカウント、または `ANTHROPIC_BASE_URL` 経由で接続する [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を使用する場合、Explore は [`opus` エイリアス](https://code.claude.com/docs/ja/model-config#model-aliases)が解決される Opus モデルで実行されます。
->   * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)では、Explore はメイン会話のモデルのままです。
+>   * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)では、Explore は Fable のままです。
 > * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
 > * **目的**: ファイル検出、コード検索、コードベース探索
 >
@@ -52,7 +52,7 @@ Explore と Plan は、調査を高速かつ低コストに保つために、CLA
 >
 > [プランモード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)中にプランを提示する前にコンテキストを収集するために使用される研究エージェント。
 >
-> * **モデル**: メイン会話から継承されます。ただし、`CLAUDE_CODE_SUBAGENT_MODEL`を設定して[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)する場合を除きます。
+> * **モデル**: [親の会話](#which-model-a-nested-subagent-runs-on)から継承されます。ただし、`CLAUDE_CODE_SUBAGENT_MODEL` を設定して[すべてのサブエージェントに強制](#run-every-subagent-on-one-model)する場合を除きます。
 > * **ツール**: 読み取り専用ツール。Write と Edit は拒否されます。
 > * **目的**: 計画のためのコードベース研究
 >
@@ -62,7 +62,7 @@ Explore と Plan は、調査を高速かつ低コストに保つために、CLA
 >
 > 探索とアクションの両方を必要とする複雑なマルチステップタスク用の有能なエージェント。
 >
-> * **モデル**: [`CLAUDE_CODE_SUBAGENT_MODEL`](#choose-a-model)モデル（設定した場合で、他の何もモデルを別の方法で割り当てない場合）、それ以外の場合はメイン会話のモデル。[モデルを選択](#choose-a-model)は完全な順序を示し、[すべてのサブエージェントを 1 つのモデルで実行](#run-every-subagent-on-one-model)は変数がこれらのソースをオーバーライドする方法を示します。
+> * **モデル**: デフォルトでは親の会話のモデル。[モデルの順序](#choose-a-model)に従います。
 > * **ツール**: [サブエージェントで利用可能](#available-tools)なすべてのツール
 > * **目的**: 複雑な研究、マルチステップ操作、コード変更
 >
@@ -346,51 +346,42 @@ experimental:
 
 ### モデルを選択する
 
-`model` フィールドは、サブエージェントが使用するモデルを制御します。
+デフォルトでは、定義したサブエージェントは、それを開始した会話と同じモデルで実行されます。モデルを自分で選択するには、定義の [`model`](#supported-frontmatter-fields) フィールドを次のいずれかの値に設定します。
 
-* **モデルエイリアス**: 利用可能なエイリアスのいずれかを使用します: `sonnet`、`opus`、`haiku`、または `fable`
-* **完全なモデル ID**: `claude-opus-5-5` や `claude-sonnet-5` などの完全なモデル ID を使用します。`--model` フラグと同じ値を受け付けます
-* **inherit**: メインの会話と同じモデルを使用します
+* **モデルエイリアス**: `sonnet`、`opus`、`haiku`、または `fable`
+* **完全なモデル ID**: `claude-opus-5-5` や `claude-sonnet-5` など、[`--model`](https://code.claude.com/docs/ja/cli-reference#cli-flags) フラグが受け付ける値
+* **`inherit`**: メインの会話のモデル。[ネストされたサブエージェント](#which-model-a-nested-subagent-runs-on)の場合は、それを生成したサブエージェントのモデル
 
-Claude がサブエージェントを呼び出す際、その呼び出しに対して `model` パラメータを渡すこともできます。Agent ツール呼び出しでは、このパラメータはモデルエイリアス（`sonnet`、`opus`、`haiku`、または `fable`）を受け付けます。Claude はこの呼び出しで完全なモデル ID や `inherit` を渡すことはできません。Claude Code は次の順序でサブエージェントのモデルを決定します。
+複数のソースがモデルを設定している場合、Claude Code は次の順序で最初のものを使用します。
 
-1. 呼び出しごとの `model` パラメータ
-2. サブエージェント定義の `model` フロントマター（`inherit` はメインの会話のモデルを選択します）
-3. [`CLAUDE_CODE_SUBAGENT_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) 環境変数（モデルエイリアスまたはモデル ID に設定した場合）
-4. メインの会話のモデル
+1. 呼び出しごとの `model` パラメータ。Claude はサブエージェントの開始時にこれを渡すことができます。Agent ツール呼び出しでは、このパラメータは完全なモデル ID や `inherit` ではなく、モデルエイリアスを受け付けます。
+2. サブエージェント定義の `model` フィールド（`inherit` を含む）
+3. [`CLAUDE_CODE_SUBAGENT_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) 環境変数
+4. メインの会話のモデル。ネストされたサブエージェントの場合は、それを生成したサブエージェントのモデル
 
-インストールされた [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が [`agent.spawn`](https://code.claude.com/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は呼び出しごとのパラメータの代わりにそのモデルを使用します。
-
-次の 2 つの場合、呼び出しごとのパラメータまたはフロントマターにおける `opus` などのファミリーエイリアスは、[エイリアスが指すバージョン](https://code.claude.com/docs/ja/model-config.md#model-aliases)ではなくメインの会話のモデルに解決されます。
-
-* **メインの会話のモデルがそのファミリーに属している場合**: サブエージェントは `[1m]` サフィックスを含め、メインの会話とまったく同じモデルで実行されるため、メインの会話と同じ[拡張コンテキスト](https://code.claude.com/docs/ja/model-config.md#extended-context)ウィンドウを得られます。
-* **[Anthropic API 以外のプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)で、Claude Code がメインの会話のモデルファミリーを判別できない場合**: これは、Amazon Bedrock で Claude Code が基盤モデルに解決していない[アプリケーション推論プロファイル ARN](https://code.claude.com/docs/ja/amazon-bedrock.md#iam-configuration) を使用している場合に発生することがあります。このケースは `opus` エイリアスのみが対象で、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) を設定している場合は適用されません。その場合、`opus` は設定したモデルに解決されるためです。
-
-`CLAUDE_CODE_SUBAGENT_MODEL` 内のエイリアスは、メインの会話のファミリーを指している場合でも、常にエイリアスが指すバージョンに解決されます。この変数を `inherit` に設定することは、未設定のままにすることと同じです。
+Claude がエイリアスを渡した場合、サブエージェントは[再開されたり、フォローアップメッセージを受け取ったり](#resume-subagents)したときもそのエイリアスを維持します。インストールされた [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が [`agent.spawn`](https://code.claude.com/docs/ja/plugins/mods/reference#subagents) フックでモデルを設定している場合、Claude Code は呼び出しごとのパラメータの代わりにそのモデルを使用します。
 
 `CLAUDE_CODE_SUBAGENT_MODEL` を設定するだけでは、組み込みの Explore サブエージェントと Plan サブエージェントが実行されるモデルは変わりません。変更するには、[すべてのサブエージェントを 1 つのモデルで実行する](#run-every-subagent-on-one-model)を参照してください。
 
-v2.1.251 より前は、`CLAUDE_CODE_SUBAGENT_MODEL` がこの順序の先頭にあり、`model: inherit` を含め、呼び出しごとのパラメータとフロントマターの両方を上書きしていました。
+#### ネストされたサブエージェントが実行されるモデル
 
-Claude Code は、呼び出しごとのパラメータ、フロントマター、環境変数の値を組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストと照合します。ブロックされた値については、別のモデルで代替します。
+デフォルトでは、定義した[ネストされたサブエージェント](#let-subagents-spawn-their-own-subagents)は、その親、つまりそれを生成したサブエージェントのモデルで実行されます。ネストされたサブエージェントを別のモデルで実行するには、その `model` フィールドをそのモデルに設定します。
 
-* ブロックされた値が `opus` などのファミリーエイリアスである場合、Claude Code は `/model` と同じ[代替ルールとプロバイダーの範囲](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)に従い、許可リストで許可されているそのファミリーの最新バージョンでサブエージェントを実行します。v2.1.222 より前は、ブロックされたファミリーエイリアスについても、Claude Code は継承されたモデルでサブエージェントを実行していました。
-* その他のブロックされた値の場合、その代替が機能しないプロバイダーの場合、または許可リストでそのファミリーのどのバージョンも許可されていない場合、Claude Code は代わりに継承されたモデルでサブエージェントを実行します。`CLAUDE_CODE_SUBAGENT_MODEL` を設定している場合、Claude Code はこれらと同じルールの下でまずそのモデルを試します。
+たとえば、メインの会話が Opus で実行され、Haiku でレビュー担当のサブエージェントを開始するとします。デフォルトでは、レビュー担当が次のサブエージェントを生成した場合、それらは Opus ではなく Haiku で実行されます。
 
-対話セッションでは、いずれの代替の場合も、Claude Code は要求されたモデルとサブエージェントが実際に実行されるモデルを示す警告を表示します。
+* `model: inherit` を指定した、または `model` フィールドのないサブエージェント
+* 組み込みの Explore、Plan、general-purpose サブエージェント
+* [フォーク](#fork-the-current-conversation)
+
+plan モードでは、セッションのモデルを [`opusplan`](https://code.claude.com/docs/ja/model-config#opusplan-model-setting) に設定している場合、これらのサブエージェントは Opus で実行され、`haiku` に設定している場合は Sonnet で実行されます。
+
+#### サブエージェントのモデルを確認する
 
 サブエージェントがどのモデルで実行されているかを確認するには、[`/tasks`](https://code.claude.com/docs/ja/commands) を実行します。Claude Code はサブエージェントの行にモデルを表示し、そのサブエージェントに [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)が設定されている場合はそれも表示します。Claude Code v2.1.242 以降が必要です。
 
-呼び出しごとの `model` パラメータは、サブエージェントが[再開されたり、フォローアップメッセージを送られたり](#resume-subagents)した場合にも適用されるため、サブエージェントはそのモデルのまま維持されます。
-
-v2.1.198 以降、サブエージェントはメインの会話の[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)設定も継承します。セッションで思考がオンであればサブエージェントでもオンになり、オフであればオフのままです。サブエージェントごとの思考設定はありません。v2.1.198 より前は、メインの会話の設定にかかわらず、サブエージェントは拡張思考が無効な状態で実行されていました。
-
 #### すべてのサブエージェントを 1 つのモデルで実行する
 
-`CLAUDE_CODE_SUBAGENT_MODEL` はデフォルト値であるため、サブエージェントの定義や Claude が渡すモデルのほうが引き続き優先されます。すべてのサブエージェント、[チームメイト](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)、[ワークフローエージェント](https://code.claude.com/docs/ja/workflows.md)に 1 つのモデルを適用するには、`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` も `1` に設定します。Claude Code v2.1.257 以降が必要です。
-
-* 両方の変数を設定した場合、サブエージェントは `CLAUDE_CODE_SUBAGENT_MODEL` のモデルで実行されます。
-* `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` のみを設定した場合、サブエージェントはメインの会話のモデルで実行されます。ただし、組み込みの Explore サブエージェントは、[組み込みサブエージェントに記載されているモデル](#built-in-subagents)で実行されます。
+すべてのサブエージェント、[チームメイト](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)、[ワークフローエージェント](https://code.claude.com/docs/ja/workflows.md)に 1 つのモデルを適用するには、`CLAUDE_CODE_SUBAGENT_MODEL` をそのモデルに、`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` を `1` に設定します。Claude Code v2.1.257 以降が必要です。
 
 たとえば、すべてのサブエージェントを Haiku で実行するには、[設定ファイル](https://code.claude.com/docs/ja/settings.md)の `env` ブロックで両方の変数を設定します。
 
@@ -405,10 +396,33 @@ v2.1.198 以降、サブエージェントはメインの会話の[拡張思考]
 
 設定が反映されたことを確認するには、サブエージェントの実行中に [`/tasks`](https://code.claude.com/docs/ja/commands) を実行します。サブエージェントの行に、実行されているモデルが表示されます。
 
-`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` が[オン](https://code.claude.com/docs/ja/env-vars.md)の間、Claude Code はサブエージェント定義の `model` フィールドを無視し、Claude はサブエージェントの開始時にモデルを渡せません。次のサブエージェントは引き続きメインの会話のモデルで実行されます。
+`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` が[オン](https://code.claude.com/docs/ja/env-vars.md)の間、Claude Code はサブエージェント定義の `model` フィールドを無視し、Claude はサブエージェントの開始時にモデルを渡せません。次のサブエージェントは引き続き親の会話のモデルで実行されます。
 
 * [フォーク](#fork-the-current-conversation)
 * `model: inherit` を指定した[サブエージェントで実行されるスキル](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent)
+
+`CLAUDE_CODE_SUBAGENT_MODEL_FORCE` のみを設定した場合、サブエージェントはメインの会話のモデルで実行されます。ただし、組み込みの Explore サブエージェントは、[組み込みサブエージェントに記載されているモデル](#built-in-subagents)で実行されます。
+
+#### モデルエイリアスが選択するバージョン
+
+デフォルトでは、モデルエイリアスを指定したサブエージェントは、[エイリアスが指すバージョン](https://code.claude.com/docs/ja/model-config.md#model-aliases)で実行されます。`model` フィールドまたは呼び出しごとのパラメータで `opus` などのファミリーエイリアスを指定した場合、次の 2 つのケースでは、サブエージェントは親の会話のモデルで実行されます。
+
+* **同じファミリー**: たとえば、メインの会話が `claude-opus-4-7` で実行されている場合、`model: opus` を指定したサブエージェントもそのバージョンで実行されます。別のバージョンで実行するには、`model` フィールドに完全なモデル ID を設定します。
+* **不明なファミリー**: Claude Code が親モデルのファミリーを判別できない場合です。たとえば、Claude Code が[参照できない](https://code.claude.com/docs/ja/amazon-bedrock.md#iam-configuration) Amazon Bedrock ARN の場合などです。このケースは、[Anthropic API 以外のプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)での `opus` エイリアスにのみ適用されます。Opus のバージョンを選択するには、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) を設定します。
+
+#### 許可リストがサブエージェントのモデルをブロックする場合
+
+組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストがサブエージェントに設定されたモデルをブロックしている場合、サブエージェントは次のうち最初に該当するもので実行されます。
+
+1. ブロックされたファミリーエイリアスの場合、[この代替をサポートするプロバイダー](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)では、そのファミリーで許可されている最新バージョン
+2. `CLAUDE_CODE_SUBAGENT_MODEL` を設定している場合はそのモデル（これと同じルールが適用されます）
+3. メインの会話のモデル。ネストされたサブエージェントの場合は、それを生成したサブエージェントのモデル
+
+対話セッションのトップレベルのサブエージェントでは、要求されたモデルとその代替モデルを示す警告が表示されます。特定のモデルで実行するには、ブロックされた値を許可リストで許可されている値に変更します。
+
+### サブエージェントでの拡張思考
+
+サブエージェントは、メインの会話の[拡張思考](https://code.claude.com/docs/ja/model-config.md#extended-thinking)設定を継承します。サブエージェントごとの思考設定はありません。
 
 ### effort レベルを選択する
 
@@ -426,7 +440,9 @@ v2.1.198 以降、サブエージェントはメインの会話の[拡張思考]
 
 #### 利用可能なツール
 
-サブエージェントは、メインの会話で利用可能な[組み込みツール](https://code.claude.com/docs/ja/tools-reference.md)と MCP ツールを継承しますが、2 つのフィルターによって絞り込まれます。1 つ目はすべてのサブエージェントから少数のツールを削除し、2 つ目は[バックグラウンド](#run-subagents-in-foreground-or-background)で実行されるサブエージェント（デフォルト）の組み込みツールセットを縮小します。macOS、Linux、WSL では、[Glob ツールの動作](https://code.claude.com/docs/ja/tools-reference.md#glob-tool-behavior)で説明されているとおり、メインの会話に Glob ツールと Grep ツールがない場合でも、サブエージェントはそれらを受け取ることがあります。[フォーク](#fork-the-current-conversation)は両方のフィルターをスキップし、メインの会話とまったく同じツールプールを受け取ります。1 つ目のフィルターは、`tools` フィールドに列挙されている場合でも、次のツールを削除します。
+サブエージェントは、メインの会話で利用可能な[組み込みツール](https://code.claude.com/docs/ja/tools-reference.md)と MCP ツールを継承しますが、2 つのフィルターによって絞り込まれます。1 つ目はすべてのサブエージェントから少数のツールを削除し、2 つ目は[バックグラウンド](#run-subagents-in-foreground-or-background)で実行されるサブエージェント（デフォルト）の組み込みツールセットを縮小します。
+
+macOS、Linux、WSL では、[Glob ツールの動作](https://code.claude.com/docs/ja/tools-reference.md#glob-tool-behavior)で説明されているとおり、メインの会話に Glob ツールと Grep ツールがない場合でも、サブエージェントはそれらを受け取ることがあります。[フォーク](#fork-the-current-conversation)は両方のフィルターをスキップし、親の会話とまったく同じツールプールを受け取ります。1 つ目のフィルターは、`tools` フィールドに列挙されている場合でも、次のツールを削除します。
 
 * `Agent`（サブエージェントが[深さの上限](#let-subagents-spawn-their-own-subagents)に達している場合）。[フォーク](#fork-the-current-conversation)ではツールは一覧に残りますが、生成する代わりにエラーを返します
 * `AskUserQuestion`
@@ -1077,7 +1093,7 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 
 この値では、サブエージェントは自身の下の第 2 階層に委任でき、その第 2 階層はそれ以上委任できません。ネストをオフにするには `1` を設定します。
 
-ネストされたサブエージェントは最上位のサブエージェントと同じ方法で設定され、同じ[スコープ](#choose-the-subagent-scope)から解決されます。ネストがオンの間に、読み取り専用のままにしておくべきレビュー役など、特定のサブエージェントが生成を行わないようにするには、その [`tools`](#available-tools) リストから `Agent` を除外するか、`disallowedTools` に追加します。
+ネストされたサブエージェントは、最上位のサブエージェントと同じ[スコープ](#choose-the-subagent-scope)で定義します。デフォルトでは、定義したネストされたサブエージェントは[生成元のサブエージェントのモデル](#which-model-a-nested-subagent-runs-on)で実行されます。ネストがオンの間に、読み取り専用のままにしておくべきレビュー役など、特定のサブエージェントが生成を行わないようにするには、その [`tools`](#available-tools) リストから `Agent` を除外するか、`disallowedTools` に追加します。
 
 ターミナルでは、Claude Code はプロンプト入力の下にあるサブエージェントパネルにネストされたサブエージェントをツリーとして表示し、パネル内にまだ子孫を持つ各行に、その数を示す `(+N)` を付けます。行を開くと、そのサブエージェントの兄弟と直接の子が、`main` までのパスとともに表示されます。
 
@@ -1221,7 +1237,10 @@ autoCompactWindow: 200000
 >
 > [エージェントビューがオフになっている](https://code.claude.com/docs/ja/agent-view.md#turn-off-agent-view)場合、`/subtask` は利用できず、代わりに `/fork` がフォークされたサブエージェントを開始します。それ以外の場合、`/fork` はセッション全体を新しい[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#from-inside-a-session)にコピーします。
 
-フォークは、これまでの会話全体を継承するサブエージェントです。これにより、サブエージェントが通常提供する入力分離が削除されます。フォークはメインセッションと同じシステムプロンプト、ツール、モデル、およびメッセージ履歴を表示するため、状況を再度説明することなく、サイドタスクを渡すことができます。フォークのツール呼び出しはまだ会話から除外され、最終結果のみが返されるため、メインコンテキストウィンドウはクリーンなままです。フォークを使用する場合は、他のサブエージェントが有用であるには背景が多すぎる場合、または同じ開始点から複数のアプローチを並行して試したい場合です。
+フォークは、新しく開始するのではなく、これまでの会話全体を継承するサブエージェントです。他のサブエージェントでは役立つまでに必要な背景情報が多すぎる場合や、同じ開始点から複数のアプローチを並行して試したい場合にフォークを使用します。
+
+* **入力**：フォークは、親の会話と同じシステムプロンプト、ツール、[モデル](#which-model-a-nested-subagent-runs-on)、およびメッセージ履歴を参照します
+* **出力**：フォーク自身のツール呼び出しは親の会話に含まれず、最終結果のみが返されます
 
 フォークモードがオンの間（デフォルトではオンです）、Claude は自らフォークを開始できます。フォークを停止するには、[フォークモードをオフにする](#turn-fork-mode-on-or-off)を参照してください。
 
@@ -1257,14 +1276,12 @@ autoCompactWindow: 200000
 
 ### フォークと他のサブエージェントの違い
 
-フォークはメインセッションがその時点で持っているすべてを継承します。他のサブエージェントはその定義から開始します。
-
 | | フォーク | 非フォークサブエージェント |
 | :- | :- | :- |
 | コンテキスト | 完全な会話履歴 | 渡すプロンプトを使用した新しいコンテキスト |
-| システムプロンプトとツール | メインセッションと同じ | サブエージェントの[定義ファイル](#write-subagent-files)から、[バックグラウンド実行用にフィルタリング](#available-tools) |
-| モデル | メインセッションと同じ | サブエージェントの `model` フィールドから |
-| プロンプトキャッシュ | メインセッションと共有 | 別のキャッシュ |
+| システムプロンプトとツール | 親の会話と同じ | サブエージェントの[定義ファイル](#write-subagent-files)から、[バックグラウンド実行用にフィルタリング](#available-tools) |
+| モデル | [親の会話](#which-model-a-nested-subagent-runs-on)と同じ | [サブエージェントのモデルの優先順位](#choose-a-model)に従う |
+| プロンプトキャッシュ | 親の会話と共有 | 別のキャッシュ |
 
 フォークのシステムプロンプトとツール定義は親と同じであるため、最初のリクエストは親の[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#subagents-and-the-cache)を再利用します。この再利用により、同じコンテキストが必要なタスクの場合、フォークは新しいサブエージェントよりも安価です。
 

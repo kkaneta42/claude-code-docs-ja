@@ -432,9 +432,9 @@ Team プランと Enterprise プランのオーナーは、[claude.ai 管理設�
 
 アーティファクトが自動削除される前に保持される期間を設定するには、[**Organization settings > Data and privacy**](https://claude.ai/admin-settings/data-privacy-controls)に移動します。作成者にのみプライベートなアーティファクトと共有されたアーティファクトに対して、別々の保持期間を設定できます。
 
-### 監査ログを確認する
+### Compliance API でアーティファクトのアクティビティを監査する
 
-アーティファクトの公開、共有、削除は、それぞれ組織の監査ログに `claude_artifact_*` イベントタイプの下に表示されます。これは claude.ai の会話で作成されたアーティファクトに使用されるのと同じファミリーです。
+Enterprise プランでは、Compliance API の [Activity Feed](https://platform.claude.com/docs/en/manage-claude/compliance-activity-feed) をクエリして、誰がアーティファクトを公開、共有、または削除したかを確認できます。フィルタリングに使用するアクティビティタイプを見つけるには、[Activity Feed リファレンス](https://platform.claude.com/docs/en/api/compliance/activities/list)で `activity_types` を展開し、`artifact` を含む名前を探します。
 
 ### ビューアドメインをホワイトリストに登録する
 

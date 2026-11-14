@@ -4533,11 +4533,10 @@ Claude Code は、`../shared-utils` のように書かれたプラグイン外�
 commands path escapes plugin directory: ./commands/deploy.md — it resolves to /home/user/shared/deploy.md, outside the plugin directory
 ```
 
-マーケットプレイスプラグイン自身のファイル（`hooks/hooks.json` など）のフルパスを示すメッセージは、Claude Code がそのファイルをスキップしたことを意味します。これは、Claude Code がそのファイルがプラグイン内にあること、または[ローカルマーケットプレイス](https://code.claude.com/docs/ja/plugins/loading.md#in-place-and-copied-plugins)内のプラグインの場合はそのマーケットプレイス内にあることを確認できない場合に発生します。メッセージは、これらの各ファイルを次に示すコンポーネント名で報告します：
+マーケットプレイスプラグイン自身のファイルのいずれか（`hooks/hooks.json` など）のフルパスを示すメッセージは、Claude Code がそのファイルをスキップしたことを意味します。Claude Code は、ファイルがプラグイン内にあること、または[ローカルマーケットプレイス](https://code.claude.com/docs/ja/plugins/loading.md#in-place-and-copied-plugins)内のプラグインの場合はそのマーケットプレイス内にあることを確認できない場合、そのファイルをスキップします。メッセージでは、これらのファイルが次に示すコンポーネント名の下に報告されます:
 
 * `hooks/hooks.json`：`hooks`
 * `monitors/monitors.json`：`monitors`
-* `settings.json`：`settings`
 * プラグインルートの `SKILL.md`：`skills`
 
 例えば、次のメッセージは、プラグインとそのローカルマーケットプレイスの両方の外に解決される `hooks/hooks.json` に対するものです：

@@ -296,6 +296,7 @@ v2.1.305 以降では、ツール検索を挙げる `400` または `422`、あ�
 * 最上位の `output_config.effort` フィールド。これを拒否するアップストリームについては、[自動リトライとエラー転送](#automatic-retry-and-error-forwarding)を参照してください
 * 適応的推論の `thinking` フィールド（ベータヘッダーはありません）
 * [会話中のシステムメッセージ](#feature-pass-through)を運ぶ `role: "system"` エントリ
+* auto モードの[サーバー側分類器レビュー](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)用の `anthropic-beta` 値と `safeguards` フィールド（`/status` で **Auto mode server** が `Enabled` と表示される場合など、そのレビューが有効なままのセッションの場合）。レビューをオフにするには、セッションを開始する前に `CLAUDE_CODE_AUTO_MODE_SERVER=0` を設定してください。その後、ターミナルでは `/status` に **Auto mode server** が `Disabled` と表示されます。
 * サブスクリプション認証に必要な OAuth の `anthropic-beta` 値
 * 開発者が [`ANTHROPIC_BETAS`](https://code.claude.com/docs/ja/env-vars) または [`CLAUDE_CODE_EXTRA_BODY`](https://code.claude.com/docs/ja/env-vars) を通じて自分で追加したヘッダー値とボディフィールド
 

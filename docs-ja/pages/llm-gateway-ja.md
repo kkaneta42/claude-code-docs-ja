@@ -43,6 +43,10 @@
 
 `ANTHROPIC_BASE_URL` を通じて到達するゲートウェイを、管理対象マシンが使用できる唯一の宛先にするには、同じ管理設定ファイルで [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) を `["customEndpoint"]` に設定し、ゲートウェイの `ANTHROPIC_BASE_URL` をそのファイルの `env` ブロックに配置します。Claude Code はその後、Anthropic に直接接続する場合や開発者独自のプロキシを含む他の場所を指すセッションを拒否し、`ANTHROPIC_BASE_URL` をそこに設定した値でのみ受け入れます。`ANTHROPIC_BEDROCK_BASE_URL` などのプロバイダー固有のエンドポイント変数を通じて到達するゲートウェイの場合、`allowedProviders` エントリはどの変数をピン留めするかを指定します。Claude Code v2.1.285 以降が必要です。
 
+> [!NOTE]
+>
+> Desktop が claude.ai にサインインしている場合、ユーザーのマシン上の Cowork セッションは [`"anthropic"`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) として扱われます。MDM ポリシーまたは管理設定ファイルでこのリストから除外すると、そのセッションは拒否されます。含めると、Anthropic に直接送信されるセッションもこのリストを通過します。
+
 ## サブスクリプションとゲートウェイ
 
 [ゲートウェイ認証情報変数](https://code.claude.com/docs/ja/llm-gateway-connect.md#set-the-credential-variable)または `apiKeyHelper` がアクティブな場合、リクエストは開発者の claude.ai サブスクリプションログインの代わりにその認証情報を使用し、サブスクリプションの使用制限は適用されません。Claude Code はマシンに保存された claude.ai ログインを保持していますが、それらのリクエストでは送信しません。そのトラフィックは、ゲートウェイが転送する認証情報の所有者（組織の Anthropic Console アカウント、またはゲートウェイがそこにルーティングする場合の Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry アカウント）にトークンごとに請求されます。

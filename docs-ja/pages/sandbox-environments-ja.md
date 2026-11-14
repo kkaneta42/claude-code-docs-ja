@@ -41,7 +41,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 | 実現したいこと | 開始するもの |
 | :- | :- |
-| 自分のマシンでの日常的な作業中に権限プロンプトを減らす | [サンドボックス化された Bash ツール](https://code.claude.com/docs/ja/sandboxing.md)（`/sandbox` で有効化） |
+| 自分のマシンでの日常的な作業中に権限プロンプトを減らす | 自動許可モードの [サンドボックス化された Bash ツール](https://code.claude.com/docs/ja/sandboxing.md)（`/sandbox` で設定） |
 | Claude に `--dangerously-skip-permissions` または自動モードで無人で作業させる | 事前設定された [dev コンテナ](https://code.claude.com/docs/ja/devcontainer.md)、任意のコンテナまたは VM、または [サンドボックスランタイム](#sandbox-runtime) |
 | Bash だけでなく MCP サーバーと hooks も分離し、Docker なしで実行する | サンドボックスランタイム |
 | チーム全体でサンドボックス化された環境を標準化する | 事前設定された [dev コンテナ](https://code.claude.com/docs/ja/devcontainer.md)（リポジトリにコピー） |

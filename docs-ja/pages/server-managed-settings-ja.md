@@ -252,7 +252,13 @@ Claude Code は Workload Identity Federation 変数と `ANTHROPIC_PROFILE` お�
 
 キャッシュされた `env` ブロック内のその他のキーはすべて起動時に適用されます。サーバーがペイロードを確認し、ペイロードが[セキュリティ承認](#security-approval-dialogs)を必要とする場合はユーザーが承認すると、保留されていた変数がセッションの残りの期間に適用されます。
 
-組織が `api.anthropic.com` に到達するためにプロキシを必要とする場合、保留はサーバーから配信された `env` ブロック自体にのみ影響します。MDM や `managed-settings.json` を通じた[エンドポイント管理](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)の `env` ブロック、シェル環境、または[ユーザー設定](https://code.claude.com/docs/ja/settings.md#where-settings-live)で設定されたプロキシは、設定フェッチに反映されます。エンドポイント管理のソースには Claude Code v2.1.223 以降が必要です。キャッシュされたサーバー管理のプロキシ値はフェッチで確認されるまで保留されるため、エンドポイント管理の値がキーごとに補完され、フェッチ自体に反映されます。v2.1.223 より前では、キャッシュされたサーバーペイロードと並行してプロキシが適用されるよう、シェル環境またはユーザー設定を使用してください。初回起動時にはキャッシュがないため、最初のフェッチには引き続きエンドポイント管理のソース、シェル環境、またはユーザー設定が必要です。
+フェッチにプロキシが必要な場合は、次のいずれかで `HTTPS_PROXY` を設定します。
+
+* MDM または `managed-settings.json` を通じた[エンドポイント管理](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)の `env` ブロック。このソースには Claude Code v2.1.223 以降が必要です。v2.1.223 より前では、プロキシが[キャッシュされたサーバーペイロードと並行して適用される](#per-key-exceptions-across-managed-sources)よう、シェル環境またはユーザー設定を使用してください。
+* シェル環境
+* [ユーザー設定](https://code.claude.com/docs/ja/settings.md#where-settings-live)
+
+`ALL_PROXY` ですでにプロキシを指定している場合でも、`HTTPS_PROXY` を設定してください。
 
 Claude Code は、ほとんどの設定の更新を再起動なしで実行中のセッションに適用します。OpenTelemetry エクスポーターの設定、`model` キー、`env` ブロックからの変数の削除など、一部の更新は次回の起動時にのみ適用されます。
 

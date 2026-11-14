@@ -102,17 +102,39 @@ Claude は時々、チームを作成する代わりに [サブエージェン�
 >
 > `tmux` には特定のオペレーティングシステムでの既知の制限があり、従来は macOS で最も効果的に動作します。iTerm2 で `tmux -CC` を使用することが、`tmux` への推奨エントリーポイントです。
 
-デフォルトは `"in-process"` です。`"auto"` を設定して、既に tmux セッション内で実行している場合または使用しているターミナルが iTerm2 で `it2` CLI がインストールされている場合は分割ペインを有効にし、それ以外の場合は in-process にフォールバックします。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。
+エージェントチームを[有効化](#enable-agent-teams)した状態で、次の手順に従って各チームメイトに専用のペインを割り当てます。
 
-`"iterm2"` を設定して iTerm2 ネイティブ分割ペインを明示的に使用してください。このモードは [`it2` CLI](https://github.com/mkusaka/it2) が必要で、`it2` が見つからない場合はインストールコマンド付きでエラーを表示します。`it2` をインストールするか tmux に切り替えるオプションを提供するセットアッププロンプトは、ターミナルが iTerm2 で tmux がフォールバックとして利用可能な場合、`"auto"` または `"tmux"` の下に表示されます。
+**1. tmux をインストールするか iTerm2 をセットアップする**
 
-デフォルトをオーバーライドするには、`~/.claude/settings.json` で [`teammateMode`](https://code.claude.com/docs/ja/settings-reference#teammatemode) を設定してください。
+分割ペインモードには、[tmux](https://github.com/tmux/tmux/wiki) または [`it2` CLI](https://github.com/mkusaka/it2) を備えた iTerm2 が必要です。Claude Code を実行する方をセットアップしてください。
+
+* **tmux**：システムのパッケージマネージャーを通じてインストールしてください。プラットフォーム固有の手順については、[tmux wiki](https://github.com/tmux/tmux/wiki/Installing) を参照してください。
+* **iTerm2**：[`it2` CLI](https://github.com/mkusaka/it2) をインストールし、**iTerm2 > Settings > General > Magic > Enable Python API** で Python API を有効にしてください。
+
+**2. 分割ペインをオンにする**
+
+[`teammateMode`](https://code.claude.com/docs/ja/settings-reference#teammatemode) 設定を変更するまで、チームメイトは in-process で実行されます。
+
+`~/.claude/settings.json` で `"auto"` に設定してください。
 
 ```json theme={null}
 {
   "teammateMode": "auto"
 }
 ```
+
+`"auto"` では、tmux または iTerm2 内で Claude Code を実行するとチームメイトが分割ペインで開き、その他のターミナルでは in-process で実行されます。
+
+**3. Claude Code を起動してチームメイトをスポーンする**
+
+tmux 内または iTerm2 で `claude` を実行し、Claude にチームメイトのスポーンを依頼してください。
+
+iTerm2 で `it2` のセットアッププロンプトが表示された場合は、**Install it2 now** を選択すると、iTerm2 ウィンドウでペインが開きます。
+
+Claude Code を tmux でも iTerm2 でもない環境で実行する場合、または iTerm2 ウィンドウでペインが開かない場合は、`teammateMode` を再度変更してください。
+
+* **tmux と iTerm2 の外部**：tmux がインストールされている状態で、`teammateMode` を `"tmux"` に設定してください。ペインは別の tmux セッションで開きます。それらを確認するには、Claude Code プロンプトの `View teammates` 行からコマンドをコピーし、2 つ目のターミナルでそのコマンドを実行してください。
+* **iTerm2 ウィンドウでペインが開かない**：`teammateMode` を `"iterm2"` に設定して、iTerm2 独自のペインを使用してください。その場合、チームメイトは `it2` がセットアップされた iTerm2 で Claude Code を実行したときにのみ起動します。
 
 単一セッションに対してモードを設定するには、フラグとして渡してください。
 
@@ -121,11 +143,6 @@ claude --teammate-mode auto
 ```
 
 `--teammate-mode` フラグは実験的であり、`claude --help` に表示されません。
-
-分割ペインモードには、[tmux](https://github.com/tmux/tmux/wiki) または [`it2` CLI](https://github.com/mkusaka/it2) を備えた iTerm2 が必要です。手動でインストールするには、以下を実行してください。
-
-* **tmux**：システムのパッケージマネージャーを通じてインストールしてください。プラットフォーム固有の手順については、[tmux wiki](https://github.com/tmux/tmux/wiki/Installing) を参照してください。
-* **iTerm2**：[`it2` CLI](https://github.com/mkusaka/it2) をインストールし、**iTerm2 → Settings → General → Magic → Enable Python API** で Python API を有効にしてください。
 
 ### チームメンバーとモデルを指定する
 
@@ -497,7 +514,7 @@ Agent teams は実験的な機能です。現在の制限事項は以下の通�
 * **インプロセスのチームメイトからのバックグラウンドサブエージェント非対応**: インプロセスのチームメイト自身のサブエージェントはフォアグラウンドで実行されます。これはチームメイトのバックグラウンド作業がチームリーダーのプロセスより長く存続できないためです。Claude Code は、チームメイトが `background: true` を設定する定義を持つサブエージェントをスポーンする場合、エラーを返します。チームメイトの `run_in_background: true` リクエストも失敗し、エラーが発生するか、フォアグラウンドで静かに実行されます。メイン会話から起動されたサブエージェントは[バックグラウンドのデフォルト](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)に従います。
 * **Lead は固定**: メインセッションはその存続期間中、lead です。teammate を lead に昇格させたり、リーダーシップを譲渡したりすることはできません。
 * **スポーン時のチームメイトごとの権限モード設定非対応**: チームメイトは[権限](#permissions)で説明されている権限モードで開始します。
-* **分割ペインは tmux または iTerm2 が必要**: デフォルトのインプロセスモードはすべてのターミナルで機能します。分割ペインモードは VS Code の統合ターミナル、Windows Terminal、または Ghostty ではサポートされていません。
+* **分割ペインは tmux または iTerm2 が必要**: デフォルトのインプロセスモードはすべてのターミナルで機能します。
 
 ## 次のステップ
 

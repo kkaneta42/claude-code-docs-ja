@@ -743,7 +743,7 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 
 多層防御のために両方を使用してください。プロンプトインジェクションによって Claude の意思決定が回避された場合でも、サンドボックスの制限は引き続き適用されるためです。サンドボックス設定と権限ルールの両方に含まれるパスとドメインは、[最終的なサンドボックス設定にマージされます](https://code.claude.com/docs/ja/sandboxing.md#permission-rules)。
 
-サンドボックス化を有効にし、`autoAllowBashIfSandboxed` をデフォルトの `true` のままにしている場合、権限に単独の `Bash` 確認ルール、または[同等の `Bash(*)` 形式](#match-all-uses-of-a-tool)が含まれていても、サンドボックス化された Bash コマンドは確認なしで実行されます。サンドボックスの境界が、このツール全体に対する確認の代わりになるためです。
+サンドボックス化を有効にし、[`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) を `true` に設定すると、サンドボックス化された Bash コマンドは確認なしで実行されます。これは、単独の `Bash` 確認ルールや[同等の `Bash(*)` 形式](#match-all-uses-of-a-tool)がある場合でも同様です。サンドボックスの境界が、このツール全体に対する確認の代わりになるためです。
 
 [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの代替を行いません。確認ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続き確認なしで実行され、それ以外のシェルコマンドは、計画中である間は通常の権限フローを経由します。plan モードで Claude Code がコマンドをどのように制御するかについては、[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください。単独の `Bash` 確認ルールがある場合は、サンドボックス化されていない場合と同様に、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドで確認が求められます。
 
@@ -784,7 +784,7 @@ Claude Code はワークスペーストラストをそれを起動した場所�
 * リポジトリ外では、Claude Code はそれを起動したディレクトリをキーとしてトラストを保存し、そのディレクトリのサブディレクトリをカバーします。ただし、クローンなどのネストされた git リポジトリは除きます。カバーされた各サブディレクトリは、その親を信頼したフォルダとしてカウントされます。
 * ホームディレクトリから起動した場合、Claude Code はトラストを現在のセッションのみ保持し、ディスクに書き込みません。[追加のセーフガード](https://code.claude.com/docs/ja/security.md#additional-safeguards)に関する注記を参照してください。
 
-Claude Code はインタラクティブセッションでのみトラストダイアログを表示します。`claude -p` 実行または SDK セッションはダイアログを表示しません。親フォルダを信頼してもこれらのルールにはカウントされないため、[フォルダを信頼する前に実行されるもの](#what-runs-before-you-trust-a-folder)は、これら 2 つの状況で Claude Code がどのリポジトリコンテンツを使用するかを説明しています。
+VS Code 拡張機能は、セッションを開始する前に、`Trust this folder in Claude Code?` というタイトルのダイアログで同じトラストを求めます。Claude Code はインタラクティブなターミナルセッションではトラストダイアログを表示しますが、`claude -p` セッションや SDK セッションでは表示しません。親フォルダを信頼しても、これらのルールにはカウントされません。[フォルダを信頼する前に実行されるもの](#what-runs-before-you-trust-a-folder)では、それぞれの場合に Claude Code が引き続き使用するリポジトリコンテンツを説明しています。
 
 [バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)を開始または再開する前に、Claude Code はセッションが実行されるディレクトリのワークスペーストラストもチェックします。信頼していないディレクトリのターミナルから `claude --bg` を実行した場合、トラストダイアログが最初に表示され、それを受け入れるとセッションが開始されます。スクリプト内など、ダイアログが表示できない場所では、コマンドは代わりに [`Workspace not trusted`](https://code.claude.com/docs/ja/errors#workspace-not-trusted-when-dispatching-a-background-session) エラーで終了します。
 

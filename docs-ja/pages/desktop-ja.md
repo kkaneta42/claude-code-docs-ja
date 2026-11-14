@@ -2127,10 +2127,11 @@ Claude Code の[管理設定](https://code.claude.com/docs/ja/managed-settings.m
 
 これを防ぐには、Claude Desktop ポリシー（Windows では`HKLM`）にも、claude.ai 組織 ID を指定して`forceLoginOrgUUID`をデプロイしてください。ポリシー自体が[Claude API を選択](https://claude.com/docs/third-party/claude-desktop/claude-api#choose-an-authentication-approach)している場合を除き、Claude Desktop はアプリの次回起動時から、ユーザー自身の API キーまたは Console アカウントを使用しなくなります。
 
-デプロイする前に、次の 2 つのケースを確認してください：
+デプロイする前に、次の 3 つのケースを確認してください：
 
 * **Claude Console 組織**：Claude Console 組織の ID を指定して`forceLoginOrgUUID`を単独でデプロイしないでください。そうすると、組織のメンバーが Claude Desktop を使用できなくなります。代わりに[Which devices offer the Claude API account sign-in](https://claude.com/docs/third-party/claude-desktop/claude-api#which-devices-offer-the-claude-api-account-sign-in)を参照してください。
 * **Enterprise Admin Console**：これがコンピューターの Claude Desktop 設定を配信している場合は、先にそれらのコンピューターを Claude Desktop v2.37337.0 以降に更新してください。それより前のバージョンでは、このキーが設定されるとその設定が無視されるためです。[Keep a device on its managed profile](https://claude.com/docs/third-party/claude-desktop/admin-console#keep-a-device-on-its-managed-profile)を参照してください。
+* **サードパーティプロバイダー**：ユーザーがアプリ内で独自の[サードパーティ推論設定](https://claude.com/docs/third-party/claude-desktop/in-app-configuration)を行っている場合、このキーをデプロイした後の次回起動時から、Claude Desktop はその設定を無視します。ユーザーが Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または LLM ゲートウェイを引き続き使用できるようにするには、同じ Claude Desktop ポリシーで、ユーザーのコンピューターに[設定をデプロイ](https://claude.com/docs/third-party/claude-desktop/configuration)してください。
 
 ### ネットワークアクセス要件
 
@@ -2260,10 +2261,6 @@ Desktop と CLI は同じ設定ファイルを読み込むため、セットア�
 #### Claude Desktop チャットアプリからの MCP サーバー
 
 Desktop アプリは、`claude_desktop_config.json` から MCP サーバーをローカルコードタブセッションに読み込み、`~/.claude.json` および `.mcp.json` のサーバーと並行して実行します。`claude_desktop_config.json` で定義したサーバーは、Desktop チャットサーフェイスとローカルコードタブセッションの両方で利用可能です。
-
-`claude_desktop_config.json` と `~/.claude.json` または `.mcp.json` で同じサーバー名を定義した場合、ローカルセッションのコードタブは 1 回接続し、`claude_desktop_config.json` の定義を使用します。
-
-アプリは、`~/.claude.json` の stdio サーバーをローカルセッションの組み込み CLI に再配信します。`~/.claude.json`（ユーザースコープ）と `.mcp.json` のトップレベルが同じ stdio サーバー名を定義する場合、コードタブは `~/.claude.json` の定義を使用し、CLI の[スコープ階層](https://code.claude.com/docs/ja/mcp.md#scope-hierarchy-and-precedence)から外れます。
 
 > [!NOTE]
 >

@@ -242,7 +242,7 @@ Claude が編集するすべてのファイルに対して [Prettier](https://pr
 
 ### 保護されたファイルへの編集をブロックする
 
-`.env`、`package-lock.json`、または `.git/` 内のファイルなど、機密性の高いファイルを Claude が変更しないようにします。Claude は編集がブロックされた理由を説明するフィードバックを受け取るため、アプローチを調整できます。
+Claude の `Edit` ツールと `Write` ツールが、`.env`、`package-lock.json`、または `.git/` 内のファイルなど、機密性の高いファイルを変更しないようにします。Claude は編集がブロックされた理由を説明するフィードバックを受け取るため、アプローチを調整できます。
 
 この例では、フックが呼び出す別のスクリプトファイルを使用します。スクリプトは対象のファイルパスを保護パターンのリストと照合し、終了コード 2 で終了して編集をブロックします。
 
@@ -305,6 +305,10 @@ chmod +x .claude/hooks/protect-files.sh
 **4. フックをテストする**
 
 `.env` ファイルにコメントを追加するよう Claude に依頼します。Claude Code は編集が実行される前にブロックし、スクリプトの `Blocked:` メッセージをフィードバックとして Claude に渡します。
+
+それでも Claude は、シェルコマンドを使って保護されたファイルを変更できます。そうしたコマンドの一部をブロックするには、`.claude/settings.json` の `permissions.deny` の下に、パスごとに [`Edit` 拒否ルール](https://code.claude.com/docs/ja/permissions#what-read-and-edit-rules-cover)を追加します。たとえば、プロジェクトルートの `.env` には `Edit(/.env)` を指定します。
+
+これらのルールがあっても、Claude は他の方法で `.env` を変更できます。コマンドが書き込めるファイルを制限するには、[サンドボックス化を設定する](https://code.claude.com/docs/ja/sandboxing.md#configure-sandboxing)を参照してください。
 
 ### コンテキスト圧縮後にコンテキストを再注入する
 
@@ -925,7 +929,7 @@ HTTP hooks は、Web サーバー、クラウド関数、または外部サー�
 エンドポイントは、コマンドフックと同じ [出力形式](https://code.claude.com/docs/ja/hooks.md#json-output) の JSON ボディで応答し、Claude Code はレスポンスのステータスも確認します：
 
 * **2xx ステータス**：ツール呼び出しをブロックするには、ボディで適切な `hookSpecificOutput` フィールドを返します。
-* **その他のステータス、またはリクエストが失敗した場合**：Claude Code は [ノンブロッキングエラー](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を報告し、アクションを続行させます。失敗したエンドポイントでアクションをブロックするには、フックに [`onFailure: "block"`](https://code.claude.com/docs/ja/hooks#block-the-action-when-a-hook-fails) を設定します。
+* **その他のステータス、またはリクエストが失敗した場合**：Claude Code は [ノンブロッキングエラー](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を報告し、アクションを続行させます。ただし、そのフックが [失敗時にアクションをブロックするフック](https://code.claude.com/docs/ja/hooks.md#block-the-action-when-a-hook-fails) である場合を除きます。失敗したエンドポイントでアクションをブロックするには、フックに [`onFailure: "block"`](https://code.claude.com/docs/ja/hooks#block-the-action-when-a-hook-fails) を設定します。
 
 ヘッダー値は `$VAR_NAME` または `${VAR_NAME}` 構文を使用した環境変数補間をサポートします。`allowedEnvVars` 配列にリストされている変数のみが解決されます。他のすべての `$VAR` 参照は空のままです。
 

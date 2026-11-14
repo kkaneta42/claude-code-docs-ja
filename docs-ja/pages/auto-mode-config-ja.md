@@ -222,6 +222,10 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
 
 各フィールドは散文説明の配列であり、自然言語ルールとして読み込まれます。分類器の前に実行されるツールパターンベースのハードブロックについては、[`permissions.deny`](https://code.claude.com/docs/ja/permissions) を使用します。
 
+> [!NOTE]
+>
+> [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) セッションでは、分類器は Claude のコードをレビューする際に `hard_deny` と `soft_deny` を適用し、コードが行う個々のツール呼び出しには適用しません。`permissions.deny` ルールは個々の呼び出しに適用されます。
+
 分類器内では、優先順位は 4 つのレベルで機能します。
 
 * `hard_deny` ルールは無条件にブロックします。ユーザーの意図と `allow` 例外は適用されません。
@@ -283,7 +287,7 @@ Claude Code は [管理設定](https://code.claude.com/docs/ja/server-managed-se
 
 デフォルトでは、狭い Bash および PowerShell の許可ルール（`Bash(npm test)` など）はオートモードで有効なままであり、Claude Code は分類器が実行される前にそれらを解決します。ただし、コマンドが [コマンドごとの許可ドメイン](https://code.claude.com/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode) を含む場合は除きます。Claude Code は、`Bash(*)` やワイルドカード化されたインタープリターなどの任意のコード実行を許可する広いルール、および [`Monitor`](https://code.claude.com/docs/ja/tools-reference#monitor-tool) という名前のすべてのルールを一時停止します。Monitor コマンドはシェルを通して実行されるためです。これは、狭いルールが、分類器が見ることなく、破壊的な引数（スクリプトパスやルールのプレフィックスが予想しなかったフラグなど）を通す可能性があることを意味します。
 
-`autoMode.classifyAllShell` を `true` に設定して、オートモードがアクティブな間、すべての Bash および PowerShell の許可ルールを一時停止し、分類器が許可リストに関係なくすべてのシェルコマンドを評価するようにします。ただし、[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-paths) は除きます。
+`autoMode.classifyAllShell` を `true` に設定すると、auto モードがアクティブな間、すべての Bash および PowerShell の許可ルールが一時停止され、分類器が許可リストに関係なくすべてのシェルコマンドを評価するようになります。ただし、[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-paths) は除きます。[Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) セッションでは、この設定がオンの場合でも、分類器はコマンドを実行するコードをレビューします。
 
 ```json theme={null}
 {

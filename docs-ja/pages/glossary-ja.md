@@ -283,7 +283,7 @@ Claude Code がその設定をロードする前に、ディレクトリを受�
 
 ### Sandboxing
 
-Bash ツールの OS レベルのファイルシステムおよびネットワーク分離。コマンドは事前に定義した境界内で実行されるため、Claude はコマンドごとの承認プロンプトなしで自由に作業できます。Sandboxing は [permission rules](#permission-rule) とは別のレイヤーです。
+Bash ツールの OS レベルのファイルシステムおよびネットワーク分離。コマンドは事前に定義した境界内で実行されます。Sandboxing は [permission rules](#permission-rule) とは別のレイヤーです。
 
 詳細情報: [Sandboxing](https://code.claude.com/docs/ja/sandboxing.md)
 

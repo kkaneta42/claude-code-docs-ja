@@ -454,7 +454,7 @@ Claude Code は、各ワークフローエージェントのモデルを、[サ�
 * 日常的な作業で普段は小さいモデルに切り替えている場合は、大規模な実行の前に `/model` を確認します
 * タスクを説明する際に、最も強力なモデルを必要としないステージには小さいモデルを使うよう Claude に依頼します
 
-組織の [`availableModels` 許可リスト](https://code.claude.com/docs/ja/model-config#restrict-model-selection)によって、スクリプトがエージェントに要求したモデルがブロックされた場合、そのエージェントは[サブエージェントと同じ置き換えルール](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)に従い、代わりのモデルで実行されます。
+組織の [`availableModels` 許可リスト](https://code.claude.com/docs/ja/model-config#restrict-model-selection)によって、スクリプトがエージェントに要求したモデルがブロックされた場合、そのエージェントは[サブエージェントと同じ置き換えルール](https://code.claude.com/docs/ja/sub-agents.md#when-an-allowlist-blocks-a-subagent-model)に従い、代わりのモデルで実行されます。
 
 ### サイズガイドラインを設定する
 

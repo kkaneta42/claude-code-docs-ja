@@ -995,7 +995,7 @@ claude() {
 
 これらの問題は、WSL 内で `npm install -g` を使用して Claude Code をインストールした場合に適用されます。[ネイティブインストーラー](https://code.claude.com/docs/ja/setup.md)を使用した場合は、このセクションをスキップしてください。npm 12 の場合は、[npm 12 のインストールを修正する](#fix-an-npm-12-install)の説明に従ってインストールしてください。
 
-**OS またはプラットフォーム検出の問題。** npm がインストール中にプラットフォームの不一致を報告する場合、WSL は Windows `npm` を選択している可能性があります。最初に `npm config set os linux` を実行してから、`npm install -g @anthropic-ai/claude-code --force` でインストールしてください。`sudo` を使用しないでください。
+**OS またはプラットフォーム検出の問題。** npm がインストール中にプラットフォームの不一致を報告する場合は、最初に `npm config set os linux` を実行してから、`npm install -g @anthropic-ai/claude-code@latest --force` でインストールしてください。`sudo` を使用しないでください。
 
 **`claude` を実行するときの `exec: node: not found`。** WSL 環境は Node.js の Windows インストールを使用している可能性があります。`which npm` と `which node` で確認してください。`/mnt/c/` で始まるパスは Windows バイナリであり、Linux パスは `/usr/` で始まります。これを修正するには、Linux ディストリビューションのパッケージマネージャーまたは [`nvm`](https://github.com/nvm-sh/nvm) 経由で Node をインストールしてください。
 
@@ -1082,7 +1082,7 @@ npm 12 のインストールを修正するには、ネイティブインスト�
   3. 再インストールします。
 
      ```bash theme={null}
-     npm install -g @anthropic-ai/claude-code
+     npm install -g @anthropic-ai/claude-code@latest
      ```
 
      このコマンドまたは手順 1 が `EACCES` で失敗する場合は、`sudo` を付けて再実行するのではなく、ネイティブインストーラーに切り替えてください。Claude Code は自身を更新する際に `sudo` なしで npm を実行するため、自動更新も同じように失敗します。
@@ -1093,7 +1093,7 @@ npm 12 のインストールを修正するには、ネイティブインスト�
 
 ### npm `ENOTEMPTY` エラー（更新または再インストール中）
 
-既存のインストールに対して `npm install -g @anthropic-ai/claude-code` を実行すると、npm は古いパッケージディレクトリを移動しようとしている間に失敗する可能性があります。
+既存のインストールに対して `npm install -g @anthropic-ai/claude-code@latest` を実行すると、npm は古いパッケージディレクトリを移動しようとしている間に失敗する可能性があります。
 
 ```text theme={null}
 npm error code ENOTEMPTY
@@ -1127,7 +1127,7 @@ npm error ENOTEMPTY: directory not empty, rename '...'
 次に再インストールしてください。npm 12 の場合は、[npm 12 のインストールを修正する](#fix-an-npm-12-install)に従ってください。それ以外の場合は、次を実行してください。
 
 ```bash theme={null}
-npm install -g @anthropic-ai/claude-code
+npm install -g @anthropic-ai/claude-code@latest
 ```
 
 `claude --version` で確認してください。これは `2.1.211 (Claude Code)` などのバージョン番号を出力します。

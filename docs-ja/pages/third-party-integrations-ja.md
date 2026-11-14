@@ -173,6 +173,10 @@ Claude Code がコードベースを理解できるように、ドキュメン�
 
 これらのデプロイメントオプションのうち、管理対象マシンが使用できるものを制限するには、管理設定で [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) を設定します。たとえば、`["bedrock"]` は Amazon Bedrock のみを許可します。Mantle エンドポイントも有効にする Bedrock フリートは `"mantle"` も一覧に含めます。このエントリは、管理対象の `env` ピン留めも必要なエンドポイント変数を示します。Claude Code v2.1.285 以降が必要です。
 
+> [!NOTE]
+>
+> Desktop が claude.ai にサインインしている場合、ユーザーのマシン上の Cowork セッションは [`"anthropic"`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) として扱われます。MDM ポリシーまたは管理設定ファイルでこれをこのリストから除外すると、そのセッションは拒否されます。含めた場合は、Anthropic に直接送信されるセッションもこのリストを通過します。
+
 ### 統合に MCP を活用する
 
 MCP は Claude Code にチケット管理システムやエラーログへの接続など、より多くの情報を提供する優れた方法です。1 つの中央チームが MCP サーバーを構成し、`.mcp.json` 構成をコードベースにチェックインして、すべてのユーザーが恩恵を受けられるようにします。[詳細をご覧ください](https://code.claude.com/docs/ja/mcp.md)。

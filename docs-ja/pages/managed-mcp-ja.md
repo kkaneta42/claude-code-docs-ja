@@ -30,7 +30,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 | パターン | 機能 | 設定 |
 | :- | :- | :- |
 | **MCP を無効化** | [排他的制御](#exclusive-control-with-managed-mcp-json)の下で読み込まれるいくつかのサーバーを除き、サーバーは読み込まれません | 空のサーバーマップを含む `managed-mcp.json` |
-| **固定デプロイ** | すべてのユーザーが同じサーバーを取得し、他のサーバーを追加できません | 必要なサーバーを含む `managed-mcp.json` |
+| **固定デプロイ** | すべてのユーザーがリストされたサーバーを取得し、ユーザーが設定したサーバーは読み込まれません | 必要なサーバーを含む `managed-mcp.json` |
 | **提供されるサーバー** | すべてのユーザーがリストされたリモートサーバーを取得し、独自のサーバーを保持します | マネージド設定の `managedMcpServers` |
 | **承認されたカタログ** | 承認されたサーバーのリストを公開します。ユーザーは必要なものを追加し、その他はすべてブロックされます | `allowedMcpServers` + `allowManagedMcpServersOnly: true` |
 | **プラグインサーバーのみ** | ユーザーは `~/.claude.json` または `.mcp.json` を通じてサーバーを追加できません。[スキルディレクトリプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#skills-directory-plugins-blocked-by-managed-settings)はプラグインとして読み込まれなくなり、その他のプラグインのサーバーは引き続き読み込まれます | [`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization) とリストの `mcp` |
@@ -49,6 +49,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 * ファイルで定義されたサーバー
 * [「`managedMcpServers` を通じて提供するサーバー」](#provide-servers-through-managed-settings)
 * セッションを開始したアプリが登録するインプロセスサーバー（VS Code 拡張機能独自のサーバーや[デスクトップアプリが提供するコネクタ](https://code.claude.com/docs/ja/mcp.md#how-connectors-reach-claude-code)など）
+* [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が[ツールを追加](https://code.claude.com/docs/ja/plugins/mods/api.md#add-a-tool)するときに Claude Code が作成するサーバー。ユーザーの mod が追加するツールをブロックするには、[ユーザーがインストールした mod の読み込みを停止](https://code.claude.com/docs/ja/plugins/mods/admin.md#stop-user-installed-mods-from-loading)してください。
 * [「Claude in Chrome」](https://code.claude.com/docs/ja/chrome.md)の組み込みサーバー（[マネージドセットと共にそれを許可](#allow-claude-in-chrome-alongside-the-managed-set)する場合）
 
 ユーザーは、プラグイン提供のサーバーや[「`--mcp-config` CLI フラグ」](https://code.claude.com/docs/ja/cli-reference#cli-flags)で渡されたサーバーを含む、その他の MCP サーバーを追加、変更、または使用することはできません。このファイルは、[マネージドセットと共にそれらを許可](#allow-claude-ai-connectors-alongside-the-managed-set)しない限り、Claude Code が自身で取得する claude.ai コネクタも抑制します。
@@ -137,7 +138,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 }
 ```
 
-`claude mcp add` は上記のエンタープライズポリシーエラーで失敗します。ユーザーが以前に構成したサーバーは、次回セッションを開始するときに読み込まれなくなります。ポリシーが理由であることについての警告はありません。`managedMcpServers` を通じて提供するサーバーと、マネージドセットと共に許可するその他のすべてのものは、空のマップの下でも読み込まれるため、MCP を完全に無効にするにはそれらのキーを設定しないままにしてください。
+`claude mcp add` は上記のエンタープライズポリシーエラーで失敗します。ユーザーが以前に構成したサーバーは、次回セッションを開始するときに読み込まれなくなります。ポリシーが理由であることについての警告はありません。`managedMcpServers` を通じて提供するサーバーと、マネージドセットと共に許可するその他のすべてのものは、空のマップの下でも[読み込まれる](#exclusive-control-with-managed-mcp-json)ため、それらのキーを設定しないままにしてください。
 
 ### マネージドセットと共に claude.ai コネクタを許可する
 

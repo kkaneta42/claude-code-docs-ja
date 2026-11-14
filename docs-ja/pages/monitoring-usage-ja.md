@@ -110,7 +110,7 @@ v2.1.217 より前では、すべての変数は独立してキーごとの設�
 | `CLAUDE_CODE_ENABLE_TELEMETRY` | テレメトリ収集を有効にします（必須） | `1` |
 | `OTEL_METRICS_EXPORTER` | メトリクスエクスポーターの種類（カンマ区切り）。無効にするには `none` を使用します | `console`, `otlp`, `prometheus`, `none` |
 | `OTEL_LOGS_EXPORTER` | ログ/イベントエクスポーターの種類（カンマ区切り）。無効にするには `none` を使用します | `console`, `otlp`, `none` |
-| `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP エクスポーターのプロトコル。すべてのシグナルに適用されます。Claude Code にはデフォルトのプロトコルがないため、有効にする `otlp` エクスポーターごとに、この変数またはシグナル固有のプロトコル変数を設定してください | `grpc`, `http/json`, `http/protobuf` |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP エクスポーターのプロトコル。すべてのシグナルに適用されます。有効な `http://` または `https://` エンドポイントの場合、デフォルトは `http/protobuf` です。`http://localhost:4317` のような gRPC エンドポイントの場合は、これを `grpc` に設定してください。このデフォルトには Claude Code v2.1.323 以降が必要です | `grpc`, `http/json`, `http/protobuf` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | すべてのシグナル向けの OTLP コレクターエンドポイント | `http://localhost:4317` |
 | `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL` | メトリクスのプロトコル。全般設定を上書きします | `grpc`, `http/json`, `http/protobuf` |
 | `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` | OTLP メトリクスエンドポイント。全般設定を上書きします | `http://localhost:4318/v1/metrics` |
@@ -475,7 +475,7 @@ Claude Code は、これらの値を OTLP リソースブロックで送信す�
 
 * **Desktop を実行しているコンピューターで設定した**: Desktop は、そこで設定した値を SSH セッションに渡しません
 * **`/etc/profile` など、ログインシェルのみが読み取るファイルでエクスポートした**: ログインシェルから `claude` を実行した場合は名前が届きますが、Desktop SSH セッションでは届きません。Desktop はログインシェル経由で Claude Code を起動しません。代わりに、リモートマシン上の[管理設定ファイル](https://code.claude.com/docs/ja/desktop.md#managed-settings)の `env` で変数を設定してください。
-* **値の中にスペースが含まれている**: この場合、Claude Code はどのキーもイベントやデータポイントにコピーせず、エラーも報告しません。[値からスペースを取り除いてください](#multi-team-organization-support)。
+* **値の中にスペースが含まれている**: この場合、Claude Code はどのキーもイベントやデータポイントにコピーしません。どの値にスペースが含まれているかを確認するには、リモートマシン上のセッションで `/status` を実行してください。[値からスペースを取り除いてください](#multi-team-organization-support)。
 * **他の何かがすでにこの変数を設定している**: デスクトップアプリが開始するセッションでは、起動環境ですでに設定されている変数が[設定ファイルより優先されます](https://code.claude.com/docs/ja/settings-reference.md#how-env-values-interact-with-your-shell)。[デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md)には、無視された各変数の名前が記録されます。サードパーティの Desktop デプロイが、提供する環境で [OTLP エンドポイントを指定している](#how-managed-settings-lock-the-otlp-destination)場合、その環境には Desktop 独自の `OTEL_RESOURCE_ATTRIBUTES` が含まれます。
 
 ### 設定例

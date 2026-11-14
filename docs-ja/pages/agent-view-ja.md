@@ -8,7 +8,7 @@
 
 `claude agents` で開くエージェントビューは、すべてのバックグラウンドセッションの 1 つの画面です。実行中のもの、入力が必要なもの、完了したものが表示されます。新しいセッションをディスパッチし、トランスクリプトをスクロールする代わりに一目でセッションの状態を確認し、セッションが必要とするときだけ介入します。各バックグラウンドセッションは完全な Claude Code の会話であり、ターミナルが接続されていなくてもバックグラウンドで実行し続けるため、いつでも開いて、返信して、去ることができます。
 
-![ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。](https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/agent-view-light.png?fit=max\&auto=format\&n=HDAmBwgbrZVk0pOt\&q=85\&s=d6905012bee31f3e6b3920b09c05dd02)
+![ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。](https://mintcdn.com/claude-code/v_J840yKc6uuKDX_/images/agent-view-light.png?fit=max\&auto=format\&n=v_J840yKc6uuKDX_\&q=85\&s=bd95fda83ea66ca8b2e0e7b68f8cb29e)
 
 Claude が複数の独立したタスクに対して、あなたが毎ステップを監視することなく作業できる場合に、エージェントビューを使用します。バグ修正、プルリクエストレビュー、不安定なテストの調査を 3 つの行としてディスパッチし、別のウィンドウで作業を続け、行が入力が必要であることを示すか、結果が得られたときに確認します。
 
@@ -144,7 +144,7 @@ Completed
 | 形状 | 意味 |
 | :- | :- |
 | `✻` またはアニメーション `✽` | セッションプロセスが実行中であるか、セッションがユーザーの入力を必要としています |
-| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信またはアタッチすると、Claude は保存された会話からセッションを再起動します |
+| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信するか `Enter` を押すと、Claude は保存された会話からセッションを再起動します |
 | `✢` | イテレーション間でスリープしている [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) セッションです。行は実行回数とカウントダウンを表示します |
 
 行の右端に表示される `#N` または `!N` ラベルは [セッションのプルリクエストまたはマージリクエスト](#pull-request-status) へのリンクであり、状態アイコンの一部ではありません。
@@ -316,7 +316,7 @@ Claude Code がセッションをバックグラウンドにすると（約 10 �
 * グループヘッダーで `Enter` を押すと、そのグループを折りたたみます。ただし、[フィルター](#filter-sessions) が有効な間は、すべてのグループが展開されたままになります
 * `Ctrl+X` を押してセッションを停止し、2 秒以内に `Ctrl+X` を再度押してリストから削除します。削除せずに確認を閉じるには `Esc` を押します。2 回目の押下は、たとえば [バックグラウンドサービスが応答していない](#agent-view-says-the-background-service-did-not-respond) ために停止の試みが失敗した場合でも、セッションを削除します。その場合、確認はさらに 2 秒間有効なままで、削除によってセッションのプロセス自体が終了されます
 
-グループヘッダーで `Ctrl+X` を押すと、確認後、そのグループ内のすべてのセッションが削除されます。[セッションを削除するときに削除されるもの](#what-deleting-a-session-removes) で説明されている保持されるケースを除き、削除するとセッションはリストから削除されます。Claude がそのセッション用に作成した worktree は、削除方法と worktree の内容に応じて、削除、保持、またはそのまま残されます。会話のトランスクリプトはローカルマシンに残り、`claude --resume` から利用できます。
+グループヘッダーで `Ctrl+X` を押すと、確認後、そのグループ内のすべてのセッションが削除されます。ただし、Claude Code が [削除を拒否する](#delete-a-session-after-claude-code-refuses) セッションは除きます。各セッションの worktree がどうなるかについては、[セッションを削除するときに削除されるもの](#what-deleting-a-session-removes) を参照してください。会話のトランスクリプトはローカルマシンに残り、`claude --resume` から利用できます。
 
 画面に収まらない完了したセッションは `… N more` 行に折りたたまれます。`Completed` グループはライブグループの後に残った縦のスペースを埋めます。短いターミナルではヘッダーが 1 行の概要に圧縮されるため、作業中または入力が必要なセッションは表示されたままになります。
 
@@ -622,48 +622,37 @@ Claude が入った worktree でバックグラウンドセッションがコー
 
 #### セッションを削除すると何が削除されるか
 
-セッションを削除するには、[エージェントビュー](#organize-the-list) で `Ctrl+X` を 2 回押すか、[`claude rm`](#manage-sessions-from-the-shell) を使用します。以下で保持されるケースを除き、セッションはリストから削除されます。そのトランスクリプトは `claude --resume` で利用できるようマシン上に残り、削除はスーパーバイザーの再起動後も維持されます。
+セッションを削除するには、[エージェントビュー](#organize-the-list) で `Ctrl+X` を 2 回押すか、[`claude rm`](#manage-sessions-from-the-shell) を使用します。Claude Code が [削除を拒否した](#delete-a-session-after-claude-code-refuses) 場合を除き、セッションはリストから削除されます。そのトランスクリプトはマシン上に残り、`claude --resume` で利用できます。
 
 Claude がセッション用に作成した worktree がどうなるかは次のとおりです。
 
 * エージェントビューは、コミットされていない変更も含めて worktree を削除するため、残しておきたいものは先にコミットしてください。
 * `claude rm` は、コミットされていない変更がある場合、セッションの行と一緒に worktree を保持します。
-* エージェントビューも `claude rm` も、別の実行中のセッションが使用中またはロック中の worktree は削除せず、再度削除しても変わりません。Claude Code は worktree とセッションを保持し、保持したディレクトリとその理由を示します。エージェントビューでは、セッションの行に `not deleted` が表示されます。もう一方のセッションを閉じてから、再度削除してください。
-* 他の場所に保存されていることを Claude Code が確認できないコミットが worktree にあるセッションを削除すると、Claude Code は worktree とセッションを保持し、メッセージには worktree のブランチと未プッシュのコミット数が示されます。メッセージには、コミットをプッシュするか、再度削除してコミットを破棄するかの 2 つの対処方法も示されます。
 
-  リモート上のコミットは削除を妨げません。`origin` リモートのデフォルトブランチのローカルコピー上のコミットも、そのブランチがメインチェックアウト（worktree ではなくリポジトリディレクトリ自体）でチェックアウトされている限り、削除を妨げません。
+Claude Code がセッションの削除を拒否する理由の 1 つは、[worktree 内の未プッシュのコミット](https://code.claude.com/docs/ja/errors.md#worktree-has-commits-that-are-not-pushed-anywhere) です。それらのコミットを残すには、セッションを削除する前にプッシュしてください。
 
-  このように拒否された後は、次のいずれかを選択します。
+エージェントビューと `claude rm` のどちらを使用しても、ディスク上に残る worktree があります。
 
-  * コミットを残すには、プッシュするか、そのデフォルトブランチにマージしてから、セッションを再度削除します。
-  * コミットを破棄するには、プッシュせずにセッションを再度削除します。エージェントビューでその行に対して `Ctrl+X` を 2 回押すか、拒否時に出力された `claude rm <id> --discard-unpushed` コマンドを実行します。これにより、セッションと worktree がそのブランチとともに削除され、未プッシュのコミットとコミットされていない変更は破棄されます。
+* worktree を自分で作成し、その中からセッションを開始した場合、worktree はディスク上に残り、保持するか削除するかを自分で決められます。
+* Claude がリポジトリ内に作成した worktree ディレクトリに `.git` ファイルがなくなっている場合、そのディレクトリはディスク上に残るため、自分で削除してください。worktree のブランチはリポジトリに残るため、そのブランチ上のコミットは保持されます。
 
-  再度削除するとき、Claude Code は拒否時に示された内容のみを破棄します。その後 worktree に新しいコミットが追加されていた場合、Claude Code は再び worktree を保持し、更新された状態を表示します。
+##### Claude Code が拒否した後にセッションを削除する
 
-  別の完了済みセッションの記録にもその worktree が記載されている場合、再度削除しても worktree は残ります。コミットをプッシュしてから、再度削除してください。
-* `git worktree prune` の後など、git がもはや認識しない worktree は削除を妨げません。Claude Code はセッションを削除し、ディレクトリはディスク上に残します。
-* git または [`WorktreeRemove` フック](https://code.claude.com/docs/ja/hooks#worktreeremove) が worktree の削除に失敗した場合、Claude Code は worktree とセッションを保持し、メッセージにその原因を示します。フックの場合、メッセージには `exited 1` などの終了状況が示され、stderr の冒頭が引用されます。メッセージでは、次に行うべきことも以下から示されます。
+worktree が原因で Claude Code がセッションの削除を拒否した場合は、表示されるメッセージに従ってください。メッセージに未プッシュのコミットが示されている場合は、[Worktree has commits that are not pushed anywhere](https://code.claude.com/docs/ja/errors.md#worktree-has-commits-that-are-not-pushed-anywhere) を参照してください。
 
-  * セッションを再度削除して、それでもディレクトリを削除します。エージェントビューでその行に対して `Ctrl+X` を 2 回押すか、`claude rm` の拒否時に出力された `claude rm <id> --force-remove-worktree <worktree-id>` コマンドを実行します。worktree のブランチはリポジトリに残ります。
+##### `Worktree not removed` メッセージを解決する
 
-    Claude Code がこの方法を提示するのは、以下のすべてを確認できる場合のみです。
+`Worktree not removed` メッセージは、Claude Code または [`WorktreeRemove` フック](https://code.claude.com/docs/ja/hooks#worktreeremove) がセッションの worktree の削除を完了しなかったことを意味します。コミットがあればプッシュし、残しておきたいファイルをコピーして退避してから、メッセージに従ってください。
 
-    * ディレクトリが、`.claude/worktrees/` の下にあるリポジトリのリンクされた worktree の 1 つである
-    * worktree にも、チェックアウトされたサブモジュールにも、追跡対象ファイルへのコミットされていない変更がない
-    * 他のセッションの記録にそのディレクトリが記載されていない
+##### `files that weren't checked against a repository` メッセージを解決する
 
-    別の git リポジトリに置き換えられたものなど、サブモジュールのチェックアウトの状態を Claude Code が確認できない場合も、この方法は提示されません。
-  * コミットされていない変更をコミットまたはスタッシュする、別の git リポジトリを worktree の外に移動する、ディレクトリを使用しているものを閉じる、フックを修正するなど、障害となっているものを解消してから、セッションを再度削除します。
-  * ディレクトリを自分で削除してから、セッションを再度削除します。
+`claude rm` からのこのメッセージは、どの git リポジトリにも属さない worktree ディレクトリ、または [`WorktreeCreate` フック](https://code.claude.com/docs/ja/hooks#worktreecreate) が管理する worktree ディレクトリにファイルが残っていることを意味します。残しておきたいファイルをコピーして退避してから、該当するケースの手順を実行してください。
 
-自分で作成し、その中でセッションを開始した worktree は、いずれの場合もそのまま残ります。
-
-リポジトリが削除された場合や、[`WorktreeCreate` フック](https://code.claude.com/docs/ja/hooks#worktreecreate) が別の場所にディレクトリを作成した場合など、worktree ディレクトリがどの git リポジトリにも属さないセッションも削除できます。ディレクトリにファイルが残っている間は、次のようになります。
-
-* エージェントビューは、ファイルを破棄する前に同じく `Ctrl+X` の 2 回押しを求めます。フックが作成したディレクトリの場合は、代わりに [`WorktreeRemove` フック](https://code.claude.com/docs/ja/hooks#worktreeremove) を実行し、そのフックがない場合は削除を拒否してセッションを保持します。
-* `claude rm` はセッションと worktree を保持し、その理由を示します。
-
-どちらの方法でも、別の完了済みセッションの記録に記載されているディレクトリは保持されます。
+| 該当するケース | 対処方法 |
+| :- | :- |
+| `WorktreeCreate` フックがディレクトリを管理していない | ファイルを破棄するには、エージェントビューでセッションの行に対して `Ctrl+X` を 2 回押します。または、ディレクトリを自分で削除してから、`claude rm <id>` を再度実行します |
+| `WorktreeCreate` フックがディレクトリを管理しており、[`WorktreeRemove` フック](https://code.claude.com/docs/ja/hooks#worktreeremove) がある | フックでディレクトリの削除を試みるには、エージェントビューでセッションの行に対して `Ctrl+X` を 2 回押します。または、ディレクトリを自分で削除してから、`claude rm <id>` を再度実行します |
+| `WorktreeCreate` フックがディレクトリを管理しており、`WorktreeRemove` フックがない | ディレクトリを自分で削除してから、`claude rm <id>` を再度実行します |
 
 ### モデル、effort、fast mode を設定する
 
@@ -774,7 +763,7 @@ Claude Code は、[`/rename`](https://code.claude.com/docs/ja/commands) また�
 | [`--add-dir <path>`](https://code.claude.com/docs/ja/permissions#additional-directories-grant-file-access-not-configuration) | 追加ディレクトリへのファイルアクセスを付与します |
 | [`--plugin-dir <path>`](https://code.claude.com/docs/ja/plugins/create#load-a-directory-or-archive-for-one-session) | ローカルディレクトリからプラグインを読み込みます |
 | [`--mcp-config <file-or-json>`](https://code.claude.com/docs/ja/mcp) | 設定ファイルまたは JSON 文字列から MCP サーバーを読み込みます |
-| `--strict-mcp-config` | `--mcp-config` の MCP サーバーのみを使用し、他の MCP 設定を無視します。管理 MCP ファイルがある場合のこのフラグの動作については、[managed-mcp.json による排他的制御](https://code.claude.com/docs/ja/managed-mcp.md#exclusive-control-with-managed-mcp-json) を参照してください |
+| `--strict-mcp-config` | `.mcp.json` などの場所で設定された MCP サーバーをスキップし、`--mcp-config` で渡したものを読み込みます。管理 MCP ファイルがある場合のこのフラグの動作については、[managed-mcp.json による排他的制御](https://code.claude.com/docs/ja/managed-mcp.md#exclusive-control-with-managed-mcp-json) を参照してください |
 
 `--add-dir`、`--plugin-dir`、`--mcp-config` は値ごとに 1 回ずつ繰り返して指定します。`claude agents` は、`--add-dir a b c` のようなスペース区切りの形式をサポートしていません。
 
@@ -802,9 +791,9 @@ claude agents --settings ./ci-settings.json --add-dir ../shared-lib
 | `claude stop <id>` | セッションを停止する。`claude kill` も受け入れます |
 | `claude respawn <id>` | セッションを再開する。実行中または停止状態のセッションを再開します。例えば、更新された Claude Code バイナリを取得するため。保存された会話があるセッションはその会話を再開します |
 | `claude respawn --all` | すべての実行中のセッションを再開する。例えば、すべてのセッションを一度に更新された Claude Code バイナリに移動するため |
-| `claude rm <id>` | セッションをリストから削除します。削除が安全な場合、Claude が作成した worktree も削除します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。会話トランスクリプトはローカルマシンに保存され、`claude --resume` を通じて利用可能なままです |
-| `claude rm <id> --discard-unpushed <commit>@<worktree-id>` | プッシュされていないコミットで削除が拒否されたセッションを削除し、worktree をそのブランチとコミットとともに破棄します。拒否が出力した正確な値を渡します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。v2.1.260 以降が必要です |
-| `claude rm <id> --force-remove-worktree <worktree-id>` | git または `WorktreeRemove` フックが worktree を削除できなかったために削除が拒否されたセッションを削除し、worktree ディレクトリを削除してそのブランチをリポジトリに残します。拒否が出力した正確な値を渡します。[セッションの削除で何が削除されるか](#what-deleting-a-session-removes)を参照してください。v2.1.268 以降が必要です |
+| `claude rm <id>` | セッションをリストから削除します。削除が安全な場合、Claude が作成した worktree も削除します。Claude Code が worktree を理由にセッションの削除を拒否した場合は、[Claude Code が拒否した後にセッションを削除する](#delete-a-session-after-claude-code-refuses)を参照してください。会話トランスクリプトはローカルマシンに保存され、`claude --resume` を通じて利用可能なままです |
+| `claude rm <id> --discard-unpushed <commit>@<worktree-id>` | プッシュされていないコミットを理由に Claude Code が拒否した後、セッションの削除を再試行し、その worktree を破棄します。このコマンドを提示する `claude rm` のメッセージからコマンドをコピーしてください。[Worktree has commits that are not pushed anywhere](https://code.claude.com/docs/ja/errors.md#worktree-has-commits-that-are-not-pushed-anywhere) を参照してください。v2.1.260 以降が必要です |
+| `claude rm <id> --force-remove-worktree <worktree-id>` | worktree を削除できなかったために Claude Code が拒否した後、セッションの削除を再試行し、それでも worktree ディレクトリを削除します。このコマンドを提示する `claude rm` のメッセージからコマンドをコピーしてください。[`Worktree not removed` メッセージを解決する](#resolve-a-worktree-not-removed-message)を参照してください。v2.1.268 以降が必要です |
 | `claude daemon status` | [supervisor](#the-supervisor-process) の状態、バージョン、ソケットディレクトリ、およびワーカー数を出力する |
 | `claude daemon logs` | supervisor のログファイル [`~/.claude/daemon.log`](#where-state-is-stored) を追跡し、`Ctrl+C` を押すまで新しい行を到着次第出力する |
 | `claude daemon stop --any` | supervisor プロセスとそれがホストするバックグラウンドセッションを停止します。`--keep-workers` を渡して、バックグラウンドセッションを実行したままにして、[次の supervisor](#the-supervisor-process) が再接続できるようにします。次の `claude agents` または `claude --bg` は新しい supervisor を開始します |
@@ -935,9 +924,11 @@ Claude はこの通知を確認して自動的に返信するため、プロン�
 マシンをシャットダウンまたは再起動すると、実行中のバックグラウンドセッションが停止します。入力を待機していたセッションは、戻ってきたときに `Needs input` の下に留まります。その他の実行中のセッションについては、エージェントビューが表示する内容は、最後に進捗があってからどのくらい前かによって異なります：
 
 * 48 時間以内の場合、セッションは失敗として表示されます。アタッチまたは返信すると、保存された会話から再開します。中断した作業を再開するには、続行を求める返信を送信してください。
-* 48 時間以上経過した場合（マシンが数日間オフになっていた後など）、セッションは `ended while the background service was off` として停止として表示されます。行で `Enter` を押すと、フッターに `Press enter again to resume this session (it ended while the background service was off), or ctrl+x to delete it.` が表示されます。同じ行で再度 `Enter` を押して、保存された会話を再開します。返信または `claude attach <id>` でそのフッタープロンプトなしで再開します。
+* 48 時間以上経過した場合（マシンが数日間オフになっていた後など）、セッションは `ended while the background service was off` として停止として表示されます。
 
-[トランスクリプトクリーンアップ](https://code.claude.com/docs/ja/settings-reference.md#cleanupperioddays)が停止したセッションの保存された会話を削除した場合、Claude Code は行を開くことを拒否します。メッセージは再開するものがないことを示しています。`claude rm <id>` は行を削除します。ただし、[保持されたケース](#what-deleting-a-session-removes)で説明されている場合を除き、`claude respawn <id>` は元のプロンプトを再度実行します。[このセッションの保存された会話はディスク上にもはやありません](https://code.claude.com/docs/ja/errors.md#this-sessions-saved-conversation-is-no-longer-on-disk)を参照してください。
+  行で `Enter` を押すと、フッターに `Press enter again to resume this session (it ended while the background service was off), or ctrl+x to remove it.` が表示されます。同じ行で再度 `Enter` を押して、保存された会話を再開します。返信または `claude attach <id>` でそのフッタープロンプトなしで再開します。
+
+[トランスクリプトクリーンアップ](https://code.claude.com/docs/ja/settings-reference.md#cleanupperioddays)が停止したセッションの保存された会話を削除した場合、Claude Code は行を開くことを拒否します。メッセージは再開するものがないことを示しています。`claude rm <id>` は行を削除し（ただし [Claude Code が拒否する](#what-deleting-a-session-removes)場合を除きます）、`claude respawn <id>` は元のプロンプトを再度実行します。[このセッションの保存された会話はディスク上にもはやありません](https://code.claude.com/docs/ja/errors.md#this-sessions-saved-conversation-is-no-longer-on-disk)を参照してください。
 
 スリープだけではセッションを停止しません。セッションはスリープ全体で保持され、スーパーバイザーはウェイク時にそれらに再接続します。
 
@@ -971,9 +962,11 @@ Claude Code は、`Enter` からまたは `claude attach` から実行される[
 
 バックグラウンドセッションのプロセスが開始を完了する前に終了し、ホストのメモリが不足している場合、行のステータスは終了を名前で表示し、`possibly low memory — free some up and retry` を追加します。
 
-ノートは仮説であり、確認された原因ではありません。Claude Code はプロセスがエラーを書き込まずに静かに終了し、シグナルによって停止されず、ホストがその時点で低メモリを報告した場合にのみ追加します。プロセスが終了前にエラーを書き込んだ場合、行はそのエラーを代わりに表示します。
+> [!NOTE]
+>
+> ノートは仮説であり、確認された原因ではありません。Claude Code はプロセスがエラーを書き込まずに静かに終了し、シグナルによって停止されず、ホストがその時点で低メモリを報告した場合にのみ追加します。プロセスが終了前にエラーを書き込んだ場合、行はそのエラーを代わりに表示します。
 
-マシンのメモリを解放してから、行にアタッチまたは返信すると、スーパーバイザーがセッションの新しいプロセスを開始します。メモリが低いままの場合、スーパーバイザーは[アイドルセッションを停止](#the-supervisor-process)して独自にリソースを解放し、他のセッションを停止しても何も解放されない場合は、アイドル状態のピン留めセッションも停止します。
+ホストのメモリを解放してから行で `Enter` を押し、[フッターで求められた](#opening-a-session-says-it-has-no-saved-transcript)場合はもう一度押してください。[スーパーバイザー](#the-supervisor-process)がセッションの新しいプロセスを開始します。メモリが低いままの場合、スーパーバイザーは[アイドルセッションを停止](#the-supervisor-process)して独自にリソースを解放し、他のセッションを停止しても何も解放されない場合は、アイドル状態のピン留めセッションも停止します。
 
 ### エージェントビューがバックグラウンドサービスが応答しなかったと表示される
 
@@ -1034,9 +1027,9 @@ macOS 15 以降では、システムはローカルネットワークアクセ�
 
 ### `.claude/worktrees/` が満杯になっている
 
-エージェントビューでセッションを削除すると、Claude が作成した worktree が削除されます。ただし、[いくつかの削除は worktree を保持するか、そのディレクトリをディスク上に残す](#what-deleting-a-session-removes)ため、孤立したディレクトリが蓄積する可能性があります。Git がもはや認識しないディレクトリは `git worktree list` に表示されないため、それらを手動で削除します。
+エージェントビューでセッションを削除すると、Claude が作成した worktree が削除されますが、[一部の worktree ディレクトリはディスク上に残ります](#what-deleting-a-session-removes)。Git がもはや認識しないディレクトリは `git worktree list` に表示されないため、それらは手動で削除してください。
 
-プロジェクトディレクトリで `git worktree list` を使用して孤立したエントリをリストし、各エントリを `git worktree remove <path>` で削除します。[worktree をクリーンアップする](https://code.claude.com/docs/ja/worktrees.md#clean-up-worktrees)を参照してください。
+プロジェクトディレクトリで `git worktree list` を使用して残っているエントリをリストし、各エントリを `git worktree remove <path>` で削除します。Git が拒否する場合は、[サブエージェントとバックグラウンドセッションの worktree をクリーンアップする](https://code.claude.com/docs/ja/worktrees.md#clean-up-subagent-and-background-session-worktrees)を参照してください。
 
 ## 制限事項
 
@@ -1044,7 +1037,7 @@ Agent view はリサーチプレビューであり、以下の制限事項があ
 
 * **レート制限が適用される**：バックグラウンドセッションはインタラクティブセッションと同じようにサブスクリプション使用量を消費するため、10 個のエージェントを並行して実行するとクォータが 10 倍速く消費されます。
 * **セッションはローカル**：バックグラウンドセッションはマシンで実行され、スリープ中は保持されますが、マシンがシャットダウンすると停止します。
-* **Claude が作成した worktrees はエージェント view のセッションで削除される**：セッションが独自の worktree でファイルを編集した場合、セッションを削除する前に変更をコミットしてください。[削除によって worktree が保持される場合もあります](#what-deleting-a-session-removes)。
+* **Claude が作成した worktree は agent view でセッションとともに削除される**：セッションが独自の worktree でファイルを編集した場合、セッションを削除する前に変更をコミットしてください。[一部の worktree はディスクに残ります](#what-deleting-a-session-removes)。
 
 ## 関連リソース
 

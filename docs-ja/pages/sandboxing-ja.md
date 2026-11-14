@@ -6,7 +6,7 @@
 
 > 組み込みのサンドボックスを使用して、Claude Code のシェルコマンドがアクセスできるファイルとネットワークホストを制限します。サンドボックスをオンにし、境界を設定し、それによって生じる問題を解決します。
 
-Bash サンドボックスは、Claude がユーザーのマシン上で実行するシェルコマンドの周囲に、オペレーティングシステムが適用する境界です。これらのコマンドがアクセスできるファイルとネットワークドメインを設定すると、その制限は Bash、PowerShell、Monitor の各コマンドと、それらが起動するプロセスに適用されます。コマンドの実行中にオペレーティングシステムが制限を適用するため、Claude Code はサンドボックス化されたコマンドを 1 つずつ承認を求めることなく[実行できます](#sandbox-modes)。
+Bash サンドボックスは、Claude がユーザーのマシン上で実行するシェルコマンドの周囲に、オペレーティングシステムが適用する境界です。これらのコマンドがアクセスできるファイルとネットワークドメインを設定すると、その制限は Bash、PowerShell、Monitor の各コマンドと、それらが起動するプロセスに適用されます。サンドボックス化されたコマンドも通常の権限フローを経由します。ただし、[自動許可モード](#sandbox-modes)を選択した場合は除きます。このモードでは、ユーザーに確認せずにコマンドを実行できます。
 
 サンドボックスの対象はシェルコマンドのみです。Claude のファイルツール、MCP サーバー、フックは[サンドボックスの外で実行されます](#what-runs-outside-the-sandbox)。
 
@@ -394,12 +394,9 @@ Claude Code は、Bash と Monitor の各呼び出しに対してエントリを
 | `credentials.envVars` の `deny` と `mask` エントリ | 適用されます。環境変数の除去はファイルシステムレイヤーから独立しています |
 | マスクとして適用された [`credentials.files` の `mask` エントリ](#mask-credential-files) | 適用されます。マスキングはファイルシステムレイヤーから独立しています。[`deny` にフォールバックした](#mask-credential-files)エントリは、他の `deny` エントリと同様に適用されません |
 
-その他に 2 つの点が変わります。
+また、サンドボックス化されたコマンドは、ユーザーごとの一時ディレクトリではなく、シェルの `$TMPDIR` を継承します。すべての一時ディレクトリが書き込み可能になり、Claude Code がコマンドをユーザーごとの一時ディレクトリにリダイレクトしなくなるためです。
 
-* サンドボックス化されたコマンドは、ユーザーごとの一時ディレクトリではなく、シェルの `$TMPDIR` を継承します。すべての一時ディレクトリが書き込み可能になり、Claude Code がコマンドをユーザーごとの一時ディレクトリにリダイレクトしなくなるためです。
-
-  Linux では、親シェルでこの変数が設定されていないことがよくあります。Bash ツールのガイダンスは、`$TMPDIR` に頼るのではなく `mktemp -d` で作業用ディレクトリを作成するよう Claude に指示します。
-* [`autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) のデフォルトは引き続き `true` であるため、サンドボックス化されたコマンドはプロンプトなしで実行され続けます。サンドボックス化されたコマンドでプロンプトを表示するには、`false` に設定します。
+Linux では、親シェルでこの変数が設定されていないことがよくあります。Bash ツールのガイダンスは、`$TMPDIR` に頼るのではなく `mktemp -d` で作業用ディレクトリを作成するよう Claude に指示します。
 
 ### 認証情報を保護する
 
@@ -1095,7 +1092,7 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 }
 ```
 
-これにより[自動許可モード](#sandbox-modes)がオンになります。通常の権限モードにするには、[`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) も `false` に設定してください。この変更は、実行中のセッションで Claude が次にシェルコマンドを実行した時点で有効になり、その後 `/sandbox` の **Mode** タブに有効なモードが表示されます。
+これにより[通常の権限モード](#sandbox-modes)がオンになります。自動許可モードにするには、[`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) も `true` に設定してください。この変更は、実行中のセッションで Claude が次にシェルコマンドを実行した時点で有効になり、その後 `/sandbox` の **Mode** タブに有効なモードが表示されます。
 
 ## 制限事項
 

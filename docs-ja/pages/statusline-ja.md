@@ -1083,46 +1083,6 @@ dirname="${cwd##*[/\\]}"
 echo "$dirname [$model]"
 ```
 
-## サブエージェントステータスライン
-
-`subagentStatusLine` 設定は、エージェントパネルに表示される各 [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) のカスタム行本体をレンダリングします。デフォルトの `name · description · token count` 行を独自のフォーマットに置き換えるために使用します。
-
-```json theme={null}
-{
-  "subagentStatusLine": {
-    "type": "command",
-    "command": "~/.claude/subagent-statusline.sh"
-  }
-}
-```
-
-コマンドはリフレッシュティックごとに 1 回実行され、表示されているすべてのサブエージェント行を単一の JSON オブジェクトとして stdin で受け取ります。入力には [基本フックフィールド](https://code.claude.com/docs/ja/hooks.md#common-input-fields)、使用可能な行幅を示す `columns` フィールド、および行ごとに 1 つのエントリを持つ `tasks` 配列が含まれます。`tasks` 配列については [タスクフィールド](#task-fields) で説明します。
-
-オーバーライドしたい各行に対して stdout に 1 つの JSON 行を書き込みます。形式は `{"id": "<task id>", "content": "<row body>"}` です。`content` 文字列はそのままレンダリングされます。ANSI 色と OSC 8 ハイパーリンクを含みます。タスクの `id` を省略して、その行のデフォルトレンダリングを保持します。空の `content` 文字列を出力して、その行を非表示にします。
-
-`statusLine` に適用される同じトラストと `disableAllHooks` および [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) ゲートが `subagentStatusLine` に適用されます。プラグインは、[`settings.json`](https://code.claude.com/docs/ja/plugins/manifest-reference#standard-layout) でデフォルトの `subagentStatusLine` を配布できます。ただし、フックとは異なり、プラグインが管理設定の `enabledPlugins` で強制的に有効化されている場合でも、プラグイン値は `allowManagedHooksOnly` の下で実行されません。
-
-### タスクフィールド
-
-`tasks` 配列の各エントリは、以下のフィールドで 1 つのサブエージェント行を記述します。省略可能と記載されたフィールドは値がない場合に省略されるため、スクリプトではそれらが存在しない場合に備えてください。
-
-| フィールド | 型 | 説明 |
-| :- | :- | :- |
-| `id` | string | タスクの識別子。この行に対して書き戻す行で `id` としてそのまま返します |
-| `name` | string、省略可能 | サブエージェントに名前がある場合、その [呼び出しに使われる](https://code.claude.com/docs/ja/sub-agents.md#subagent-names) 名前 |
-| `type` | string | タスクの種類: `local_agent` |
-| `agentType` | string | タスクが実行されるサブエージェントタイプ。組み込みの [`Explore`](https://code.claude.com/docs/ja/sub-agents#built-in-subagents) やカスタムの `code-reviewer` などです。フックが [`agent_type`](https://code.claude.com/docs/ja/hooks#subagentstart) として受け取るのと同じ値を保持します。Claude Code v2.1.293 以降が必要です |
-| `status` | string | タスクの状態。`running`、`completed`、`failed`、`killed` など |
-| `description` | string | タスクの短い説明。Claude がサブエージェントを生成したときに付けた説明など |
-| `label` | string | Claude Code が持っている場合はタスクの短い進捗サマリー、それ以外の場合は `description` と同じテキスト |
-| `startTime` | number | タスクが開始された時刻（Unix エポックからのミリ秒） |
-| `model` | string、省略可能 | タスクが実行される解決済みモデルの ID。モデルが解決されるまでは省略されます |
-| `effort` | string または number、省略可能 | サブエージェントの [定義フロントマター](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields) または個別の呼び出しで設定された推論 effort: `low`、`medium`、`high`、`xhigh`、`max`、またはトークン予算の数値。これは設定された値であり、モデルがそのレベルをサポートしていない場合、Claude Code が実際に適用する effort は異なる可能性があります。effort が設定されていない場合は省略されます |
-| `contextWindowSize` | number、省略可能 | `model` のコンテキストウィンドウ（トークン単位）。メインステータスラインの [`context_window.context_window_size`](#context-window-fields) と同じ方法で計算されるため、`tokenCount` から行ごとのパーセンテージをレンダリングできます。`model` が省略されている場合は省略されます |
-| `tokenCount` | number | サブエージェントの累計トークン数。デフォルトの行に表示される数値です |
-| `tokenSamples` | array of numbers | 直近最大 16 個の `tokenCount` の読み取り値。リフレッシュティックごとに 1 つずつ、古い順に並び、現在の値で終わります |
-| `cwd` | string | サブエージェントの作業ディレクトリ。隔離された worktree など独自のディレクトリで実行される場合はそのディレクトリ、それ以外の場合はセッションの作業ディレクトリです |
-
 ## ヒント
 
 * **モック入力でテストする**：`echo '{"model":{"display_name":"Opus"},"workspace":{"current_dir":"/home/user/project"},"context_window":{"used_percentage":25},"session_id":"test-session-abc"}' | ./statusline.sh`

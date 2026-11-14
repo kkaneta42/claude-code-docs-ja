@@ -22,7 +22,7 @@ Claude Code スキルは [Agent Skills](https://agentskills.io) オープンス�
 
 Claude Code には、`/doctor`、`/code-review`、`/batch`、`/debug`、`/loop`、`/claude-api` などのバンドルされたスキルが含まれています。バンドルされたスキルはプロンプトベースです。Claude に詳細な指示を与え、ツールを使用して作業を調整させます。ほとんどの組み込みコマンドは、代わりに固定ロジックを直接実行します。
 
-バンドルされたスキルを呼び出すには、`/` の後にスキル名を入力します。Claude は関連する場合、一部のバンドルされたスキルを自動的に呼び出します。[`/verify`](#run-and-verify-your-app) を含む他のスキルは、呼び出した場合にのみ実行されます。
+バンドルされたスキルを呼び出すには、`/` の後にスキル名を入力します。Claude は関連する場合、一部のバンドルされたスキルを自動的に呼び出します。
 
 ほとんどのバンドルされたスキルはすべてのセッションで利用可能です。いくつかは特定の機能に依存しています。たとえば、`/workflow-authoring` は [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md) が有効な場合にのみ利用可能です。
 
@@ -320,7 +320,9 @@ Claude Code は、[bare モード](https://code.claude.com/docs/ja/headless.md#s
 
 セッション開始時に存在しなかったトップレベルのスキルディレクトリを作成した場合は、[`/reload-skills`](https://code.claude.com/docs/ja/commands#all-commands) を実行して、そこに置いたスキルを読み込みます。Claude Code はまだそのディレクトリを監視していないため、その後そこで変更するたびに `/reload-skills` を再度実行してください。
 
-ライブ変更検出の対象は `SKILL.md` のテキストのみです。[プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#plugins-shared-through-a-repository)でもあるスキルフォルダでは、`hooks/`、`.mcp.json`、`agents/`、`output-styles/` の変更を反映するには `/reload-plugins` が必要です。
+> [!NOTE]
+>
+> ライブ変更検出の対象は `SKILL.md` のテキストです。[プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#plugins-shared-through-a-repository)でもあるスキルフォルダでは、`.mcp.json`、`agents/`、`output-styles/` の変更を反映するには `/reload-plugins` が必要です。`hooks/` の変更にも必要ですが、[mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) のモジュールファイルが[自動で再読み込みされる](https://code.claude.com/docs/ja/env-vars.md)場合は除きます。
 
 ### スキルを削除する
 
@@ -787,7 +789,11 @@ PowerShell ツールも、実行するコマンドに同じタイムアウト、
 
 注入されたコマンドは、スキルのレンダリング中に権限を求めることはありません。Claude Code はまず各コマンドを[権限ルール](https://code.claude.com/docs/ja/permissions.md)と照合します。拒否ルールに一致するコマンドは、`Shell command permission check failed for pattern "..."` で呼び出しを中止します。
 
-[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)以外では、コマンドの権限チェックが許可以外の結果を返した場合、Claude Code は同じエラーで呼び出しを中止します。これには、通常であればユーザーに確認を求めるルールも含まれます。一致しないコマンドがここで中止されないようにするには、[`allowed-tools`](#pre-approve-tools-for-a-skill) で事前に承認してください。組織が権限ルールを管理設定に限定している場合は、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。拒否ルールと確認ルールは引き続き `allowed-tools` より優先されます。[権限を管理する](https://code.claude.com/docs/ja/permissions.md#manage-permissions)を参照してください。
+[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)以外では、コマンドの権限チェックが許可以外の結果を返した場合、Claude Code は呼び出しを中止します。一致しないコマンドで中止されないようにするには、[`allowed-tools`](#pre-approve-tools-for-a-skill) で事前に承認してください。ただし、次の制限があります。
+
+* **拒否ルールと確認ルール**: これらのいずれかに一致するコマンドは引き続き中止されます。該当するルールを見つけるには、[権限を管理する](https://code.claude.com/docs/ja/permissions.md#manage-permissions)を参照してください。
+* **管理設定のみのルール**: セッションで `/status` を実行したときに、そのスキルが `allowed-tools ignored this session` の下に一覧表示される場合は、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。
+* **検証されていない Git フォルダー**: `HEAD` または `.git` ファイルがユーザー自身のものではない可能性がある場所では、Claude Code は `git` を含む Bash コマンド、または Claude Code が解析できない Bash コマンドについて `allowed-tools` を無視します。自分のベアリポジトリの worktree など、そのフォルダーを信頼できる場合は、セッション内で [`/permissions`](https://code.claude.com/docs/ja/permissions#manage-permissions) を使用してそのコマンドを許可してください。
 
 auto モードでは、本来ユーザーの承認が必要なコマンドでも呼び出しは中止されません。スキルは、最初にそのコマンドを実行するよう Claude に指示する内容とともに読み込まれ、Claude 自身による呼び出しは [auto モードの通常のチェック](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)を経由します。ただし、`agent` を設定する[フォークされたスキル](#run-skills-in-a-subagent)や、Claude が[注入されたコマンドを実行するシェルツール](#how-injected-commands-run)を持たないセッションでは、引き続き呼び出しが中止されます。
 

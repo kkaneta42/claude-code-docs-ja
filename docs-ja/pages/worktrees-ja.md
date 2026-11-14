@@ -232,6 +232,7 @@ config/secrets.json
 
 デフォルトの `"fresh"` [ベース](#choose-the-base-branch)では、以下のすべてが当てはまる場合、再度開かれた worktree は古いチップで続行する代わりにリポジトリのデフォルトブランチにリセットされます。
 
+* [サンドボックス](https://code.claude.com/docs/ja/sandboxing.md#filesystem-isolation)がセッション内のファイル書き込みを制限しておらず、worktree とメインチェックアウトのどちらの `.claude` 設定ファイルもサンドボックスを有効にしていない。
 * コミットされていない変更または追跡されていないファイルがない。
 * Claude Code が作成したブランチ上にまだある。
 * 独自のコミットがない、またはプルリクエストやマージリクエストがマージされ、リモートブランチが削除されている。
@@ -240,10 +241,12 @@ Claude Code はマージされたケースを git の状態のみから検出し
 
 その他のすべての場合、Claude Code は worktree を古いチップで再度開きます。
 
-* worktree がいずれかの条件を満たさない。
+* worktree またはセッションがいずれかの条件を満たさない。
 * Claude Code が worktree の状態を検証できない。
 * `worktree.baseRef` が `"head"` である。
 * 名前がプルリクエストまたはマージリクエストの参照である。
+
+`"fresh"` ベースでサンドボックスを使用する場合は、`git fetch origin` を実行してから、`--worktree` に新しい名前を渡して最新のデフォルトブランチから開始してください。
 
 ### フックで worktree の作成を置き換える
 

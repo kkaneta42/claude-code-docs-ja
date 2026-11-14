@@ -235,7 +235,6 @@
 | [`strictPluginOnlyCustomization.mcp`](#strictpluginonlycustomization-mcp) | ユーザーとプロジェクトのソースからの [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)をブロックします | プラグインとスキル | Managed |
 | [`strictPluginOnlyCustomization.skills`](#strictpluginonlycustomization-skills) | ユーザーとプロジェクトのソースからの[スキル](https://code.claude.com/docs/ja/skills.md)をブロックします | プラグインとスキル | Managed |
 | [`subagentPromptCacheTtl`](#subagentpromptcachettl) | サブエージェントおよびメイン会話以外のリクエストの[プロンプトキャッシュの有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)を選択します | モデルと応答 | Any file |
-| [`subagentStatusLine`](#subagentstatusline) | 独自のコマンドで、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)のタスク表示の行を書き換えます | インターフェースとターミナル | Any file |
 | [`switchModelsOnFlag`](#switchmodelsonflag) | [安全性分類器](https://code.claude.com/docs/ja/model-config.md#ask-before-switching)がリクエストを警告したときに、モデルを自動で切り替えるか一時停止します | モデルと応答 | Any file |
 | [`syncClaudeAiPlugins`](#syncclaudeaiplugins) | [claude.ai アカウントで有効にしたプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)の読み込みと、新しいプラグインのダウンロードを停止します | プラグインとスキル | User, local, or managed |
 | [`syncClaudeAiSkills`](#syncclaudeaiskills) | [claude.ai アカウントで有効にしたスキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)の読み込みと、新しいスキルのダウンロードを停止します | プラグインとスキル | User, local, or managed |
@@ -885,7 +884,7 @@ auto モードがアクティブな間、すべての Bash および PowerShell 
 }
 ```
 
-[すべてのシェルコマンドを分類器にルーティングする](https://code.claude.com/docs/ja/auto-mode-config.md#route-all-shell-commands-through-the-classifier)を参照してください。
+Code Mode セッションでは、このキーの動作が異なります。[すべてのシェルコマンドを分類器にルーティングする](https://code.claude.com/docs/ja/auto-mode-config.md#route-all-shell-commands-through-the-classifier)を参照してください。
 
 ### `disableAutoMode`
 
@@ -1356,21 +1355,21 @@ Linux と WSL2 では、サンドボックスは `bubblewrap` と `socat` が必
 
 ### `sandbox.autoAllowBashIfSandboxed`
 
-Claude Code がサンドボックス化された Bash コマンドを権限プロンプトなしで実行できるようにします。サンドボックスで実行できないコマンドは通常の権限フローを通過し、`deny` ルールと `Bash(git push *)` などのコンテンツスコープ付き `ask` ルールは引き続き適用されます。ベアの `Bash` ask ルールはサンドボックス化されたコマンドではスキップされます。これを `false` に設定して、サンドボックス化されたコマンドも通常の権限フローを通すようにします。これは `/sandbox` **Mode** タブが通常権限モードと呼ぶものです。
+サンドボックス化された Bash コマンドを、Claude Code が権限プロンプトなしで実行できるようにします。サンドボックス内で実行できないコマンドは、引き続き通常の権限フローを通ります。`deny` ルールと、`Bash(git push *)` のように内容を限定した `ask` ルールは引き続き適用されますが、単独の `Bash` 確認ルールはサンドボックス化されたコマンドではスキップされます。管理設定でこれを `true` に設定するには、[最上位の管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)の `sandbox` ブロックに追加してください。
 
 * **Scope**: [`Any file`](#scopes)
 * **Type**: ブール値
   * `true`: Claude Code はサンドボックス化された Bash コマンドを権限プロンプトなしで実行します。ただし、[自動許可モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)で説明されているケースを除きます。`CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` は自動許可をオフにします
   * `false`: サンドボックス化されたコマンドは通常の権限フローを通過するため、許可ルールと権限モードが決定します。`/sandbox` **Mode** タブはこれを通常権限モードと呼びます
-* **Default**: `true`
+* **デフォルト**: `false`。v2.1.324 より前は、デフォルトは `true` でした
 
-これはサンドボックスをオンに保ち、サンドボックス化されたコマンドを通常の権限フローを通します：
+サンドボックスをオンにしたまま、サンドボックス化されたコマンドを権限プロンプトなしで実行するには、`sandbox` ブロックで両方のキーを設定します：
 
 ```json settings.json theme={null}
 {
   "sandbox": {
     "enabled": true,
-    "autoAllowBashIfSandboxed": false
+    "autoAllowBashIfSandboxed": true
   }
 }
 ```
@@ -1654,7 +1653,7 @@ Claude Code は `.` エントリをプロジェクト設定ではプロジェク
 }
 ```
 
-このレイヤーがオフの場合、Claude Code は `denyRead` や `credentials.files` の `deny` エントリを適用しませんが、`credentials.envVars` エントリと適用済みの `mask` エントリは引き続き機能します。[`autoAllowBashIfSandboxed`](#sandbox-autoallowbashifsandboxed) のデフォルトは引き続き `true` であるため、プロンプトを表示し続けるには `false` に設定してください。これを設定できるソースの一覧と、隔離がオフのときに何が変わるかについては、[ファイルシステムの隔離を無効にする](https://code.claude.com/docs/ja/sandboxing.md#disable-filesystem-isolation)を参照してください。
+このレイヤーがオフの場合、Claude Code は `denyRead` や `credentials.files` の `deny` エントリを強制しませんが、`credentials.envVars` エントリと適用済みの `mask` エントリは引き続き機能します。これを設定できるソースの完全な一覧と、分離がオフのときに何が変わるかについては、[ファイルシステムの分離を無効にする](https://code.claude.com/docs/ja/sandboxing.md#disable-filesystem-isolation)を参照してください。
 
 ### `sandbox.ignoreViolations`
 
@@ -2455,7 +2454,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 
 #### `env` の値とシェルの相互作用
 
-* ここで指定した値は、シェルでエクスポートされた同じ変数を上書きします。複数の設定ファイルが同じ変数を設定している場合は、[優先順位が最も高い](https://code.claude.com/docs/ja/settings.md#settings-precedence)ものが適用されます。プロジェクト設定とローカル設定の例外は、[Claude Code が `env` で無視する変数](#variables-claude-code-ignores-in-env)に記載しています。
+* ここで指定した値は、シェルでエクスポートされた同じ変数を上書きします。複数の設定ファイルが同じ変数を設定している場合は、[優先順位が最も高い](https://code.claude.com/docs/ja/settings.md#settings-precedence)ものが適用されます。例外は、[Claude Code が `env` で無視する変数](#variables-claude-code-ignores-in-env)に記載しています。
 * Claude Desktop アプリまたは[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)のランナーがセッションを開始する場合は、代わりにそれが構築する起動環境が優先されます。起動環境がすでに設定している変数については、Claude Code はどの設定ファイルの `env` の値も無視します。無視された各変数は[デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md)に記載されます。
 * シェルのエクスポートを取り消すには、変数を `""` に設定します。Claude Code はプロバイダーの選択において空の値を未設定として扱い、サブプロセスは空の値を継承します。
 * ここで設定した `NO_COLOR` と `FORCE_COLOR` は、サブプロセスにのみ反映されます。Claude Code 自体のインターフェースのカラーを変更するには、`claude` を起動する前にシェルで設定してください。
@@ -2496,6 +2495,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
   * Claude Code がファイルやディレクトリの `@` メンションを展開しないようにする [`CLAUDE_CODE_DISABLE_FILE_MENTIONS`](https://code.claude.com/docs/ja/env-vars#variables)。
 
   v2.1.251 より前は、プロジェクト設定とローカル設定でも、このリストのうち Claude Code がファイルを書き込む場所を選択する変数やセッションの内容をエクスポートする変数を設定できました（`HOME` と `XDG_CONFIG_HOME` を除く）。v2.1.290 より前は、ダイアログのタイマー変数と `CLAUDE_CODE_DISABLE_ATTACHMENTS` も設定できました。
+* [Code Mode](https://code.claude.com/docs/ja/code-mode.md) は、シェル、ユーザー設定、または `--settings` ファイルから [`CLAUDE_CODE_EXPERIMENTAL_CODE_MODE`](https://code.claude.com/docs/ja/env-vars#variables) でオンにできますが、管理設定、プロジェクト設定、ローカル設定からはオンにできません。最初の 3 つのいずれか、または管理設定で `0` を指定すると、他の場所で何を設定していても Code Mode はオフのままです。管理設定に `1` が含まれている場合、シェルでの `1` は無視されるため、ユーザー設定で独自に `1` を設定してください
 * `CLAUDE_CODE_REMOTE` や `CLAUDE_CODE_ACCOUNT_UUID` など、Claude Code のホスティング環境が所有する ID 変数は、すべてのファイルで無視されます。
 * Claude Code 自身がエクスポートする [`CLAUDE_CODE_MESSAGING_SOCKET` と `CLAUDE_CODE_MESSAGING_TOKEN`](https://code.claude.com/docs/ja/env-vars#variables) は、すべてのファイルで無視されます。ソケット変数を無視する動作には Claude Code v2.1.224 以降が、トークンを無視する動作には v2.1.228 以降が必要です。
 * Claude Code が起動環境からのみ読み取る [`CLAUDE_CODE_PROJECT_DIR_NAME`](https://code.claude.com/docs/ja/sessions#name-the-project-directory-yourself) は、すべてのファイルで無視されます。v2.1.234 以降が必要です。
@@ -3175,25 +3175,6 @@ Claude の作業中、Claude Code は `Acme tip: Run /review before opening a PR
 
 この例には [`jq`](https://jqlang.org/) のインストールが必要で、シェルで実行されます。PowerShell と Git Bash での同等の設定については、[Windows での設定](https://code.claude.com/docs/ja/statusline.md#windows-configuration)を参照してください。セットアップ全体については、[ステータスラインを手動で設定する](https://code.claude.com/docs/ja/statusline.md#manually-configure-a-status-line)を参照してください。
 
-### `subagentStatusLine`
-
-Claude が[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)を実行すると、Claude Code はプロンプトの下のタスク表示にそれらを一覧表示し、サブエージェントごとに `name · description · token count` を示す行を 1 つずつ表示します。このキーを使用すると、独自のコマンドを実行してそれらの行を書き換えることができます。たとえば、各サブエージェントのコンテキスト使用量をパーセンテージで表示できます。更新のたびに、Claude Code は表示中の行を 1 つの JSON オブジェクトとして stdin に送信します。このオブジェクトの `tasks` 配列には、各サブエージェントの `id`、`name`、`status`、`model`、`tokenCount` などが含まれます。Claude Code は、`{"id", "content"}` 行として書き戻した各 `id` の行を置き換えます。書き戻さなかった行はデフォルトのレンダリングのままです。
-
-* **スコープ**: [`Any file`](#scopes)。[`allowManagedHooksOnly`](#allowmanagedhooksonly) がオンの場合、または管理設定以外で [`disableAllHooks`](#disableallhooks) が設定されている場合は、管理設定の値のみが実行されます。
-* **型**: `"command"` に設定された `type` と `command` 文字列を持つオブジェクト
-* **デフォルト**: 未設定のため、Claude Code はデフォルトの行をレンダリングします
-
-```json settings.json theme={null}
-{
-  "subagentStatusLine": {
-    "type": "command",
-    "command": "jq -c '.tasks[] | {id, content: \"\\(.name): \\(.tokenCount) tokens\"}'"
-  }
-}
-```
-
-[サブエージェントのステータスライン](https://code.claude.com/docs/ja/statusline.md#subagent-status-lines)を参照してください。
-
 ### `syntaxHighlightingDisabled`
 
 Claude Code は、ターミナルに表示する差分、コードブロック、ファイルプレビューのコードを、組み込みのハイライターで言語ごとに色分けします。代わりにプレーンテキストとして表示するには、このキーを `true` に設定します。たとえば、色がターミナルのテーマと合わない場合や、スクリーンリーダーの動作が遅くなる場合に使用します。
@@ -3650,7 +3631,7 @@ Agent SDK の `managedSettings` オプションでは、リストにエントリ
 * **その他すべてはブロックされます**: ユーザー、プロジェクト、ローカルフック、他のインストール済みプラグインからのフックと mod、エージェントのフロントマターで宣言されたフック。[Claude Code に組み込まれた mod](https://code.claude.com/docs/ja/plugins/mods/overview.md#mods-built-into-claude-code) は実行し続けます。ユーザーの mod のみをブロックするには、代わりに [`allowManagedModsOnly`](https://code.claude.com/docs/ja/plugins/mods/admin#set-options-on-the-built-in-guard) を設定してください。
 * **コマンドソースプラグインは無効になります**: Claude Code は [`command` ソース](https://code.claude.com/docs/ja/plugins/marketplace-reference#command-plugin-source)を持つプラグイン（管理 `enabledPlugins` で強制有効にされたプラグインを含む）も無効にします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) を明示的に `false` に設定した場合を除きます
 * **マーケットプレイス `headersHelper` コマンドはブロックされます**: Claude Code はマーケットプレイス [`headersHelper` コマンド](https://code.claude.com/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、[`disableCommandPluginSources`](#disablecommandpluginsources) が明示的に `false` に設定されている場合、または管理設定自体が宣言するマーケットプレイスの場合を除きます。Claude Code v2.1.238 以降が必要です
-* **ステータスラインとファイル提案は管理設定に絞られます**: Claude Code は [`statusLine`](https://code.claude.com/docs/ja/statusline)、[`fileSuggestion`](#filesuggestion)、[`subagentStatusLine`](https://code.claude.com/docs/ja/statusline#subagent-status-lines) を管理設定からのみ読み込みます。[ステータスラインとファイル提案ゲート](#status-line-and-file-suggestion-gates)に従います
+* **ステータスラインとファイル提案は管理設定に絞られます**: Claude Code は [`statusLine`](https://code.claude.com/docs/ja/statusline) と [`fileSuggestion`](#filesuggestion) を管理設定からのみ読み込みます。[ステータスラインとファイル提案ゲート](#status-line-and-file-suggestion-gates)に従います
 
 このキーが設定されている間、[`/goal`](https://code.claude.com/docs/ja/goal) コマンドは実行できません。これはフックに依存しているためです。
 
@@ -3689,7 +3670,7 @@ Claude Code に組み込まれた mod は、どちらの場合も実行し続け
 
 #### ステータスラインとファイル提案ゲート
 
-Claude Code は `statusLine`、`fileSuggestion`、`subagentStatusLine` について、この順序で 2 つの決定を行います:
+Claude Code は `statusLine` と `fileSuggestion` について、この順序で 2 つの決定を行います:
 
 * **完全にオフ**: 管理設定が `disableAllHooks` を設定している場合、またはフォルダが設定ファイル内のフックと同じ [ワークスペーストラストルール](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)の下で信頼されていない場合
 * **管理設定に絞られます**: [`allowManagedHooksOnly`](#allowmanagedhooksonly) が設定されている場合、[設定の優先順位](https://code.claude.com/docs/ja/hooks.md#disable-or-remove-hooks)が適用された後に管理設定外で `disableAllHooks` が `true` である場合、または `--safe-mode` で Claude Code を起動した場合
@@ -4661,7 +4642,7 @@ Claude Code は、承認ダイアログでサーバーを拒否すると、こ�
 
 * **スコープ**: [`任意のファイル`](#scopes)
 * **タイプ**: 文字列、組み込みまたはカスタムエージェントの名前
-* **デフォルト**: 未設定。メインスレッドは Claude Code のデフォルトエージェントとして実行されます
+* **デフォルト**: 未設定
 * **セッションごとの上書き**: `--agent` はこのキーより優先され、1 つのセッションに適用されます
 
 ```json settings.json theme={null}
@@ -4669,8 +4650,6 @@ Claude Code は、承認ダイアログでサーバーを拒否すると、こ�
   "agent": "code-reviewer"
 }
 ```
-
-プラグイン独自の `settings.json` もこのキーを提供できます。[プラグインでデフォルト設定を配布する](https://code.claude.com/docs/ja/plugins/components.md#default-settings)を参照してください。
 
 ### `crossSessionInbound`
 
@@ -4891,7 +4870,7 @@ Remote Control、クラウド環境、デスクトップアプリ、および Cl
 
 ### `agentPushNotifEnabled`
 
-Claude が送信する価値があると判断した場合（たとえば、長いタスクが完了した場合など）に、電話にプッシュ通知を送信することを Claude に許可します。ローカルセッションでは、Claude は [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間に通知を送信できます。`/config` では **Push when Claude decides** として表示されます。そこで変更すると、Claude Code はその値をアカウントにも保存します。
+Claude が送信する価値があると判断した場合（たとえば、長いタスクが完了した場合など）に、電話にプッシュ通知を送信することを Claude に許可します。ローカルセッションでは、Claude は [Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間に通知を送信できます。`/config` では **Push when Claude decides** として表示されます。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code は古いバージョンによって `~/.claude.json` に残された値も読み取ります。
 * **Type**: Boolean
@@ -4905,9 +4884,9 @@ Claude が送信する価値があると判断した場合（たとえば、長�
 }
 ```
 
-[`claude remote-control`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) サーバーの下でセッションを実行する場合、それらのセッションはこのキーではなく、アカウントに保存された値に従います。その値を変更するには、ターミナルの Claude Code セッションで `/config` を実行し、**Push when Claude decides** をオンまたはオフにします。トグルがすでに目的の値を示している場合は、一度切り替えてから元に戻し、Claude Code がその値をアカウントに保存するようにします。
+このキーだけでは通知は届きません。通知を設定するには、[Mobile push notifications](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications) の手順に従ってください。
 
-[Mobile push notifications](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications) を参照してください。
+[`claude remote-control`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) サーバーの下でセッションを実行する場合、それらのセッションはこのキーではなく、アカウントに保存された値に従います。その値を変更するには、ターミナルの Claude Code セッションで `/config` を実行し、**Push when Claude decides** をオンまたはオフにします。トグルがすでに目的の値を示している場合は、一度切り替えてから元に戻し、Claude Code がその値をアカウントに保存するようにします。
 
 ### `awaySummaryEnabled`
 
@@ -5064,7 +5043,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 }
 ```
 
-[Mobile push notifications](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications) を参照してください。
+このキーだけでは通知は届きません。通知を設定するには、[Mobile push notifications](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications) の手順に従ってください。
 
 ### `preferredNotifChannel`
 
@@ -5209,14 +5188,14 @@ Claude Code v2.1.307 より前は、Edit ツールは有効な設定ファイル
 
 * **スコープ**: [`Managed`](#scopes)。マシン自身の管理者ソース（MDM ポリシーおよび管理設定ファイル）が設定したリストは、サーバー管理設定もリストを配信する場合でも適用され続けます。その場合、セッションは両方のリスト上のプロバイダーのみを使用できるため、サーバー管理リストはマシンが許可するものを狭めることはできますが、広げることはできません。マシンソースの `allowedProviders` のどれが数えられるかは、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に従います。サーバー管理設定のみを通じて配信されたリストは、[サーバー管理設定を取得する](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)セッションのみに到達します。
 * **タイプ**: 文字列の配列。各要素は以下のいずれか：
-  * `"anthropic"`: claude.ai または Console サインイン、または API キーを通じた Anthropic 独自のホスト上の Anthropic API。[`forceLoginMethod`](#forceloginmethod) または [`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせてサインインも制限します
+  * `"anthropic"`: claude.ai または Console サインイン、または API キーを通じた Anthropic 独自のホスト上の Anthropic API。[`forceLoginMethod`](#forceloginmethod) または [`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせてサインインも制限します。[ユーザーのマシン上](https://code.claude.com/docs/ja/managed-settings.md#where-and-when-a-policy-applies)で動作する Desktop の Cowork は、claude.ai にサインインしている場合 `"anthropic"` として扱われるため、マシンのリストにこれが含まれていないと、Cowork は[起動時に拒否されます](https://code.claude.com/docs/ja/errors.md#managed-settings-dont-allow-this-api-provider)。Cowork を起動できるようにするにはこれを追加します。これにより、このリストは Anthropic への直接のセッションも許可するようになります。
   * `"bedrock"`: [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)
   * `"vertex"`: [Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)（旧 Vertex AI）
   * `"foundry"`: [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)
   * `"anthropicAws"`: [AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md)
   * `"mantle"`: Amazon Bedrock [Mantle エンドポイント](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)。[Invoke API と並行して Mantle を実行する](https://code.claude.com/docs/ja/amazon-bedrock.md#run-mantle-alongside-the-invoke-api)セッションは両方のプロバイダーを使用するため、`"bedrock"` と `"mantle"` をまとめてリストアップします
   * `"customEndpoint"`: 別のホストに送信される Anthropic API またはクラウドプロバイダーの API。`ANTHROPIC_BASE_URL` や、`ANTHROPIC_BEDROCK_BASE_URL` などのプロバイダーのエンドポイント変数で指定された [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)などです。Claude Code はそれを管理 [`env`](#env) ブロックがピンで留めた正確な値に対してのみ許可します
-  * `"gateway"`: [Cloud ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)サインイン
+  * `"gateway"`: [Cloud gateway](https://code.claude.com/docs/ja/claude-apps-gateway) サインイン
 * **デフォルト**: 未設定。任意のプロバイダーを使用できます
 
 ```json managed-settings.json theme={null}
@@ -5442,18 +5421,18 @@ Claude Code は `/config` の **Auto-update channel** で選択すると、ユ�
 
 ### `minimumVersion`
 
-バックグラウンド自動更新と `claude update` がこれより下のバージョンをインストールするのを防ぎます。これにより、`"stable"` チャネルに移動しても、より新しい `"latest"` ビルドからダウングレードされません。Claude Code は `/config` でチャネルを切り替えながら現在のバージョンにとどまることを選択すると、このキーを書き込み、`"latest"` に戻すと削除します。
+バックグラウンド自動更新と `claude update` が、設定したバージョンより下のバージョンをインストールするのを防ぎます。Claude Code は `/config` でチャネルを切り替えながら現在のバージョンにとどまることを選択すると、このキーを自動的に書き込みます。`/config` で `"latest"` に戻すと、Claude Code はこのキーを削除します。
 
-* **スコープ**: [`Any file`](#scopes)。ユーザーおよびプロジェクト設定が低下させることができない、組織全体の最小値をピン留めするために、管理設定で設定します。
-* **タイプ**: 文字列、`"2.1.100"` などのバージョン番号。有効なバージョンではない値は無視されます
+* **スコープ**: [`Any file`](#scopes)。ユーザー設定およびプロジェクト設定で上書きできない、組織全体の最小値をピン留めするには、このキーを管理設定で設定します。
+* **タイプ**: 文字列、`"2.1.323"` などのバージョン番号。有効なバージョンではない値は無視されます
 * **デフォルト**: 未設定の場合、更新はチャネルが提供するすべてのバージョンをインストールできる
 
-この例は stable チャネルに従い、2.1.100 より下のバージョンをインストールするのを拒否します：
+この例は stable チャネルに従い、2.1.323 より下のバージョンをインストールするのを拒否します：
 
 ```json settings.json theme={null}
 {
   "autoUpdatesChannel": "stable",
-  "minimumVersion": "2.1.100"
+  "minimumVersion": "2.1.323"
 }
 ```
 

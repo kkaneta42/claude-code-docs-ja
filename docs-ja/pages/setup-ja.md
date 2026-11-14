@@ -40,7 +40,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **macOS、Linux、WSL：**
 >
-> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.sh | bash
 > ```
 >
@@ -48,13 +48,13 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **Windows PowerShell：**
 >
-> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > irm https://claude.ai/install.ps1 | iex
 > ```
 >
 > **Windows CMD：**
 >
-> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 > ```
 >
@@ -72,7 +72,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] Homebrew
 >
-> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > brew install --cask claude-code
 > ```
 >
@@ -84,7 +84,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] WinGet
 >
-> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > winget install Anthropic.ClaudeCode
 > ```
 >
@@ -220,6 +220,8 @@ npm グローバルインストールが npm グローバルディレクトリ�
 }
 ```
 
+この設定では、ネイティブインストールは stable バージョンが現在のバージョンより古い場合でも、そのバージョンに更新されます。ダウングレードを避けるには、あわせて[最小バージョンをピン留め](#pin-a-minimum-version)してください。
+
 新しくリリースされたモデルでは、stable チャネルが提供するバージョンよりも新しい Claude Code バージョンが必要になる場合があります。そのモデルをすぐに使用するには、latest チャネルに移行してください。
 
 エンタープライズデプロイメントの場合、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)を使用して、組織全体で一貫したリリースチャネルを適用できます。
@@ -230,20 +232,27 @@ apt、dnf、および apk リポジトリからのインストールは、この
 
 ### 最小バージョンをピン留め
 
-`minimumVersion` 設定は下限を確立します。バックグラウンド自動更新と `claude update` は、この値より下のバージョンのインストールを拒否するため、`"stable"` チャネルに移動しても、既に新しい `"latest"` ビルドを使用している場合はダウングレードされません。
+ダウングレードせずにネイティブインストールを `"stable"` [リリースチャネル](#configure-release-channel)に移行するには、[`minimumVersion`](https://code.claude.com/docs/ja/settings-reference#minimumversion) を現在実行しているバージョンに設定します。バックグラウンド自動更新と `claude update` は、最小値より下のバージョンのインストールを拒否します。
 
-`/config` 経由で `"latest"` から `"stable"` に切り替えると、現在のバージョンに留まるか、ダウングレードを許可するかを選択するよう求められます。留まることを選択すると、`minimumVersion` がそのバージョンに設定されます。`"latest"` に戻すと、それがクリアされます。
+最小値は、`/config` で設定すると Claude Code が現在のバージョンを自動で入力し、設定ファイルで設定すると番号を自分で入力します。
 
-[settings.json ファイル](https://code.claude.com/docs/ja/settings.md)に追加して、下限を明示的にピン留めします。
+* **`/config` の場合**: **自動更新チャネル**を stable に切り替えてから、**現在のバージョンに留まる**を選択します。`/config` で latest に戻すと、Claude Code は最小値をクリアします。
+* **[設定ファイル](https://code.claude.com/docs/ja/settings.md)の場合**: シェルで `claude --version` を実行し、出力の先頭にある番号を `minimumVersion` に設定します。同じ編集で、`autoUpdatesChannel` を `"stable"` に設定します。
+
+次の `~/.claude/settings.json` は、バージョン 2.1.323 のインストールを stable に切り替えます。
 
 ```json theme={null}
 {
   "autoUpdatesChannel": "stable",
-  "minimumVersion": "2.1.100"
+  "minimumVersion": "2.1.323"
 }
 ```
 
-[管理設定](https://code.claude.com/docs/ja/managed-settings.md)では、これはユーザーおよびプロジェクト設定がオーバーライドできない組織全体の最小値を適用します。
+このインストールは、stable チャネルがより新しいバージョンを提供するまで 2.1.323 に留まります。
+
+#### 組織のバージョン制限を設定
+
+[管理設定](https://code.claude.com/docs/ja/managed-settings.md)では、`minimumVersion` はユーザーおよびプロジェクト設定が上書きできない組織全体の最小値を適用します。
 
 `minimumVersion` ピンは更新のみを制約します。Claude Code がバージョン範囲外で起動することを拒否するようにするには、代わりに管理設定の `requiredMinimumVersion` と `requiredMaximumVersion` を使用します。更新は `requiredMaximumVersion` の上限も尊重します。[`requiredMinimumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredminimumversion)と[`requiredMaximumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredmaximumversion)を参照してください。
 
@@ -445,10 +454,10 @@ Claude Code は署名付き apt、dnf、および apk リポジトリを公開�
 >
 > シェルで `npm --version` が `12` から始まるバージョンを出力する場合は、代わりに [npm 12 でのインストールを修正する](https://code.claude.com/docs/ja/troubleshoot-install.md#fix-an-npm-12-install)の手順に従ってください。`sudo` でインストールしないでください。Claude Code は自身を更新する際に `sudo` なしで npm を実行するため、`sudo` を必要とするインストールは自動更新できません。
 
-Claude Code をグローバル npm パッケージとしてインストールすることもできます。npm パッケージには [Node.js 22 以上](https://nodejs.org/en/download)が必要です。古い Node.js バージョンでは、npm はインストール中に失敗するのではなく `EBADENGINE` 警告を出力します。インストールは完了し、パッケージがランタイムで Node.js を使用しないネイティブバイナリをダウンロードするため、`claude` は引き続き実行されます。
+Claude Code をグローバル npm パッケージとしてインストールすることもできます。npm パッケージには [Node.js 22 以上](https://nodejs.org/en/download)が必要です。古い Node.js バージョンでは、npm はデフォルトで、失敗するのではなく `EBADENGINE` 警告を出力してインストールを完了します。パッケージはランタイムで Node.js を使用しないネイティブバイナリをダウンロードするため、インストールされた `claude` は引き続き実行できます。
 
 ```bash theme={null}
-npm install -g @anthropic-ai/claude-code
+npm install -g @anthropic-ai/claude-code@latest
 ```
 
 npm パッケージは、スタンドアロンインストーラーと同じネイティブバイナリをインストールします。npm は `@anthropic-ai/claude-code-darwin-arm64` などのプラットフォーム固有のオプション依存関係を通じてバイナリをプルし、postinstall ステップがそれを所定の位置にリンクします。インストールされた `claude` バイナリ自体は Node を呼び出しません。

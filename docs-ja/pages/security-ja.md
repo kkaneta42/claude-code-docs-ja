@@ -25,7 +25,7 @@
 
 agentic システムのリスクを軽減するために：
 
-* **サンドボックス化された bash ツール**: [Sandbox](https://code.claude.com/docs/ja/sandboxing.md) bash コマンドをファイルシステムとネットワークの分離で実行し、権限プロンプトを減らしながらセキュリティを維持します。`/sandbox` で設定して、Claude Code が自律的に動作できる境界を定義します
+* **サンドボックス化された Bash ツール**: ファイルシステムとネットワークの分離により Bash コマンドを [サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md) します。`/sandbox` で設定します
 * **作業ディレクトリの境界**: Manual モードでは、Claude Code のファイルツールが、起動されたフォルダとそのサブフォルダの外部で読み取りまたは書き込みを行う前に、ユーザーに確認します。この境界は権限プロンプトであるため、ユーザーが承認した Bash コマンドは、ユーザーアカウントが書き込み可能な任意の場所に書き込むことができます
   * 確認なしでフォルダを読み取るには、そのフォルダを [追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories) として追加します
   * オペレーティングシステムレベルで Bash コマンドを制限するには、[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md#filesystem-isolation) をオンにします
@@ -62,7 +62,7 @@ agentic システムのリスクを軽減するために：
 * **信頼検証**: 対話型セッションでは、まだ信頼していないフォルダで Claude Code を起動すると、ワークスペースの信頼ダイアログが表示されます。プロジェクトの `.mcp.json` 内のサーバーには独自の承認プロンプトがあり、[プロジェクトスコープ](https://code.claude.com/docs/ja/mcp.md#project-scope) にはそのプロンプトをスキップするセッションが記載されています
   * 注：`-p` セッションではどちらのプロンプトも表示されません。そこでリポジトリのファイルが実行できるものについては、[フォルダを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder) に記載されています
   * 注：Claude Code をホームディレクトリで直接起動する場合、信頼受け入れは現在のセッションのみ保持され、ディスクに書き込まれないため、起動するたびにプロンプトが再度表示されます。これを永続化するための設定はありません。代わりに、プロジェクトサブディレクトリから Claude Code を起動してください。そこでは信頼受け入れはディレクトリごとに保存されます
-* **コマンドインジェクション検出**: Manual モードでは、Claude Code は完全に分析できない Bash コマンドを実行する前に確認を求めます。`Bash(git *)` のようなコマンドの一部に対する許可ルールがあっても、このプロンプトはスキップされません。[サンドボックス化されたコマンド](https://code.claude.com/docs/ja/permissions.md#how-permissions-interact-with-sandboxing) はこのプロンプトなしで実行できます
+* **コマンドインジェクション検出**: Manual モードでは、Claude Code は完全に分析できない Bash コマンドを実行する前に確認を求めます。`Bash(git *)` のようなコマンドの一部に対する許可ルールがあっても、このプロンプトはスキップされません。[auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)の[サンドボックス化されたコマンド](https://code.claude.com/docs/ja/permissions.md#how-permissions-interact-with-sandboxing) はこのプロンプトなしで実行できます
 * **フェイルクローズドマッチング**: Manual モードでは、マッチしないコマンドはデフォルトで承認が必要です
 * **セキュアな認証情報ストレージ**: API キーとトークンは、利用可能な場合は macOS Keychain に保存されます。Linux ではモード `0600` のファイルに保存され、Windows ではユーザープロファイルディレクトリのアクセス制御を継承するファイルに保存されます。[Credential Management](https://code.claude.com/docs/ja/authentication.md#credential-management) を参照してください
 

@@ -273,9 +273,9 @@ Claude Code は、その他のブロックされた選択を、モデルが設�
 * **`/model`**: Claude Code はエラーを表示して切り替えを拒否します
 * **`--model` フラグ、`ANTHROPIC_MODEL`、または `model` 設定**: Claude Code は起動時に値を置き換え、要求されたモデルと置き換え後のモデルの両方を示す警告を表示します。セッションはデフォルトモデルで開始されます
 * **[`ANTHROPIC_DEFAULT_MODEL`](#set-a-default-model-for-new-sessions)**: Claude Code はこの変数を無視します
-* **サブエージェントまたはチームメイトの上書き**: Claude Code はリクエストを失敗させるのではなく、フォールバックモデルでサブエージェントまたはチームメイトを実行します。サブエージェントのフォールバックについては[モデルを選択する](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)を、チームメイトのフォールバックについては[チームメイトとモデルを指定する](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)を参照してください。
+* **サブエージェントまたはチームメイトの上書き**: Claude Code はリクエストを失敗させるのではなく、フォールバックモデルでサブエージェントまたはチームメイトを実行します。サブエージェントのフォールバックについては[許可リストがサブエージェントのモデルをブロックした場合](https://code.claude.com/docs/ja/sub-agents.md#when-an-allowlist-blocks-a-subagent-model)を、チームメイトのフォールバックについては[チームメイトとモデルを指定する](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)を参照してください。
 
-  インタラクティブセッションでは、このフォールバックまたは上記の許可された最新バージョンへの置き換えによってサブエージェントのモデルが置き換えられた場合、Claude Code は要求されたモデルと置き換え後のモデルを示す警告を表示します。チームメイトのフォールバックについては報告しません。
+  インタラクティブセッションでは、トップレベルのサブエージェントのモデルを置き換えた場合、Claude Code は警告を表示します。チームメイトのフォールバックについては報告しません。
 
   上記の許可された最新バージョンへの置き換えが機能する環境では、ブロックされたファミリーエイリアスはそちらに従います。v2.1.222 より前は、すべてのプロバイダーで、エイリアスは他のブロックされた値と同様にフォールバックしていました
 * **スキルまたはコマンドの上書き**: Claude Code は、ブロックされたファミリーエイリアスを含めて上書きを無視し、スキルまたはコマンドはセッションのモデルで実行されます。[サブエージェントで実行される](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent)スキルまたはコマンドは、代わりに上記のサブエージェントの動作に従います

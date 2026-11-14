@@ -189,8 +189,8 @@ CLI はメッセージをセッションのキューに追加し、返信を待�
 
 ```
 Sent to cloud session.
-Session ID: session_01DiUkqY2kzbUbDmW1w96rfi
-View: https://claude.ai/code/session_01DiUkqY2kzbUbDmW1w96rfi?from=cli&m=0
+Session ID: session_01HJKLMNOPQRSTUVWXYZ
+View: https://claude.ai/code/session_01HJKLMNOPQRSTUVWXYZ?from=cli&m=0
 ```
 
 機械可読な結果を得るには `--output-format json` を渡します。成功時は `{ok, session_id, url}`、送信に失敗した場合（セッションが存在しない、またはアーカイブされている場合など）は `{ok: false, session_id, error}` が返されます。サポートされていないプロバイダーや無効化された組織ポリシーなどの設定エラーは、JSON なしで stderr に出力されます。`--output-format stream-json` は `--cloud <session-id>` ではサポートされていません。

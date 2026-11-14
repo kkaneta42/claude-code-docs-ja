@@ -806,7 +806,7 @@ claude mcp add --transport http shared-server --scope project https://example.co
 
 * [`disabledMcpjsonServers`](https://code.claude.com/docs/ja/settings-reference#disabledmcpjsonservers)に追加します。これはすべての権限モードでそれをブロックします。
 * [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags)または SDK の `settingSources` オプションでプロジェクト設定全体を除外します。
-* [`--strict-mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags)でセッションを開始します。Claude Code は `--mcp-config` で渡した MCP サーバーのみを使用します。Claude Code がロードしていないプロジェクトスコープのサーバーの承認プロンプトをスキップするには、Claude Code v2.1.246 以降が必要です。v2.1.246 より前では、厳密なセッションでもそれらの承認を待機していたため、バックグラウンドセッションは起動時に待機していました。マネージド MCP ファイルの下でフラグが何をするかについては、[マネージド mcp.json での排他的制御](https://code.claude.com/docs/ja/managed-mcp.md#exclusive-control-with-managed-mcp-json)を参照してください。
+* [`--strict-mcp-config`](https://code.claude.com/docs/ja/cli-reference#cli-flags)でセッションを開始します。これにより、Claude Code は `--mcp-config` で渡したサーバーをロードし、`.mcp.json` などの場所で設定されたサーバーをスキップします。Claude Code がロードしていないプロジェクトスコープのサーバーの承認プロンプトをスキップするには、Claude Code v2.1.246 以降が必要です。マネージド MCP ファイルの下でフラグが何をするかについては、[マネージド mcp.json での排他的制御](https://code.claude.com/docs/ja/managed-mcp.md#exclusive-control-with-managed-mcp-json)を参照してください。
 
 [プロジェクトサーバーの承認とワークスペーストラスト](#project-server-approvals-and-workspace-trust)は、リポジトリにコミットされた承認がワークスペーストラストとどのように相互作用するかについて説明しています。
 
@@ -834,8 +834,6 @@ Claude Code は 3 つのスコープ全体で名前によって重複を照合�
 2 つの URL スペルは、スキームまたはホストの大文字小文字、スキームのデフォルトポート（`https` の `:443` など）、または末尾のスラッシュのみが異なる場合、同じエンドポイントとして扱われます。異なるパス、クエリ文字列、ユーザー情報、または非デフォルトポートは 2 つのサーバーを作成します。
 
 組織が [`managedMcpServers`](https://code.claude.com/docs/ja/managed-mcp#provide-servers-through-managed-settings)マネージド設定を通じて提供するサーバーは、これらすべての上にランクされるため、それらの 1 つがそれを複製する場合、Claude Code は組織の定義に接続します。Claude Code v2.1.259 以降が必要です。
-
-[Desktop アプリの Code タブ](https://code.claude.com/docs/ja/desktop.md#mcp-servers-from-the-claude-desktop-chat-app)でローカルセッションを開く場合、`~/.claude.json`（ユーザースコープ）のトップレベルと `.mcp.json` に同じ stdio サーバー名がある場合、Code タブは `~/.claude.json` 定義を使用します。
 
 ### `.mcp.json` での環境変数の展開
 

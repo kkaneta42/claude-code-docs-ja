@@ -257,7 +257,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 管理者は[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) を使用して、実行されるフックを制限できます。
 
 * ユーザー、プロジェクト、ローカル、プラグインのフックはブロックされます。管理設定の `enabledPlugins` で強制的に有効化されたプラグインのフックは除外されます
-* Claude Code は、[`statusLine`](https://code.claude.com/docs/ja/statusline)、[`fileSuggestion`](https://code.claude.com/docs/ja/settings-reference#filesuggestion)、[`subagentStatusLine`](https://code.claude.com/docs/ja/statusline#subagent-status-lines) の設定も管理設定のものに限定します
+* Claude Code は、[`statusLine`](https://code.claude.com/docs/ja/statusline) と [`fileSuggestion`](https://code.claude.com/docs/ja/settings-reference#filesuggestion) の設定も管理設定のものに限定します
 * Claude Code は、[`command` ソース](https://code.claude.com/docs/ja/plugins/marketplace-reference#command-plugin-source)を持つプラグインも無効化します。これには管理設定の `enabledPlugins` で強制的に有効化されたプラグインも含まれます。ただし、[`disableCommandPluginSources`](https://code.claude.com/docs/ja/settings-reference#disablecommandpluginsources) が明示的に `false` に設定されている場合は除きます。`command` ソースには Claude Code v2.1.229 以降が必要です
 * Claude Code は、マーケットプレイスの [`headersHelper` コマンド](https://code.claude.com/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、[`disableCommandPluginSources`](https://code.claude.com/docs/ja/settings-reference#disablecommandpluginsources) が明示的に `false` に設定されている場合は除きます。また、管理設定自体が宣言しているマーケットプレイスは対象外です
 
@@ -505,7 +505,7 @@ Bash 入力がどのコマンドを実行するかを Claude Code が判断で�
 | `url` | はい | POST リクエストを送信する URL |
 | `headers` | いいえ | キー値ペアとしての追加 HTTP ヘッダー。値は `$VAR_NAME` または `${VAR_NAME}` 構文を使用した環境変数補間をサポートします。`allowedEnvVars` にリストされている変数のみが解決されます |
 | `allowedEnvVars` | いいえ | ヘッダー値に補間される可能性のある環境変数名のリスト。リストされていない変数への参照は空の文字列に置き換えられます。環境変数補間が機能するために必須 |
-| `onFailure` | いいえ | フックが失敗したときにアクションがどうなるか。`"continue"`（デフォルト）または `"block"`。[フックが失敗したときにアクションをブロックする](#block-the-action-when-a-hook-fails)を参照してください。Claude Code v2.1.295 以降が必要です |
+| `onFailure` | いいえ | フックが失敗したときに、フックをトリガーしたアクションを続行するかどうか。`"continue"` または `"block"`。`"block"` の場合と、このフィールドを未設定のままにした場合については、[フックが失敗したときにアクションをブロックする](#block-the-action-when-a-hook-fails)を参照してください。Claude Code v2.1.295 以降が必要です |
 
 Claude Code はフックの [JSON 入力](#hook-input-and-output)を `Content-Type: application/json` の POST リクエスト本体として送信します。レスポンス本体はコマンド フックと同じ [JSON 出力形式](#json-output)を使用します。
 
@@ -901,6 +901,10 @@ Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or
 
 `PreToolUse` では、タイムアウトした `command`、`http`、または `mcp_tool` フックはツール呼び出しをブロックしません。ただし、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)は例外です。呼び出しは通常の[権限フロー](https://code.claude.com/docs/ja/permissions.md)を通じて続行されるため、停止したフックがゲートとして機能することを当てにしないでください。`command` または `http` フックがタイムアウトしたときに呼び出しをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。タイムアウトを超えた [Agent SDK コールバック フック](https://code.claude.com/docs/ja/agent-sdk/hooks.md)は[ツール呼び出しをブロックします](#pretooluse)。
 
+> [!NOTE]
+>
+> Code Mode を使用している場合、`PreToolUse` でのタイムアウトの動作は異なります。[フックによって拒否されたツール呼び出し](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook)を参照してください。
+
 #### バックグラウンド プロセスを開始するフック
 
 フックは、開発サーバーなどの長時間実行されるプログラムを起動し、セッションの続行中も実行したままにできます。フックのスクリプトまたは[シェル形式](#exec-form-and-shell-form)のコマンドで、次のようにします。
@@ -980,6 +984,10 @@ Error: Cannot find module '/path/to/project/.claude/hooks/check-command.js'
 
 * **`Stop`、`SubagentStop`、`TaskCompleted`、`TeammateIdle` フック**: これらのイベントでの終了コード 2 は Claude を作業に戻しますが、Claude は実行されないフックを修復できません
 * **バックグラウンド コマンド フック**: [`async` または `asyncRewake`](#run-hooks-in-the-background) を設定したコマンド フック
+
+> [!NOTE]
+>
+> Code Mode を使用している場合、`PreToolUse` での失敗の動作は異なります。[フックによって拒否されたツール呼び出し](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook)を参照してください。
 
 #### Git Bash のない Windows で失敗したフック
 
@@ -1512,6 +1520,7 @@ InstructionsLoaded フックには決定制御がありません。指示の読�
 * `/loop` の反復を含む、[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)が発火したとき
 * [バックグラウンドのサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)が、それを開始したセッションに報告を返すとき
 * [別のセッションが送信したメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md)がメインの会話に届くとき
+* [Code Mode](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook) セッションにおける Claude のコードの出力（`command`、`http`、`mcp_tool` フックの場合で、コードをバックグラウンドで実行できるとき）
 
 `UserPromptSubmit` フックのデフォルトのタイムアウトは、`command`、`http`、`mcp_tool` タイプで 30 秒です。これは、他のほとんどのイベントにおけるこれらのタイプのデフォルトである 600 秒より短い値です。このフックはすべてのプロンプトの前に実行され、完了するまでモデルの処理をブロックするため、フックが停止するとセッションも停止します。フックにより多くの時間が必要な場合は、フックエントリで `timeout` フィールドを設定してください。
 
@@ -1560,12 +1569,12 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
 | フィールド | 説明 |
 | :- | :- |
 | `decision` | `"block"` はプロンプトが Claude に届く前に停止します。プロンプトの処理を続行させるには省略します |
-| `reason` | `decision` が `"block"` の場合にユーザーに表示されます。コンテキストには追加されません |
+| `reason` | `decision` が `"block"` の場合にユーザーに表示されます。コンテキストには追加されません。ただし、フックが [Code Mode の出力](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook)をブロックする場合は除きます |
 | `additionalContext` | 送信されたプロンプトとともに Claude のコンテキストに追加される文字列。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
 | `sessionTitle` | セッションタイトルを設定します。プロンプトの内容に基づいてセッションに自動的に名前を付けるために使用します |
 | `suppressOriginalPrompt` | フックがプロンプトをブロックする際に `true` の場合、ブロックメッセージからプロンプトのテキストを除外します。[ブロックされたプロンプトが残すもの](#what-a-blocked-prompt-leaves-behind)を参照してください |
 
-終了コード 2 でブロックするフックは、`reason` と同じように扱われます。ブロックメッセージには stderr のテキストがユーザーに表示され、コンテキストには追加されません。
+フックが終了コード 2 でブロックする場合、その stderr のテキストは `reason` と同じように扱われます。
 
 ```json theme={null}
 {

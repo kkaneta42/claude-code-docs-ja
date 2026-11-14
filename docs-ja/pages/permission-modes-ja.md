@@ -50,7 +50,7 @@ Claude Code は、`bypassPermissions` を含むどのモードでも、次の操
 | 実現したいこと | 開始する | 必要な隔離 | 注記 |
 | :- | :- | :- | :- |
 | すべてのアクションを自分でレビュー | Manual モード：`claude --permission-mode default` | なし | 機密作業、不慣れなコード |
-| ローカルで反復、分類器なしでプロンプトを減らす | Manual モード + [auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)の Bash サンドボックス：`claude --permission-mode default`、その後 `/sandbox` を実行して auto-allow を選択 | 組み込み Bash サンドボックス、macOS、Linux、WSL2 上 | 拒否ルールは依然として適用され、`Bash(git push *)` のようなコマンドに名前を付ける ask ルールは依然としてプロンプトを表示します。プロンプトを表示する可能性があるその他のコマンドについては、[auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)で説明しています。代わりに設定ファイルからサンドボックスをオンにするには、[`sandbox.enabled`](https://code.claude.com/docs/ja/settings-reference#sandbox-enabled) を `true` に設定します |
+| ローカルで反復、分類器なしでプロンプトを減らす | Manual モード + [auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)の Bash サンドボックス：`claude --permission-mode default`、その後 `/sandbox` を実行して auto-allow を選択 | 組み込み Bash サンドボックス、macOS、Linux、WSL2 上 | 拒否ルールは依然として適用され、`Bash(git push *)` のようなコマンドに名前を付ける ask ルールは依然としてプロンプトを表示します。プロンプトを表示する可能性があるその他のコマンドについては、[auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)で説明しています。代わりに設定ファイルからサンドボックスをオンにするには、[`sandbox.enabled`](https://code.claude.com/docs/ja/settings-reference#sandbox-enabled) と [`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) を `true` に設定します |
 | 何かを変更する前に探索 | `claude --permission-mode plan` | なし | Claude Code は[計画を承認](#review-and-approve-a-plan)するまで編集をブロックします |
 | auto モードでハンズオフで作業 | `claude --permission-mode auto`、v2.1.283 以降の[組み込み開始権限モード](#which-mode-a-session-starts-in) | なし。サンドボックスまたはコンテナは防御の深さを追加 | [サポートされているモデル](#eliminate-prompts-with-auto-mode)が必要で、組織は [auto モードをオフ](#eliminate-prompts-with-auto-mode)にできます |
 | 正確な許可リストで CI で実行 | `claude -p "run the test suite" --permission-mode dontAsk --allowedTools "Bash(npm test)" "Read"` | CI ランナーが提供するもの以外はなし | [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は設定ファイルから `dontAsk` を無視します |
@@ -593,6 +593,7 @@ auto モードがセッションのアクションを承認できない場合、
 >    * Claude が[他のユーザーが作成したアーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取る場合は、そのセクションに記載されている承認のケースが適用されます
 >    * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取りはプロンプトを表示します
 > 3. それ以外はすべて分類器に回されます。ただし、デフォルトの処理下にある[重要なパスの削除](#critical-paths)は除きます。ステップ 1 で直接プロンプトを表示するコネクタツールと `requiresUserInteraction` の MCP ツールも分類器には到達しないため、組織が必須とする承認も同意のステップも自動承認されることはありません
+>    * [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) がオンの場合、Claude のコードは実行前に 1 回だけ分類器に回され、その中のツール呼び出しは回されません。`deny` ルールで呼び出しをブロックしたり、`ask` ルールでプロンプトを必須にしたりすることは引き続きできますが、Claude は[ルールが一致しない形式](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)で Bash コマンドを実行できます
 > 4. 分類器がブロックした場合、Claude はその理由を受け取ります。ほとんどのセッションでは、理由は文章による説明ではなく、`[Data Exfiltration]` のように分類器が一致したルールの名前で示されます。[拒否の確認](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を参照してください
 >
 > インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が `tool.check` を処理する場合、その mod もアクションを承認できます。その承認がルールやフックを通過しないケースについては、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。

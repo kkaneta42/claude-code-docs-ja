@@ -182,11 +182,11 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 * **Review allowed permissions**: **Always allowed** パネルからこのタスクの保存されたツール承認を確認および取り消します
 * **Delete**: タスクを削除します。タスクが作成したセッションは削除されず、[アーカイブ](https://code.claude.com/docs/ja/desktop.md#organize-and-find-sessions)されます。タスクの `SKILL.md` ファイルを格納するフォルダは、ディスク上の `~/.claude/scheduled-tasks/<task-name>/`、またはその変数を設定している場合は [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) 配下の `scheduled-tasks/<task-name>/` に残ります。そのフォルダを削除するには、手動で削除してください。
 
-任意の Desktop セッションで Claude に尋ねることで、タスクをリスト、作成、編集、および一時停止することもできます。たとえば、「dependency-audit タスクを一時停止する」または「スケジュール設定されたタスクを表示する」などです。タスクを削除するには、その詳細ページの **Delete** ボタンを使用します。
+Claude に尋ねる、タスク自身に更新させる、またはディスク上のタスクのプロンプトを編集することでも、タスクを管理できます。
 
-タスクが `update_scheduled_task` MCP ツールを使用して自身のスケジュールまたはプロンプトを変更できるようにするには、**Run now** をクリックし、その呼び出しを毎回承認してください。
-
-ディスク上のタスクのプロンプトを編集するには、`~/.claude/scheduled-tasks/<task-name>/SKILL.md` を開きます（[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) が設定されている場合はその下）。ファイルは `name` と `description` の YAML フロントマターを使用し、プロンプトが本文です。変更は次の実行時に有効になります。スケジュール、フォルダ、および有効な状態はこのファイルにはありません。Edit フォームを通じて変更するか、Claude に尋ねます。
+* **Claude に尋ねる**: 任意の Desktop セッションで Claude に尋ねることで、タスクをリスト、作成、編集、および一時停止できます。たとえば、「dependency-audit タスクを一時停止する」または「スケジュールタスクを表示する」などです。タスクを削除するには、その詳細ページの **Delete** ボタンを使用します。
+* **タスク自身に更新させる**: タスクが `update_scheduled_task` MCP ツールを使用して自身のスケジュールまたはプロンプトを変更できるようにするには、**Run now** をクリックし、その呼び出しを毎回承認してください
+* **ディスク上のプロンプトを編集する**: `~/.claude/scheduled-tasks/<task-name>/SKILL.md`、またはその変数を設定している場合は [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) 配下の `scheduled-tasks/<task-name>/SKILL.md` を開きます。ファイルは `name` と `description` の YAML フロントマターを使用し、プロンプトが本文です。変更は次の実行時に有効になります。スケジュール、フォルダ、および有効な状態はこのファイルにはありません。Edit フォームを通じて変更するか、Claude に尋ねます。
 
 ## 関連リソース
 

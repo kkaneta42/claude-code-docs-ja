@@ -202,6 +202,15 @@ Claude Code でできることのその他のアイデアについては、[一�
   既存の思考ブロックは空のままです。再読み込み後の応答では、ブロックをクリックするか、`Ctrl+O` を押してすべてを展開します。
 * **複数行入力**: `Shift+Enter` を押すと、送信せずに改行を追加できます。これは質問ダイアログの「Other」自由記述入力でも機能します。
 
+### 提案されたプロンプトを使用する、またはオフにする
+
+Claude が応答した後、パネルには次のプロンプトの提案が、空のプロンプトボックス内にグレーの斜体テキストとして表示されることがあります。各提案は[短いバックグラウンドリクエスト](https://code.claude.com/docs/ja/interactive-mode.md#prompt-suggestions)を使用し、これはプランの使用制限または API コストにカウントされます。
+
+* **提案を使用する**: `Tab` を押して編集可能なテキストに変換してから送信します。受け入れる前に `Enter` を押しても、提案は送信されません。
+* **独自のプロンプトを書く**: 入力を始めると、提案は非表示になります。
+
+提案をオフにするには、`~/.claude/settings.json` で [`promptSuggestionEnabled`](https://code.claude.com/docs/ja/settings-reference#promptsuggestionenabled) を `false` に設定します。新しい会話では提案が表示されなくなり、開いている会話ではコマンドパレットから **Developer: Reload Window** を実行した後に表示されなくなります。[`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION`](https://code.claude.com/docs/ja/env-vars) を `true` に設定している場合は、設定した場所で `false` に変更してください。変更しないと、提案は引き続き表示されます。
+
 ### ファイルとフォルダーを参照する
 
 @メンションを使用すると、特定のファイルやフォルダーに関するコンテキストを Claude に与えられます。`@` に続けてファイル名やフォルダー名を入力すると、Claude はその内容を読み込み、それについての質問に答えたり、変更を加えたりできます。Claude Code はあいまい一致をサポートしているため、名前の一部を入力するだけで目的のものを見つけられます。
@@ -936,6 +945,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 | `SSL certificate verification failed` または `Self-signed certificate detected` | [SSL 証明書エラー](https://code.claude.com/docs/ja/errors.md#ssl-certificate-errors) |
 | `Dictation error: WebSocket error:` に続いて `unable to get local issuer certificate` などの証明書エラーが表示される、または Web タブに `Remote server is not connected` が表示される | [TLS インスペクションを行うプロキシの背後で音声入力または Web タブが失敗する](#dictation-or-the-web-tab-fails-behind-a-tls-inspecting-proxy) |
 | `Claude Code process exited with code 1` またはその他のコード | [Claude Code process exited with code N](https://code.claude.com/docs/ja/errors.md#claude-code-process-exited-with-code-n) |
+| `Claude Code did not finish starting` または `Subprocess initialization did not complete within 60000ms` | [Subprocess initialization did not complete within 60000ms](https://code.claude.com/docs/ja/errors.md#subprocess-initialization-did-not-complete-within-60000ms) |
 | `Could not locate the Claude CLI on PATH` | [Could not locate the Claude CLI on PATH](https://code.claude.com/docs/ja/errors.md#could-not-locate-the-claude-cli-on-path) |
 | `The connection to Claude Code ended before this message completed` | [The connection to Claude Code ended before this message completed](https://code.claude.com/docs/ja/errors.md#the-connection-to-claude-code-ended-before-this-message-completed) |
 | `The Claude Code program for this computer, the <build> build, could not be found` | [The Claude Code program for this computer could not be found](https://code.claude.com/docs/ja/errors.md#the-claude-code-program-for-this-computer-could-not-be-found) |

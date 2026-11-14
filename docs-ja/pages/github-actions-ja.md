@@ -129,6 +129,7 @@ Claude Code GitHub Action を削除するには、インストールに適用さ
 | Administration | 読み取り |
 | Checks | 読み取りと書き込み |
 | Contents | 読み取りと書き込み |
+| Dependabot alerts | 読み取り |
 | Discussions | 読み取りと書き込み |
 | Issues | 読み取りと書き込み |
 | Members | 読み取り |

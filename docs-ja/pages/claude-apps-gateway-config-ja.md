@@ -14,7 +14,7 @@ Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` と�
 
 ## ファイル構造
 
-5 つのセクションが[必須](#required-sections)です。その他のセクションはすべて[オプション](#optional-sections)であり、省略されたセクションはデフォルト値を使用します。不明なキーはブート時に失敗するため、タイプミスは設定が無視されるのではなく、名前付きエラーとして表示されます。
+5 つのセクションが[必須](#required-sections)です。その他のセクションはすべて[オプション](#optional-sections)であり、省略されたセクションはデフォルト値を使用します。
 
 **必須セクション：**
 
@@ -517,6 +517,10 @@ models:
 
 Claude Code v2.1.281 以降を実行しているゲートウェイが必要です。[AWS でのコスト帰属](https://code.claude.com/docs/ja/claude-apps-gateway-on-aws.md#cost-attribution)では、IAM ロールと、AWS の請求でセッションがどこに表示されるかを説明しています。
 
+> [!NOTE]
+>
+> 開発者ごとの帰属を行うには、`aws_bearer_token` を使用するものを除くすべての `bedrock` および [`mantle`](#amazon-bedrock-mantle-endpoint) アップストリームで、`session_name` を指定した `assume_role` を設定してください。`aws_bearer_token` を使用するアップストリームは [`assume_role` を使用できない](#bedrock-in-another-aws-account)ため、そのリクエストは 1 つのプリンシパルのままになります。
+
 ```yaml theme={null}
 upstreams:
   - provider: bedrock
@@ -532,8 +536,6 @@ upstreams:
 アクティブな開発者 1 人につき、ゲートウェイのレプリカごとに 1 時間あたり 1 回の STS 呼び出しが発生し、同時に発生した最初のリクエストは 1 回の呼び出しを共有します。
 
 ゲートウェイは、このロールで独自の呼び出しも 1 つ行います。[支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md)を正確に保つための、クライアントが中断したリクエストのトークンカウントです。そのカウントとその [1 トークンのフォールバックリクエスト](#amazon-bedrock)は共有の `claude-apps-gateway` セッションで署名されるため、AWS はフォールバックを開発者ではなく `claude-apps-gateway` に帰属させます。
-
-厳密な開発者ごとの帰属を行うには、列挙するすべての Bedrock アップストリームで `session_name` 付きの `assume_role` を設定してください。これがないアップストリームは、処理するリクエストに自身の認証情報で署名します。
 
 #### Amazon Bedrock Mantle エンドポイント
 
@@ -1281,6 +1283,10 @@ Claude Code は、デベロッパーに承認ダイアログを表示せずに�
 
 代わりに 1M コンテキストをオフにするには、同じ `env` ブロックで [`CLAUDE_CODE_DISABLE_1M_CONTEXT: "1"`](https://code.claude.com/docs/ja/model-config#extended-context) を設定します。すると Claude Code はすべてのモデルのウィンドウを 200K として扱います。インタラクティブセッションでは、この変数が有効になる前に、各デベロッパーが [承認ダイアログ](#what-goes-in-cli) でこれを承認します。
 
+> [!NOTE]
+>
+> Claude Code は、コンテキストウィンドウのサイズを決めるためにエイリアスの `upstream_model` を読み取りません。Claude Code が認識しない `models` 内のエイリアスに、そのモデルのウィンドウを与えるには、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id) を参照してください。
+
 #### 1 時間のプロンプトキャッシュ
 
 デフォルトの 5 分の代わりに 1 時間の [プロンプトキャッシュ TTL](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime) をリクエストするには、ポリシーの既存の [`code`、`cli`、または `settings` ブロック](#choose-cli-or-code) にこれらのキーを追加し、ゲートウェイを再起動します。これらのキーには、ゲートウェイサーバーとクライアントの両方で Claude Code v2.1.242 以降が必要です。
@@ -1383,20 +1389,31 @@ managed:
 
 ##### ゲートウェイがブート時に拒否するもの
 
-ゲートウェイはブート時に各 `desktop` ブロックを Claude Desktop 自体が使用する設定スキーマに対して検証するため、間違いは接続されたすべてのデスクトップに届くのではなく、ゲートウェイ起動時にキーを示すエラーとして表面化します。ブロックに以下が含まれる場合、ゲートウェイはブート時に失敗します：
+`desktop` ブロックに次のものが含まれていると、ゲートウェイは起動時に失敗します：
 
-* 不明なキー
-* 空の値やネストされたエントリ内のサブキーのスペルミスなど、Claude Desktop が拒否するか黙って破棄する値を持つ認識済みのキー。v2.1.260 より前では、ゲートウェイは `managedMcpServers` または `orgPluginSettings` エントリのネストされたオブジェクト内のスペルミスのあるフィールドを、ブート時に失敗させずに黙って破棄していました。
+* 空の値など、Claude Desktop が拒否するか暗黙的に破棄する値を持つ認識済みのキー。
 * ゲートウェイ自身が計算するキー：推論接続、モデルリスト、OTLP リレー。これらは [`upstreams`](#upstreams)、[`models`](#models)、[`telemetry`](#telemetry) セクションの `forward_to` で設定してください。
 * 現在のキーのレガシーエイリアス。ブートエラーでは、ゲートウェイは記述すべき正規のキーを示します。
+* v2.1.300 以降では、セルフホスト型セッションホスト用のキーなど、名前が `selfHosted` で始まるすべてのキー。ゲートウェイを v2.1.300 以降にアップグレードする前に、これらのキーを削除してください。
 
 `transport` のない `managedMcpServers` エントリなど、非推奨の値やエントリ形式を使用した場合、ゲートウェイは起動し、代替を示す警告をログに記録します。
 
 v2.1.232 より前では、ゲートウェイは `chatTabEnabled` や `disableAutoUpdates` など 11 個の機能ゲートキーの固定リストを受け入れ、その他のすべてのキーをブート時に拒否していました。v2.1.227 より前では、ゲートウェイは `chatTabEnabled` と `chatAdvancedFileAnalysisEnabled` もブート時に拒否していました。
 
+##### ゲートウェイが認識しないキー
+
+Claude Code v2.1.295 以降を実行しているゲートウェイでは、新しい Claude Desktop リリースのほとんどのキーはゲートウェイのアップグレードを必要としません。v2.1.321 以降では、既知のキー内のほとんどの新しいサブキーも同様です。
+
+一部のキーと値は、次のように引き続き起動時に失敗します：
+
+* 既知のキーの固定値リストにおける新しい選択肢。
+* `disableAutoUpdates` に対する `disable_auto_updates` など、`desktop` ブロックで設定できるキーのタイプミスと思われるもの。エラーで名前が提案されます。
+
+いずれの場合も、その名前または値が新しい Claude Desktop リリースで実在するものであれば、[ゲートウェイを最新リリースにアップグレード](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#upgrades)してください。そうでなければ、修正または削除してください。デプロイ前に確認するには、[ポリシーをテスト](#test-a-policy-before-deployment)してください。
+
 ##### より新しいゲートウェイまたは Claude Desktop のバージョンが必要なキー
 
-ゲートウェイは `cli` ブロックと同様に、インストール済みバージョンにバンドルされたスキーマに対して `desktop` ブロックを検証します。新しい Claude Desktop リリースで導入された設定を配信するには、まずゲートウェイをアップグレードしてください。例えば、`userPluginMarketplacesEnabled` と `userPluginUploadsEnabled` には、ゲートウェイサーバー上の Claude Code v2.1.260 以降と、メンバーのマシン上の Claude Desktop 1.37937.0 以降が必要です。
+`userPluginMarketplacesEnabled` と `userPluginUploadsEnabled` には、ゲートウェイサーバーで Claude Code v2.1.260 以降、メンバーのマシンで Claude Desktop 1.37937.0 以降が必要です。
 
 `blockReadsOutsideWorkingDirectories`、`disableBypassPermissionsMode`、`configRecheckIntervalMinutes`、`sshClientPath` には、ゲートウェイサーバー上の Claude Code v2.1.281 以降が必要です。`microsoftAuthBroker` の `required` 値と、Microsoft 365 `managedMcpServers` エントリの `continuousAccessEvaluation` フィールドも同様です。`required` 値より前の Claude Desktop リリースはそれを `disabled` として読み取るため、すべてのメンバーの Claude Desktop がサポートしてから `required` を設定してください。Claude Desktop の [管理設定リファレンス](https://claude.com/docs/third-party/claude-desktop/configuration) には、各キーを最初に読み取るリリースがリストされています。
 
