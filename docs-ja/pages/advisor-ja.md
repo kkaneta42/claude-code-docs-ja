@@ -8,7 +8,7 @@
 
 > [!NOTE]
 >
-> advisor ツールは実験的機能であり、Anthropic API または [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) が必要です。Claude Platform on AWS では、Claude Code v2.1.300 以降が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
+> advisor ツールは実験的機能であり、Anthropic API、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、または [Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md) が必要です。Claude Platform on AWS または Claude Models on Google Cloud (Anthropic managed) では、Claude Code v2.1.300 以降が必要です。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。動作、価格設定、および利用可能性は変更される可能性があります。
 
 advisor ツールを使用すると、Claude はタスク中の重要な瞬間（アプローチをコミットする前、繰り返し発生するエラーで行き詰まった場合、またはタスク完了を宣言する前など）に、通常はより強力な 2 番目のモデルに相談できます。advisor は、すべてのツール呼び出しと結果を含む完全な会話を受け取り、Claude が続行する前に適用するガイダンスを返します。
 
@@ -174,10 +174,10 @@ advisor モデル自体の会話の読み取りはキャッシュされません
 
 ## 要件
 
-* **プロバイダー**：Anthropic API または [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Claude Platform on AWS では、advisor を使用するには Claude Code v2.1.300 以降が必要です。
+* **プロバイダー**：Anthropic API、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、または [Claude Models on Google Cloud（Anthropic managed）](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry では利用できません。Claude Platform on AWS または Claude Models on Google Cloud（Anthropic managed）では、advisor を使用するには Claude Code v2.1.300 以降が必要です。
 * **LLM ゲートウェイ**：`ANTHROPIC_BASE_URL` で構成された [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を経由する場合、利用可能性はゲートウェイがリクエストを Anthropic API にそのまま転送するかどうかに依存します。ゲートウェイまたはそのアップストリームが advisor ツールを認識しない場合に Claude Code がどのように応答するかについては、[自動再試行とエラー転送](https://code.claude.com/docs/ja/llm-gateway-protocol.md#automatic-retry-and-error-forwarding)を参照してください。
 * **サポートされているメインモデル**：Fable、Opus 4.6 以降、Sonnet 4.6 以降、Haiku 4.5、または Haiku 5.5。各メインモデルがどの advisor を受け入れるかについては、[advisor モデルを選択する](#choose-an-advisor-model)を参照してください。
-* **フィーチャーフラグ取得**：Claude Platform on AWS を使用している場合を除き、advisor には Anthropic から取得するフィーチャーフラグが必要です。`DISABLE_TELEMETRY` など、取得をオフにする変数が設定されているセッションには、そのフラグがありません。セッションを確認するには、[取得をスキップするセッション、またはフラグなしで開始するセッション](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)を参照してください。
+* **フィーチャーフラグ取得**：Claude Platform on AWS または Claude Models on Google Cloud（Anthropic managed）を使用している場合を除き、advisor には Anthropic から取得するフィーチャーフラグが必要です。`DISABLE_TELEMETRY` など、取得をオフにする変数が設定されているセッションには、そのフラグがありません。セッションを確認するには、[取得をスキップするセッション、またはフラグなしで開始するセッション](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)を参照してください。
 
 ## advisor をオフにする
 

@@ -110,7 +110,7 @@ Claude Code はストリーミングの推論応答を、到着したそばか�
 
 開発者がどの接続方法を使用しているかにかかわらず、Claude Code が認識しないモデル ID について想定する内容は、2 つのクライアント側の設定で変更できます。
 
-* **コンテキストウィンドウ**：Claude Code は 200K を想定し、ID に `[1m]` が含まれる場合は 1M を想定します。実際のウィンドウサイズを宣言するには、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください
+* **コンテキストウィンドウ**：Claude Code はデフォルトで 1M トークンのコンテキストウィンドウを想定します。実際のウィンドウサイズを宣言するには、[ゲートウェイまたはカスタムモデル ID のウィンドウを修正する](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)を参照してください
 * **機能**：ゲートウェイのエイリアスに、その背後にあるモデルの機能を持たせるには、配布する設定の [`modelOverrides`](https://code.claude.com/docs/ja/errors#unrecognized-model-id-on-a-request) エントリで、そのモデルの Anthropic ID をエイリアスにマッピングします。`ANTHROPIC_DEFAULT_*_MODEL_SUPPORTED_CAPABILITIES` 変数が適用される場面については、[機能のパススルー](#feature-pass-through)を参照してください
 
 ## リクエストヘッダー

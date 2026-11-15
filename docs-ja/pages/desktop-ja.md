@@ -264,7 +264,7 @@ Code タブはペインを任意のレイアウトで配置できるように構
 
 ### ペインを最小化する
 
-Terminal、Browser、[iOS Simulator](https://code.claude.com/docs/ja/desktop-ios-simulator.md)、または[サイドチャット](#ask-a-side-question-without-derailing-the-session)を小さいサイズで表示したままにするには、ペインのヘッダーにある**Minimize**をクリックします。このボタンを使用するには、Claude Desktop v4.0.0 以降と、[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)ではなく Claude アカウントが必要です。Browser ペインでは、ローカルセッションでのみこのボタンが表示されます。
+Terminal、Browser、[iOS Simulator](https://code.claude.com/docs/ja/desktop-ios-simulator.md)、または[サイドチャット](#ask-a-side-question-without-derailing-the-session)を小さいサイズで表示したままにするには、ペインのヘッダーにある**Minimize**をクリックします。このボタンを使用するには Claude Desktop v4.0.0 以降が必要です。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合は v5.11492.0 以降が必要なため、[バージョンを確認してください](#check-your-version)。Browser ペインでは、ローカルセッションでのみこのボタンが表示されます。
 
 最小化されたペインは、[セッション詳細パネル](#see-session-details)が画面に表示されている間はそのパネル内に配置され、それ以外の場合はチャットの隅にフローティング表示されます：
 

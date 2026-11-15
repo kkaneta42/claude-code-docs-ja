@@ -1347,7 +1347,7 @@ Claude Desktop をデプロイしない場合は、ポリシーから `desktop` 
 
 ##### Code タブで `code` 設定を適用する
 
-ポリシーが [`code`](#choose-cli-or-code) キーの下に持つ Claude Code 設定は、次のすべてが成り立つ場合に Claude Desktop の Code タブで適用されます。
+[一部のプロバイダーとモデルの変数](https://code.claude.com/docs/ja/desktop.md#managed-settings) を除き、ポリシーが [`code`](#choose-cli-or-code) キーの下に持つ Claude Code の設定は、次のすべてが満たされる場合に Claude Desktop の Code タブで適用されます。
 
 * ポリシーに `desktop` キーもあること（空の `desktop: {}` でもかまいません）
 * Claude Desktop がバージョン 2.9939.2 以降であること

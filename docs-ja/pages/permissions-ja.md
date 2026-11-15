@@ -50,7 +50,7 @@ Claude Code は、回答方法に応じてコメントを異なる方法で配�
 `/permissions` を使用して、Claude Code のツール権限を表示および管理できます。このダイアログは、すべての権限ルールと、各ルールが取得される `settings.json` ファイルをリストします。Claude が作業中にダイアログを開くことができます。ルールを追加または削除すると、Claude Code は同じターン内の Claude の次のツール呼び出しから変更を適用します。v2.1.234 より前では、Claude Code はターンが終了するまでコマンドをキューに入れていました。
 
 * **Allow** ルールは、Claude Code が手動承認なしで指定されたツールを使用できるようにします。
-* **Ask** ルールは、Claude Code が指定されたツールを使用しようとするたびに確認を促します。
+* **Ask** ルールは、Claude が指定されたツールを使用しようとしたときに確認を求めます。
 * **Deny** ルールは、Claude Code が指定されたツールを使用することを防止します。
 
 ルールは順序で評価されます。deny、ask、allow の順です。その順序での最初のマッチがアウトカムを決定し、ルールの特異性は順序を変更しません。
@@ -85,6 +85,8 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 > `bypassPermissions` モードでは、Claude Code は権限プロンプトをスキップします。これには [保護されたパス](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)（`.git` や `.claude` など）への書き込みも含まれます。[クロスセッションメッセージングセーフガード](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)は引き続き適用されます。このモードは、Claude Code が損害を引き起こせないコンテナや VM などの隔離された環境でのみ使用してください。
 
 `bypassPermissions` または `auto` モードが使用されるのを防ぐには、任意の[設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `permissions.disableBypassPermissionsMode` または `permissions.disableAutoMode` を `"disable"` に設定してください。これらは、オーバーライドできない[管理設定](#managed-settings)で最も有用です。
+
+権限プロンプトで待機することになる呼び出しを拒否し、無人のセッションが作業を続けられるようにするには、ユーザー設定または管理設定で [`permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/ja/settings-reference#permissions-denyinsteadofprompting) を `true` に設定してください。`dontAsk` はそれ自体が独立した権限モードですが、このキーは現在使用中の権限モードと組み合わせて機能します。
 
 ## 権限ルール構文
 
@@ -807,7 +809,7 @@ Claude Code は git を実行して 2 つを区別し、フォルダを信頼し
 
 | リポジトリが提供するもの | 親フォルダのみを信頼した | `claude -p` または SDK、フォルダは信頼されていない |
 | :- | :- | :- |
-| 設定ファイル内の[フック](https://code.claude.com/docs/ja/hooks.md)、[`env`](https://code.claude.com/docs/ja/settings-reference#env) ブロック、[`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) などのヘルパーコマンド、およびプロジェクトスキルの[フック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents)と [`allowed-tools`](https://code.claude.com/docs/ja/skills#pre-approve-tools-for-a-skill) | 使用 | 使用。ワークスペーストラストはどのセッションでもスキルの `allowed-tools` をゲートしません |
+| 設定ファイル内の[フック](https://code.claude.com/docs/ja/hooks.md)、[`env`](https://code.claude.com/docs/ja/settings-reference#env) ブロック、[`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) などのヘルパーコマンド、およびプロジェクトスキルの[フック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents)と [`allowed-tools`](https://code.claude.com/docs/ja/skills#pre-approve-tools-for-a-skill) | 使用 | 使用 |
 | `.claude/settings.json` 内の `permissions.allow` ルールと `additionalDirectories` | トラストダイアログを受け入れるまで使用されません。ダイアログは再度表示され、それらをリストします | 使用されません。Claude Code は stderr に [`this workspace has not been trusted`](https://code.claude.com/docs/ja/errors#workspace-has-not-been-trusted) 警告を出力します |
 | プロジェクト[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#hooks-in-subagent-frontmatter)のフロントマターフック、プロジェクト [`@skills-dir` プラグイン](https://code.claude.com/docs/ja/plugins/loading#plugins-shared-through-a-repository)、およびリポジトリまたは `--add-dir` ディレクトリからの [`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces) エントリ | 使用されず、ダイアログは提供されません | 使用されません |
 | リポジトリまたは `--add-dir` ディレクトリからのサブエージェントのフロントマター内のインライン [`mcpServers`](https://code.claude.com/docs/ja/sub-agents#scope-mcp-servers-to-a-subagent) | 使用されず、ダイアログは提供されません | 使用されません |

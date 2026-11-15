@@ -97,7 +97,7 @@ Jamf、Iru、Intune、グループポリシー用のスターターテンプレ�
 
 キーはどこでも同じですが、各メカニズムはそれらを異なる場所と形式で保存します:
 
-* **サーバー管理**: Anthropic のサーバー、またはユーザーのゲートウェイがポリシーを保持します。Claude Code はローカルキャッシュを保持し、起動時にそれを適用し、[取得が成功するたびに置き換えます](https://code.claude.com/docs/ja/server-managed-settings.md#security-considerations)。
+* **サーバー管理**: Anthropic のサーバー、またはユーザーのゲートウェイがポリシーを保持します。Claude Code はローカルキャッシュを保持し、そのキャッシュを[起動時に適用でき](https://code.claude.com/docs/ja/server-managed-settings.md#fetch-and-caching-behavior)、[取得が成功するたびに置き換えます](https://code.claude.com/docs/ja/server-managed-settings.md#security-considerations)。
 * **macOS 構成プロファイル**: `com.anthropic.claudecode` 管理環境設定ドメイン。`managed-settings.json` と同じトップレベルキーを使用し、ネストされた設定は辞書として、リストは plist 配列として記述します。
 * **Windows HKLM レジストリ**: `HKLM\SOFTWARE\Policies\ClaudeCode` の下にある `Settings` という名前の `REG_SZ` または `REG_EXPAND_SZ` 値としての JSON。
 * **ファイルベース**: システムディレクトリ内の `managed-settings.json`、オプションの `managed-settings.d/` ディレクトリ、および `managed-mcp.json`。システムディレクトリは、macOS では `/Library/Application Support/ClaudeCode/`、Linux と WSL では `/etc/claude-code/`、Windows では `C:\Program Files\ClaudeCode\` です。Claude Code は、従来の Windows パス `C:\ProgramData\ClaudeCode\managed-settings.json` を読み取りません。

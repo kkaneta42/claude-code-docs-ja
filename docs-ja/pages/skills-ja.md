@@ -14,7 +14,10 @@
 >
 > `/help` や `/compact` などの組み込みコマンド、および `/debug` や `/code-review` などのバンドルされたスキルについては、[コマンドリファレンス](https://code.claude.com/docs/ja/commands.md)を参照してください。
 >
-> **カスタムコマンドはスキルにマージされました。** `.claude/commands/deploy.md` のファイルと `.claude/skills/deploy/SKILL.md` のスキルの両方が `/deploy` を作成し、同じように機能します。既存の `.claude/commands/` ファイルは引き続き機能します。スキルはオプション機能を追加します。サポートファイル用のディレクトリ、[スキルを呼び出すユーザーを制御する](#control-who-invokes-a-skill)ためのフロントマター、および Claude が関連する場合に自動的にスキルを読み込む機能です。
+> **カスタムコマンドはスキルにマージされました。** 既存の `.claude/commands/` ファイルは引き続き機能します。Claude は、ユーザーがコマンドを入力しなくてもそれらを呼び出すことができます。Claude が独自にコマンドを呼び出さないようにするにはコマンドを編集し、複数のファイルを必要とするコマンドはスキルに変換してください。
+>
+> * **Claude が独自にコマンドを呼び出さないようにする**：コマンドファイルの[フロントマター](#frontmatter-reference)に [`disable-model-invocation: true`](#control-who-invokes-a-skill) を追加します
+> * **スクリプトなどの[サポートファイル](#add-supporting-files)を追加する**：コマンドをスキルに変換します。たとえば、`.claude/commands/deploy.md` を `.claude/skills/deploy/SKILL.md` に移動します。[フォルダ名がコマンドになる](#how-a-skill-gets-its-command-name)ため、引き続き `/deploy` と入力できます。
 
 Claude Code スキルは [Agent Skills](https://agentskills.io) オープンスタンダードに従い、複数の AI ツール全体で機能します。Claude Code は [呼び出し制御](#control-who-invokes-a-skill)、[サブエージェント実行](#run-skills-in-a-subagent)、[動的コンテキスト注入](#inject-dynamic-context)などの追加機能でスタンダードを拡張します。[Claude Code 外でスキルフロントマターを使用する](#using-skill-frontmatter-outside-claude-code)を参照して、どのフロントマターフィールドがスタンダードの一部であり、どれが Claude Code 拡張機能であるかを確認してください。
 
@@ -312,7 +315,7 @@ Claude Code が同期スキルの本文をどう扱うかは、セッション�
 
 * クラウドセッションでは、セッションが隔離されたコンテナで実行されるため、本文はローカルスキルと同じ動作を保ちます。
 * デスクトップ上の Cowork セッションでは、本文はローカルスキルと同じ動作を保ちます。ただし、そこで提供するすべてのスキルと同様に、Claude Code はすべての `!` コマンド行を [`disableSkillShellExecution` のプレースホルダー](#inject-dynamic-context)に置き換えます。
-* マシン上のその他のセッションでは、Claude Code は [`!` コマンド](#inject-dynamic-context)を実行せず、ローカルスキルの場合のように `@` 参照が指すファイルを添付せず、`${CLAUDE_PROJECT_DIR}` と `${CLAUDE_SESSION_ID}` のプレースホルダーも置換しません。そのため、`@` 参照と両方のプレースホルダーはリテラルテキストとして Claude に届きます。`!` コマンド行もリテラルテキストとして、または `disableSkillShellExecution` がオンの場合はそのプレースホルダーとして Claude に届きます。この扱いには Claude Code v2.1.228 以降が必要です。
+* ターミナルまたは VS Code のセッションでは、Claude Code は [`!` コマンド](#inject-dynamic-context)を実行せず、`@` 参照が指すファイルを添付せず、`${CLAUDE_PROJECT_DIR}` と `${CLAUDE_SESSION_ID}` のプレースホルダーも置換しません。`@` 参照と両方のプレースホルダーはリテラルテキストとして Claude に届きます。`!` コマンド行もリテラルテキストとして、またはその設定がオンの場合は `disableSkillShellExecution` のプレースホルダーとして Claude に届きます。この扱いには Claude Code v2.1.228 以降が必要です。
 
 ### セッション中にスキルを編集する
 
@@ -580,15 +583,15 @@ Deploy $ARGUMENTS to production:
 4. Verify the deployment succeeded
 ```
 
-それでも Claude が実行しようとした場合、Claude Code はその呼び出しをブロックし、デプロイの手順を別の方法で再現しないよう指示します。そのため、Claude はユーザー自身で `/deploy` を実行するよう提案することになります。
+メッセージに `/deploy` が[句読点が付かない独立した単語](#where-you-write-the-skills-name)として含まれていないときに Claude が実行しようとすると、Claude Code はその呼び出しをブロックします。その場合、Claude はユーザー自身で `/deploy` を実行するよう提案するはずです。
 
 2 つのフィールドが呼び出しとコンテキストの読み込みに与える影響は次のとおりです。
 
 | フロントマター | ユーザーが呼び出せる | Claude が呼び出せる | コンテキストに読み込まれるタイミング |
 | :- | :- | :- | :- |
-| （デフォルト） | はい | はい | 説明は常にコンテキストにあり、スキル全体は呼び出されたときに読み込まれる |
+| （デフォルト） | はい | はい | 説明はコンテキストに含まれ、呼び出されるとスキル全体が読み込まれます |
 | `disable-model-invocation: true` | はい | 自らは不可 | 説明はコンテキストになく、スキル全体は呼び出されたときに読み込まれる |
-| `user-invocable: false` | いいえ | はい | 説明は常にコンテキストにあり、スキル全体は呼び出されたときに読み込まれる |
+| `user-invocable: false` | いいえ | はい | 説明はコンテキスト内にあり、呼び出されたときにスキル全体が読み込まれる |
 
 > [!NOTE]
 >
@@ -619,7 +622,7 @@ Claude がスキルを再度呼び出し、レンダリングされたコンテ�
 
 `allowed-tools` フィールドは、スキルを呼び出したターンの間、リストされたツールに権限を付与します。これにより、Claude はユーザーに承認を求めることなくそれらのツールを使用できます。スキルのコンテンツは[コンテキストに残り続けます](#skill-content-lifecycle)が、この付与は次のメッセージを送信するとクリアされます。スキルを再度呼び出すと、そのターンに対して再び適用されます。このフィールドは利用可能なツールを制限するものではありません。すべてのツールは引き続き呼び出し可能であり、リストされていないツールには引き続き[権限設定](https://code.claude.com/docs/ja/permissions.md)が適用されます。単一のターンではなくセッション全体でツールを事前承認するには、代わりにその権限設定に許可ルールを追加してください。
 
-このフィールドは、ワークスペースの信頼によって制限されません。Claude Code は、一度も信頼したことのないフォルダーでの `-p` 実行であっても、プロジェクトスキルの `allowed-tools` を適用します。スキルは自身に広範なツールアクセスを付与できるため、リポジトリで Claude Code を実行する前に、そのリポジトリにチェックインされているスキルの `allowed-tools` を確認してください。組織全体でリポジトリのスキルからこのフィールドを無効にするには、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。
+Claude Code は、一度も信頼したことのないフォルダーでの `-p` 実行であっても、プロジェクトスキルの `allowed-tools` を適用します。スキルは自身に広範なツールアクセスを付与できるため、リポジトリで Claude Code を実行する前に、そのリポジトリにチェックインされているスキルの `allowed-tools` を確認してください。組織全体でリポジトリのスキルからこのフィールドを無効にするには、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。
 
 このスキルを呼び出すと、Claude は使用のたびに承認を得ることなく git コマンドを実行できます。
 
@@ -707,7 +710,7 @@ Claude Code は、最初のスキルと、その後に重ねられた最大 5 �
 
 ### 動的コンテキストを注入する
 
-`` !`<command>` `` 構文は、スキルの内容が Claude に送信される前にシェルコマンドを実行します。コマンドの出力がプレースホルダーを置き換えるため、Claude はコマンドそのものではなく実際のデータを受け取ります。スキルが [claude.ai アカウントから同期](#how-claude-code-handles-the-body-of-a-synced-skill)されている場合、Claude Code はこれらのコマンドをユーザーのマシン上で実行しません。この制限には Claude Code v2.1.228 以降が必要です。
+`` !`<command>` `` 構文は、スキルの内容が Claude に送信される前にシェルコマンドを実行します。コマンドの出力がプレースホルダーを置き換えるため、Claude はコマンドそのものではなく実際のデータを受け取ります。claude.ai アカウントから同期されたスキルについては、[同期されたスキルの本文を Claude Code がどのように扱うか](#how-claude-code-handles-the-body-of-a-synced-skill)を参照してください。
 
 次のスキルは、GitHub CLI でライブの PR データを取得してプルリクエストを要約します。`` !`gh pr diff` `` などのコマンドが最初に実行され、その出力がプロンプトに挿入されます。
 
@@ -745,7 +748,7 @@ git status --short
 
 ユーザー、プロジェクト、プラグイン、または[追加ディレクトリ](#skills-from-additional-directories)をソースとするスキルとカスタムコマンドでこの動作を無効にするには、[設定](https://code.claude.com/docs/ja/settings.md)で `"disableSkillShellExecution": true` を設定します。各コマンドは実行される代わりに `[shell command execution disabled by policy]` に置き換えられます。バンドルスキルと管理スキルは影響を受けません。この設定は、ユーザーが上書きできない[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で使用すると特に効果的です。
 
-この設定に関係なく、[claude.ai アカウントから同期](#how-synced-skills-behave)されたスキルにこれらのコマンドが含まれている場合、Claude Code がユーザーのマシン上でそれらを実行することはありません。この制限には Claude Code v2.1.228 以降が必要です。各種セッションで Claude がコマンドの代わりに何を受け取るかについては、[同期されたスキルの本文を Claude Code がどのように扱うか](#how-claude-code-handles-the-body-of-a-synced-skill)を参照してください。
+ターミナルまたは VS Code のセッションでは、この設定に関係なく、[claude.ai アカウントから同期](#how-synced-skills-behave)されたスキル内のこれらのコマンドを Claude Code は実行しません。この制限には Claude Code v2.1.228 以降が必要です。
 
 > [!TIP]
 >
@@ -793,7 +796,7 @@ PowerShell ツールも、実行するコマンドに同じタイムアウト、
 
 * **拒否ルールと確認ルール**: これらのいずれかに一致するコマンドは引き続き中止されます。該当するルールを見つけるには、[権限を管理する](https://code.claude.com/docs/ja/permissions.md#manage-permissions)を参照してください。
 * **管理設定のみのルール**: セッションで `/status` を実行したときに、そのスキルが `allowed-tools ignored this session` の下に一覧表示される場合は、[管理された権限ルールのみが適用される場合](#when-only-managed-permission-rules-apply)を参照してください。
-* **検証されていない Git フォルダー**: `HEAD` または `.git` ファイルがユーザー自身のものではない可能性がある場所では、Claude Code は `git` を含む Bash コマンド、または Claude Code が解析できない Bash コマンドについて `allowed-tools` を無視します。自分のベアリポジトリの worktree など、そのフォルダーを信頼できる場合は、セッション内で [`/permissions`](https://code.claude.com/docs/ja/permissions#manage-permissions) を使用してそのコマンドを許可してください。
+* **ベアリポジトリのフォルダー**: `refs` または `commondir` のすぐ隣に `HEAD` ファイルを持つフォルダーは、ベアリポジトリのように見えます。作業ディレクトリまたはその上位にある最も近いリポジトリがベアリポジトリのように見える場合、Claude Code は `git` を含む Bash コマンド、または Claude Code が解析できない Bash コマンドについて `allowed-tools` を無視します。そのフォルダーを信頼できる場合は、セッション内で [`/permissions`](https://code.claude.com/docs/ja/permissions#manage-permissions) を使用してそのコマンドを許可してください。
 
 auto モードでは、本来ユーザーの承認が必要なコマンドでも呼び出しは中止されません。スキルは、最初にそのコマンドを実行するよう Claude に指示する内容とともに読み込まれ、Claude 自身による呼び出しは [auto モードの通常のチェック](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)を経由します。ただし、`agent` を設定する[フォークされたスキル](#run-skills-in-a-subagent)や、Claude が[注入されたコマンドを実行するシェルツール](#how-injected-commands-run)を持たないセッションでは、引き続き呼び出しが中止されます。
 
@@ -876,10 +879,10 @@ Claude が呼び出せるスキルを制御する方法は 3 つあります。
 Skill
 ```
 
-**特定のスキルを許可または拒否する**には、[権限ルール](https://code.claude.com/docs/ja/permissions.md)を使用します。
+**特定のスキルを許可または拒否する**には、[権限ルール](https://code.claude.com/docs/ja/permissions.md)を使用します。許可ルールを追加しても、Claude がそのルールで指定されたスキルに限定されるわけではありません。
 
 ```text theme={null}
-# Allow only specific skills
+# Allow rules: skip the prompt
 Skill(commit)
 Skill(review-pr *)
 

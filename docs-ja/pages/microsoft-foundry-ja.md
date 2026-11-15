@@ -109,7 +109,9 @@ export ANTHROPIC_FOUNDRY_RESOURCE={resource}
 
 > [!WARNING]
 >
-> すべてのデプロイに対して特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` や `opus` などのモデルエイリアスが Claude Code の Microsoft Foundry 用の組み込みデフォルトに解決されます。これは最新リリースより遅れている可能性があり、アカウントでまだ利用できない場合があります。Microsoft Foundry にはスタートアップモデルチェックがないため、デフォルトが利用できない場合、リクエストは失敗します。Azure デプロイを作成するときは、「最新に自動更新」ではなく、特定のモデルバージョンを選択してください。
+> すべてのデプロイに対して特定のモデルバージョンをピン留めしてください。ピン留めなしでは、`sonnet` や `opus` などのモデルエイリアスが Claude Code の Microsoft Foundry 用の組み込みデフォルトに解決されます。このデフォルトは最新リリースより遅れている可能性があり、アカウントでまだ利用できない場合があります。
+>
+> リソースにデフォルトのモデルのデプロイがない場合、Claude Code は古いモデルに切り替えるか、リクエストが失敗します。切り替えが発生すると、`Switched to <fallback> because <model> is not available` で始まるメッセージが表示されます。Azure デプロイを作成するときは、「最新に自動更新」ではなく、特定のモデルバージョンを選択してください。
 
 モデル変数をステップ 1 で作成したデプロイ名と一致するように設定します。
 
@@ -153,7 +155,11 @@ Microsoft Entra ID、またはそれが発行したベアラートークンで�
 
 ## 1M トークンのコンテキストウィンドウ
 
-Microsoft Foundry では、デプロイがどのモデルを提供しているかを Claude Code が判別できる場合、Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、`[1m]` サフィックスを付けなくてもデフォルトで [1M トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)で動作します。Claude Code は、モデル変数に指定されたデプロイ名からモデルを読み取ります。各デプロイには `claude-opus-4-8` のようにモデル ID を名前として付けるか、[`modelOverrides`](https://code.claude.com/docs/ja/model-config#override-model-ids-per-version) でモデルをデプロイ名にマッピングしてください。モデルと照合できないデプロイ名の場合、[別のウィンドウを宣言](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)しない限り、Claude Code は 200K のウィンドウを想定します。
+Microsoft Foundry では、Fable モデル、Sonnet 5 以降、Opus 4.7 以降は、デフォルトで [1M トークンのコンテキストウィンドウ](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)で動作します。デプロイがどのモデルを提供しているかを Claude Code が判別できる限り、`[1m]` サフィックスは不要です。
+
+> [!NOTE]
+>
+> Claude Code は、モデル変数に指定されたデプロイ名からモデルを読み取ります。各デプロイには `claude-opus-4-8` のようにモデル ID を名前として付けるか、[`modelOverrides`](https://code.claude.com/docs/ja/model-config#override-model-ids-per-version) でモデルをデプロイ名にマッピングしてください。
 
 次の `settings.json` のエントリは、`team-opus-prod` という名前のデプロイが Opus 4.8 を提供していることを Claude Code に伝えます。
 
@@ -166,6 +172,8 @@ Microsoft Foundry では、デプロイがどのモデルを提供している�
 ```
 
 代わりに 200K のウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](https://code.claude.com/docs/ja/model-config#turn-off-1m-context) を設定します。
+
+Claude Code がデプロイ名をモデルと照合できない場合、デフォルトで 1M のウィンドウを想定します。そのため、デプロイしたモデルが受け付けるウィンドウがそれより小さい場合は、[実際のウィンドウを設定](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)してください。
 
 Opus 4.6 と Sonnet 4.6 は、[サードパーティデプロイ向けにモデルを固定する](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)で説明されているように、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のデプロイ名に `[1m]` を付加すると 1M のウィンドウを利用できます。v2.1.287 より前では、Microsoft Foundry 上の Fable モデルおよび Opus 4.7 以降でもこのサフィックスが必要で、付けない場合はデフォルトで 200K のウィンドウで動作していました。
 

@@ -237,7 +237,9 @@ Claude Code は起動時に Anthropic のサーバーから設定をフェッチ
 * [エンドポイント管理ソース](https://code.claude.com/docs/ja/managed-settings.md#choose-a-delivery-mechanism)が独自にプラグインを列挙または有効化しているマシンでは、キャッシュされたリストのみが有効化しているプラグインは、フェッチがペイロードを確認するまで、組織のものではなく[ユーザーのもの](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)として扱われます
 * Claude Code はバックグラウンドで最新の設定をフェッチします
 * セッションのプロバイダーがキャッシュされた [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) リストにない場合、Claude Code は拒否する前にそのフェッチを待機して再度確認することがあります。フェッチが失敗した場合、セッションは拒否されます
-* キャッシュされた設定はネットワーク障害が発生しても維持されます。起動時のフェッチが失敗した場合、Claude Code は対話型セッションと Code タブで、キャッシュされたポリシーが有効であることを警告します
+* キャッシュされた設定は、最後に成功したフェッチから 24 時間後に有効期限が切れるものとして計画してください
+* キャッシュされた設定の有効期限が切れる前に起動時のフェッチが失敗した場合、Claude Code は対話型セッションと Code タブで、キャッシュされたポリシーが有効であることを警告します
+* キャッシュされた設定の有効期限が切れた後に起動時のフェッチが失敗した場合、セッションはサーバー管理設定なしで開始され、警告にはリモートポリシーが適用されていないことが示されます。代わりに Claude Code を終了させるには、[`forceRemoteSettingsRefresh`](#enforce-fail-closed-startup) を設定します
 * フェッチが成功するまで、起動時に保留された値は保留されたままです
 
 Claude Code は、サーバーがセッションのペイロードを確認するまで、キャッシュされた `env` ブロック内のいくつかのカテゴリの変数を保留します。これにより、キャッシュされたプロキシ、認証局、エンドポイント、または認証情報の値によって、ペイロードを確認する設定フェッチがリダイレクト、傍受、または再認証されることを防ぎます。この強化策はサーバーからフェッチされた設定のキャッシュにのみ適用されます。MDM や `managed-settings.json` を通じてデプロイされた[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は影響を受けません。保留されるカテゴリには以下が含まれます。
@@ -285,7 +287,7 @@ Claude Code は、ほとんどの設定の更新を再起動なしで実行中�
 
 ### フェイルクローズ起動を強制する
 
-デフォルトでは、起動時にリモート設定のフェッチが失敗した場合、CLI は最後に成功したフェッチでキャッシュされた設定で続行します。[Claude Code が保留する値](#fetch-and-caching-behavior)は、フェッチが成功するまで保留されたままです。一度もフェッチしたことがないマシンでは、CLI はサーバー管理設定なしで続行し、デバイス上の[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は引き続き適用します。ただし、代わりに [Anthropic が設定を必須とする](#fetch-and-caching-behavior)場合もあります。
+デフォルトでは、起動時にリモート設定のフェッチが失敗した場合、CLI は最後に成功したフェッチでキャッシュされた設定で続行します。ただし、その設定の[有効期限が切れている](#fetch-and-caching-behavior)場合を除きます。[Claude Code が保留する値](#fetch-and-caching-behavior)は、フェッチが成功するまで保留されたままです。キャッシュされた設定の有効期限が切れている場合、またはキャッシュされた設定がない場合、CLI はサーバー管理設定なしで続行し、デバイス上の[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は引き続き適用します。ただし、代わりに [Anthropic が設定を必須とする](#fetch-and-caching-behavior)場合もあります。
 
 クライアントがキャッシュされたサーバー管理設定で、またはサーバー管理設定がない状態で起動しないようにするには、管理設定で `forceRemoteSettingsRefresh: true` を設定します。
 
@@ -425,11 +427,11 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および
 
 | シナリオ | 動作 |
 | :- | :- |
-| ユーザーがキャッシュされた設定ファイルを編集する | 改ざんされたファイルは起動時に適用されますが、[サーバーがペイロードを確認するまで Claude Code が保留する値](#fetch-and-caching-behavior)を除きます。次のサーバーフェッチで正しい設定が復元されます。ただし、[次回の起動時にのみ適用されるキー](#fetch-and-caching-behavior)（`model` や `env` ブロックに追加された変数など）は、再起動されるまで有効なままです |
+| ユーザーがキャッシュされた設定ファイルを編集する | 改ざんされたファイルは起動時に適用される可能性がありますが、[サーバーがペイロードを確認するまで Claude Code が保留する値](#fetch-and-caching-behavior)を除きます。次のサーバーフェッチで正しい設定が復元されます。ただし、[次回の起動時にのみ適用されるキー](#fetch-and-caching-behavior)（`model` や `env` ブロックに追加された変数など）の改ざんされた値は、再起動されるまで有効なままです |
 | ユーザーがキャッシュされた設定ファイルを削除する | [初回起動動作](#fetch-and-caching-behavior)が発生します |
 | ユーザーが変更された Claude Code バイナリを実行する | 変更されたクライアントを実行できるユーザーは、クライアント側の制御をバイパスできます |
 | ユーザーが古い Claude Code バージョンを実行する | サーバー管理設定より前のバージョンは、これらをフェッチまたは適用しません |
-| API が利用不可 | キャッシュされた設定が利用可能な場合は適用されます。キャッシュがない場合、Claude Code は次の成功したフェッチまでサーバー管理設定を適用しません。Anthropic が設定を必須とする場合を含む例外については、[フェッチとキャッシュの動作](#fetch-and-caching-behavior)に記載されています。`forceRemoteSettingsRefresh: true` の場合、CLI は続行するのではなく終了します。ただし、[`claude auth` サブコマンド](#enforce-fail-closed-startup)を除きます。[Claude apps gateway](#platform-availability)を通じてサインインしているクライアントは、その設定がない場合でも起動時に終了します。同じ `claude auth` 除外があります |
+| API が利用不可 | キャッシュされた設定が利用可能で、[有効期限切れ](#fetch-and-caching-behavior)でない場合は適用されます。キャッシュがない場合、Claude Code は次の成功したフェッチまでサーバー管理設定を適用しません。Anthropic が設定を必須とする場合を含む例外については、[フェッチとキャッシュの動作](#fetch-and-caching-behavior)に記載されています。`forceRemoteSettingsRefresh: true` の場合、CLI は続行するのではなく終了します。ただし、[`claude auth` サブコマンド](#enforce-fail-closed-startup)を除きます。[Claude apps gateway](#platform-availability) を通じてサインインしているクライアントは、その設定がない場合でも起動時に終了します。同じ `claude auth` 除外があります |
 | ユーザーが別の組織で認証する | 管理対象組織外のアカウントには設定が配信されません。これには [Console API キー](#platform-availability)で認証するセッションも含まれます |
 | ユーザーが[サードパーティモデルプロバイダー](#platform-availability)を構成する | サーバー管理設定はバイパスされます。これには `CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_MANTLE`、`CLAUDE_CODE_USE_VERTEX`、`CLAUDE_CODE_USE_FOUNDRY`、`CLAUDE_CODE_USE_ANTHROPIC_AWS`、またはデフォルト以外の `ANTHROPIC_BASE_URL` の設定が含まれます |
 | ネットワークトラフィックが傍受またはリダイレクトされる | TLS 検証が無効化されたか、傍受されたトラフィックは、クライアントが受け取る設定を変更できます |

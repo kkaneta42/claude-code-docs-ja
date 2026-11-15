@@ -45,6 +45,7 @@ Claude Code の `model` 設定には、次のいずれかを設定できます�
 | :- | :- | :- | :- |
 | Anthropic API | Opus 5.5 | Sonnet 5.5 | Haiku 5.5 |
 | [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) | Opus 5.5 | Sonnet 4.6 | Haiku 4.5 |
+| [Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md) | Opus 5.5 | Sonnet 5.5 | Haiku 4.5 |
 | Amazon Bedrock、Google Cloud's Agent Platform | Opus 5.5 | Sonnet 4.5 | Haiku 4.5 |
 | Microsoft Foundry | Opus 4.6 | Sonnet 4.5 | Haiku 4.5 |
 
@@ -109,6 +110,7 @@ Anthropic API では、[`availableModels`](#restrict-model-selection) または[
 プロンプトが待機している間にできることは、セッションによって異なります。
 
 * Remote Control が接続されている場合やチームメイトのセッションでは、ターミナルで任意のキーを押すと期限がキャンセルされ、Claude Code は応答を待ちます。
+* ターミナルの対話セッションで Remote Control が接続されている場合は、接続されたデバイスで応答することもでき、その応答はそのセッションの間有効です。Claude Code v2.1.323 以降が必要です。
 * バックグラウンドセッションでは、期限までに応答してください。
 * ターミナルで誰かが入力する前にリモートクライアントから新しいメッセージを送信した場合、Claude Code は同様にターンを終了し、新しいメッセージが次のターンを開始します。ターミナルで誰かが入力した後は、Claude Code は応答を待ち続け、新しいメッセージはその後ろにキューイングされます。
 
@@ -185,6 +187,10 @@ claude --model opus
 ```text theme={null}
 /model sonnet
 ```
+
+> [!NOTE]
+>
+> デフォルトでは、`claude-opus-4-1` などの Claude Opus 4 または Opus 4.1 の ID を使用して Anthropic API で開始したセッションは、`opus` が解決されるモデルで実行されます。
 
 設定ファイルの例:
 
@@ -309,7 +315,7 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 
 | 配信メカニズム | CLI と IDE | Desktop のローカルセッション | Web、モバイル、クラウドセッション | Agent SDK と非インタラクティブ | Cowork |
 | :- | :- | :- | :- | :- | :- |
-| 管理コンソールからの[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) | 適用される | 適用される | 適用される（[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションを除く） | 適用される | リモート Cowork セッション: サーバーがモデルをチェックします。ユーザーのマシン上: 配信されません。 |
+| 管理コンソールからの[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) | 適用される | 適用される | 適用される。ただし、[Claude Tag](https://claude.com/docs/claude-tag/overview) セッション、および [Amazon Bedrock または Google Cloud の Agent Platform を使用する](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#what-differs-from-sessions-on-the-anthropic-api)セルフホストランナー上のセッションには配信されません | 適用される | リモート Cowork セッション: サーバーがモデルをチェックします。ユーザーのマシン上: 配信されません。 |
 | [MDM または管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms) | 適用される | 適用される | Anthropic がホストする環境には配信されません。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)では、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に従ってランナーイメージから適用されます | 適用される | デプロイされている場所で適用される |
 
 * Desktop アプリから開始したものを含む[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、デフォルトで Anthropic が管理する VM 上で実行されます。デバイスにデプロイされた設定はこれらに届かないため、許可リストはサーバー管理設定を通じて配信してください。組織が[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)にルーティングするセッションは独自のコンピューティング上で実行され、ランナーイメージ内の管理設定ファイルも読み取ります。そのファイルがいつ適用されるかについては、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を参照してください。クラウドセッションでのセッション途中のモデル切り替えは、要求されたモデルが許可リストによって除外されている場合は拒否されます。サーバー管理設定の `availableModels` リストが空でない場合、サーバーは、リストが除外するモデルで claude.ai/code または Desktop アプリからクラウドセッションを開始するリクエストを拒否します。
@@ -481,7 +487,7 @@ effort 上限は[組織のモデル制限](#organization-model-restrictions)と�
 `default` の動作はアカウントの種類によって異なります。
 
 * **Pro、Max、Ultra、Team、Enterprise、Anthropic API**：デフォルトは Opus 5.5
-* **Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform**：デフォルトは Opus 5.5
+* **Claude Platform on AWS、Claude Models on Google Cloud（Anthropic managed）、Amazon Bedrock、Google Cloud's Agent Platform**：デフォルトは Opus 5.5
 * **Microsoft Foundry**：デフォルトは Sonnet 4.5
 
 v2.1.280 より前は、`default` は Pro と Team Standard では Sonnet 5 に、Max、Ultra、Team Premium、Enterprise、Anthropic API では Opus 5 に解決され、Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform では v2.1.219 以降 Opus 5 に解決されていました。v2.1.219 より前は、`default` は Anthropic API、Max、Ultra、Team Premium、Enterprise の従量課金では v2.1.154 以降 Opus 4.8 に解決され、Claude Platform on AWS、Amazon Bedrock、Google Cloud's Agent Platform では v2.1.207 以降 Opus 4.8 に解決されていました。v2.1.207 より前は、`default` は Claude Platform on AWS では Opus 4.7 に、Amazon Bedrock と Google Cloud's Agent Platform では Sonnet 4.5 に解決されていました。
@@ -527,7 +533,7 @@ claude --fallback-model sonnet,haiku
 
 ```json theme={null}
 {
-  "fallbackModel": ["claude-sonnet-5", "claude-haiku-4-5"]
+  "fallbackModel": ["claude-sonnet-5", "claude-haiku-5-5"]
 }
 ```
 
@@ -535,10 +541,13 @@ claude --fallback-model sonnet,haiku
 
 Claude Code は起動時にチェーンを確認せず、`/status` にも表示されません。切り替えが発生したときに表示される通知が、フォールバックが設定されていることを示す最初の目に見えるサインです。
 
-リクエストがフェイルオーバーすると、Claude Code はいずれかのエントリがリクエストを受け付けるまで、各エントリを順に試します。設定に固定された廃止済みモデルなど、到達できないエントリも同様に次のエントリへフェイルオーバーします。Claude Code は、この順次試行を始める前に 2 種類のエントリを除外します。
+#### Claude Code が試すエントリ
+
+リクエストがフェイルオーバーすると、Claude Code はいずれかのエントリがリクエストを受け付けるまで、各エントリを順に試します。設定に固定された廃止済みモデルなど、到達できないエントリも同様に次のエントリへフェイルオーバーします。Claude Code は次の場合にエントリを除外します。
 
 * **許可リスト外**：Claude Code はチェーンを読み込む際に、[`availableModels`](#restrict-model-selection) で許可されていないエントリを除外します。
 * **コンテキスト圧縮中のより小さいコンテキストウィンドウ**：チェーンは[コンテキスト圧縮](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)にも適用されますが、Claude Code はプライマリモデルより小さいコンテキストウィンドウを持つモデルにはフォールバックしません。そこで要約すると、会話の一部が先に切り捨てられてしまうためです。すべてのフォールバックがより小さい場合、圧縮は元のエラーを表示し、再試行できます。
+* **auto モードでサポートされていない**：[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)、および分類器がコマンドを審査している間の plan モードでは、Claude Code は auto モードがサポートしていないモデルをスキップします。いずれかのモードを使用する場合は、サポートされているモデルを含めてください。
 
 Claude Code はチェーンを[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)にも適用します。サブエージェントのリクエストがフェイルオーバーすると、Claude Code は設定されたフォールバックモデルを順に試し、サブエージェントはリクエストを受け付けたモデルで処理を続行します。セッションのモデルは変わりません。v2.1.247 より前は、チェーンの対象となる失敗が発生するとサブエージェントが終了していました。
 
@@ -714,11 +723,19 @@ Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus
 
 プロンプトのどこかに `ultrathink` を含めると、セッションの effort 設定を変更せずに、そのターンでより深い推論を要求できます。Claude Code はこのキーワードを認識し、コンテキスト内に指示を追加します。「think」、「think hard」、「think more」などのその他の表現は、Claude Code が通常のプロンプトテキストとしてそのまま渡し、キーワードとしては認識しません。
 
-ターミナルのプロンプトに入力した場合、この単語によってそのターンを `xhigh` の effort に引き上げることもできます。引き上げが可能な場合、この単語は虹色で表示されます。Claude Code v2.1.311 以降が必要です。新しいターンを開始するときに単語が虹色にならない場合は、次のいずれかを試してください。
+そのターンを `xhigh` の effort にも引き上げるには、次のいずれかの場所にこの単語を入力します。
+
+* ターミナルのプロンプト。ターンを引き上げられる場合、この単語は虹色で表示されます。Claude Code v2.1.311 以降が必要です。
+* VS Code のチャットボックス。ここでもこの単語は虹色で表示されます。Claude Code v2.1.316 以降が必要です。
+* デスクトップアプリの Code タブのローカルセッション。Claude Code v2.1.316 以降が必要です。
+
+新しいターンを開始するときに単語が虹色にならない場合は、次のいずれかを試してください。
 
 * 引用符、括弧、パス、コマンドなどの外側に、`/` で始まらないプロンプト内で入力し直す
 * `CLAUDE_CODE_EFFORT_LEVEL` が `xhigh` 未満に設定されている場合は設定を解除する。または、自分の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を `xhigh` 以上に引き上げるか、組織の管理者に[組織の制限](#organization-effort-limits)を引き上げるよう依頼する
-* セッション内で `/model` を実行し、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.2、Fable 5.1 のいずれかのモデルに切り替える。Amazon Bedrock 上など、この単語でターンを引き上げられない場合は、代わりに [effort レベルを設定](#set-the-effort-level)してください
+* セッション内で `/model` を実行し、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.2、Fable 5.1 のいずれかのモデルに切り替える。Amazon Bedrock、Google Cloud's Agent Platform、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) 上など、この単語でターンを引き上げられない場合は、代わりに [effort レベルを設定](#set-the-effort-level)してください
+
+コンテキスト内の指示も含めてこのキーワードをオフにするには、シェルまたは[設定ファイル](https://code.claude.com/docs/ja/env-vars.md#in-settings-files)で `CLAUDE_CODE_DISABLE_ULTRATHINK` を `1` に設定します。Claude Code v2.1.316 以降が必要です。
 
 #### effort レベルを設定する
 
@@ -905,14 +922,14 @@ Haiku 5.5 のリクエストは、プロンプトが 100K トークンを超え�
 
 ### ゲートウェイまたはカスタムモデル ID のウィンドウを修正する
 
-次の警告のいずれかが表示された場合、Claude Code はセッションのモデル ID を認識していないため、そのモデルのコンテキストウィンドウを判別できず、200K トークンを想定しています。
+次の警告のいずれかが表示された場合、Claude Code はセッションのモデル ID を認識しておらず、警告に示されたコンテキストウィンドウを想定しています。
 
 ```text theme={null}
-⚠ Model "my-gateway-opus" isn't recognized · context assumed to be 200k tokens · ...
-Claude Code doesn't recognize the model "my-gateway-opus", so it assumes a context window of 200k tokens. Update Claude Code, or see https://code.claude.com/docs/en/model-config#correct-the-window-for-a-gateway-or-custom-model-id to set the window.
+⚠ Model "my-gateway-opus" isn't recognized · context assumed to be 1m tokens · ...
+Claude Code doesn't recognize the model "my-gateway-opus", so it assumes a context window of 1m tokens. Update Claude Code, or see https://code.claude.com/docs/en/model-config#correct-the-window-for-a-gateway-or-custom-model-id to set the window.
 ```
 
-Claude Code は想定した 200K で会話を[自動圧縮](#default-auto-compact-thresholds)するため、モデルの実際のコンテキストウィンドウが 200K であれば、修正の必要はありません。そうでない場合は、ID に合わせて次のいずれかの方法で実際のウィンドウを Claude Code に指定してください。
+Claude Code は想定したウィンドウに収まるように会話を[自動圧縮](#default-auto-compact-thresholds)するため、警告に示されたウィンドウがモデルの実際のコンテキストウィンドウであれば、修正の必要はありません。そうでない場合は、次のいずれかの方法で実際のウィンドウを Claude Code に指定してください。
 
 * **Claude Code のバージョンより新しいモデル**：シェルで `claude update` を実行します。更新後に Claude Code がその ID を認識すれば、他に設定する必要はありません。
 * **Claude Code が認識しているモデルに対する、ゲートウェイまたはプロバイダー側の名前**：Anthropic のモデル ID を自分の ID に対応付ける [`modelOverrides`](#override-model-ids-per-version) エントリを追加します（例：`"claude-opus-4-8": "my-gateway-opus"`）。代わりに、[`modelPicker`](https://code.claude.com/docs/ja/settings-reference#fields-for-modelpicker) の行に自分の ID を記載し、`behavesAs` にそのモデルを設定することもできます。いずれの場合も、Claude Code はその ID をそのモデルとして扱います。
@@ -925,15 +942,13 @@ Claude Code が ID を認識するか、指定したウィンドウを使用す�
 
 [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)やその他のカスタムデプロイでは、Claude Code がその ID を Claude モデルに解決するかどうかにかかわらず、モデル ID に対してモデルの実際のウィンドウとは異なるコンテキストウィンドウを想定することがあります。Claude Code が代わりに想定すべきウィンドウを [`CLAUDE_CODE_MAX_CONTEXT_TOKENS`](https://code.claude.com/docs/ja/env-vars) に設定してください。
 
-この変数の適用方法は ID によって異なります。Claude Code は、ID が（大文字小文字を問わず）`claude-` で始まらない場合、または Google Cloud の Agent Platform で使用される `@YYYYMMDD` の日付のように、ID の読み取り時に Claude Code が取り除く接尾辞が付いている場合に、その ID をプロバイダー固有またはカスタムの表記として扱います。v2.1.259 より前の Claude Code は取り除かれた接尾辞を考慮しなかったため、日付の接尾辞が付いた認識できない `claude-` ID は、接尾辞のない `claude-` 名として扱われていました。
+この変数の動作は、認識できない ID、`[1m]` が付いた認識できない ID、Claude Code が認識する ID によって異なります。
 
-認識できないプロバイダー固有またはカスタムの表記、`[1m]` が付いた同じ表記、およびそれ以外のすべての ID は、次の 3 つの異なるケースとして扱われます。
-
-* Claude Code がプロバイダー固有またはカスタムの表記を認識できるモデルに解決できず、ID に `[1m]` が含まれていない場合、この変数は直接適用され、宣言されたウィンドウでプロアクティブなコンテキスト圧縮が継続されます。
-* Claude Code がプロバイダー固有またはカスタムの表記を認識できるモデルに解決できず、ID に（大文字小文字を問わず）`[1m]` が含まれている場合、Claude Code はその ID に 1M のウィンドウを想定し、この変数は単独では適用されません。プロアクティブなコンテキスト圧縮を維持しながらウィンドウを修正するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](https://code.claude.com/docs/ja/env-vars) も設定してください。この変数を設定すると、Claude Code はその ID を `[1m]` のない同じ表記と同様にサイズ設定するため、`CLAUDE_CODE_MAX_CONTEXT_TOKENS` は、タグのない表記に適用される場合と同じ条件で適用されます。
+* Claude Code が ID を認識できず、ID に `[1m]` が含まれていない場合、この変数は単独で適用され、宣言されたウィンドウでプロアクティブなコンテキスト圧縮が継続されます。`claude-sonnet-latest` のような ID の場合、これには Claude Code v2.1.324 以降が必要です。
+* Claude Code が ID を認識できず、ID に（大文字小文字を問わず）`[1m]` が含まれている場合、Claude Code はその ID に 1M のウィンドウを想定します。この変数に 1M 未満の値を設定しても、単独では適用されません。プロアクティブなコンテキスト圧縮を維持しながらウィンドウを修正するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](https://code.claude.com/docs/ja/env-vars) も設定してください。この変数を設定すると、Claude Code はその ID を `[1m]` のない同じ ID と同様にサイズ設定するため、`CLAUDE_CODE_MAX_CONTEXT_TOKENS` が適用されます。
 
   宣言されたウィンドウが 200K を超える場合、この構成では [200K の上限が適用されない](https://code.claude.com/docs/ja/errors.md#the-200k-limit-isnt-enforced)という警告が表示されるのは想定どおりの動作です。
-* ID が Claude Code の認識するモデルに解決される場合、または ID が（大文字小文字を問わず）Claude Code が取り除く接尾辞のない `claude-` 名のみの場合、この変数は [`DISABLE_COMPACT`](https://code.claude.com/docs/ja/env-vars) も設定したときにのみ有効になります。`DISABLE_COMPACT` はすべてのコンテキスト圧縮を無効にします。
+* ID が Claude Code の認識するモデルに解決される場合、この変数は [`DISABLE_COMPACT`](https://code.claude.com/docs/ja/env-vars) も設定したときにのみ有効になります。`DISABLE_COMPACT` はすべてのコンテキスト圧縮を無効にします。
 
   たとえば、`anthropic/claude-opus-4-8`、`us.anthropic.claude-…-v1:0`、日付付きの `claude-sonnet-4-5@20250929` など、Claude Code が認識している Claude モデル名を含む ID は、そのモデルに解決されます。これには `[1m]` も含む ID も含まれます。`CLAUDE_CODE_DISABLE_1M_CONTEXT` が設定されている場合でも、Claude Code は `claude-opus-4-8[1m]` を Opus 4.8 に解決します。
 
@@ -994,7 +1009,10 @@ Claude Code は `ANTHROPIC_CUSTOM_MODEL_OPTION` に設定されたモデル ID �
 
 [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud's Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)、または [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) を通じて Claude Code をデプロイする場合は、ユーザーに配布する前にモデルバージョンを固定してください。
 
-固定しない場合、Claude Code は `fable`、`opus`、`sonnet`、`haiku` などのモデルエイリアスを使用し、これらは各プロバイダーの組み込みのデフォルトモデル ID に解決されます。このデフォルトは最新の Anthropic リリースより遅れている場合があり、参照先のモデルがユーザーのアカウントでまだ有効になっていないこともあります。デフォルトが利用できない場合、Amazon Bedrock と Google Cloud's Agent Platform のユーザーには通知が表示され、セッションはデフォルトモデルの以前のバージョンにフォールバックします。デフォルトが Opus モデルで利用可能な Opus バージョンがない場合は、デフォルトの Sonnet モデルにフォールバックします。Microsoft Foundry には同等の起動時チェックがないため、Microsoft Foundry のユーザーには代わりにエラーが表示されます。
+固定しない場合、Claude Code は `fable`、`opus`、`sonnet`、`haiku` などのモデルエイリアスを使用し、これらは各プロバイダーの組み込みのデフォルトモデル ID に解決されます。このデフォルトは最新の Anthropic リリースより遅れている場合があり、参照先のモデルがユーザーのアカウントでまだ有効になっていないこともあります。デフォルトが利用できない場合:
+
+* **Amazon Bedrock と Google Cloud's Agent Platform**: [起動時チェック](https://code.claude.com/docs/ja/amazon-bedrock.md#startup-model-checks)の後、ユーザーには通知が表示され、セッションはデフォルトモデルの以前のバージョンにフォールバックします。デフォルトが Opus モデルで利用可能な Opus バージョンがない場合、セッションはデフォルトの Sonnet モデルにフォールバックします。
+* **Microsoft Foundry**: Claude Code が古いモデルに切り替えるか、リクエストが失敗します。
 
 Amazon Bedrock と Google Cloud's Agent Platform では、ユーザーが `--model`、`ANTHROPIC_MODEL`、または `model` 設定などで特定の Sonnet または Opus バージョンでセッションを開始すると、そのバージョンが対応するエイリアスのセッションのデフォルトとして固定されます。起動時チェックは置き換えられた組み込みのデフォルトをスキップし、フォールバック通知は表示されません。v2.1.211 より前は、セッションモデルが明示的に設定されていてもチェックが実行され、通知が表示されることがありました。
 
@@ -1012,7 +1030,10 @@ Amazon Bedrock と Google Cloud's Agent Platform では、ユーザーが `--mod
 
 `ANTHROPIC_DEFAULT_FABLE_MODEL`、`ANTHROPIC_DEFAULT_SONNET_MODEL`、`ANTHROPIC_DEFAULT_HAIKU_MODEL` にも同じパターンを適用します。すべてのプロバイダーにおける現行およびレガシーのモデル ID については、[モデルの概要](https://platform.claude.com/docs/en/about-claude/models/overview)を参照してください。ユーザーを新しいモデルバージョンにアップグレードするには、これらの環境変数を更新して再デプロイします。
 
-Opus 4.8 や Sonnet 5 など、ネイティブで 1M ウィンドウを持つモデルを固定した場合、Claude Code が固定した ID をそのモデルと照合できれば、サフィックスなしで [1M コンテキストウィンドウ](#extended-context)で動作します。ID は、`us.anthropic.claude-opus-4-8` が `claude-opus-4-8` を含むようにモデルの Anthropic API ID を含む場合、または [`modelOverrides`](#override-model-ids-per-version) のエントリがモデルをその ID にマッピングしている場合に一致します。Claude Code がモデルと照合できない固定 ID では、ID に `[1m]` サフィックスが付いていない限り、セッションはデフォルトで 200K ウィンドウで動作します。
+デフォルトでは、次の場合に Claude Code は固定した ID を [1M コンテキストウィンドウ](#extended-context)を持つものとして扱い、`[1m]` サフィックスは不要です。
+
+* **Opus 4.8 や Sonnet 5 など、ネイティブで 1M ウィンドウを持つモデルと Claude Code が照合する ID**: ID は、`us.anthropic.claude-opus-4-8` が `claude-opus-4-8` を含むようにモデルの Anthropic API ID を含む場合、または [`modelOverrides`](#override-model-ids-per-version) のエントリがモデルをその ID にマッピングしている場合に一致します
+* **Claude Code がモデルと照合できない ID**: ID の背後にあるモデルが受け付けるウィンドウがこれより小さい場合は、[実際のウィンドウを設定](#correct-the-window-for-a-gateway-or-custom-model-id)してください
 
 Opus 4.6 や Sonnet 4.6 など、`[1m]` バリアントを通じて 1M に対応するモデルの場合は、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のモデル ID に `[1m]` を付加して拡張コンテキストを有効にします。
 

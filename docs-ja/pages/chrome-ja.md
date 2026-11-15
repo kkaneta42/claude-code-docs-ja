@@ -41,13 +41,17 @@ Claude Code を Chrome で使用する前に、以下が必要です。
 * [Claude Code](https://code.claude.com/docs/ja/quickstart.md#step-1-install-claude-code)
 * 直接 Anthropic プラン（Pro、Max、Ultra、Team、または Enterprise）
 
-HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
-
 Chrome 統合を使用するには、`/login` でサインインする必要もあります。API キーまたは [`claude setup-token`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で発行した長期間有効なトークンで認証している場合、`--chrome` を渡しても Claude Code は Chrome 統合を無効のままにします。ブラウザ拡張機能はこれらの認証情報では認証できません。
 
 > [!NOTE]
 >
 > Chrome 統合は Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのサードパーティプロバイダーを通じては利用できません。Claude にサードパーティプロバイダーを通じてのみアクセスする場合、この機能を使用するには別の claude.ai アカウントが必要です。
+
+### HIPAA またはゼロデータ保持が有効な場合の Chrome の利用可否
+
+HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
+
+組織で Claude Code に対して[ゼロデータ保持（ZDR）](https://code.claude.com/docs/ja/zero-data-retention.md)が有効になっている場合、Claude Code では Claude in Chrome を利用できません。Owner が **Organization settings > Claude in Chrome** でオンにしていても、また `--chrome` を渡しても、オフのままになります。`/chrome` は `Claude in Chrome is disabled by your organization's policy` と表示します。組織が許可している場合は、Claude Code の外で引き続き拡張機能を使用できます。
 
 ## CLI で開始する
 

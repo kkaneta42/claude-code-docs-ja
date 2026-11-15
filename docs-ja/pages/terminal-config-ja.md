@@ -332,7 +332,7 @@ $env:CLAUDE_CODE_NO_FLICKER = "1"; claude
 
 プロンプトに 800 文字を超える、または 3 行を超えるテキストを貼り付けると、Claude Code は入力ボックスを使いやすい状態に保つため、入力を `[Pasted text #1 +120 lines]` のようなプレースホルダーに折りたたみます。送信時には完全な内容が送られます。ファイル全体や長いログなど非常に大きな入力の場合は、貼り付けるのではなく、内容をファイルに書き出して Claude にそのファイルを読むよう依頼してください。そうすることで会話のトランスクリプトが読みやすく保たれ、Claude は後のターンでもパスを指定してそのファイルを参照できます。また、VS Code の統合ターミナルでは、非常に大きな貼り付けの一部の文字が Claude Code に届く前に欠落することがあるため、その場合もファイルを使用してください。
 
-貼り付けた内容に[不可視の Unicode 文字](https://code.claude.com/docs/ja/interactive-mode.md#invisible-characters-in-prompts)が含まれている場合、Enter を押すと Claude Code がそれらを除去し、クリーンアップされたプロンプトを入力ボックスに戻します。もう一度 Enter を押すと送信できます。
+貼り付けた内容に[不可視の Unicode 文字](https://code.claude.com/docs/ja/interactive-mode.md#invisible-characters-in-prompts)が含まれている場合、Enter を押すと Claude Code がそれらを除去します。
 
 ### Claude による貼り付けテキストの扱い
 

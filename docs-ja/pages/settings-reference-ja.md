@@ -188,7 +188,7 @@
 | [`sandbox.enableWeakerNestedSandbox`](#sandbox-enableweakernestedsandbox) | 非特権コンテナ内で Linux の[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)を実行します | サンドボックス設定 | Any file |
 | [`sandbox.enableWeakerNetworkIsolation`](#sandbox-enableweakernetworkisolation) | macOS の[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md#go-based-clis-fail-tls-verification-on-macos)内で、`gh`、`gcloud`、`terraform` が MITM プロキシの背後で TLS を検証できるようにします | サンドボックス設定 | Any file |
 | [`sandbox.excludedCommands`](#sandbox-excludedcommands) | Claude Code が[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)の外で実行できるコマンドを指定します | サンドボックス設定 | Any file |
-| [`sandbox.failIfUnavailable`](#sandbox-failifunavailable) | [サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)を起動できない場合に、サンドボックスなしで実行するのではなく起動を拒否します | サンドボックス設定 | Any file |
+| [`sandbox.failIfUnavailable`](#sandbox-failifunavailable) | Anthropic がホストする環境を除き、[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)を起動できない場合に、サンドボックスなしで実行するのではなく起動を拒否します | サンドボックス設定 | Any file |
 | [`sandbox.filesystem`](#sandbox-filesystem) | [サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md#filesystem-isolation)されたコマンドが読み書きできるパスを制御します | サンドボックス設定 | Any file |
 | [`sandbox.filesystem.allowManagedReadPathsOnly`](#sandbox-filesystem-allowmanagedreadpathsonly) | [組織がブロックした読み取りパス](https://code.claude.com/docs/ja/sandboxing.md#keep-developers-from-widening-the-policy)を開発者が再度開けないようにします | サンドボックス設定 | Managed |
 | [`sandbox.filesystem.allowRead`](#sandbox-filesystem-allowread) | [`denyRead`](#sandbox-filesystem-denyread) がブロックする領域内で、読み取りを再び許可します | サンドボックス設定 | Any file |
@@ -289,7 +289,7 @@ Claude がサーバー側の [advisor ツール](https://code.claude.com/docs/ja
 }
 ```
 
-このキーは、Amazon Bedrock など、advisor が[利用できない](https://code.claude.com/docs/ja/advisor.md#requirements)プロバイダーでは効果がありません。Claude Platform on AWS では、このキーには Claude Code v2.1.300 以降が必要です。`"fable"` には [Fable へのアクセス](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)が必要です。
+このキーは、Amazon Bedrock など、advisor が[利用できない](https://code.claude.com/docs/ja/advisor.md#requirements)プロバイダーでは効果がありません。Claude Platform on AWS または [Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md) では、このキーには Claude Code v2.1.300 以降が必要です。`"fable"` には [Fable へのアクセス](https://code.claude.com/docs/ja/advisor.md#choose-an-advisor-model)が必要です。
 
 ### `alwaysThinkingEnabled`
 
@@ -435,11 +435,11 @@ Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable モデルなど、常に思考する�
 * **デフォルト**: 未設定。失敗したリクエストは別のモデルで再試行されません
 * **セッションごとの上書き**: `--fallback-model` は、1 つのセッションに限りこのキーよりも優先されます
 
-この例では、プライマリモデルが失敗した場合に、まず Sonnet 5、次に Haiku 4.5 を試します。
+この例では、プライマリモデルが失敗した場合に、まず Sonnet 5、次に Haiku 5.5 を試します。
 
 ```json settings.json theme={null}
 {
-  "fallbackModel": ["claude-sonnet-5", "claude-haiku-4-5"]
+  "fallbackModel": ["claude-sonnet-5", "claude-haiku-5-5"]
 }
 ```
 
@@ -884,7 +884,7 @@ auto モードがアクティブな間、すべての Bash および PowerShell 
 }
 ```
 
-Code Mode セッションでは、このキーの動作が異なります。[すべてのシェルコマンドを分類器にルーティングする](https://code.claude.com/docs/ja/auto-mode-config.md#route-all-shell-commands-through-the-classifier)を参照してください。
+このキーは Code Mode セッションでは動作が異なります。[シェル許可ルールの一時停止](https://code.claude.com/docs/ja/auto-mode-config.md#route-all-shell-commands-through-the-classifier)を参照してください。
 
 ### `disableAutoMode`
 
@@ -1335,8 +1335,8 @@ Linux と WSL2 では、サンドボックスは `bubblewrap` と `socat` が必
 サンドボックスがサポートしていないプラットフォームでは、このキーがオンの場合、Claude Code は起動しません。[管理設定でサンドボックスを強制する](https://code.claude.com/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)を参照してください。
 
 * **Scope**: [`Any file`](#scopes)（[プロジェクト設定とローカル設定には制限あり](https://code.claude.com/docs/ja/sandboxing.md#repository-settings-under-an-admin-required-sandbox)）
-* **型**: ブール値
-  * `true`: `sandbox.enabled` が `true` でもサンドボックスを起動できない場合、Claude Code は起動時にエラーで終了します。サンドボックスがこのチェックを通過した後に初期化に失敗した場合、セッションは実行を続け、Claude Code は[サンドボックス化された各コマンドを拒否します](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required)
+* **型**: Boolean
+  * `true`: `sandbox.enabled` が `true` でサンドボックスを起動できない場合、Claude Code は起動時にエラーで終了します。サンドボックスがそのチェックを通過した後に初期化に失敗した場合、セッションは実行を続けます。その場合、Claude Code は[サンドボックス化された各コマンドを拒否します](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required)。Anthropic がホストする環境のセッションは、警告付きでそのまま起動でき、`sandbox.filesystem` や `sandbox.network` のルールは適用されません
   * `false`: サンドボックスを起動できない場合、Claude Code はサンドボックスなしでコマンドを実行します
 * **Default**: `false`
 
@@ -2455,7 +2455,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 #### `env` の値とシェルの相互作用
 
 * ここで指定した値は、シェルでエクスポートされた同じ変数を上書きします。複数の設定ファイルが同じ変数を設定している場合は、[優先順位が最も高い](https://code.claude.com/docs/ja/settings.md#settings-precedence)ものが適用されます。例外は、[Claude Code が `env` で無視する変数](#variables-claude-code-ignores-in-env)に記載しています。
-* Claude Desktop アプリまたは[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)のランナーがセッションを開始する場合は、代わりにそれが構築する起動環境が優先されます。起動環境がすでに設定している変数については、Claude Code はどの設定ファイルの `env` の値も無視します。無視された各変数は[デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md)に記載されます。
+* Claude Desktop アプリまたは[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)のランナーがセッションを開始する場合は、代わりにそれが構築する起動環境が優先されます。起動環境がすでに設定している変数については、Claude Code は設定ファイルの `env` の値を無視します。[デバッグログ](https://code.claude.com/docs/ja/debug-your-config.md)には、無視された変数の名前が記録されることがあります。
 * シェルのエクスポートを取り消すには、変数を `""` に設定します。Claude Code はプロバイダーの選択において空の値を未設定として扱い、サブプロセスは空の値を継承します。
 * ここで設定した `NO_COLOR` と `FORCE_COLOR` は、サブプロセスにのみ反映されます。Claude Code 自体のインターフェースのカラーを変更するには、`claude` を起動する前にシェルで設定してください。
 * ここに記述した値は設定ファイル内のプレーンテキストであり、Claude Code が起動するすべてのサブプロセスに渡されます。ローテーションする OTLP ベアラートークンには [`otelHeadersHelper`](#otelheadershelper) を、API の認証情報には [`apiKeyHelper`](#apikeyhelper) を使用してください。
@@ -4043,7 +4043,7 @@ Claude Code v2.1.229 以降が必要です。
 
 | ソース | エントリの例 | フィールド |
 | :- | :- | :- |
-| `github` | `{ "source": "github", "repo": "acme-corp/plugins", "ref": "main", "path": "marketplace" }` | `repo` は必須。`ref` はブランチまたはタグ。`path` はサブディレクトリ |
+| `github` | `{ "source": "github", "repo": "acme-corp/plugins", "ref": "main", "path": "marketplace" }` | `repo` は必須。`ref` はブランチ、タグ、またはコミット SHA。`path` はサブディレクトリ |
 | `git` | `{ "source": "git", "url": "https://gitlab.example.com/tools/plugins.git", "ref": "production" }` | `url` は必須。`ref` と `path` は `github` と同じ |
 | `url` | `{ "source": "url", "url": "https://plugins.example.com/marketplace.json", "headers": { "Authorization": "Bearer ${TOKEN}" } }` | `url` は必須。`headers` は認証付きアクセス用の HTTP ヘッダーを追加します |
 | `file` | `{ "source": "file", "path": "/opt/acme-corp/plugins/marketplace.json" }` | `path` は必須。`marketplace.json` ファイルへの絶対パス |
@@ -5193,6 +5193,7 @@ Claude Code v2.1.307 より前は、Edit ツールは有効な設定ファイル
   * `"vertex"`: [Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)（旧 Vertex AI）
   * `"foundry"`: [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)
   * `"anthropicAws"`: [AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md)
+  * `"anthropicGoogleCloud"`: [Google Cloud 上の Claude Models（Anthropic 管理）](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)
   * `"mantle"`: Amazon Bedrock [Mantle エンドポイント](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)。[Invoke API と並行して Mantle を実行する](https://code.claude.com/docs/ja/amazon-bedrock.md#run-mantle-alongside-the-invoke-api)セッションは両方のプロバイダーを使用するため、`"bedrock"` と `"mantle"` をまとめてリストアップします
   * `"customEndpoint"`: 別のホストに送信される Anthropic API またはクラウドプロバイダーの API。`ANTHROPIC_BASE_URL` や、`ANTHROPIC_BEDROCK_BASE_URL` などのプロバイダーのエンドポイント変数で指定された [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)などです。Claude Code はそれを管理 [`env`](#env) ブロックがピンで留めた正確な値に対してのみ許可します
   * `"gateway"`: [Cloud gateway](https://code.claude.com/docs/ja/claude-apps-gateway) サインイン

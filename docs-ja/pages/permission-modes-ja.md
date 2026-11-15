@@ -344,8 +344,12 @@ auto モードは、アカウントが以下のすべての要件を満たす場
 
 * **プラン**: すべてのプラン。
 * **組織**: Team と Enterprise では、auto モードはデフォルトで利用可能です。管理者は[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `permissions.disableAutoMode` を `"disable"` に設定することで、組織の auto モードをオフにできます。
-* **モデル**: Anthropic API と [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) では、Claude Opus 4.6 以降、Sonnet 4.6 以降、Haiku 5.5、または [Fable モデル](https://code.claude.com/docs/ja/model-config.md#work-with-fable)。Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッションでは、Claude Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみです。Sonnet 4.5、Opus 4.5、Haiku 4.5、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
-* **プロバイダー**: Anthropic API、Claude Platform on AWS、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの Claude apps gateway セッションでデフォルトで利用可能です。
+* **プロバイダーとモデル**: 以下のプロバイダーで、以下のモデルを使用する場合にデフォルトで利用可能です。
+
+  * **Anthropic API、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、および [Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)**: Claude Opus 4.6 以降、Sonnet 4.6 以降、Haiku 5.5、または [Fable モデル](https://code.claude.com/docs/ja/model-config.md#work-with-fable)
+  * **Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、およびサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッション**: Claude Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみ
+
+  Sonnet 4.5、Opus 4.5、Haiku 4.5、claude-3 モデルを含む古いモデルは、どのプロバイダーでもサポートされていません。
 
 Claude Code が auto モードを利用不可と報告する場合は、まずこれらの要件と、いずれかの設定ファイルが [`disableAutoMode`](https://code.claude.com/docs/ja/settings-reference#disableautomode) を設定していないかを確認してください。また、Anthropic がサーバー側で auto モードをオフにしているか、サーバーがアカウントに対して auto モードを拒否した可能性もあります。いずれかの回答を受け取ったセッションは、セッションが終了するまで auto モードをオフのままにするため、後で新しいセッションを開始してください。
 

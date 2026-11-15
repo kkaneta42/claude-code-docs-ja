@@ -81,7 +81,7 @@ Claude がターンを終え、stdin が閉じられた後も、`claude -p` の�
 実行は、バックグラウンドコマンド、サブエージェントとワークフロー、Monitor ウォッチ、保留中の `/loop` ウェイクアップなどのバックグラウンド作業を待機します。
 
 * **[バックグラウンドコマンド](https://code.claude.com/docs/ja/tools-reference.md#background-commands)**: メイン会話が開始したコマンド（例えば開発サーバーやウォッチビルド）の場合、実行はコマンドが終了するか [時間制限](https://code.claude.com/docs/ja/tools-reference.md#time-limit-for-background-commands) に達するまで待機します。その後、Claude はその結果を受けてもう 1 ターン実行します。コマンドの実行中は、10 分の上限によって待機が終了することはありません。
-* **バックグラウンドの [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) とワークフロー**: その結果は最終出力の一部であるため、実行はその作業が完了するまで開いたままになります。
+* **バックグラウンドの [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) とワークフロー**: 実行は、それぞれが完了するか、10 分の上限によって待機が終了するまで開いたままになります。
 * **[Monitor](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) ウォッチ**: 実行は、ウォッチがタイムアウトするか 10 分の上限が待機を終了するか、どちらか先に来た方まで待機します。待機中、Claude はウォッチが報告することに応答し続けます。デフォルトでは、ウォッチは Claude が開始してから 5 分後にタイムアウトします。
 * **保留中のウェイクアップ**: プロンプトを `--input-format stream-json` ではなくテキストとして渡した実行で、Claude が [自己ペースの `/loop` ウェイクアップ](https://code.claude.com/docs/ja/scheduled-tasks#let-claude-choose-the-interval) をスケジュールした場合、実行は各ウェイクアップが発生するのを待ち、[ループが終了する](https://code.claude.com/docs/ja/scheduled-tasks.md#stop-a-loop) までその反復を実行します。これは 10 分の上限を超えても続きます。
 
@@ -90,6 +90,12 @@ stderr がターミナルで、実行が 5 秒間待機した場合、Claude Cod
 実行が [`--max-budget-usd`](https://code.claude.com/docs/ja/cli-reference#cli-flags) の上限に達した場合、Claude Code は待機せずに残りのバックグラウンド作業を停止します。
 
 バックグラウンド作業によって別のターンが開始された場合、デフォルトの `text` 出力では各ターンの結果が出力され、`json` 出力では最後のターンの結果が出力されます。v2.1.295 より前は、`text` 出力でも最後のターンの結果のみが出力されていました。
+
+#### 長時間実行されるサブエージェントのコマンドにより多くの時間を与える
+
+サブエージェントの長時間実行コマンドがタイムアウト時に [バックグラウンドに移行する](https://code.claude.com/docs/ja/tools-reference.md#foreground-commands-that-move-to-the-background) と、`claude -p` の実行はコマンドが完了する前にコード 0 で終了することがあります。
+
+デフォルトのタイムアウトをコマンドの実行時間より長くするには、[`BASH_DEFAULT_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) を設定します。例えば 5 分にする場合は `BASH_DEFAULT_TIMEOUT_MS=300000 claude -p "<prompt>"` とします。10 分を超えるバックグラウンドサブエージェントのコマンドの場合は、[10 分の上限](#background-tasks-at-exit) も引き上げてください。
 
 #### 非対話型の実行が終了したときの MCP の作業
 
@@ -333,9 +339,13 @@ claude -p "Apply the lint fixes" --permission-mode acceptEdits
 
 ### 無人実行で権限プロンプトをオフにする
 
-権限プロンプトに答えられる人がいない場合（例えば、スケジュール済みジョブ）は、`--permission-prompts none` を渡します。このフラグが最も重要になるのは、実行に権限ホストがある場合です。権限ホストとは、[`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input)を持つ Agent SDK アプリ、または [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で渡す MCP ツールです。フラグがない場合、実行は各権限リクエストに対してそのホストが答えるのを待ちます。
+権限プロンプトに答えられる人がいない場合（例えば、スケジュール済みジョブ）は、`--permission-prompts none` を渡します。このフラグが最も重要になるのは、実行に権限ホストがある場合です。権限ホストとは、[`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input)を持つ Agent SDK アプリ、または [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で渡す MCP ツールです。フラグも [`permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/ja/settings-reference#permissions-denyinsteadofprompting) 設定もない場合、実行は各権限リクエストに対してそのホストが答えるのを待ちます。
 
 フラグを指定すると、実行はホストに問い合わせず、待機もしません。確認を求めることになるものはすべて、`PermissionRequest` フックが許可しない限り拒否され、Claude には誰もリクエストを承認できないため再試行しないよう伝えられ、実行は続行されます。ホストのない `-p` 実行では、これらのリクエストはいずれにしても拒否されますが、このフラグは Claude に再試行しないよう伝える役割も果たします。権限ルール、[`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest)、および設定した権限モードが引き続き最初にすべての呼び出しを判定し、Claude Code は他の何によっても解決されないリクエストのみを拒否します。
+
+> [!NOTE]
+>
+> `--permission-prompts none` フラグの効果は 1 回の実行に限られます。以降の実行でも権限プロンプトを待つことになる呼び出しを拒否するには、ユーザー設定または管理設定で [`permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/ja/settings-reference#permissions-denyinsteadofprompting) を `true` に設定してください。
 
 この例は [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で無人タスクを実行します。分類器は通常どおり各アクションをレビューし、Claude Code はプロンプトにフォールバックするはずだったものをすべて拒否します。
 
@@ -369,7 +379,7 @@ claude -p "Look at my staged changes and create an appropriate commit" \
 > * ユーザーが呼び出す[スキル](https://code.claude.com/docs/ja/skills.md)とカスタムコマンドは機能します。プロンプト文字列に `/skill-name` を含めると、Claude Code は実行前にそれを展開します。
 > * ターミナルインターフェースでのみ動作する `/login` などの組み込みコマンドは利用できません。
 > * `/model`、`/effort`、`/fast`、`/color`、`/rename` は値を引数として受け付け（例：`/model sonnet`）、`/mcp` は引数なしでサーバーステータスのテキスト概要を出力します。これらの形式は各コマンドの[利用可能性に関する注記](https://code.claude.com/docs/ja/commands.md#all-commands)に従います。
-> * 設定を変更するには、`/config` に `key=value` を渡します（例：`/config thinking=false`）。
+> * 設定を変更するには、`/config` に `key=value` を渡します（例：`/config verbose=true`）。
 > * `/output-style <style>` は[出力スタイル](https://code.claude.com/docs/ja/output-styles.md)を切り替え、`/output-style` 単体ではそれらを一覧表示します。Claude Code v2.1.269 以降が必要です。
 
 ### システムプロンプトをカスタマイズする

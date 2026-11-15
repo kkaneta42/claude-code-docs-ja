@@ -49,7 +49,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `SendMessage` | 別のエージェントにメッセージを送信します。[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、[エージェント ID または名前で再開するサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)、またはこのマシン上またはその外にある他の Claude Code セッションのいずれか。他のセッションへのメッセージングには Claude Code v2.1.224 以降が必要です。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)は、Claude が到達できるセッション、[メッセージが到着したときの外観](https://code.claude.com/docs/ja/cross-session-messaging.md#what-a-message-looks-like)、および[別のセッションがアイドル状態になったときに Claude が通知を受け取る方法](https://code.claude.com/docs/ja/cross-session-messaging.md#get-a-notice-when-another-session-goes-idle)をカバーしています。Claude はオプションの `summary` 入力を含めることができます。通常は 5～10 語で、Claude Code は 1 行のプレビューとして表示します。Claude が[プレーンテキストメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md#limitations)で省略した場合、Claude Code はメッセージの最初の行を概要として使用します。Claude Code は 200 文字を超える概要を省略記号で切り詰めます | いいえ |
 | `SendUserFile` | セッションからファイルをオプションのキャプション付きでユーザーに送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトで言及されるだけでなく、デバイスに届くようにします。オプションの `display` 入力は表示方法を制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) クライアントが接続されている場合、または[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
 | `ShareOnboardingGuide` | `ONBOARDING.md` をアップロードし、チームメイトが Claude Code で開くことができる共有リンクを返します。ガイドが作成された後、`/team-onboarding` から呼び出されます。Team および Enterprise プランの claude.ai サブスクライバーが利用できます | はい |
-| `Skill` | メイン会話内で[スキル](https://code.claude.com/docs/ja/skills.md#control-who-invokes-a-skill)を実行します | はい |
+| `Skill` | メイン会話内で[スキル](https://code.claude.com/docs/ja/skills.md#control-who-invokes-a-skill)を実行します。`allowed-tools`、`disallowed-tools`、または `hooks` を設定するスキルではプロンプトを表示する場合があります | 一部のスキル |
 | `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
 | `TaskCreate` | タスクリストに新しいタスクを作成します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskGet` | 特定のタスクの完全な詳細を取得します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
@@ -197,7 +197,7 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 * Claude がバックグラウンドで開始するコマンドは 30 分、または Claude が `run_in_background` で渡す `timeout` を取得します。最大 2 時間まで。
 * フォアグラウンドで開始し、タイムアウト時にバックグラウンドに移動するコマンドは、移動から 30 分を取得します。
 
-プロンプトを `--input-format stream-json` ではなくテキストとして渡す `-p` フラグ付きの実行では、実行が[結果の後にバックグラウンドコマンドを待機する](https://code.claude.com/docs/ja/headless.md#background-tasks-at-exit)ため、両方のデフォルトが 30 分ではなく 10 分になります。
+プロンプトを `--input-format stream-json` ではなくテキストとして渡す `-p` フラグ付きの実行では、両方のデフォルトが 30 分ではなく 10 分になります。
 
 バックグラウンドコマンドが時間制限に達すると、Claude Code はそれを停止し、Claude に理由を伝えます。Claude は、作業がまだ必要な場合、より長い `timeout` でコマンドを再度開始できます。停止通知は `Background command "<description>" was stopped after reaching its background time limit` と読みます。
 
@@ -260,13 +260,17 @@ Claude は、`cat` や `grep` などの Bash コマンドでファイルを表�
 
 Claude がこの方法でファイルを表示すると、Claude Code はそのファイルに適用される[サブディレクトリの `CLAUDE.md`](https://code.claude.com/docs/ja/memory#how-claude-md-files-load)と[パススコープのルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules)も読み込みます。`Read` と `Edit` の拒否ルールがどの Bash コマンドをカバーするかについては、[Read と Edit の権限ルール](https://code.claude.com/docs/ja/permissions.md#read-and-edit)を参照してください。
 
+### Perforce で読み取り専用ファイルを保護する
+
+Edit、Write、NotebookEdit が Perforce ワークスペース内の読み取り専用ファイルを上書きしないようにするには、[`CLAUDE_CODE_PERFORCE_MODE`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定します。これにより、これらのツールは読み取り専用ファイルの変更を拒否し、先に `p4 edit` を実行するよう Claude に指示します。
+
 ### UTF-8 以外のファイル
 
 Claude は、有効な UTF-8 ではないファイルに対して [NotebookEdit](#notebookedit-tool-behavior) を使用できません。Edit も同様ですが、ファイルがリトルエンディアンの UTF-16 バイトオーダーマークで始まる場合は例外です。Claude が変更を試みると、ツールは変更を拒否し、ファイルには手を加えません。拒否されるファイルには、Windows-1252 や Shift-JIS などのレガシーエンコーディングで保存された非 ASCII テキスト、バイナリファイル、無効なバイトシーケンスを含む UTF-8 ファイルが含まれます。
 
 これらのツールが拒否するのは、ファイル全体を UTF-8 として保存し直すため、デコードできないすべてのバイトが置換文字 `U+FFFD` に置き換わってしまうからです。代わりに、[Claude が受け取るエラー](https://code.claude.com/docs/ja/errors.md#file-is-not-valid-utf-8)は、ファイルのエンコーディングを維持するシェルコマンドを使って変更を行うか、先に UTF-8 への変換についてユーザーに確認するよう Claude に指示します。
 
-新しいコンテンツに `U+FFFD`（Read がデコードできないバイトの代わりに Claude に表示する文字）が含まれていない限り、Claude はそのようなファイルを Write で置き換えることができます。このガードにより、Claude が読み取った文字化けしたテキストを書き戻すことを防ぎます。Write がファイルを置き換える場合は新しいコンテンツを UTF-8 として保存するため、ファイルの元のエンコーディングは失われます。
+新しい内容に `U+FFFD`（Read がデコードできないバイトの代わりに Claude に表示する文字）が含まれている場合を除き、Claude は引き続き Write でそのようなファイルを置き換えることができます。このガードにより、Claude が読み取った文字化けしたテキストを書き戻すことが防止されます。Write がファイルを置き換える場合、新しい内容は UTF-8 として保存されるため、ファイルの元のエンコーディングは失われます。
 
 ## EndConversation ツールの動作
 
@@ -445,6 +449,10 @@ NotebookEdit は、Jupyter ノートブックを 1 回に 1 セル、`cell_id` �
 NotebookEdit は、[Edit と同じルール](#non-utf-8-files)に従い、UTF-8 としてデコードできないノートブック ファイルを拒否し、何も書き込みません。
 
 権限ルールは `Edit(...)` パス形式を使用します。`Edit(notebooks/**)` のようなルールは、そのディレクトリ内のファイルに対する NotebookEdit 呼び出しをカバーします。
+
+### セルを置換すると、ファイル内の保存済み出力がクリアされる
+
+NotebookEdit がコード セルを置換すると、その実行カウントと保存済みの出力がクリアされます。出力を元に戻すには、そのセルと、そのセルが定義する関数や変数を使用するすべてのセルを再実行してください。VS Code でのワークフローについては、[Jupyter ノートブックを操作する](https://code.claude.com/docs/ja/vs-code.md#work-with-jupyter-notebooks)を参照してください。
 
 ## PowerShell ツール
 
@@ -692,7 +700,7 @@ WebSearch 権限ルールは指定子を取りません。`allow` または `den
 
 > [!NOTE]
 >
-> WebSearch は Claude API、[AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、Microsoft Foundry で利用可能です。Google Cloud の Agent Platform では Opus 4、Sonnet 4、Haiku 4.5 以降のモデルで動作します。Amazon Bedrock はサーバー側ウェブ検索ツールを公開していません。
+> WebSearch は Claude API、[AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、[Google Cloud 上の Claude Models（Anthropic 管理）](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)、Microsoft Foundry で利用可能です。Google Cloud の Agent Platform では Opus 4、Sonnet 4、Haiku 4.5 以降のモデルで動作します。Amazon Bedrock はサーバー側ウェブ検索ツールを公開していません。
 
 ### セッション検索制限
 

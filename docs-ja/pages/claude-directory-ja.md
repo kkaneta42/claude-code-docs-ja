@@ -137,6 +137,7 @@ Claude Code は、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings
 | `usage-data/` | `report.html` と [`/insights`](https://code.claude.com/docs/ja/costs#analyze-your-usage-patterns)で書き込まれたタイムスタンプ付きレポートコピー。それらを構築するために使用されるキャッシュされたセッションごとの分析データ |
 | `skills/.trash/`、`plugins/.trash/` | [スキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)と [プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)。claude.ai 同期で削除されたもの。例えば、claude.ai でオフにした後、または同期を停止した後。ファイルはここに残るため、スイープが削除するまで復元できます |
 | `plugins/installed_plugins.set-aside.<date>.<hash>.json`、`plugins/installed_plugins.unreadable.<date>.<hash>.kept` | 日付付きコピー。Claude Code が [`installed_plugins.json`](https://code.claude.com/docs/ja/plugins/loading#find-plugins-on-disk) を書き直す前に作成します。削除したインストールレコード、および読み込めなかったファイルの内容 |
+| `plugins/mcpb/` | プラグインが宣言する [MCP バンドル](https://code.claude.com/docs/ja/plugins/components.md#include-a-packaged-mcpb-server)から Claude Code が展開したファイル。バンドルの経過日数は、それを最後に使用したセッションから数えます |
 | `todos/`、`statsig/`、`logs/` | 古いバージョンのレガシーディレクトリ。現在は書き込まれていません。スイープはその内容を削除してから、空のディレクトリを削除します |
 
 `sessions/` のセッションファイル、自動メモリ、Claude Desktop および Cowork トランスクリプトは、それぞれ独自の保持ルールに従います：

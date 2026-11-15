@@ -240,7 +240,7 @@
 * [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) と [`allowManagedMcpServersOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedmcpserversonly) は、管理対象の権限と MCP の許可リストのみが適用されるようにします
 * `allowedMcpServers` は、MCP サーバーを URL で固定します
 * `strictKnownMarketplaces` は、1 つのプラグインマーケットプレイスを許可します
-* `sandbox` は、固定のネットワーク許可リストを使用し、サンドボックス外での再試行なしでコマンドをサンドボックス化します。その `failIfUnavailable` キーは、[サンドボックスを実行できない環境で Claude Code が起動しないようにします](https://code.claude.com/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)
+* `sandbox` は、固定のネットワーク許可リストを使用し、サンドボックス外での再試行なしでコマンドをサンドボックス化します。その `failIfUnavailable` キーは、Anthropic がホストする環境を除き、[サンドボックスを実行できない環境で Claude Code が起動しないようにします](https://code.claude.com/docs/ja/sandboxing.md#enforce-sandboxing-with-managed-settings)
 * `requiredMinimumVersion` は、Claude Code の最小バージョンを設定します
 * `cleanupPeriodDays` は、セッションのトランスクリプトおよびその他のローカルデータの保持期間を 7 日間に短縮します
 * `companyAnnouncements` は、起動時にメッセージを表示します

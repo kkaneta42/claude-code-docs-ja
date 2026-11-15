@@ -6,13 +6,15 @@
 
 > プロキシサーバー、カスタム認証局（CA）、相互 Transport Layer Security（mTLS）認証を使用して、エンタープライズ環境向けに Claude Code を設定します。
 
-Claude Code は、環境変数を通じてさまざまなエンタープライズネットワークおよびセキュリティ設定をサポートしています。これには、企業プロキシサーバーを通じたトラフィックのルーティング、カスタム認証局（CA）の信頼、および強化されたセキュリティのための相互 Transport Layer Security（mTLS）証明書による認証が含まれます。
+Claude Code は、環境変数を通じてさまざまなエンタープライズネットワークおよびセキュリティ設定をサポートしています。
 
 Claude Code を起動する前に、これらの環境変数を設定してください。シェルでエクスポートされた変数は起動時に 1 回読み込まれるため、実行中のセッションはシェル環境への後の変更を取得しません。
 
 > [!NOTE]
 >
 > このページに表示されているすべての環境変数は、[`settings.json`](https://code.claude.com/docs/ja/settings) でも設定できます。
+
+[リモート MCP サーバーにサインイン](https://code.claude.com/docs/ja/mcp.md#authenticate-with-remote-mcp-servers)すると、Claude Code は送信するサインインリクエストに、[プロキシ](#proxy-configuration)、[CA](#custom-ca-certificates)、および[クライアント証明書](#mtls-authentication)の変数を適用します。[`claude mcp login`](https://code.claude.com/docs/ja/mcp#authenticate-from-the-command-line) の場合は、プロジェクト設定やローカル設定ではなく、シェル、`~/.claude/settings.json`、または[管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#deploy-a-managed-settings-file)で変数を設定してください。
 
 ## プロキシ設定
 

@@ -252,7 +252,7 @@ claude mcp remove notion
 
 次のリストのステータスは、接続試行ではなく設定上の判断を報告するものであるため、Claude Code はサーバーに接続せずにこれらを表示します。
 
-* ``⏸ Pending approval (run `claude` to approve)``: まだ承認していない、`.mcp.json` のプロジェクトスコープのサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方にこれを表示します。`claude` を対話的に実行して確認し、承認してください。
+* ``⏸ Pending approval (run `claude` to approve)``: まだ承認していない、`.mcp.json` のプロジェクトスコープのサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方でこれを表示します。`claude` を対話的に実行して、確認して承認してください。
 * `✘ Rejected (see disabledMcpjsonServers in settings)`: [`disabledMcpjsonServers`](https://code.claude.com/docs/ja/settings-reference#disabledmcpjsonservers) エントリによって拒否された `.mcp.json` サーバーです。Claude Code はこれを `claude mcp get <name>` でのみ表示します。
 * `⊘ Disabled for this project (re-enable via /mcp)`: プロジェクトの [`disabledMcpServers`](#disable-a-server-without-removing-it) リストに記載されたサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方にこれを表示します。`/mcp` パネルからサーバーを再びオンにしてください。
 * `✘ Blocked by enterprise managed policy`: 組織のポリシーのいずれかによって拒否されたサーバーです。Claude Code は `claude mcp list` と `claude mcp get <name>` の両方にこれを表示します。[管理 MCP 設定](https://code.claude.com/docs/ja/managed-mcp.md#how-restrictions-appear-to-users)の許可リスト、拒否リスト、またはその他の制限によってブロックされたサーバーは、このステータスで表示されるのではなく、両方のコマンドで非表示になります。どのポリシーがサーバーをブロックしているかは管理者に確認してください。
@@ -504,7 +504,7 @@ MCP タスクとは、レポートのエクスポートやビルドなど、MCP 
 
 #### MCP タスクを停止する、または結果を取得する
 
-実行中のタスクを停止するには、[`/tasks`](https://code.claude.com/docs/ja/commands#all-commands) でタスクを選択して `x` を押すか、Claude に停止を依頼します。Claude Code はタスクの追跡を停止し、サーバーにキャンセルを求めますが、サーバーがタスクを完了させる場合もあります。切断されたサーバーは先に `/mcp` から再接続してください。そうしないとキャンセルリクエストが送信されず、Claude Code はタスクを忘れて再び追跡できなくなります。`Esc` を押してもバックグラウンドタスクは停止しません。
+実行中のタスクを停止するには、[`/tasks`](https://code.claude.com/docs/ja/commands#all-commands) でそれを選択して `x` を押すか、Claude に停止を依頼します。Claude Code はタスクの追跡を停止し、サーバーにキャンセルを要求しますが、サーバーはそれでもタスクを完了させる可能性があります。キャンセルリクエストを送信できるよう、切断されたサーバーは先に `/mcp` から再接続してください。Claude Code は停止したタスクを再び追跡できません。`Esc` を押してもバックグラウンドタスクは停止しません。
 
 タスクが終了すると、トランスクリプトに次のような行が表示されます。
 
@@ -516,7 +516,9 @@ MCP task <server task id> (<server>/<tool>) completed.
 
 #### MCP タスクからの質問に回答する
 
-実行中のタスクは、入力を求めるために[エリシテーションダイアログ](#respond-to-mcp-elicitation-requests)を開くことがあります。`/tasks` が開いている間はダイアログが非表示のままになるため、回答するには `/tasks` を閉じてください。拒否したり `Esc` を押したりすることもサーバーへの回答であり、サーバーはそれを受けてタスクを続行するかどうかを判断します。
+実行中のタスクは、[エリシテーションダイアログ](#respond-to-mcp-elicitation-requests)を開いて入力を求めることがあります。`/tasks` が開いている間はダイアログが非表示のままになるため、回答するには `/tasks` を閉じてください。辞退もサーバーへの回答であり、その後タスクを続けるかどうかはサーバーが判断します。
+
+Claude を[結果を待つ](#make-claude-wait-for-the-result-of-an-mcp-task)ように設定していない限り、ダイアログで `Esc` を押すと後で回答できます。質問を再び開くには、`/tasks` を実行し、タスクの詳細を開いて `Enter` を押します。後で回答するには Claude Code v2.1.324 以降が必要です。
 
 [非対話](https://code.claude.com/docs/ja/headless.md)セッションでは、Claude Code は、[`Elicitation` フック](https://code.claude.com/docs/ja/hooks#elicitation)を実行したり Agent SDK の `onElicitation` コールバックを呼び出したりせずに、入力を要求するタスクのキャンセルをサーバーに求めます。
 

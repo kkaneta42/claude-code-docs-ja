@@ -183,7 +183,7 @@ Agent Platform では、ユーザー、プロジェクト、ローカル、ま�
 Agent Platform が fast mode を拒否した場合、Claude Code は標準速度にフォールバックします。その後、対話セッションでは次のいずれかのターミナルメッセージが表示されます：
 
 * `Using standard speed on Fable 5.2 · fast mode wasn't available`：`/fast on` を実行して fast mode を再試行します
-* `Fast mode was refused for this project · trying again in 30m`：Agent Platform が fast mode リクエストに 403 または 404 エラーで応答しました。より早く再試行するには、`/fast on` を実行します。
+* `Fast mode paused: your cloud provider refused a fast request · trying again in 30m`：Agent Platform が fast mode リクエストに 403 または 404 エラーで応答しました。より早く再試行するには、`/fast on` を実行します。Claude Code v2.1.323 以降が必要です。
 
 ### プロキシと LLM ゲートウェイの背後で高速モードを使用する
 

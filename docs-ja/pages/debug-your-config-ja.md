@@ -49,9 +49,9 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 ## MCP サーバーを確認する
 
-`/mcp` を実行すると、設定されているすべてのサーバー、その接続状態、および現在のプロジェクトでそのサーバーを承認済みかどうかを確認できます。サーバーが正しく定義されていても、いくつかのよくある理由でツールが提供されない場合があります。
+`/mcp` を実行すると、サーバーとその接続状態を確認できます。サーバーが正しく定義されていても、いくつかのよくある理由でツールが提供されない場合があります。
 
-* `.mcp.json` 内のプロジェクトスコープのサーバーには、一度だけの承認が必要です。プロンプトが閉じられた場合、`/mcp` から承認するまでそのサーバーは無効のままになります。
+* `.mcp.json` 内のプロジェクトスコープのサーバーには、一度だけの承認が必要です。プロンプトを閉じた場合、そのサーバーは無効のままになります。プロンプトを再度表示するには、`claude mcp reset-project-choices` を実行して Claude Code を再起動してください。すべてのプロジェクトサーバーについて再度確認されます。
 * 起動に失敗したサーバーは、`/mcp` で失敗として表示されます。`command` または `args` 内の相対ファイルパスはよくある原因です。これらは `.mcp.json` の場所ではなく、Claude Code を起動したディレクトリを基準に解決されるためです。
 * 接続済みと表示されているのにツールが 0 個と表示されるサーバーは、正常に起動しているもののツールリストを返していません。`/mcp` から **Reconnect** を選択してください。それでも数が 0 のままの場合は、`claude --debug=mcp` を実行し、`~/.claude/debug/<session-id>.txt` にあるデバッグログでサーバーの stderr を確認してください。
 
@@ -72,9 +72,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 
 `settings.json` を編集すると、短いファイル安定性遅延後に実行中のセッションで変更が有効になります。セッション開始後にプロジェクトの `.claude/` フォルダを作成した場合でも、再起動する必要はありません。v2.1.257 より前では、Claude Code はセッション開始後に作成された `.claude/` フォルダの編集を検出しませんでした。
 
-保存後数秒経っても `/hooks` が古い定義を表示している場合は、`/hooks` を再度実行してビューをリフレッシュしてください。
-
-`/hooks` がフックを表示しても発火しない場合、次のステップはフック評価をライブで監視することです。`claude --debug` でセッションを開始し、ツール呼び出しをトリガーします。デバッグログは各イベント、チェックされたマッチャー、フックの終了コードと出力を記録します。ログ形式については [フックをデバッグする](https://code.claude.com/docs/ja/hooks.md#debug-hooks) を、一般的な失敗パターンについては [hooks トラブルシューティング](https://code.claude.com/docs/ja/hooks-guide.md#limitations-and-troubleshooting) を参照してください。
+保存後数秒経っても `/hooks` が古い定義を表示している場合は、`/hooks` を再度実行してビューをリフレッシュしてください。`/hooks` がフックを表示しても発火しない場合、次のステップはフック評価をライブで監視することです。`claude --debug` でセッションを開始し、ツール呼び出しをトリガーします。ログ形式については [フックをデバッグする](https://code.claude.com/docs/ja/hooks.md#debug-hooks) を、一般的な失敗パターンについては [hooks トラブルシューティング](https://code.claude.com/docs/ja/hooks-guide.md#limitations-and-troubleshooting) を参照してください。
 
 ## クリーン設定に対してテストする
 
@@ -159,7 +157,7 @@ Claude Code のセッションを実行していない状態のシェルで、�
 | クリーンアップロジックがセッション終了時に実行されない | `SessionEnd` hook が設定されていない | `settings.json` に `SessionEnd` hook を追加してください。[hook イベントリスト](https://code.claude.com/docs/ja/hooks.md#hook-events)を参照してください。 |
 | `.mcp.json` の MCP サーバーが読み込まれない | ファイルが `.claude/` の下にあるか、そのサーバーが VS Code の `mcp.json` のように、`mcpServers` ではなくトップレベルの `servers` キーの下にある | プロジェクト MCP 設定はリポジトリルートの `.mcp.json` に配置され、`.claude/` 内ではなく、`mcpServers` キーの下にサーバーがあります。[MCP 設定](https://code.claude.com/docs/ja/mcp.md)を参照してください。 |
 | `settings.json` の `mcpServers` の下に追加された MCP サーバーが表示されない | `settings.json` が `mcpServers` キーを読み込まない | プロジェクトサーバーをリポジトリルートの `.mcp.json` で定義するか、ユーザースコープのサーバーの場合は `claude mcp add --scope user` を実行してください。[MCP 設定](https://code.claude.com/docs/ja/mcp.md)を参照してください。 |
-| プロジェクト MCP サーバーが追加されたが表示されない | ワンタイム承認プロンプトが却下された | プロジェクトスコープのサーバーは承認が必要です。`/mcp` を実行してステータスを確認し、承認してください。 |
+| プロジェクト MCP サーバーが追加されたが表示されない | ワンタイム承認プロンプトが却下された | プロジェクトスコープのサーバーは承認が必要です。`claude mcp reset-project-choices` を実行し、Claude Code を再起動して、サーバーを承認してください。 |
 | MCP サーバーが一部のディレクトリから起動に失敗する | `command` または `args` が相対ファイルパスを使用している | ローカルスクリプトには絶対パスを使用してください。`npx` や `uvx` のような `PATH` 上の実行可能ファイルはそのまま機能します。 |
 | MCP サーバーが予期された環境変数なしで起動する | サーバーの設定エントリがそれらを設定していない、および Claude Code が stdio サーバーに渡す環境に含まれていない。その環境は、[サブプロセスから削除される変数](https://code.claude.com/docs/ja/monitoring-usage.md#administrator-configuration)を除いた独自の環境です | サーバーの `.mcp.json` エントリ内でサーバーごとの `env` を設定してください。これは起動環境またはワークスペーストラストに依存しません。 |
 | `Bash(rm *)` 拒否ルールが `/bin/rm` または `find -delete` をブロックしない | Bash ルールは基になる実行可能ファイルではなく、リテラルコマンド文字列にマッチします。[Bash ルールがマッチしないもの](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)を参照してください | [PreToolUse hook](https://code.claude.com/docs/ja/hooks-guide.md)または[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)を使用して、ハード保証を取得してください。 |

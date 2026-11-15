@@ -133,6 +133,7 @@ Contact sales
 * [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway)、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic API の前に IdP サインインを追加するセルフホスト型ゲートウェイ
 * [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)
 * [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)
+* [Claude Models on Google Cloud（Anthropic 管理）](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)
 * [Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)
 * [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)
 

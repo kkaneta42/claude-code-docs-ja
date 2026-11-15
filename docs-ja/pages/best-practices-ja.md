@@ -10,7 +10,7 @@ Claude Code は、ほとんどの場合、新しいセッションで最初に�
 
 例えば：
 
-* 各コマンドを逐一承認しなくても安全に実行できるよう、新しいターミナルおよび VS Code セッションは [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で開始します。このモードでは、リスクのある操作は実行前に分類器がレビューします。
+* 各コマンドを逐一承認しなくても実行できるよう、新しいターミナルおよび VS Code セッションは [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で開始します。
 * 独立した作業を並列で進めながらメインの会話を集中した状態に保つため、Claude はサブエージェントに委譲し、必要なときだけ確認を求めます。
 * ユーザーが管理しなくても長いセッションを続けられるよう、コンテキストウィンドウがいっぱいになる前に、会話が自動でコンテキスト圧縮されます。
 
@@ -595,7 +595,7 @@ config/dev-credentials.json
 
 これらを自分でクリーンアップしなければならないことはほとんどありません：
 
-* 名前のない worktree セッションを終了すると、中身が何もなければ Claude Code は [worktree を削除します](https://code.claude.com/docs/ja/worktrees.md#clean-up-worktrees)。名前付きセッションや変更のあるセッションの場合は、どうするかを尋ねます。
+* 名前のない worktree セッションを終了すると、中身が何もなければ Claude Code は [git で作成した worktree を削除します](https://code.claude.com/docs/ja/worktrees.md#clean-up-worktrees)。名前付きセッションや変更のあるセッションの場合は、どうするかを尋ねます。
 * サブエージェントの worktree は、サブエージェントが変更なしで終了すると消えます。
 * 残されたサブエージェントやバックグラウンドセッションの worktree は、`cleanupPeriodDays` より古くなり、作業を含んでいなければ一掃されます。
 

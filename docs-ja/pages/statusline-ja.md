@@ -182,7 +182,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 | `cost.total_api_duration_ms` | API レスポンスの待機に費やされた合計時間（ミリ秒） |
 | `cost.total_lines_added`, `cost.total_lines_removed` | 変更されたコードの行数 |
 | `context_window.total_input_tokens`, `context_window.total_output_tokens` | 直近の API レスポンスに基づく、現在コンテキストウィンドウ内にあるトークン数。入力にはキャッシュの読み取りと書き込みが含まれます |
-| `context_window.context_window_size` | 最大コンテキストウィンドウサイズ（トークン）。デフォルトは 200000、拡張コンテキストを持つモデルでは 1000000 です。 |
+| `context_window.context_window_size` | 最大コンテキストウィンドウサイズ（トークン） |
 | `context_window.used_percentage` | 事前計算されたコンテキストウィンドウの使用率 |
 | `context_window.remaining_percentage` | 事前計算されたコンテキストウィンドウの残り率 |
 | `context_window.current_usage` | 最後の API 呼び出しからのトークン数。[コンテキストウィンドウのフィールド](#context-window-fields)で説明しています |

@@ -178,12 +178,13 @@ Remote Control セッションがアクティブになったら、別のデバ�
 接続されたデバイスには、ターミナル内の会話がリアルタイムで表示されます。通常のメッセージ以外には、次のようなケースがあります。
 
 * **コンテキスト圧縮と `/clear`**：Claude Code が[会話を圧縮](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)している間、接続されたデバイスには進行状況が表示され、その後会話が圧縮された位置が表示されます。`/clear` を実行すると、接続されたデバイス上の会話もリセットされます。
+* **`/resume` または `/teleport` 後の切断**：接続されたセッションに[共有リンク](https://code.claude.com/docs/ja/claude-code-on-the-web.md#share-sessions)がある場合、または Claude Code が共有リンクの有無を確認できない場合、いずれかのコマンドで別の会話を開くと Remote Control は切断されます。切断しなければ、リンクを持つユーザーがその会話を見られることになるためです。新しい会話を接続するには、ターミナルで `/remote-control` を実行します。共有リンクの確認には Claude Code v2.1.324 以降が必要です。
 * **`/resume` による会話の切り替え**：接続されたデバイスは切り替え先の会話のタイトルや過去の履歴を受け取りませんが、双方向の新しいメッセージはターミナルで開いている会話との間でやり取りされます。デバイスから元の会話で再び作業するには、ターミナルで `/resume` を実行して元の会話に切り替えます。
 * **`/teleport` によるセッションの取り込み**：`/teleport` で[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#from-cloud-to-terminal)をターミナルに取り込むと、接続されたデバイスは取り込んだ会話の過去の履歴を受け取りません。双方向の新しいメッセージは、現在ターミナルで開いている取り込んだ会話との間でやり取りされます。
 * **自分の他のセッションからのメッセージ**：[セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)を使用すると、同じ接続で異なるマシン上の自分のセッション間のメッセージもやり取りされます。
 * **変更の差分**：セッションのディレクトリが git リポジトリ内にある場合、接続されたデバイスの差分ペインに変更が表示されます。リポジトリのデフォルトブランチより先行するコミットがあるブランチでは、ペインにはデフォルトブランチから分岐して以降の変更が、コミットされていない編集も含めて表示されます。デフォルトブランチ自体、またはデフォルトブランチより先行していないブランチでは、コミットされていない変更のみが表示されます。
 * **モデル**：接続されたデバイスから[モデル](https://code.claude.com/docs/ja/model-config.md)を選択すると、Claude Code はそのモデルでセッションを実行します。Claude Code v2.1.238 以降が必要です。デバイスのモデルコントロールで選択したモデルは現在のセッションにのみ適用されます。デバイスからインタラクティブセッションに `/model <name>` を送信すると、Claude Code は新しいセッションのデフォルトも設定します。
-* **effort レベル**：接続されたデバイスから `/effort` またはデバイスの effort コントロールで [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を設定すると、Claude Code はそれをマシン上のセッションに適用します。`CLAUDE_CODE_EFFORT_LEVEL` でレベルを固定している場合、セッションはそのレベルを維持し、Claude Code は effort コントロールでの異なる選択を拒否します。effort コントロールからレベルを選択するには、マシン上で Claude Code v2.1.234 以降が必要です。
+* **effort レベル**：接続されたデバイスから `/effort` またはデバイスの effort コントロールで [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)を設定すると、Claude Code はそれをマシン上のセッションに適用します。`CLAUDE_CODE_EFFORT_LEVEL` でレベルを固定している場合、セッションはそのレベルを維持します。effort コントロールからレベルを選択するには、マシン上で Claude Code v2.1.234 以降が必要です。
 * **接続失敗後の再接続**：`/remote-control` を実行して再接続します。その間にコンテキスト圧縮によって会話が書き換えられたか、`/resume` で会話を切り替えた場合、Claude Code は使用していたサーバーセッションをセッション一覧に残さずアーカイブします。そのセッションは、claude.ai/code の[アーカイブされたセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#find-an-archived-session)から引き続き見つけられます。デバイスが接続されたままの状態で会話を切り替えても、セッションはアーカイブされません。
 
 ### ブラウザからセッションをフォークする
@@ -369,18 +370,18 @@ Claude Code は、お客様がターミナルに入力中または接続され�
 * **サーバーモードでクラッシュしたセッション**: `claude remote-control` で提供されているセッションがクラッシュした場合は、接続済みのデバイスからそのセッションにメッセージを送信してください。Claude Code がそのセッションを再び提供します。サーバーを再起動する必要はありません。Claude Code v2.1.238 以降が必要です。
 * **接続済みセッションでの HTTP 403 拒否**: 対話型セッションが接続されると、VPN やネットワークの変更後などに、マシンと Anthropic のサーバーの間にある何かが HTTP 403 で応答した場合、Claude Code は最大 3 分間再試行を続けます。拒否がそれより長く続くと Claude Code は切断し、その理由として拒否したもの（ネットワークエッジ、または自分のネットワーク上のプロキシ、VPN、ファイアウォール）が示されます。
 * **長時間のネットワーク障害**: マシンがスリープしていないのにネットワークに到達できない場合、次に行うことはモードによって異なります。
-  * **サーバーモード**: Claude Code は約 10 分後に諦め、`claude remote-control` プロセスが終了します。新しいセッションを開始するには、`claude remote-control` を再度実行してください。
+  * **サーバーモード**: Claude Code は約 10 分後に諦め、`claude remote-control` プロセスが終了します。サーバーを再起動するには、[サーバー停止後にセッションを再開する](#resume-sessions-after-stopping-the-server)を参照してください。
   * **対話型セッション**: ローカルで作業を続けてください。Claude Code は障害が続く間再試行を続け、ネットワークが復旧すると自動的に再接続します。
 * **ダウンロードされない添付ファイル**: スマートフォンやブラウザから添付したファイルをマシンにダウンロードできない場合でも、Claude はメッセージとダウンロードできたファイルを受け取ります。欠けているファイルの代わりに、Claude Code は `[1 of 3 attachments did not arrive]` のような注記をメッセージに追加します。
 * **プレゼンスハートビートの失敗**: 対話型セッションが `could not reach the Remote Control server for about 30 minutes` で切断された場合は、`/remote-control` を実行して再接続してください。
 * **転送されたダイアログの有効期限**: Claude Code は、権限プロンプトと `AskUserQuestion` の質問を、回答するまで開いたままにします。安全性による拒否の後に表示されるモデル選択プロンプトなど、別の種類のダイアログを Claude Code がリモートセッションに転送した場合は、デフォルトで 5 分間待機した後、ダイアログを閉じて、そのダイアログの何もしないデフォルトで続行します。期限を調整または無効にするには、[`dialogExpiry`](https://code.claude.com/docs/ja/settings-reference#dialogexpiry) を設定してください。Claude Code v2.1.224 以降が必要です。
-* **Fable の使用クレジット同意プロンプトは転送されない**: Claude Code は、セッション中の [Fable の使用クレジット同意プロンプト](https://code.claude.com/docs/ja/model-config.md#fable-and-usage-credits)を、デバイス上ではなくセッションが実行されている場所でのみ表示します。セッションがターミナルで実行されていて、Claude Code がプロンプトを閉じる前にそこで誰も回答しなかった場合、ターンはリクエストを送信せずに終了します。[The prompt to confirm went unanswered](https://code.claude.com/docs/ja/errors.md#the-prompt-to-confirm-went-unanswered) を参照してください。
+* **回答されない Fable の使用クレジットプロンプトはターンを終了する**: [`dialogExpiry`](https://code.claude.com/docs/ja/settings-reference#dialogexpiry) の期限までに [Fable の使用クレジット同意プロンプト](https://code.claude.com/docs/ja/model-config.md#fable-and-usage-credits)に誰も回答しなかった場合、ターンは終了し、何も送信されません。[The prompt to confirm went unanswered](https://code.claude.com/docs/ja/errors.md#the-prompt-to-confirm-went-unanswered) を参照してください。ターミナルの対話型セッションでは、このプロンプトは接続済みのデバイスにも表示されることがあり、そこで回答することもできます。Claude Code v2.1.323 以降が必要です。
 * **一部のコマンドはローカル専用**: `/plugin` や `/resume` など、ターミナルインターフェースでのみ実行されるコマンドは、引数を渡すかどうかにかかわらず、ローカルの CLI からのみ動作します。`/claude-api` も、モバイルや Web から入力した場合は使用できません。ただし、そこでも Claude は[そのスキルを自ら読み込む](https://code.claude.com/docs/ja/skills.md#work-on-claude-api-projects)ことができます。以下はモバイルと Web から動作します。
   * テキスト出力コマンド: `/compact`、`/clear`、`/context`、`/usage`、`/exit`、`/usage-credits`、`/recap`、`/reload-plugins`。`/usage-credits` は、使用クレジットを管理する場所などをテキストで返します。`/reload-plugins` は、セッションが対話型ターミナルで実行されている場合にのみ動作します。対話型ターミナルのないセッションではこのコマンドは拒否されます。
   * `/model`、`/effort`、`/fast`、`/color`、`/rename`: 値を引数として渡します（例: `/model sonnet` や `/effort high`）。モバイルと Web からは、`/model` と `/effort` はターミナルのピッカーやスライダーの代わりに引数を受け取ります。
   * `/mcp`: モバイルアプリからは、ピッカーを開く代わりにサーバーのステータスのテキスト要約を返します。Web では、`/mcp` を単独で実行すると、要約を返す代わりに [claude.ai コネクタ](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)のディレクトリが開きます。`reconnect`、`enable`、`disable` の[サブコマンド](https://code.claude.com/docs/ja/commands.md#all-commands)は、セッションが対話型ターミナルで実行されている場合、どちらからでも動作します。サーバー名を指定しない `/mcp reconnect` は、失敗した、または認証が必要なすべてのサーバーを再試行します。ピッカーを使わずに claude.ai コネクタを認可するには、[シェルからコネクタを再度認可する](#authorize-a-connector-again-from-your-shell)を参照してください。
   * `/config`: モバイルアプリからは、`key=value` を渡して設定を変更するか、引数なしで実行して設定可能なキーを一覧表示します。Web では、`/config` は代わりに **Settings > Code** または **Settings > Claude Code** を開きます。
-  * Team と Enterprise では、モバイルや Web からの `/usage-credits` は[管理者への使用クレジットのリクエスト](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)を送信しません。送信には対話型 CLI でのみ表示される確認が必要なため、このコマンドは代わりにそちらで実行するよう案内します。
+  * 請求へのアクセス権を持たない Team または Enterprise のメンバーの場合、モバイルや Web からの `/usage-credits` は[管理者への使用クレジットのリクエスト](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)を送信しません。送信には対話型 CLI でのみ表示される確認が必要なため、このコマンドは代わりにそちらで実行するよう案内します。
   * `/autocompact`（v2.1.221 以降）: ウィンドウサイズを引数として渡します（例: `/autocompact 500k`）。引数なしの場合、ターミナルセッションでこのコマンドが表示するダイアログを開く代わりに、現在のウィンドウサイズをテキストとして出力します。
   * `/advisor`（v2.1.260 以降）: モデルを引数として渡すか（例: `/advisor opus`）、`off` を渡してアドバイザーをオフにします。どちらの形式も現在のセッションにのみ適用され、保存済みのデフォルトは変更されません。引数なしの場合、ピッカーを開く代わりに現在のアドバイザーをテキストとして出力します。
   * `/output-style`（v2.1.269 以降）: スタイル名を引数として渡すか（例: `/output-style concise`）、引数なしで実行してスタイルを一覧表示します。モバイルと Web からは、[組み込みスタイル](https://code.claude.com/docs/ja/output-styles.md#built-in-output-styles)のみを一覧表示・選択できます。[カスタムスタイル](https://code.claude.com/docs/ja/output-styles.md#create-a-custom-output-style)を使用するには、セッション自体で選択してください。
@@ -507,17 +508,16 @@ v2.1.281 より前では、この状態は `Remote Control is disabled by your o
 
 ### "Remote credentials fetch failed"
 
-Claude Code は、接続を確立するために Anthropic API から短期認証情報を取得できませんでした。`--verbose` で再実行して完全なエラーを確認してください。
+Claude Code は、接続を確立するために Anthropic API から短期認証情報を取得できませんでした。完全なエラーを確認するには、デバッグログを有効にしてシェルからセッションを開始し、ログ内で `code-session` を検索してください。
 
 ```bash theme={null}
-claude remote-control --verbose
+claude --remote-control --debug-file claude-debug.log
 ```
 
 一般的な原因：
 
-* サインインしていない：`claude` を実行して `/login` を使用して claude.ai アカウントで認証してください。API キー認証は Remote Control ではサポートされていません。
 * ネットワークまたはプロキシの問題：ファイアウォールまたはプロキシが送信 HTTPS リクエストをブロックしている可能性があります。Remote Control には、ポート 443 の Anthropic API へのアクセスが必要です。
-* セッション作成失敗：`Session creation failed — see debug log` も表示される場合、失敗はセットアップの前の段階で発生しました。サブスクリプションがアクティブであることを確認してください。
+* セッション作成失敗：`Session creation failed — see debug log` も表示される場合、失敗はセットアップの前の段階で発生しました。同じ検索を実行してエラーを見つけてください。
 
 ### "working folder not found"
 

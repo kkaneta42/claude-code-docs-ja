@@ -375,7 +375,8 @@ Claude Code がセッションをバックグラウンドにすると（約 10 �
 | `Ctrl+J` | ディスパッチ入力に改行を挿入 |
 | `Ctrl+X` | セッションを停止。2 秒以内に再度押して削除 |
 | `Shift+↑` / `Shift+↓` | 選択したセッションを並べ替え |
-| `Esc` | ピークパネルを閉じるか、入力をクリアするか、終了します。`←` でセッションをバックグラウンドにしてエージェントビューを開いた場合、最後の `Esc` は終了する代わりにその会話に戻ります。[vim エディターモード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode) がオンの場合、入力で `Esc` を押すと、メインプロンプトと同様に INSERT から NORMAL モードに切り替わり、テキストは保持されます |
+| `Esc` | ピークパネルを閉じるか、入力をクリアするか、終了します。Claude Code v2.1.323 以降では、プロンプトのクリアには 2 回の押下が必要です。`←` でセッションをバックグラウンドにしてエージェントビューを開いた場合、最後の `Esc` は終了する代わりにその会話に戻ります。[vim エディターモード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode) がオンの場合、入力で `Esc` を押すと、メインプロンプトと同様に INSERT から NORMAL モードに切り替わり、テキストは保持されます |
+| `Ctrl+Y` | ディスパッチ入力で、最後にクリアしたテキスト、または `Ctrl+K`、`Ctrl+U`、`Ctrl+W` で削除したテキストを復元します。エージェントビューが終了すると、そのテキストは失われます |
 | `Ctrl+C` | 入力をクリア。2 回押して終了。画面上のテキストが選択されている間は、代わりに選択を解除します。その際、[選択時に既にコピーされている](https://code.claude.com/docs/ja/settings-reference.md#copyonselect) 場合を除き、先に選択内容をコピーします |
 | `?` | ショートカットを表示 |
 
@@ -481,7 +482,7 @@ Claude Code がセッションをバックグラウンドにすると（約 10 �
 
 セッションをバックグラウンドに移動すると、進行中のバックグラウンド作業は種類ごとに、バックグラウンドセッションに引き継がれるか、Claude がそこで再起動した場合にのみ続行されるか、停止するかのいずれかになります。
 
-* **引き継がれるもの**: 実行中のバックグラウンドシェルコマンド、バックグラウンド化されたサブエージェント、[`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) で作成したスケジュールタスク、および Claude の [アーティファクトコメントへの自動返信](https://code.claude.com/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own) は、バックグラウンドセッションで実行を続けます。サブエージェントは自身が開始したすべてのものと一緒に移動するため、その作業のすべてが移動できる場合にのみ引き継がれます。
+* **引き継がれるもの**: 実行中のバックグラウンドシェルコマンド、バックグラウンド化されたサブエージェント、および [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) で作成したスケジュールタスクは、バックグラウンドセッションで実行を続けます。サブエージェントは自身が開始したすべてのものと一緒に移動するため、その作業のすべてが移動できる場合にのみ引き継がれます。
 * **Claude が再起動した場合にのみ続行されるもの**: 実行中の [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)。バックグラウンドセッションを確認したときにワークフローが続行されていない場合は、[Claude に再起動を依頼してください](#dynamic-workflows-when-you-background)。
 * **停止するもの**: 実行中の [モニター](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) など、バックグラウンドセッションに移動できない作業。そのような作業が実行中の場合、Claude Code は `Background this session?` ダイアログを表示し、作業を停止する前に確認できるようにします。モニターを所有するバックグラウンド化されたサブエージェントは、モニターと一緒に停止します。
 
@@ -901,11 +902,11 @@ Background sessions still running will stop in about a minute. Run 'claude agent
 
 ### バックグラウンド化が `Background this session?` ダイアログを表示する
 
-`←` を押してセッションをバックグラウンドに移すときに `Background this session?` ダイアログが表示される場合、そのセッションには、停止する、中断される、または無人で実行され続けることになる実行中のバックグラウンド作業があります：
+`←` を押してセッションをバックグラウンドに移すときに `Background this session?` ダイアログが表示される場合、そのセッションには、停止または中断されることになる実行中のバックグラウンド作業があります：
 
 * **移動できない作業**：セッションには、実行中の [モニター](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) など、バックグラウンドセッションに移動できない作業があります。ダイアログは Claude Code が停止するバックグラウンド作業を名前で表示し、転送されるタスクは別にカウントします。
 * **実行中のサブエージェントを持つワークフロー**：[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)にはまだ実行中のサブエージェントがあります。それでもバックグラウンド化すると、それらのサブエージェントは停止し、ダイアログはその数を表示します。Claude が[バックグラウンドセッションでワークフローを再起動する](#dynamic-workflows-when-you-background)と、それらのサブエージェントは最初からやり直します。
-* **自動アーティファクト返信**：Claude が[アーティファクトのコメントに自動で返信している](https://code.claude.com/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own)場合があります。これらの返信はバックグラウンドセッションで続行され、ダイアログはそのことを表示します。
+* **自動アーティファクト返信**：Claude が[アーティファクトのコメントに自動で返信している](https://code.claude.com/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own)場合があります。それでもバックグラウンド化すると、これらの返信は停止します。
 
 `/tasks` を実行してすべての実行中のものを確認し、確認してバックグラウンド化するか、`Stay` を選択して作業が完了するまで待機します。[バックグラウンドに移動するときに引き継がれるもの](#what-carries-over-when-you-background)を参照して、どのタスク種が引き継がれ、どのタスク種が Claude Code によって停止されるかを確認してください。
 
@@ -934,10 +935,10 @@ Claude はこの通知を確認して自動的に返信するため、プロン�
 
 ### セッションを開くと、会話が既に開いていると表示される
 
-2 つのプロセスが同じトランスクリプトに書き込むことはできません。停止したセッションの保存された会話が別の実行中の Claude Code プロセスで既に開いている場合、Claude Code はセッション自体のプロセスを開始することを拒否します。何が表示されるかは、会話を保持しているものによって異なります：
+これらのメッセージは、このマシン上の別の Claude Code プロセスが停止したセッションの保存された会話を開いているため、エージェントビューと `claude attach` がセッションを開かないことを意味します：
 
-* 例えば `claude --resume` または `/resume` で会話を再開したターミナル：行は `Open in a terminal` を表示し、そこで続行するというヒントが表示され、行を開くと `Can't open — this session is running in another terminal` が表示されます。そのターミナルで続行するか、終了して行を再度開きます。
-* 別の非インタラクティブ Claude Code プロセス（例えば、同じ会話のバックグラウンドセッションプロセスがまだ終了していない）：行を開くと `This conversation is already open in another running Claude session` が表示されます。そのプロセスを使用するか、終了するまで待機して行を再度開きます。
+* `Can't open — this session is running in another terminal`：`claude -p` の実行や、会話を再開したターミナルなど、別のプロセスが会話を開いています。そのターミナルで続行するか、そのプロセスを終了するか完了させてから、セッションを再度開いてください。
+* `This conversation is already open in another running Claude session`：別のバックグラウンドセッションが会話を開いています。そのセッションを使用するか、それを停止してからこのセッションを再度開いてください。
 
 Claude Code は拒否された試みで入力した返信を保存し（`!` または `/` で始まる返信を除く）、セッションが次に開始するときに送信します。
 
@@ -1055,6 +1056,7 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 
 | バージョン | 変更 |
 | - | - |
+| v2.1.323 | agent view の入力で [`Ctrl+Y`](#keyboard-shortcuts) を押すと、クリアしたテキストが復元されます。 |
 | v2.1.299 | [ディスパッチ入力での `/effort` と `/fast`](#set-the-model-effort-and-fast-mode) は、次にディスパッチするセッションの effort レベルと fast mode を設定します。値を指定せずに `/model`、`/effort`、`/fast` を入力すると、ピッカーが開きます。 |
 | v2.1.299 | Claude Code は、単独の `--` 区切りより前で、かつ別のフラグの値の外にある場合にのみ [`--bg` と `--background` をフラグとして読み取り](#from-your-shell)、曖昧な位置にある場合は推測せずに拒否します。このリリースより前は、バックグラウンドセッションへのプロンプトや返信としての `--bg` や `--background` がフラグと解釈されることがありました。その結果、テキストが配信されずに、新しいバックグラウンドセッションが何度も開始されることがありました。 |
 | v2.1.296 | [セッションがバックグラウンドに移動する際](#switch-sessions-without-leaving-the-terminal)に入力したプロンプトや `!` シェルコマンドは、停止されるか未送信のままになり、そのテキストはプロンプト履歴に保持されます。このリリースより前は、応答やコマンドが見えない場所で実行され続け、`←` の直後に送信したプロンプトが見えないまま 2 回実行されることがありました。また、`SessionStart` フックの実行中に入力したプロンプトは失われ、送信されず、プロンプト履歴にも残りませんでした。 |
@@ -1102,7 +1104,7 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
 | v2.1.246 | `/fork` は、それ自体がコピーとして開始され、その後新しいプロンプトを記録していないセッションからも[会話全体をコピーします](#copy-the-session-with-%2Ffork)。このようなセッションには、アタッチした `/fork` のコピー、`←` または `/background` でバックグラウンドに移動した後に再アタッチしたセッション、`claude --resume <id> --fork-session` で開始したセッションがあります。このリリースより前は、そのようなセッションで新しいプロンプトを送信する前に `/fork` を実行すると、Claude Code は通常の確認を出力するものの、空の会話でコピーを開始していました。そのようなセッションを `←` または `/background` でバックグラウンドに移動した場合も、同様に会話が失われていました。 |
 | v2.1.246 | ディスパッチした直後のセッションを、ワーカープロセスの起動中に開いた場合（行で `Enter` を押した場合など）、Claude Code はプロセスの起動を待ってからアタッチします。このリリースより前は、プロセスの起動中に `Enter` を押すと、Claude Code が [`Session <id> was stopped while the respawn was in flight`](https://code.claude.com/docs/ja/errors#session-was-stopped-while-the-respawn-was-in-flight) でセッションを停止することがありました。 |
 | v2.1.246 | 名前付きセッションを[バックグラウンド化する](#from-inside-a-session)と、Claude Code はそれを 1 回だけ一覧に表示し、同じ会話を再度バックグラウンド化した場合は、既存の行の名前はそのままで、新しい行の名前に `my-session (2)` のように番号を付けます。このリリースより前は、`←` を押したターミナルが同じ名前の 2 つ目のセッションとして `claude agents --json` に表示されることがあり、同じ会話を再度バックグラウンド化すると、Claude Code はまったく同じ名前で別の行を追加していました。 |
-| v2.1.239 | [vim エディターモード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)がオンの場合、agent view の入力で `Esc` を押すと、メインプロンプトと同様にテキストを保持したまま INSERT モードから NORMAL モードに切り替わります。[`Esc` ショートカット](#keyboard-shortcuts)の説明どおり、NORMAL モードで入力にテキストが残っている場合は `Esc` でクリアされ、入力が空の場合は `Esc` で終了します。このリリースより前は、`Esc` で入力がクリアされていました。 |
+| v2.1.239 | [vim エディターモード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)がオンの場合、agent view の入力で `Esc` を押すと、メインプロンプトと同様にテキストを保持したまま INSERT モードから NORMAL モードに切り替わります。このリリースより前は、`Esc` で入力がクリアされていました。 |
 | v2.1.233 | GitLab マージリクエストにリンクされたセッションでは、Claude Code は行のラベルを GitLab の `!1234` 参照構文で表記します。マージリクエストの URL を[ディスパッチ入力](#filter-sessions)に貼り付けて、そのセッションを選択することもできます。このリリースより前は、ラベルは `#1234` と表示され、貼り付けたマージリクエストの URL は、最初のプロンプトにその URL が含まれるセッションにのみ一致していました。 |
 | v2.1.227 | 別の実行中の Claude Code セッションがその worktree ディレクトリ内で動作している間は、[セッションを削除](#what-deleting-a-session-removes)してもセッションとその worktree が保持されます。agent view では行に `not deleted` が、フッターに理由が表示され、`claude rm` は `kept <id>` と理由を出力します。理由には他のセッションのプロセス ID が示されます。このリリースより前は、他のセッションがまだ worktree 内で作業しているにもかかわらず、セッションを削除すると worktree が削除されていました。 |
 | v2.1.225 | 信頼していないディレクトリで `claude agents` を実行すると、agent view が開く前に、`claude` の起動時と同じ[ワークスペースの信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)が表示されます。承諾するとそのワークスペースの信頼が保存され、拒否すると agent view を開かずに終了します。このリリースより前は、`claude agents` は確認なしで開いたため、そこからディスパッチしたセッションは、信頼を一度も求められていないディレクトリで実行されていました。 リストがディレクトリ別にグループ化されている場合、行にマウスを重ねるとハイライトされますが、[ディスパッチ先](#dispatch-to-a-specific-directory)は変わりません。矢印キーまたはクリックで行を選択すると、引き続きディスパッチ先が変わります。このリリースより前は、別のプロジェクトのセッションにマウスを重ねるだけで、次にディスパッチするセッションの開始ディレクトリが気付かないうちに変わっていました。 |

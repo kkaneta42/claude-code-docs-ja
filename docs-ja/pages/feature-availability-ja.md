@@ -4,7 +4,7 @@
 
 # 機能の利用可能性
 
-> Anthropic のサブスクリプションプラン、Anthropic Console、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry 全体で利用可能な Claude Code 機能を比較します。
+> Anthropic の各サブスクリプションプラン、Anthropic Console、および Amazon Bedrock や Google Cloud などのクラウドプロバイダーで利用可能な Claude Code 機能を比較します。
 
 Claude Code CLI とローカルで実行されるすべてのものは、すべてのプロバイダーで同じように動作します。プロバイダーごとのセットアップ手順については、[エンタープライズデプロイメント概要](https://code.claude.com/docs/ja/third-party-integrations.md)を参照してください。プロバイダーで不足している機能に直接進みたい場合は、[プロバイダー別サマリー](#summary-by-provider)タブを参照してください。
 
@@ -18,7 +18,8 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 * **Anthropic Console**：Anthropic API キーで認証しているか、[API キーなしで Console アカウントにサインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)している場合
 * **Amazon Bedrock**：Amazon Bedrock のモデルカタログから Claude モデルを使用し、`CLAUDE_CODE_USE_BEDROCK` を設定している場合。[Mantle エンドポイント](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)（`CLAUDE_CODE_USE_MANTLE`）もこの列に含まれます
 * **Claude Platform on AWS**：AWS Marketplace を通じて Claude を購入しているものの Anthropic API を呼び出しており、`CLAUDE_CODE_USE_ANTHROPIC_AWS` を設定している場合
-* **Google Cloud's Agent Platform**：Google が運営。`CLAUDE_CODE_USE_VERTEX` を設定します
+* **Google Cloud（Anthropic 管理）**：[Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md) を使用し、`CLAUDE_CODE_USE_ANTHROPIC_GOOGLE_CLOUD` を設定している場合。Google Cloud プロジェクトを通じて、Anthropic が運営する Claude API にアクセスします。2 つの Google Cloud のサービスを見分けるには、[どちらのサービスを使用していますか？](https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/overview#which-offering-are-you-using)を参照してください
+* **Google Cloud（Google 管理）**：Google Cloud の Agent Platform（旧 Vertex AI）の一部として Google が運営。`CLAUDE_CODE_USE_VERTEX` を設定し、Claude Models on Google Cloud (Google managed) を使用します
 * **Microsoft Foundry**：Anthropic が運営。`CLAUDE_CODE_USE_FOUNDRY` を設定します
 
 ### すべてのプロバイダーで利用できる機能
@@ -34,10 +35,10 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 
 次の機能にはプロバイダー固有の違いがあります。
 
-* **MCP サーバー**：[claude.ai のコネクタ](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)は、claude.ai サブスクリプションが有効な認証方法である場合にのみ読み込まれます。[ツール検索](https://code.claude.com/docs/ja/mcp.md#configure-tool-search)は、Microsoft Foundry の [Azure でホストされるデプロイ](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)ではサポートされていません。Google Cloud's Agent Platform では、Claude Opus 4.5、Claude Sonnet 4.5、Claude Haiku 4.5 より前のモデルではツール検索がサポートされていません
+* **MCP サーバー**：[claude.ai のコネクタ](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai)は、claude.ai サブスクリプションが有効な認証方法である場合にのみ読み込まれます。[ツール検索](https://code.claude.com/docs/ja/mcp.md#configure-tool-search)は、Microsoft Foundry の [Azure でホストされるデプロイ](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)ではサポートされていません。Google Cloud（Google 管理）では、Claude Opus 4.5、Claude Sonnet 4.5、Claude Haiku 4.5 より前のモデルではツール検索がサポートされていません
 * **サブエージェント**：親の会話で Fable を実行している場合、組み込みの [Explore サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#built-in-subagents)は、Claude サブスクリプション、Anthropic Console アカウント、または `ANTHROPIC_BASE_URL` 経由で接続する [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を使用している場合は Opus で実行されます。Claude Platform on AWS を含むその他のプロバイダーでは、Fable で実行されます
 * **[コマンド](https://code.claude.com/docs/ja/commands.md#all-commands)**：
-  * `/design-sync` と、`claude import` サブコマンド形式を持つ `/import` は、Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry、Claude Platform on AWS、および [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway#availability-and-limitations)経由では利用できません
+  * `/design-sync` と、`claude import` サブコマンド形式を持つ `/import` は、クラウドプロバイダー上および [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway#availability-and-limitations)経由では利用できません
   * `/voice` には claude.ai アカウントが必要です
   * `/list-agents` とそのエイリアス `/peers` は、[セッション間メッセージングが有効になっている](https://code.claude.com/docs/ja/cross-session-messaging.md#availability)セッションでのみ利用できます
 
@@ -71,7 +72,8 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <th>Anthropic Console</th>
       <th>Amazon Bedrock</th>
       <th>Claude Platform on AWS</th>
-      <th>Google Cloud's Agent Platform</th>
+      <th>Google Cloud（Anthropic 管理）</th>
+      <th>Google Cloud（Google 管理）</th>
       <th>Microsoft Foundry</th>
     </tr>
   </thead>
@@ -83,6 +85,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✓</td>
       <td>✗</td>
       <td>✓</td>
+      <td>✓</td>
       <td>注を参照 <sup>[1](#fn1)</sup></td>
       <td>✓</td>
     </tr>
@@ -91,6 +94,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>[fast mode](https://code.claude.com/docs/ja/fast-mode.md)</td>
       <td>✓（Team および Enterprise では [Owner による有効化](https://code.claude.com/docs/ja/fast-mode.md#enable-fast-mode-for-your-organization)が必要）</td>
       <td>✓（Opus 5 および 4.8 ではプロビジョニングが必要）</td>
+      <td>✗</td>
       <td>✗</td>
       <td>✗</td>
       <td>✓（[Fable 5.2、条件付き](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-on-agent-platform)）</td>
@@ -103,6 +107,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✓</td>
       <td>注を参照 <sup>[2](#fn2)</sup></td>
       <td>✓</td>
+      <td>✓</td>
       <td>注を参照 <sup>[2](#fn2)</sup></td>
       <td>注を参照 <sup>[2](#fn2)</sup></td>
     </tr>
@@ -112,6 +117,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✓</td>
       <td>✓</td>
       <td>✗</td>
+      <td>✓（Claude Code v2.1.300 以降）</td>
       <td>✓（Claude Code v2.1.300 以降）</td>
       <td>✗</td>
       <td>✗</td>
@@ -125,11 +131,13 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✗</td>
       <td>✗</td>
       <td>✗</td>
+      <td>✗</td>
     </tr>
 
     <tr>
       <td>[セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)</td>
       <td>✓ <sup>[5](#fn5)</sup></td>
+      <td>✓（同一マシン） <sup>[5](#fn5)</sup></td>
       <td>✓（同一マシン） <sup>[5](#fn5)</sup></td>
       <td>✓（同一マシン） <sup>[5](#fn5)</sup></td>
       <td>✓（同一マシン） <sup>[5](#fn5)</sup></td>
@@ -145,6 +153,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✗</td>
       <td>✗</td>
       <td>✗</td>
+      <td>✗</td>
     </tr>
 
     <tr>
@@ -153,12 +162,14 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✓</td>
       <td>✓</td>
       <td>✗</td>
+      <td>✗</td>
       <td>✓</td>
       <td>✓</td>
     </tr>
 
     <tr>
       <td>[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md)</td>
+      <td>✓</td>
       <td>✓</td>
       <td>✓</td>
       <td>✓</td>
@@ -181,7 +192,8 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <th>Anthropic Console</th>
       <th>Amazon Bedrock</th>
       <th>Claude Platform on AWS</th>
-      <th>Google Cloud's Agent Platform</th>
+      <th>Google Cloud（Anthropic 管理）</th>
+      <th>Google Cloud（Google 管理）</th>
       <th>Microsoft Foundry</th>
     </tr>
   </thead>
@@ -191,6 +203,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>[分析ダッシュボードと API](https://code.claude.com/docs/ja/analytics.md)</td>
       <td>✓（ダッシュボード：Team および Enterprise、API：Enterprise）</td>
       <td>✓ <sup>[4](#fn4)</sup></td>
+      <td>✗</td>
       <td>✗</td>
       <td>✗</td>
       <td>✗</td>
@@ -205,6 +218,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✗</td>
       <td>✗</td>
       <td>✗</td>
+      <td>✗</td>
     </tr>
 
     <tr>
@@ -213,13 +227,14 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>✓（条件を満たすアカウント）</td>
       <td>注を参照 <sup>[3](#fn3)</sup></td>
       <td>✓（条件を満たすアカウント）</td>
+      <td>✓（リクエストに応じて）</td>
       <td>注を参照 <sup>[3](#fn3)</sup></td>
       <td>注を参照 <sup>[3](#fn3)</sup></td>
     </tr>
   </tbody>
 </table>
 
-<sup>1</sup> Google Cloud's Agent Platform では、Web 検索は Opus 4、Sonnet 4、Haiku 4.5 以降のモデルで利用できます。\
+<sup>1</sup> Google Cloud（Google 管理）では、Web 検索は Opus 4、Sonnet 4、Haiku 4.5 以降のモデルで利用できます。\
 
 <sup>2</sup> これらのプロバイダーでは、auto モードは Claude Sonnet 5 以降、Opus 4.7 以降、Haiku 5.5、および Fable モデルのみをサポートします。[auto モードの設定](https://code.claude.com/docs/ja/auto-mode-config.md)を参照してください。これらのプロバイダーでセッションがどの権限モードで開始されるかについては、[セッションが開始されるモード](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)を参照してください。\
 
@@ -227,7 +242,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 <sup>4</sup> ダッシュボードと API のみです。[コントリビューションメトリクス](https://code.claude.com/docs/ja/analytics.md#enable-contribution-metrics)には claude.ai の Team または Enterprise 組織が必要です。\
 
-<sup>5</sup> macOS および Linux（WSL 2 内の Linux を含む）では Claude Code v2.1.224 以降が必要です。ネイティブの Windows では Claude Code v2.1.234 以降が必要です。API キー認証の場合、メッセージングは同一マシン内に限られます。Amazon Bedrock、Claude Platform on AWS、Google Cloud's Agent Platform、Microsoft Foundry では、メッセージングは同一マシン内に限られ、Claude Code v2.1.248 以降が必要です。Claude が[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)や他のマシン上のセッションを見つけられるのは、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) に接続されたセッションからのみです。接続するには、claude.ai でのサインインと、その他の [Remote Control の要件](https://code.claude.com/docs/ja/remote-control.md#requirements)を満たす必要があります。[他のマシン上のセッションにメッセージを送る](https://code.claude.com/docs/ja/cross-session-messaging.md#message-sessions-on-other-machines)を参照してください。
+<sup>5</sup> macOS および Linux（WSL 2 内の Linux を含む）では Claude Code v2.1.224 以降が必要です。ネイティブの Windows では Claude Code v2.1.234 以降が必要です。API キー認証の場合、メッセージングは同一マシン内に限られます。Amazon Bedrock、Claude Platform on AWS、Google Cloud（Anthropic 管理）、Google Cloud（Google 管理）、Microsoft Foundry では、メッセージングは同一マシン内に限られ、Claude Code v2.1.248 以降が必要です。Claude が[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)や他のマシン上のセッションを見つけられるのは、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) に接続されたセッションからのみです。接続するには、claude.ai でのサインインと、その他の [Remote Control の要件](https://code.claude.com/docs/ja/remote-control.md#requirements)を満たす必要があります。[他のマシン上のセッションにメッセージを送る](https://code.claude.com/docs/ja/cross-session-messaging.md#message-sessions-on-other-machines)を参照してください。
 
 > [!NOTE]
 >
@@ -237,7 +252,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 ### プロバイダー別の概要
 
-各タブには、そのプロバイダーで利用できない機能や部分的にサポートされている機能と、代替手段がある場合はその代替手段を記載しています。記載されていないものは、上記の[プロバイダー固有の違い](#features-available-on-every-provider)を除き、Claude サブスクリプションと同じように動作します。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry、Claude Platform on AWS では、Anthropic へのエラーレポートとテレメトリはデフォルトでオフになっています。それでも Anthropic に送信される通信と、オプトアウトの方法については、[API プロバイダー別のデフォルトの動作](https://code.claude.com/docs/ja/data-usage.md#default-behaviors-by-api-provider)を参照してください。
+各タブには、そのプロバイダーで利用できない機能や部分的にサポートされている機能と、代替手段がある場合はその代替手段を記載しています。[プロバイダー固有の違い](#features-available-on-every-provider)も参照してください。Amazon Bedrock、Google Cloud（Google 管理）、Microsoft Foundry、Claude Platform on AWS では、Anthropic へのエラーレポートとテレメトリはデフォルトでオフになっています。それでも Anthropic に送信される通信と、オプトアウトの方法については、[API プロバイダー別のデフォルトの動作](https://code.claude.com/docs/ja/data-usage.md#default-behaviors-by-api-provider)を参照してください。
 
 > [tab] Amazon Bedrock
 >
@@ -264,7 +279,22 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 >
 > \*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。クラウドセッションの代わりには、[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用します。
 
-> [tab] Google Cloud's Agent Platform
+> [tab] Google Cloud（Anthropic 管理）
+>
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[Code Mode](https://code.claude.com/docs/ja/code-mode.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+>
+> \*\*Google Cloud（Google 管理）では利用できないが、こちらでは利用可能：\*\*Claude Code v2.1.300 以降での [Advisor](https://code.claude.com/docs/ja/advisor.md)。
+>
+> **部分的なサポート：**
+>
+> * [セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)：このマシン上の自分のセッション間のみ <sup>[5](#fn5)</sup>
+> * [Zero Data Retention](https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/anthropic-managed#data-retention)：リクエストに応じて利用可能です。Anthropic のアカウント担当者にお問い合わせください
+>
+> \*\*代替手段：\*\*スケジュール設定には、`/schedule` の代わりに [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) を使用します。
+
+> [tab] Google Cloud（Google 管理）
+>
+> Google Cloud の Agent Platform で Claude Code を使用するために `CLAUDE_CODE_USE_VERTEX` を設定している場合は、このプロバイダーを使用しています。
 >
 > \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[Code Mode](https://code.claude.com/docs/ja/code-mode.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
@@ -304,7 +334,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 ## サブスクリプションプラン別の利用可能性
 
-Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または Anthropic Console API キーを通じて認証する場合、このセクションは適用されません。claude.ai アカウントでサインインすると、プランによって以下の機能の利用可能性が決まります。
+クラウドプロバイダーまたは Anthropic Console API キーを通じて認証する場合、このセクションは適用されません。claude.ai アカウントでサインインすると、プランによって以下の機能の利用可能性が決まります。
 
 [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md)が適用されている Enterprise 組織では、この表の一部の機能が無効になります。
 
@@ -345,5 +375,5 @@ Claude Code では、Max と Ultra の機能は同じであり、[利用可能�
 ## 関連リソース
 
 * [エンタープライズデプロイメント概要](https://code.claude.com/docs/ja/third-party-integrations.md)：プロバイダー全体で認証、請求、およびリージョンを比較
-* プロバイダーセットアップガイド：[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)
+* プロバイダーセットアップガイド：[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、[Claude Models on Google Cloud（Anthropic managed）](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)
 * [プラットフォームと統合](https://code.claude.com/docs/ja/platforms.md)：CLI、Desktop、IDE 拡張機能、Web、モバイル、CI/CD を含む Claude Code が実行される場所

@@ -66,7 +66,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 
 ### フックがどのように解決されるか
 
-イベント、matcher、ハンドラーがどのように組み合わさるかを理解するために、破壊的なシェル コマンドをブロックする次の `PreToolUse` フックを考えてみましょう。
+イベント、matcher、ハンドラーがどのように組み合わさるかを理解するために、`rm -rf` コマンドをブロックする次の `PreToolUse` フックを考えてみましょう。
 
 > [tab] macOS/Linux
 >
@@ -440,7 +440,7 @@ Monitor コマンドに対して実行されるフックは、そのコマンド
 | `Bash(rm *)` | `echo $(date)` | いいえ | サブコマンドが `rm *` にマッチしません |
 | `Bash(git push *)` | `echo $(date)` | はい | コマンド名以上を指定するパターンは、`$()`、バッククォート、または `$VAR` でとにかくフックを実行します |
 
-Bash 入力がどのコマンドを実行するかを Claude Code が判断できない場合、パターンに関係なくフックを実行します。`if` フィルターはベストエフォートであるため、ハードな許可または拒否を強制するには、フックではなく[権限システム](https://code.claude.com/docs/ja/permissions.md)を使用してください。
+Claude Code が Bash 入力をサブコマンドに分割できない場合、パターンに関係なくフックを実行します。`if` フィルターはベストエフォートであるため、ハードな許可または拒否を強制するには、フックではなく[権限システム](https://code.claude.com/docs/ja/permissions.md)を使用してください。
 
 #### コマンド フック フィールド
 
@@ -691,7 +691,7 @@ hooks:
     - matcher: "Bash"
       hooks:
         - type: command
-          command: "./scripts/security-check.sh"
+          command: '"${CLAUDE_PROJECT_DIR}"/scripts/security-check.sh'
 ---
 ```
 
@@ -825,13 +825,13 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 
 終了 0 は成功を意味し、構造化制御のために JSON を出力する場合に想定される終了コードです。フックが 0 で終了しても、解析できない JSON や[スキーマ検証](#json-output)に失敗する JSON を出力した場合、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、アクションは進行します。その実行は、フィールドが適用された成功ではなく、[非ブロッキング エラー](#exit-code-output)になります。
 
-出力を修正するには、`<hook name> hook error` 通知に含まれる解析または検証のメッセージを使用してください。[非同期](#how-async-hooks-execute)でないフックの場合、stdout が [JSON 出力](#json-output)として扱われるのは、1 行または複数行にわたる 1 つの JSON オブジェクトを、前後に空白以外何もない状態で出力した場合のみです。Claude Code はそれ以外の stdout をプレーン テキストまたは解析失敗として読み取ります。
+`<hook name> hook error` 通知にパースまたは検証のメッセージが含まれている場合は、それを使って出力を修正してください。[非同期](#how-async-hooks-execute)ではないフックの場合、stdout が [JSON 出力](#json-output)として扱われるのは、JSON オブジェクトを 1 つだけ出力し（1 行でも複数行でもかまいません）、その前後に空白以外が何もない場合に限られます。Claude Code はそれ以外の stdout をプレーンテキストまたはパース失敗として読み取ります：
 
 * **`{` で始まらない出力、または `{` で始まり `}` で終わらない出力**: プレーン テキストとして扱われます。このルールにより、JSON 配列や引用符で囲まれた JSON 文字列はプレーン テキストになります。
 * **それぞれが単独で JSON として解析できる 2 行以上の出力で、最初の行が `{` で始まり最後の行が `}` で終わるもの**: フィールドを設定する JSON 出力オブジェクトである行がない場合はプレーン テキストになります。そのような行がある場合、出力は解析失敗になるため、そのオブジェクトだけを stdout に出力してください。
 * **`{` で始まり `}` で終わるが有効な JSON ではないその他の出力**: 解析失敗になります。
 
-ほとんどのイベントでは、Claude Code は stdout をデバッグ ログに書き込み、トランスクリプトには表示しません。次のイベントでは、stdout は Claude またはコンテキスト圧縮の要約に届きます。
+次のイベントでは、プレーン テキストの stdout が Claude またはコンテキスト圧縮の要約に届きます。
 
 * **`UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch`**: Claude Code はプレーン テキストの stdout を Claude が見て行動できるコンテキストとして追加します。解析に失敗した stdout は追加しません。
 * **`PreCompact`**: stdout は[コンテキスト圧縮の要約に対する指示](#precompact-output)になります
@@ -873,7 +873,7 @@ PreToolUse:Bash hook error: [${CLAUDE_PROJECT_DIR}/.claude/hooks/no-rm.sh]: Bloc
 
 #### その他の終了コード
 
-`Failed with non-blocking status code:` を含む `<hook name> hook error` 通知は、フックの終了コードが 0 でも 2 でもなく、stdout がプレーン テキストまたは空だったことを意味します。[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)でない限り、これは[非ブロッキング エラー](#exit-code-output)であるため、フックはアクションを停止していません。通知に表示される最初の行だけでなくフックの完全な stderr を取得するには、[デバッグ ログ](#debug-hooks)を有効にしてください。
+`Failed with non-blocking status code:` を含む `<hook name> hook error` 通知は、フックの終了コードが 0 でも 2 でもなく、stdout がプレーン テキストまたは空だったことを意味します。これは[非ブロッキング エラー](#exit-code-output)であるため、フックはアクションを停止していません。通知で stderr が途中で切れている場合は、[フックのデバッグ](#debug-hooks)の説明に従ってデバッグ ログを有効にし、フックを再実行してください。
 
 例えば、`Bash` の `PreToolUse` フックが stderr に `something broke` を出力して 1 で終了した場合、`PreToolUse:Bash hook error` 通知には次の行が含まれます。
 
@@ -1097,9 +1097,9 @@ JSON オブジェクトは 3 種類のフィールドをサポートしていま
 
 | フィールド | デフォルト | 説明 |
 | :- | :- | :- |
-| `continue` | `true` | `false` の場合、フックが実行された後、Claude は完全に処理を停止します。イベント固有の決定フィールドよりも優先されます |
+| `continue` | `true` | `false` の場合、フックが実行された後、Claude は完全に処理を停止します。`PreToolUse` のツール呼び出しはブロックしないため、ブロックするには `permissionDecision: "deny"` も返してください |
 | `stopReason` | なし | `continue` が `false` のときにユーザーに表示されるメッセージ。会話に残るため、会話が続行された場合は Claude にも表示されます |
-| `suppressOutput` | `false` | 効果はありません。Claude Code はこのフィールドを受け入れますが、それに基づいて動作しません。成功したフックの stdout はトランスクリプトに表示されることはなく、デバッグ ログに記録されます |
+| `suppressOutput` | `false` | 効果はありません |
 | `systemMessage` | なし | ユーザーに表示される警告メッセージ。[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) および [`--output-format stream-json`](https://code.claude.com/docs/ja/headless) の出力では、[`SDKInformationalMessage`](https://code.claude.com/docs/ja/agent-sdk/typescript#sdkinformationalmessage) として届く場合があります |
 | `terminalSequence` | なし | Claude Code が代わりに発行するターミナル エスケープ シーケンス（デスクトップ通知、ウィンドウ タイトル、ベルなど）。OSC `0`/`1`/`2`/`9`/`99`/`777` と BEL に制限されます。値に許可リスト外のものが含まれている場合、フィールドは無視されます。フックでは利用できない `/dev/tty` への書き込みの代わりにこれを使用してください |
 
@@ -1109,7 +1109,7 @@ Claude を完全に停止するには、次のようにします。
 { "continue": false, "stopReason": "Build failed, fix errors before continuing" }
 ```
 
-`PreToolUse` および `PostToolUse` フックの場合、Claude がまだ応答をストリーミングしている間にツール呼び出しが失敗または完了した場合でも、停止が適用されます。
+`PreToolUse` および `PostToolUse` フックの場合、Claude がまだ応答をストリーミングしている間にツール呼び出しが失敗または完了した場合でも、停止が適用されます。権限チェックが `PreToolUse` の呼び出しを拒否した場合は適用されません。
 
 #### ターミナル通知を発行
 
@@ -1220,7 +1220,7 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 * `PostToolUse`: `updatedToolOutput` はツールの結果を置き換えます。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでは、ツールが `AskUserQuestion` または `ExitPlanMode` の場合、Claude Code は `updatedToolOutput` を無視し、Claude は元の回答またはプランを読み取ります。[PostToolUse 決定制御](#posttooluse-decision-control)を参照してください
 * `UserPromptSubmit`: プロンプトを置き換えることはできません。`additionalContext` をそれと一緒に注入するだけです
 
-秘匿化や変換のユースケースの場合、アウトバウンド ツール入力の場合は `PreToolUse` で、インバウンド ツール結果の場合は `PostToolUse` で傍受します。
+秘匿化や変換のユースケースの場合、アウトバウンド ツール入力は `PreToolUse` で、成功した呼び出しの結果は `PostToolUse` で傍受します。`PostToolUseFailure` は結果を書き換えられないため、失敗したコマンドの出力はそのまま Claude に届きます。
 
 各パターンの実行例を以下に示します。
 
@@ -3375,7 +3375,6 @@ Claude Code は、WorktreeCreate が返したパスをフックの入力の `wor
 
 結果は WorktreeRemove フックの終了コードによって決まります。フックが 0 以外で終了し、その後も `worktree_path` のディレクトリが存在している場合、削除は失敗します。
 
-* worktree はディスク上に残り、フックのコマンドと stderr は[デバッグログ](#debug-hooks)に記録されます。
 * バックグラウンドセッションを削除しようとしていた場合は、セッションも残ります。[エージェントビュー](https://code.claude.com/docs/ja/agent-view.md#what-deleting-a-session-removes)の拒否メッセージには、`exited 1` のようにフックがどのように終了したかが示され、stderr の冒頭が引用され、セッションを再度削除した場合にディレクトリが強制的に削除されるかどうかが示されます。
 * `claude remote-control` がセッションの worktree をクリーンアップしていた場合は、それを実行しているターミナルに `worktree removal failed, kept: <path>` と表示されます。
 
@@ -3778,8 +3777,6 @@ Elicitation フックは、ユーザーの代わりにリクエストに回答�
   }
 }
 ```
-
-ダイアログでは、**Decline** を選択すると `decline` が送信され、`Esc` を押すと `cancel` が送信されます。サーバーに見せたいほうを返してください。
 
 URL モードのリクエストでは、`accept` を返すフックはダイアログをスキップするため、URL は開かれません。
 

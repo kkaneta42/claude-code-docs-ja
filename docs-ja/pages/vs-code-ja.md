@@ -304,6 +304,7 @@ v2.1.257 より前は、このアクションは **Delete session** で、セッ
 * 拡張機能が `claudeCode.initialPermissionMode` から、または以前の会話から引き継がれた選択から[開始時の権限モードを選択する](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)場合
 * `claudeCode.claudeProcessWrapper` を設定している場合
 * [拒否ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)によって [`ExitPlanMode`](https://code.claude.com/docs/ja/tools-reference) ツールが除外されている場合
+* [`permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/ja/settings-reference#permissions-denyinsteadofprompting) がオンになっている場合
 
 #### 会話がまだ別の場所で開かれている場合
 
@@ -605,6 +606,20 @@ summarize the changes I've made to the auth module
 
 会話が worktree に移動するのは、たとえば [Claude に worktree で作業するよう依頼した](https://code.claude.com/docs/ja/worktrees.md#ask-claude-to-create-a-worktree)場合です。会話を再度開いたとき、またはパネルが[ウィンドウの再読み込み後に会話を再度開いた](#continue-conversations-after-a-reload)とき、Claude Code がその worktree を `.claude/worktrees/` 配下に作成しており、かつそれがまだ存在する場合は、会話は worktree 内で再開されます。Claude Code v2.1.300 より前のバージョンでは、代わりに空の会話が開かれていました。これらのバージョンを使用している場合は、拡張機能を更新してください。
 
+## Jupyter ノートブックを操作する
+
+Claude Code は [NotebookEdit ツール](https://code.claude.com/docs/ja/tools-reference.md#notebookedit-tool-behavior)を使用してノートブックを編集します。
+
+### 編集したセルを再実行する
+
+Claude がコードセルを置き換えると、ファイル内のセルのソースが書き換えられ、セルに保存されている出力と実行カウントがクリアされます。
+
+この編集にカーネルの再起動は必要ありません。NotebookEdit はファイルに書き込むだけで、カーネルには接続しないためです。そのセルと、そのセルで定義された関数や変数を使用するセルをすべて再実行してください。
+
+### 編集前にノートブックを保存する
+
+編集を依頼する前にノートブックを保存してください。拡張機能の [`autosave` 設定](#extension-settings)は、NotebookEdit の実行前には保存を行いません。
+
 ## バックグラウンドで作業を実行する
 
 長時間実行されるコマンドやサブエージェントをバックグラウンドに送り、プロンプトボックスから状況を確認します。
@@ -736,7 +751,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | `initialPermissionMode` | - | 新しい会話の承認プロンプトを制御します：`default`、`plan`、`acceptEdits`、または `bypassPermissions`。`manual` は `default` のエイリアスで、モードインジケーターで **Manual** と表示されるモードを選択します。未設定のままにすると、拡張機能は[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)で説明されているとおりに開始時の権限モードを選択します。 |
 | `preferredLocation` | `panel` | Claude を開く場所：`sidebar`（右側）または `panel`（新しいタブ） |
 | `lockEditorGroups` | `true` | [Claude がタブ用に開始したエディターグループをロック](#choose-where-claude-lives)し、Claude タブにフォーカスがある間に開いたファイルが別のグループで開くようにします。オフにすると、拡張機能はエディターグループを一切ロックしません。Claude Code v2.1.274 以降が必要です |
-| `autosave` | `true` | Claude がファイルを読み書きする前にファイルを自動保存します |
+| `autosave` | `true` | Read、Edit、Write ツールが実行される前にファイルを自動保存します |
 | `attachOpenFile` | `true` | エディターで開いているファイルをメッセージに追加し、プロンプトボックスに表示します。オフにすると、ファイルはテキストを選択した場合にのみ、そのテキストと一緒に追加されます。Claude Code v2.1.271 以降が必要です |
 | `attachSelection` | `true` | エディターで選択したテキストをメッセージに追加し、プロンプトボックスに表示します。オフにしても、[選択範囲を @-メンションとして追加](#automatic-context-from-your-selection-and-open-file)することはできます。Claude Code v2.1.300 以降が必要です |
 | `useCtrlEnterToSend` | `false` | プロンプトの送信に Enter の代わりに Ctrl/Cmd+Enter を使用します |

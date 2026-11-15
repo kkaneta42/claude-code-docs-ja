@@ -48,6 +48,7 @@ ZDR は、ZDR が有効化されている組織であっても、以下には適
 | claude.ai 上のチャット | Claude for Enterprise ウェブインターフェース経由のチャット会話は ZDR でカバーされません。 |
 | Cowork | Cowork セッションは ZDR でカバーされません。 |
 | アーティファクト | チャット会話および Cowork セッション内のアーティファクトは ZDR でカバーされず、組織がアーティファクトの保持期間を設定しない限り、削除されるまで保持されます。ZDR を使用する Claude Code ではアーティファクトは利用できません。 |
+| Claude in Chrome | [Claude in Chrome](https://support.claude.com/en/articles/13065128-claude-in-chrome-admin-controls) ブラウザ拡張機能は ZDR でカバーされません。ZDR を使用する Claude Code では[利用できません](https://code.claude.com/docs/ja/chrome.md#chrome-availability-with-hipaa-or-zero-data-retention)が、組織が許可している場合、メンバーは Claude Code の外部で引き続き使用できます。 |
 | Claude Code Analytics | プロンプトまたはモデル応答を保存しませんが、アカウントメールや使用統計などの生産性メタデータを収集します。貢献メトリクスは ZDR 組織では利用できません。[analytics ダッシュボード](https://code.claude.com/docs/ja/analytics.md)は使用メトリクスのみを表示します。 |
 | ユーザーとシート管理 | アカウントメールやシート割り当てなどの管理データは標準ポリシーの下で保持されます。 |
 | サードパーティ統合 | サードパーティツール、MCP servers、またはその他の外部統合によって処理されたデータは ZDR でカバーされません。これらのサービスのデータ処理慣行を独立して確認してください。 |

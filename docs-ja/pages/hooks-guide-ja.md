@@ -593,10 +593,8 @@ exit 0  # exit 0 = no decision; the normal permission flow applies
 
 * **終了コード 0**：`PreToolUse` フックから終了コード 0 で終了した場合でも、ツール呼び出しは通常の [権限フロー](https://code.claude.com/docs/ja/permissions.md) を経由します。終了コード 0 はツール呼び出しを承認するものではないためです。`UserPromptSubmit`、`UserPromptExpansion`、`SessionStart`、`PostModelSwitch` フックでは、Claude Code は [プレーンテキストとして扱う](https://code.claude.com/docs/ja/hooks.md#exit-code-0) stdout を Claude のコンテキストに追加します。
 * **終了コード 2**：stderr に理由を書き込みます。イベントに応じて、Claude が調整できるようにフィードバックとして受け取るか、ユーザーに表示されるか、あるいは `ConfigChange` や `Elicitation` のようにメッセージが表示されないかのいずれかになります。ブロックできないイベントもあります。`SessionStart` などでは、終了コード 2 は stderr をユーザーに表示し、実行は続行されます。完全な一覧については [イベントごとの終了コード 2 の動作](https://code.claude.com/docs/ja/hooks.md#exit-code-2-behavior-per-event) を参照してください。
-* **その他の終了コード**：0 以外の終了コードで失敗する `WorktreeCreate` など、イベントごとの例外については [終了コードの出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を参照してください。その他のイベントでは、フックが失敗時にアクションをブロックするものでない限り、フックが stdout に出力した内容から該当するケースを確認してください。
-  * スキーマ検証に合格する解析済みオブジェクト：Claude Code は終了コードを無視し、JSON のみで結果が決まり、フックはエラーとして報告されません。
-  * スキーマ検証に失敗する解析済みオブジェクト、または Claude Code が [JSON として解析しようとする](https://code.claude.com/docs/ja/hooks.md#exit-code-0) ものの有効な JSON ではない stdout：アクションは非ブロッキングエラーとして続行されます。検証または解析のメッセージについては、`<hook name> hook error` の通知を確認してください。
-  * Claude Code が [プレーンテキストとして扱う](https://code.claude.com/docs/ja/hooks.md#exit-code-0) stdout、または空の stdout：アクションは非ブロッキングエラーとして続行されます。トランスクリプトには `<hook name> hook error` の通知が表示され、その後に `Failed with non-blocking status code:` が先頭に付いた stderr の 1 行目が表示されます。stderr の全体を取得するには、`claude --debug` を使用するか、セッション中に `/debug` を実行して [デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks) を有効にしてください。
+
+`PreToolUse` などのイベントで、終了コードと stdout の組み合わせごとの結果を調べるには、[終了コードの出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output) を参照してください。`WorktreeCreate` など、独自の終了コードのルールを持つイベントについても、同じセクションを確認してください。
 
 #### 構造化 JSON 出力
 
@@ -700,9 +698,9 @@ matcher がない場合、フックはそのイベントが発生するたびに
 
 以下のタブでは、さまざまなイベントタイプに対する matcher の例をさらにいくつか示します。
 
-> [tab] すべての Bash コマンドをログに記録する
+> [tab] 成功した Bash コマンドをログに記録する
 >
-> `Bash` ツールの呼び出しのみに一致させ、各コマンドをファイルにログとして記録します。`PostToolUse` イベントはコマンドの完了後に発火するため、`tool_input.command` には実行された内容が含まれます。フックは stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` がコマンド文字列のみを抽出し、`>>` がそれをログファイルに追記します。
+> `Bash` ツールの呼び出しのみに一致させ、成功した各コマンドをファイルにログとして記録します。`PostToolUse` イベントはコマンドが成功した後に発火するため、`tool_input.command` には実行された内容が含まれます。フックは stdin で JSON としてイベントデータを受け取り、`jq -r '.tool_input.command'` がコマンド文字列のみを抽出し、`>>` がそれをログファイルに追記します。
 >
 > ```json theme={null}
 > {
@@ -803,7 +801,7 @@ matcher がない場合、フックはそのイベントが発生するたびに
 | `Bash(git *)` | `echo $(date)` | いいえ | `git *` に一致するサブコマンドがない |
 | `Bash(git push *)` | `echo $(date)` | はい | コマンド名以上を指定するパターンでは、`$()`、バッククォート、`$VAR` があるとフックがいずれにせよ実行される |
 
-Bash の入力がどのコマンドを実行するかを Claude Code が判断できない場合、パターンにかかわらずフックが実行されます。Claude Code がサブコマンド単位で絞り込めるコマンドの形と絞り込めない形については、[Bash の照合表](https://code.claude.com/docs/ja/hooks.md#bash-if-matching) を参照してください。この絞り込みはベストエフォートであるため、厳密な許可や拒否を強制するには、フックではなく [権限システム](https://code.claude.com/docs/ja/permissions.md) を使用してください。
+Claude Code が Bash の入力をサブコマンドに分割できない場合、パターンにかかわらずフックが実行されます。Claude Code がサブコマンド単位で絞り込めるコマンドの形と絞り込めない形については、[Bash の照合表](https://code.claude.com/docs/ja/hooks.md#bash-if-matching) を参照してください。この絞り込みはベストエフォートであるため、厳密な許可や拒否を強制するには、フックではなく [権限システム](https://code.claude.com/docs/ja/permissions.md) を使用してください。
 
 `if` フィールドは、権限ルールと同じパターン（`"Bash(git *)"`、`"Edit(*.ts)"` など）を受け付けます。複数のツール名に一致させるには、それぞれ独自の `if` 値を持つ個別のハンドラーを使用するか、パイプによる選択がサポートされている `matcher` レベルで照合してください。
 
@@ -901,9 +899,7 @@ Hook 入力データだけで決定を下すのに十分な場合はプロンプ
 
 `type: "http"` hooks を使用して、シェルコマンドを実行する代わりに、イベントデータを HTTP エンドポイントに POST します。エンドポイントはコマンド hook が stdin で受け取るのと同じ JSON を受け取り、HTTP レスポンスボディを使用して同じ JSON 形式で結果を返します。
 
-HTTP hooks は、Web サーバー、クラウド関数、または外部サービスに hook ロジックを処理させたい場合に便利です。たとえば、チーム全体のツール使用イベントをログに記録する共有監査サービス。
-
-この例はすべてのツール使用をローカルログサービスに POST します：
+HTTP hooks は、チームの共有監査サービスなど、Web サーバー、クラウド関数、または外部サービスにフックロジックを処理させたい場合に便利です。以下の設定は、成功したすべてのツール呼び出しをローカルのログサービスに POST します：
 
 ```json theme={null}
 {
@@ -1062,11 +1058,11 @@ fi
 * **成功**：フックの JSON が `systemMessage` や Stop フックのフィードバックなどを表示しない限り、何も表示されません。
   * フックが実行されたことを確認するには、ファイルが再フォーマットされたなどの効果を確認します
 * **ブロッキングエラー**：ほとんどのイベントでは、ブロックに伴うメッセージが表示されます（例：`Blocked: rm commands are not allowed`）。`ConfigChange` や `Elicitation` などの一部のイベントでは、メッセージは表示されません。メッセージの出どころについては[終了コード 2](https://code.claude.com/docs/ja/hooks.md#exit-code-2) で説明しています。
-* **非ブロッキングエラー**：`<hook name> hook error` という通知と短い説明が表示されます。説明は、`Failed with non-blocking status code:` の後に続く stderr の最初の行や、JSON の検証メッセージまたは解析メッセージなどです。アクションは続行されています。
+* **非ブロッキングエラー**：`Failed with non-blocking status code:` を含む `<hook name> hook error` という通知は、フックがアクションを停止しなかったことを意味します。`Notification` などのイベントでコマンドフックが失敗した場合、この通知は表示されません。
 
-特定の終了コードと stdout に対する結果（イベントごとの例外を含む）を調べるには、リファレンスの[終了コードの出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output)を参照してください。
+`PreToolUse` などのイベントにおける終了コードと stdout の組み合わせに対する結果を調べるには、リファレンスの[終了コードの出力](https://code.claude.com/docs/ja/hooks.md#exit-code-output)を参照してください。`WorktreeCreate` など、独自の終了コードルールを持つイベントについても同じセクションを確認してください。
 
-フックの終了コード、stdout、stderr を含む実行の詳細をすべて確認するには、[デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks)を読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
+実行の詳細については、[デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks)を読みます。`claude --debug-file /tmp/claude.log` で Claude Code を起動して既知のパスに書き込み、別のターミナルで `tail -f /tmp/claude.log` を実行します。このフラグを付けずに起動した場合は、セッションの途中で `/debug` を実行してログを有効にし、ログのパスを確認します。
 
 ## 詳細を学ぶ
 
