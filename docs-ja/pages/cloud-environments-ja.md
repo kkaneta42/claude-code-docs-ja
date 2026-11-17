@@ -110,7 +110,7 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 シークレットは一度に 1 つずつ追加します。シークレットのホストまたは値を変更するには、削除して再度追加します。
 
-[共有環境](#organization-shared-environments) にシークレットを追加するには、[管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページから環境を編集用に開き、その **ネットワークシークレット** セクションで手順 2 から続けます。Team または Enterprise プランで [組織管理者ロール](#requirements) を持っていない場合は、自分の環境で手順 1 に従い、その後 [短いフォームに入力](#add-a-secret-without-the-role) します。
+[共有環境](#organization-shared-environments) にシークレットを追加するには、[管理設定](https://claude.ai/admin-settings) の **クラウド環境** ページから環境を編集用に開き、その **ネットワークシークレット** 行を選択して、手順 2 から続けます。Team または Enterprise プランで [組織管理者ロール](#requirements) を持っていない場合は、自分の環境で手順 1 に従い、その後 [短いフォームに入力](#add-a-secret-without-the-role) します。
 
 **1. 環境のネットワークシークレットを開く**
 
@@ -118,10 +118,10 @@ Anthropic ホスト型環境では、セッションは環境の値をセッシ�
 
 **2. シークレットを追加する**
 
-**シークレットを追加**（管理設定では **追加** と表示）を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **シークレットタイプ**、**Bearer** を保持し、これらのフィールドに入力します。
+**シークレットを追加** を選択してフォームに入力します。API キーがリクエストヘッダーで移動する場合はデフォルトの **シークレットタイプ**、**Bearer** を保持し、これらのフィールドに入力します。
 
 * **許可されたウェブサイト**: `api.example.com` などの API のホスト。先頭の `*.` はすべてのサブドメインと一致します
-* **カスタムヘッダー**: キーを運ぶヘッダーの 1 行。行には既に **ヘッダー名** として `Authorization`、**プレフィックス** として `Bearer` が入力されています。キー自体を **値** として貼り付けます。`X-Api-Key` のようなベア値を取得するヘッダーの場合、名前を変更してプレフィックスをクリアします
+* **カスタムヘッダー**: キーを運ぶヘッダーの 1 行。行には既に **ヘッダー名** として `Authorization`、**プレフィックス** として `Bearer` が入力されています。キー自体を **値** として貼り付けます。`X-Api-Key` のように値をそのまま受け取るヘッダーの場合、名前を変更してプレフィックスをクリアします
 
 別の方法で認証する API の場合、別の **シークレットタイプ** を選択します。リストは [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プランの Slack 統合）が [接続](https://claude.com/docs/claude-tag/admins/add-connections) に提供するものと同じです。
 
@@ -178,7 +178,7 @@ Anthropic ホスト型環境が不要になったら、アーカイブしてく�
 
 Team および Enterprise プランでは、Owner は組織のすべてのメンバーと共有されるクラウド環境を作成できます。同じロールは **クラウド環境** 管理ページで他のすべてを管理します。[自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments) を含みます。Admin ロールはページを開くことができません。それを開くことができるロールの完全なリストは、[サーバー管理設定を管理する](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) ためのものです。
 
-共有環境は各メンバーの [環境セレクター](#configure-your-environment) に **組織** 見出しの下に表示され、メンバー独自の環境の下に **個人** が表示されるため、チームは各メンバーが再作成する代わりに 1 つの設定で標準化できます。共有環境の設定アイコンを選択すると、すべてのメンバー（Owner を含む）の設定の読み取り専用サマリーが開きます。
+共有環境は、各メンバーの[環境セレクター](#configure-your-environment)で、**Personal** の下にあるメンバー自身の環境の後に、**Organization** 見出しの下に表示されます。これにより、各メンバーが設定を作り直すことなく、チームで 1 つの設定に統一できます。そこで共有環境の設定アイコンを選択すると、Owner を含むすべてのメンバーに対して、その環境の設定の読み取り専用の概要が表示されます。
 
 Owner は 2 つの方法のいずれかで環境を組織で利用可能にします。
 
@@ -200,7 +200,7 @@ Owner は [claude.ai/admin-settings/claude-code](https://claude.ai/admin-setting
 
 各環境は 1 つのネットワークアクセスレベルを設定します。これは、セッションが行える送信接続を制御します。新しい環境は **Allow package managers** がチェックされた **Limited** で開始されるため、そのセッションはパッケージレジストリおよび他の [許可リストに登録されたドメイン](#default-allowed-domains) に到達できます。
 
-環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [クラウドスケジュールタスクエディター](https://code.claude.com/docs/ja/routines.md#environments-and-network-access) に表示されます。個人環境は claude.ai アカウント設定に別ページを持ちません。
+環境のネットワークアクセスを変更するには、[編集用に開き](#configure-your-environment)、ダイアログの **Network access** セレクターを使用します。[共有環境](#organization-shared-environments) はそこで読み取り専用で開くため、Owner は [admin settings](https://claude.ai/admin-settings) の **Cloud environments** ページからネットワークアクセスを変更します。セレクターを開くコントロールは、[The Default environment](#the-default-environment) に記載されているアプリサーフェスと [クラウドスケジュールタスクエディター](https://code.claude.com/docs/ja/routines.md#environments-and-network-access) に表示されます。
 
 Anthropic ホスト環境のネットワークアクセスを変更すると、既存のセッションはセッションの [network allowlist](#access-levels) を通じて行くリクエストについて、約 1 分以内に新しい設定に従います。新しいセッションを開始する必要はありません。
 
@@ -296,7 +296,7 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 | ユーザー `~/.claude/CLAUDE.md` | いいえ | マシンに存在し、リポジトリには存在しません。[リポジトリにコミットせずに個人設定を追加する](#add-personal-preferences-without-committing-to-the-repo)を参照してください |
 | ユーザー `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/commands/` | いいえ | マシンに存在し、リポジトリには存在しません。代わりにリポジトリの `.claude/` ディレクトリにコミットしてください。クラウドセッションは [claude.ai で有効にしたスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions)を自動的に読み込みます |
 | ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` はマシンの `~/.claude/settings.json` に存在します |
-| デフォルトのローカルスコープまたはユーザースコープで `claude mcp add` を使用して追加した MCP サーバー | いいえ | これらはマシンの `~/.claude.json` に書き込まれ、リポジトリには書き込まれません。`claude mcp add --scope project` でサーバーを追加します。これはリポジトリの[`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-scope)に書き込まれ、そのファイルをコミットしてください。1 つのリポジトリを持つセッションはそれを読み込みます |
+| デフォルトのローカルスコープまたはユーザースコープで `claude mcp add` を使用して追加した MCP サーバー | いいえ | これらのスコープでは、コマンドはマシンの `~/.claude.json` に書き込みます。リポジトリの [`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-scope) に書き込むには、リポジトリのルートから `claude mcp add --scope project` を実行し、そのファイルをコミットしてください。1 つのリポジトリを持つセッションはそれを読み込みます |
 | リポジトリの `.claude/settings.json` `env` ブロック内のトランスポート変数（`NODE_EXTRA_CA_CERTS` や[mTLS クライアント証明書変数](https://code.claude.com/docs/ja/network-config.md#mtls-authentication)など） | いいえ | ホスティング環境がセッションの API 接続を管理するため、Claude Code はこれらのキーを無視し、セッションのデバッグログで無視された各キーを記録します |
 | Claude が呼び出すサービスの API キーとトークン | Anthropic ホスト環境では、[ネットワークシークレット](#add-network-secrets)として | キーを環境に一度追加すると、エージェントプロキシがリストしたホストへのリクエストにそれを添付します。エージェントプロキシが[添付できない](#requests-that-never-get-the-credential)キーは環境変数に留まります |
 | AWS SSO のようなインタラクティブ認証 | いいえ | サポートされていません。SSO はクラウドセッションで実行できないブラウザベースのログインが必要です |

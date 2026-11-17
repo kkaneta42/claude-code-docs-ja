@@ -22,6 +22,7 @@ iOS シミュレータペインは、Claude Code Desktop の会話の横に Appl
 * Mac（Apple の iOS シミュレータは macOS でのみ実行されるため）
 * [Xcode](https://developer.apple.com/xcode/)（iOS プラットフォームがインストールされている状態）。これはシミュレータデバイスを提供します。Xcode にまだシミュレータが表示されていない場合は、[シミュレータペインにシミュレータが見つからないと表示される](#the-simulator-pane-says-no-simulators-were-found)を参照してください。
   * Xcode 26.x または Xcode 27 が推奨されており、ペインはどちらでも動作します。複数の Xcode がインストールされている場合は、[シミュレータペインが使用する Xcode を選択する](#choose-which-xcode-the-simulator-pane-uses)を参照してください。
+  * iPhone Duo でテストするには、Xcode 27.1 以降が必要です。その他に必要なものについては、[iPhone Duo でアプリをテストする](#test-your-app-on-an-iphone-duo)を参照してください。
 
 > [!NOTE]
 >
@@ -133,6 +134,30 @@ Claude の要求を拒否した場合、デバイスは接続されず、Desktop
 * `requireCoworkFullVmSandbox` ポリシーキー。これは Claude のツールを Mac 上ではなく分離された仮想マシン内で実行し、シミュレータペインと Claude のシミュレータツールを完全に無効にするため、設定されている間はペインがデバイスを接続できません。
 
 Claude はどちらが適用されるかを通知します。
+
+## iPhone Duo でアプリをテストする
+
+シミュレーターペインの iPhone Duo シミュレーターでアプリをテストし、デバイスを閉じた状態、半開きの状態、開いた状態の各ポーズに折りたたむことができます。テストには次のものが必要です。
+
+* Claude Desktop v4.29.0 以降。これはシミュレーターペイン自体に必要な v1.24012.0 よりも新しいバージョンです。アップデートするには、**Claude > Check for Updates…** を開き、アプリを再起動します。
+* Xcode 27.1 以降と、iPhone Duo シミュレーターを含むその iOS シミュレーターランタイム。Xcode 27.1 の場合、そのランタイムは iOS 27.1 です。ランタイムがない場合は、[Xcode の Components 設定からダウンロードしてください](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)。複数の Xcode をインストールしている場合は、[Xcode 27.1 以降を選択してください](#choose-which-xcode-the-simulator-pane-uses)。
+
+ペインで iPhone Duo を開くには、リクエストの中でデバイス名を指定するか、[ペインを自分で切り替えます](#control-the-simulator-yourself)。デバイスメニューにまだ iPhone Duo が表示されていない場合は、デバイス一覧の最後にある **Add simulator…** を選択し、iPhone Duo のデバイスタイプを選びます。
+
+たとえば、アプリの 1 つの画面を各ポーズで Claude に確認させるには、次のようにします。
+
+```text theme={null}
+Run the app on the iPhone Duo simulator and check the settings screen closed, half open, and open.
+```
+
+### iPhone Duo を折りたたむ
+
+* **自分で折りたたむ**：回転ボタンの隣にある 3 つのポーズボタンのいずれかをクリックします。ボタンの上にポインターを置くと、その名前（**Closed**、**Half open**、**Open**）が表示されます。これらのポーズの中間の角度にするには、ポーズボタンの上にポインターを移動し、その上に表示されるスライダーをドラッグします。
+* **Claude に折りたたんでもらう**：3 つのポーズのいずれか、または 1～179 度の半開きのヒンジ角度を指定して依頼します。
+
+### Xcode のエージェントスキルのエクスポートを求めるプロンプトが表示される場合がある
+
+iPhone Duo でレイアウトを確認する前に、Claude が Xcode のエージェントスキルを[個人用スキルフォルダー](https://code.claude.com/docs/ja/skills.md#where-skills-live)にエクスポートするかどうかを尋ねることがあります。これらのスキルはコーディングエージェントをガイドするために Xcode に付属しているもので、そのフォルダーに置かれると、Claude Code は他のプロジェクトでもそれらを読み込みます。これには、アプリのレイアウトを iPhone Duo に対応させるためのスキルが含まれています。
 
 ## 制限事項
 

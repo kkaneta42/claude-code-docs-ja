@@ -27,7 +27,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 | [仮想マシン](#virtual-machine) | 完全なオペレーティングシステム | いいえ | 高い |
 | [クラウドセッション](#cloud-sessions) | 完全なオペレーティングシステム（Anthropic がホスト） | いいえ | なし。Claude サブスクリプションが必要で、GitHub リポジトリをクローンするには接続された GitHub アカウントが必要 |
 
-[サンドボックス化された Bash ツール](https://code.claude.com/docs/ja/sandboxing.md)は Claude Code に組み込まれており、Bash コマンドのみを制限します。組み込みファイルツール、MCP サーバー、hooks はホスト上で直接実行されます。表内の他のすべてのアプローチは、Claude Code プロセス全体を分離境界内に配置するため、ファイルツール、MCP サーバー、hooks も制限されます。
+[サンドボックス化された Bash ツール](https://code.claude.com/docs/ja/sandboxing.md)は Claude Code に組み込まれており、Bash コマンドを制限します。組み込みファイルツール、MCP サーバー、hooks はホスト上で直接実行されます。表内の他のすべてのアプローチは、Claude Code プロセス全体を分離境界内に配置するため、ファイルツール、MCP サーバー、hooks も制限されます。
 
 > [!WARNING]
 >
@@ -59,7 +59,7 @@ Claude Code は、軽量なコマンド単位のサンドボックスから完�
 
 [自動モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)はプロンプトを、アクションをレビューする分類器に置き換えます。分類器はアクション単位の制御であり、分離境界ではないため、分離境界は無人実行の防御層を追加し、`--dangerously-skip-permissions` の場合のように必須ではありません。
 
-[サンドボックス化された Bash ツール](#sandboxed-bash-tool)単独では Bash のみを制限するため、どちらのモードでも完全に無人で実行するには不十分です。アプローチを重ねることができます。サンドボックス化された Bash ツールをコンテナまたは VM 内で実行すると、外側の環境境界の上に OS レベルのコマンド制限が得られます。Bash サンドボックス自体が権限ルールおよび権限モードとどのように相互作用するかについては、[サンドボックス化が権限および権限モードとどのように関連するか](https://code.claude.com/docs/ja/sandboxing.md#how-sandboxing-relates-to-permissions-and-permission-modes)を参照してください。
+[サンドボックス化された Bash ツール](#sandboxed-bash-tool)単独ではシェルコマンドのみを制限するため、どちらのモードでも完全に無人で実行するには不十分です。アプローチを重ねることができます。サンドボックス化された Bash ツールをコンテナまたは VM 内で実行すると、外側の環境境界の上に OS レベルのコマンド制限が得られます。Bash サンドボックス自体が権限ルールおよび権限モードとどのように相互作用するかについては、[サンドボックス化が権限および権限モードとどのように関連するか](https://code.claude.com/docs/ja/sandboxing.md#how-sandboxing-relates-to-permissions-and-permission-modes)を参照してください。
 
 ## サンドボックス化された Bash ツール
 

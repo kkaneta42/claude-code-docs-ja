@@ -206,8 +206,6 @@ Claude Code は URL から番号のみを読み取ります。常にリポジト
 
 このフェッチはターミナルでの入力を待機しません。git または ssh がパスワード、鍵のパスフレーズ、または新しい SSH ホストの確認を求める場合、フェッチは代わりに失敗し、Claude Code は `Error creating worktree: Failed to fetch PR/MR #<number>` メッセージを表示して終了します。`ssh-agent` が保持している鍵は引き続き使用できるため、開始する前に鍵を `ssh-agent` に読み込み、`git fetch` を一度手動で実行して新しいホストを記録してください。
 
-v2.1.233 より前は、Claude Code は `--worktree` に対して `#<number>` と GitHub 形式のプルリクエスト URL のみを受け入れ、常に `pull/<number>/head` をフェッチしていました。
-
 ### gitignore されたファイルを worktree にコピーする
 
 worktree は新しいチェックアウトなので、メインリポジトリの `.env` や `.env.local` などの追跡されていないファイルは存在しません。Claude が worktree を作成するときに自動的にコピーするには、プロジェクトルートに `.worktreeinclude` ファイルを追加します。

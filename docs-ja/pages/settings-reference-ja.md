@@ -927,7 +927,7 @@ Claude が確認なしで使用できるツール、プロンプトを表示す�
 
 Claude Code が plan モード中にシェルコマンドを確認するために auto モードの分類器を使用するかどうかを選択します。デフォルトの `true` では、auto モードが利用可能な場合、分類器は計画中に各コマンドを確認し、プロンプトは表示されません。ただし、[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-paths)を除きます。`false` に設定すると、組み込みの読み取り専用セット外のすべてのコマンドに対して権限プロンプトが表示されます。`/config` に **Use auto mode during plan** として表示されます。
 
-* **スコープ**: [`User, local, or managed`](#scopes)。リポジトリがこれをオフにすることはできません。
+* **スコープ**: [`User, local, or managed`](#scopes)。
   * これらのファイルのいずれか、または `--settings` で `false` が設定されていると、オフになります。ただし、[`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) などのオプションでそのユーザーまたはローカルファイルを除外した場合は除きます。除外されたファイルを無視するには Claude Code v2.1.314 以降が必要です
 * **タイプ**: ブール値
   * `true`: 未設定と同じです。auto モードが利用可能な場合、分類器は計画中にシェルコマンドを確認します
@@ -2139,7 +2139,7 @@ macOS でサンドボックス化されたコマンドがネットワークポ�
 
 ### `sandbox.network.allowMachLookup`
 
-macOS のサンドボックスが参照できる追加の XPC および Mach サービス名を記載します。iOS Simulator や Playwright など、XPC で通信するツールは、そのサービスをここに記載する必要があります。サンドボックス化されたコマンドは、記載した各サービスにサンドボックスの外からアクセスでき、サンドボックスは[それらのサービスがコマンドのために行う処理を制限しません](https://code.claude.com/docs/ja/sandboxing.md#security-limitations)。
+macOS のサンドボックスが参照できる追加の XPC および Mach サービス名を記載します。iOS Simulator や Playwright など、XPC で通信するツールは、そのサービスをここに記載する必要があります。サンドボックス化されたコマンドは、サンドボックスの外にある、記載した各サービスにアクセスでき、サンドボックスは[それらのサービスがコマンドのために行う処理を制限しません](https://code.claude.com/docs/ja/sandboxing.md#security-limitations)。
 
 * **Scope**: [`Any file`](#scopes)（[プロジェクト設定とローカル設定には制限あり](https://code.claude.com/docs/ja/sandboxing.md#repository-settings-under-an-admin-required-sandbox)）
 * **Type**: 文字列の配列。各サービス名。単一の末尾 `*` はプレフィックスと一致し、`"*"` だけはすべてのサービスと一致します
@@ -2685,7 +2685,7 @@ claude.ai の使用制限によってセッションが停止した後、開い�
 
 ### `autoScrollEnabled`
 
-[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)で、新しい出力に合わせて会話の末尾まで追従します。オフにすると、Claude が作業を続けている間もスクロールした位置にとどまります。権限プロンプトは引き続きスクロールして表示されます。
+[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)で、新しい出力に合わせて会話の末尾まで追従します。
 
 * **スコープ**: [`Any file`](#scopes)
 * **型**: Boolean
@@ -3868,7 +3868,7 @@ Claude Code に同梱されている[スキル](https://code.claude.com/docs/ja/
 
 [claude.ai アカウントで有効になっているスキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)のダウンロードをオフにします。Claude Code は、[claude.ai アカウントでサインインしているターミナルセッション](https://code.claude.com/docs/ja/skills.md#where-synced-skills-load)（対話型・非対話型を問わず）、および Cowork セッションとクラウドセッションで、それらを `~/.claude/skills/synced/` にダウンロードします。`false` を設定すると、そのダウンロードが停止し、すでに同期されたスキルの読み込みも停止します。Claude Code が反映するのは `false` のみです。`true` は未設定と同じであり、他の理由でオフになっている場所で同期をオンにすることはありません。
 
-* **スコープ**: [`ユーザー、ローカル、または管理`](#scopes)、および `--settings` で渡されたファイル。リポジトリがユーザーに代わってこれをオフにすることはできません。
+* **スコープ**: [`ユーザー、ローカル、または管理`](#scopes)、および `--settings` で渡されたファイル。
 * **型**: Boolean
   * `false`: Claude Code は同期スキルのダウンロードを停止し、`~/.claude/skills/synced/` にすでにあるスキルの読み込みも停止します。ユーザー設定または管理設定では、それらを `~/.claude/skills/.trash/` に移動することもします
   * `true`: 未設定と同じです
@@ -3886,7 +3886,7 @@ Claude Code に同梱されている[スキル](https://code.claude.com/docs/ja/
 
 [claude.ai アカウントで有効になっているプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)のダウンロードをオフにします。Claude Code は、claude.ai アカウントでサインインしているターミナルセッションの開始時と Cowork セッションで、それらを `~/.claude/plugins/synced/` にダウンロードし、それぞれを `<name>@synced` として読み込みます。`false` を設定すると、そのダウンロードが停止し、すでに同期されたプラグインの読み込みも停止します。Claude Code が反映するのは `false` のみです。`true` は未設定と同じであり、他の理由でオフになっている場所で同期をオンにすることはありません。Claude Code v2.1.273 以降が必要です。
 
-* **スコープ**: [`ユーザー、ローカル、または管理`](#scopes)、および `--settings` で渡されたファイル。リポジトリがユーザーに代わってこれをオフにすることはできません。
+* **スコープ**: [`ユーザー、ローカル、または管理`](#scopes)、および `--settings` で渡されたファイル。
 * **型**: Boolean
   * `false`: Claude Code は同期プラグインのダウンロードを停止し、`~/.claude/plugins/synced/` にすでにあるプラグインの読み込みも停止します。ユーザー設定または管理設定では、それらを `~/.claude/plugins/.trash/` に移動することもします
   * `true`: 未設定と同じです

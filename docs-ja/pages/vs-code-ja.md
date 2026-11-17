@@ -378,7 +378,7 @@ VS Code 拡張機能はチェックポイントをサポートしています。
 
 ## ワークフローをカスタマイズする
 
-Claude パネルの位置を変更したり、複数の会話を実行したり、セッションリストをグループ化またはフィルタリングしたり、ターミナルモードに切り替えたりできます。
+Claude パネルの位置を変更したり、フォントを変更したりできます。また、複数の会話を実行したり、セッションリストをグループ化またはフィルタリングしたり、ターミナルモードに切り替えたりすることもできます。
 
 ### Claude の配置場所を選ぶ
 
@@ -395,6 +395,19 @@ Claude が新しいエディターグループでタブを開くと、拡張機�
 > [!TIP]
 >
 > メインの Claude セッションにはサイドバーを使い、サイドタスクには追加のタブを開きましょう。Claude は好みの配置場所を記憶します。アクティビティバーのセッションリストアイコンは Claude パネルとは別のものです。セッションリストは常にアクティビティバーに表示されますが、Claude パネルのアイコンがそこに表示されるのは、パネルが左側のサイドバーにドッキングされている場合のみです。
+
+### フォントを変更する
+
+Claude パネルは VS Code のチャットフォント設定を使用します。これは VS Code の組み込みチャットビューのスタイルを決めるのと同じ設定です。Mac では `Cmd+,`、Windows と Linux では `Ctrl+,` で VS Code の設定を開き、`chat font` を検索します。
+
+| 設定 | 適用対象 |
+| - | - |
+| [`chat.fontSize`](vscode://settings/chat.fontSize) | 会話テキストとプロンプトボックスのサイズ（ピクセル単位）。コードブロックとツール出力もこれに合わせて拡大縮小されます。VS Code 1.104 以降が必要です |
+| [`chat.fontFamily`](vscode://settings/chat.fontFamily) | 会話テキストとプロンプトボックスのフォント。VS Code 1.104 以降が必要です |
+| [`chat.editor.fontSize`](vscode://settings/chat.editor.fontSize) | 差分のサイズ（ピクセル単位）。Claude Code v2.1.300 以降が必要です |
+| [`chat.editor.fontFamily`](vscode://settings/chat.editor.fontFamily) | コードブロックとツール出力のフォント |
+
+Claude パネルとともに VS Code 全体を拡大縮小するには、Mac では `Cmd+=`、Windows と Linux では `Ctrl+=` でウィンドウをズームします。
 
 ### リロード後に会話を続ける
 
@@ -732,7 +745,7 @@ vscode://anthropic.claude-code/open?prompt=review%20my%20changes
 
 ## 設定を構成する
 
-拡張機能は、VS Code の拡張機能設定と Claude Code の設定ファイルの 2 か所で構成します。
+拡張機能は、VS Code の拡張機能設定と Claude Code の設定ファイルで構成します：
 
 * VS Code の**拡張機能設定**：VS Code 内での拡張機能の動作を制御します。`Cmd+,`（Mac）または `Ctrl+,`（Windows/Linux）で開き、**Extensions > Claude Code** に移動します。`/` と入力して **General config…** を選択して設定を開くこともできます。
 * `~/.claude/settings.json` の **Claude Code 設定**：拡張機能と CLI の間で共有されます。許可するコマンド、環境変数、フック、MCP サーバーに使用します。Claude Code v2.1.283 以降では、会話が開始される権限モードを決める入力の 1 つにもなります。それより前のバージョンでは、Pro、Max、Ultra、Team プランでのみ該当します。順序については[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)を参照してください。詳細は[設定](https://code.claude.com/docs/ja/settings.md)を参照してください。

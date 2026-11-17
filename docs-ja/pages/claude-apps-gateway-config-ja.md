@@ -22,7 +22,7 @@ Claude apps gateway デプロイメントは、慣例的に `gateway.yaml` と�
 * [`oidc`](#oidc)：ID プロバイダー（IdP）、発行者、クライアント、クレームマッピング、サインイン可能なユーザーを含む
 * [`session`](#session)：ゲートウェイが発行するベアラートークン、シークレット、ライフタイム
 * [`store`](#store)：デバイスグラント、レート制限カウンター用の PostgreSQL
-* [`upstreams`](#upstreams)：推論の送信先、Anthropic、Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、Microsoft Foundry のいずれか
+* [`upstreams`](#upstreams)：推論の送信先、Anthropic、Amazon Bedrock、AWS 上の Claude Platform、Google Cloud 上の Claude Models（Anthropic 管理）、Google Cloud の Agent Platform、Microsoft Foundry のいずれか
 
 **オプションセクション：**
 
@@ -175,7 +175,7 @@ export CLAUDE_GATEWAY_PROXY_IS_EGRESS_BOUNDARY=1
 | - | - | - |
 | `provider: anthropic` のアップストリーム、Workload Identity Federation のトークン交換、`telemetry.forward_to` のエクスポート | ローカルで解決およびチェックされた後、チェック済みの IP アドレスへプロキシ経由で `CONNECT`。`NO_PROXY` に列挙されたテレメトリコレクターには代わりに直接到達 | ホスト名をプロキシに渡す |
 | IdP のディスカバリ、JWKS、トークン、userinfo | [`oidc.use_proxy: true`](#idp-requests-through-a-forward-proxy) でない限り直接。その場合はチェック済みの IP アドレスへ `CONNECT` | ホスト名をプロキシに渡す。ただし `oidc.use_proxy: false` で内部 IdP を直接のままにできる |
-| Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry のアップストリーム、Google グループの検索 | ホスト名をプロキシに渡す | 変更なし |
+| Amazon Bedrock、Claude Platform on AWS、Claude Models on Google Cloud (Anthropic managed)、Google Cloud の Agent Platform、Microsoft Foundry のアップストリーム、Google グループの検索 | ホスト名をプロキシに渡す | 変更なし |
 
 プロキシのみのエグレスは、ゲートウェイの環境が次の 3 つの条件をすべて満たさない限りオフのままです。
 
@@ -609,6 +609,24 @@ upstreams:
 | `base_url` | いいえ | 導出されたエンドポイントを上書きします |
 
 このプラットフォームはファーストパーティのモデル ID を解決するため、組み込みカタログは [`models:`](#models) ブロックなしでこのプラットフォームにルーティングされます。`models:` リストを独自に作成する場合は、エントリのキーを `anthropicAws:` にしてファーストパーティの ID を指定してください。
+
+#### Claude Models on Google Cloud (Anthropic managed)
+
+Claude Models on Google Cloud (Anthropic managed) は、Google Cloud プロジェクトを通じてアクセスする、Anthropic が運用する Claude API です。モデルリクエストをここに送信するには、`anthropicGoogleCloud` プロバイダーを使用したアップストリームを追加します。
+
+アップストリームを追加する前に、ゲートウェイのレプリカを Claude Code v2.1.307 以降にアップグレードし、[Google Cloud プロジェクトでサービスをセットアップ](https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/anthropic-managed#set-up-your-account)してください。ゲートウェイの Google 認証情報が解決される ID に、そのプロジェクトに対する `roles/claude.user` を付与します。
+
+```yaml theme={null}
+upstreams:
+  - provider: anthropicGoogleCloud
+    project_id: example-prod
+    workspace_id: wrkspc_01ABCDEFGHIJKLMN
+    auth: {}                           # Google credentials, not an API key; {} uses Application Default Credentials
+    # OR the path to a service account key file:
+    # auth: { service_account_json: /secrets/sa.json }
+```
+
+`project_id` と `workspace_id` はどちらも必須です。`project_id` はサービスをセットアップしたプロジェクトの ID で、[`wrkspc_` ID は Claude Console で確認できます](https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/anthropic-managed#find-your-workspace-id)。
 
 #### Google Cloud Agent Platform
 

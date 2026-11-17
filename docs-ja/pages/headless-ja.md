@@ -63,7 +63,7 @@ bare モードでは、`--settings` で渡したフックや、フラグで読�
 bare モードでは、セッションの実行中に行われる処理も制限されます。
 
 * **MCP サーバー**: コマンドラインで指定されたサーバー（例えば `--mcp-config` で指定したもの）のみが接続されます。対話型セッションでは、`--ide` を渡さない限り、Claude Code は IDE への自動接続もスキップします。
-* **システムリマインダー**: Claude はプロンプトとツールの結果を受け取りますが、Claude Code が通常それらと一緒に追加する [システムリマインダー](https://code.claude.com/docs/ja/glossary.md#system-reminder) は含まれません。例えば、以前に読み取ったファイルがディスク上で変更されても Claude には通知されず、`--add-dir` フォルダのスキルを含む利用可能なスキルの一覧も Claude には渡されません。
+* **システムリマインダー**: Claude はプロンプトとツールの結果を受け取りますが、Claude Code が通常それらと一緒に追加する [システムリマインダー](https://code.claude.com/docs/ja/glossary.md#system-reminder) は含まれません。例えば、以前に編集したファイルがディスク上で変更されても Claude には通知されず、`--add-dir` フォルダのスキルを含む利用可能なスキルの一覧も Claude には渡されません。
 * **バックグラウンドタスク**: Claude はバックグラウンドコマンドやバックグラウンドサブエージェントを実行できず、[`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars) によってオフになるその他の機能もオフになります。[タイムアウト](https://code.claude.com/docs/ja/tools-reference.md#timeout-and-output-limits) に達したコマンドは、[バックグラウンドに移行する](https://code.claude.com/docs/ja/tools-reference.md#background-commands) 代わりに停止します。
 
 v2.1.286 より前は、これらの制限は部分的にしか適用されていませんでした。対話型の `--bare` セッションは通常のセッションと同じ MCP サーバーに接続し、すべての `--bare` セッションがシステムリマインダーを送信し、バックグラウンドタスクも引き続き利用可能でした。

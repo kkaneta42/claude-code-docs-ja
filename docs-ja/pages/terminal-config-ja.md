@@ -26,10 +26,10 @@ Enter キーを押すとメッセージが送信されます。送信せずに�
 
 | ターミナル | 改行用の Shift+Enter |
 | :- | :- |
-| Ghostty、Kitty、iTerm2、WezTerm、Warp、Windows Terminal | セットアップなしで機能 |
+| Ghostty、Kitty、iTerm2、WezTerm、Warp、Windows Terminal 1.25 以降 | セットアップなしで機能 |
 | kitty キーボードプロトコルをサポートする他のターミナル（foot や Alacritty 0.16 以降など） | セットアップなしで機能。Claude Code v2.1.269 以降が必要です |
 | VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed | 1 回 `/terminal-setup` を実行 |
-| gnome-terminal、PyCharm や Android Studio などの JetBrains IDE | 利用不可。Ctrl+J または `\` の後に Enter を使用 |
+| gnome-terminal、Windows Terminal 1.25 より前のバージョン、PyCharm や Android Studio などの JetBrains IDE | 利用不可。Ctrl+J または `\` の後に Enter を使用 |
 
 VS Code、Cursor、Devin Desktop、Alacritty 0.16 より前のバージョン、Zed の場合、`/terminal-setup` はターミナルの設定ファイルに Shift+Enter キーバインディングを書き込みます。初回実行時には `Installed VSCode terminal Shift+Enter key binding` などの確認メッセージが表示されます。既存のバインディングはそのまま保持されます。`VSCode terminal Shift+Enter key binding already configured` などのメッセージが表示される場合は、変更は加えられていません。`/terminal-setup` は tmux または screen の内部ではなく、ホストターミナル内で直接実行してください。ホストターミナルの設定に書き込む必要があるためです。
 
@@ -140,7 +140,7 @@ set -s extended-keys on
 set -as terminal-features 'xterm*:extkeys'
 ```
 
-表示中のペインから外側のターミナルに通知を送るには、`allow-passthrough` 行を残したまま、[`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) を `"iterm2"`、`"kitty"`、または `"ghostty"` に設定してください。このサンプルでは、表示していないウィンドウ内のペインからは通知が送られません。`extended-keys` 行により、tmux が Shift+Enter と通常の Enter を区別できるようになり、改行ショートカットが機能するようになります。
+Shift+Enter を使うには、最後の 2 行を残したまま、tmux からデタッチして再度アタッチし、Claude Code を再起動してください。表示中のペインから外側のターミナルに通知を送るには、`allow-passthrough` 行を残したまま、[`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) を `"iterm2"`、`"kitty"`、または `"ghostty"` に設定してください。このサンプルでは、表示していないウィンドウ内のペインからは通知が送られません。
 
 [mod の `Image`](https://code.claude.com/docs/ja/plugins/mods/reference#elements) には、`allow-passthrough` 行と `focus-events` 行に加えて、その他の [tmux 内で描画するための要件](https://code.claude.com/docs/ja/plugins/mods/gallery.md#draw-an-image-inside-tmux)が必要です。これらの行を追加した後は、tmux からデタッチして再度アタッチし、Claude Code を再起動してください。
 
@@ -216,7 +216,7 @@ Claude Code は `~/.claude/themes/` を監視しており、ファイルが追�
 > | `text` | デフォルトの前景テキスト |
 > | `inverseText` | ステータスバッジなど、色付きの背景の上に描画されるテキスト |
 > | `inactive` | ヒント、タイムスタンプ、無効な項目などの補助テキスト |
-> | `subtle` | 薄い枠線と目立たない補助テキスト |
+> | `subtle` | 薄い枠線、区切り線、記号 |
 > | `suggestion` | オートコンプリートの候補とピッカー内の選択ハイライト |
 > | `permission` | 権限プロンプトやピッカーを含むダイアログの枠線 |
 > | `remember` | メモリと `CLAUDE.md` のインジケーター |

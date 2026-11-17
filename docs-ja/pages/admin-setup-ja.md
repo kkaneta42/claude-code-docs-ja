@@ -112,7 +112,7 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド�
 メンバーが claude.ai または Anthropic API 経由でサインインし、Claude Enterprise プランを利用している場合は、何もデプロイせずに組織の管理設定からモデルを管理することもできます。
 
 * [組織のモデル制限](https://code.claude.com/docs/ja/model-config.md#organization-model-restrictions)：個々のモデルを無効にします。サーバー側で強制されます。
-* [組織のデフォルトモデル](https://code.claude.com/docs/ja/model-config.md#organization-default-model)：新しいセッションが開始するモデルを設定します。メンバーは引き続きモデルを切り替えられます。起動時にデフォルトに戻すには、そのセクションで説明している上書きをオンにします。メンバーが選択できるモデルを制限するには、[組織のモデル制限](https://code.claude.com/docs/ja/model-config.md#organization-model-restrictions)を使用します。
+* [組織のデフォルトモデル](https://code.claude.com/docs/ja/model-config.md#organization-default-model)：新しいセッションが開始するモデルを設定します。メンバーは引き続きモデルを切り替えられます。メンバーをデフォルトに戻すには、そのセクションで説明している上書きをオンにします。メンバーが選択できるモデルを制限するには、[組織のモデル制限](https://code.claude.com/docs/ja/model-config.md#organization-model-restrictions)を使用します。
 * [組織の effort 制限](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits)：ロールごとに effort レベルの上限を設定します。サーバー側で強制されます。
 
 これらの制御はいずれも、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、または [Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) 上のセッションには適用されません。これらのプロバイダーでは、代わりに管理設定を使用してください。制限には `availableModels`、デフォルトには `model`、effort の上限には [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を使用します。

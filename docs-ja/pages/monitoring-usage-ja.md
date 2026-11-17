@@ -446,7 +446,7 @@ Claude Code は、これらの値を OTLP リソースブロックで送信す�
 > export OTEL_RESOURCE_ATTRIBUTES="org.name=John%27s%20Organization"
 > ```
 >
-> 値を引用符で囲んでもスペースはエスケープされません。たとえば、`org.name="My Company"` は `My Company` ではなく、引用符を含むリテラル値 `"My Company"` になります。
+> 値を引用符で囲んでもスペースはエスケープされません。
 
 ### Desktop SSH セッションにテレメトリを関連付ける
 

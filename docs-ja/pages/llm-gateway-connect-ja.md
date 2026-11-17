@@ -59,7 +59,7 @@ Claude Code をゲートウェイに認証するには、環境変数に認証�
 | :- | :- |
 | `ANTHROPIC_AUTH_TOKEN` | ゲートウェイチームが「bearer token」または「Authorization header」と言った場合 |
 | `ANTHROPIC_API_KEY` | ゲートウェイチームが「API key」または「x-api-key」と言った場合 |
-| [`apiKeyHelper`](#rotate-credentials-with-apikeyhelper) | 認証情報がローテーションするか、ボルトから来る場合 |
+| [`apiKeyHelper`](#rotate-credentials-with-apikeyhelper) | 認証情報がローテーションするか、ボールトから来る場合 |
 
 どの種類かを指定されなかった場合は、`ANTHROPIC_AUTH_TOKEN` を使用します。以下の[検証リクエスト](#verify-the-connection)は、切り替える必要があるかどうかを判断する方法を示しています。
 
@@ -314,13 +314,13 @@ options = ClaudeAgentOptions(
 
 `apiKeyHelper`は、静的環境変数から読み取る代わりに、ゲートウェイ認証情報を取得するために Claude Code が実行するコマンドです。
 
-認証情報がスケジュールに従って期限切れになる場合、コンテナまたは SSO コマンドから取得される場合、または管理者が設定を指示した場合は、ヘルパーを使用します。認証情報が一度設定する固定文字列である場合、[認証情報変数](#set-the-credential-variable)で十分であり、このセクションをスキップできます。
+認証情報がスケジュールに従って期限切れになる場合、ボールトまたは SSO コマンドから取得される場合、または管理者が設定を指示した場合は、ヘルパーを使用します。認証情報が一度設定する固定文字列である場合、[認証情報変数](#set-the-credential-variable)で十分であり、このセクションをスキップできます。
 
 ヘルパーは、現在の認証情報を stdout に出力する任意のシェルコマンドです。Claude Code はシステムシェルを通じて実行するため、Windows ではそれは実行可能ファイルまたは PowerShell 呼び出しです。コマンドが認証情報以外に何も出力しないようにします。Claude Code v2.1.227 以降では、キーと一緒に出力されるバナーまたはログ行により、[ヘルパーが失敗します](https://code.claude.com/docs/ja/errors.md#your-apikeyhelper-script-is-failing)。スクリプトを作成し、実行可能にして、[設定ファイル](https://code.claude.com/docs/ja/settings.md)の`apiKeyHelper`から参照します。
 
 > [tab] Bash or Zsh
 >
-> 例えば、コンテナから読み取るスクリプト：
+> 例えば、ボールトから読み取るスクリプト：
 >
 > ```bash theme={null}
 > #!/bin/bash
@@ -337,7 +337,7 @@ options = ClaudeAgentOptions(
 
 > [tab] PowerShell
 >
-> 例えば、コンテナから読み取るスクリプト：
+> 例えば、ボールトから読み取るスクリプト：
 >
 > ```powershell theme={null}
 > vault kv get -field=api_key secret/llm-gateway/claude-code

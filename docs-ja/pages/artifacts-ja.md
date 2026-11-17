@@ -204,7 +204,7 @@ Claude は、1 時間以内にそのアーティファクトで 60 件の送信�
 
 以下のいずれかの方法で、Claude の自動返信を停止できます。
 
-* **アイドルプロンプトで Ctrl+C を 1 回押す**：Claude はセッションが監視しているすべてのアーティファクトへの返信を一時停止します。次のメッセージを送信した後、返信が再開されます。
+* **アイドル状態の空のプロンプトで Ctrl+C を 1 回押す**：Claude はセッションが監視しているすべてのアーティファクトへの返信を一時停止します。次のメッセージを送信した後、返信が再開されます。
 * **`/tasks` でタスクを停止する**：Claude はそのアーティファクトへの返信を停止し、そこで返信を再開するよう求めるまで停止したままになります。アーティファクトを再度公開しても返信は再開されず、セッションを再開しても停止は適用されたままになります。
 * **3 秒以内に `Ctrl+X Ctrl+K` を 2 回押す**：[すべての実行中のバックグラウンドサブエージェントを停止](https://code.claude.com/docs/ja/interactive-mode.md#general-controls)するコードは、セッションの残りの間、Claude がすべてのアーティファクトに返信するのも停止します。Claude に返信を再開するよう求めても、この停止は元に戻りません。
 
@@ -242,7 +242,7 @@ Claude は公開処理の一環として、ページが呼び出せるコネク�
 
 コネクタを利用するページは描画されるものの、組織内の閲覧者に対してライブセクションが空のままになる場合は、次の原因を確認してください。
 
-* **閲覧者がコネクタを接続していない**：コネクタはアカウントごとに設定されるため、各閲覧者はページが呼び出すすべてのコネクタについて、自分自身の接続が必要です。claude.ai の [**Customize > Connectors**](https://claude.ai/customize/connectors) でコネクタを追加してから、ページを再読み込みしてもらいます。
+* **閲覧者がコネクタを接続していない**：コネクタはアカウントごとに設定されるため、各閲覧者はページが呼び出すすべてのコネクタについて、自分自身の接続が必要です。[claude.ai/customize/connectors](https://claude.ai/customize/connectors) でコネクタを追加してから、ページを再読み込みしてもらいます。
 * **閲覧者が権限の確認を拒否した**：拒否はそのページ読み込みの間だけ有効です。ページを再読み込みすると、権限の確認が再び表示されます。
 * **組織でコネクタ呼び出しが無効になっている**：Owner が管理設定の [**Enable artifact connectors** トグル](#control-connector-calls-from-artifacts)を制御します。
 * **ページが、コネクタの公開していないツール名を呼び出している**：該当するセクションは、自分を含むすべての人に対して空のままになります。これは、独自のツールを少数しか公開していないゲートウェイ型のコネクタについて、その背後にある個々のツールをページが指定している場合に発生することがあります。ページが呼び出すツール名を修正して再度公開するよう Claude に依頼してください。
@@ -323,25 +323,21 @@ Claude はデザインシステムを独自の選択肢より高い優先度と�
 
 タイポグラフィについて、Claude は Google Fonts からタイプフェイスを読み込むことができます。これはアーティファクトページが読み込むことができる唯一の外部フォントソースです。Claude は他のタイプフェイスを `@font-face` データ URI としてインライン化し、すべてのタイプフェイスにフォールバックスタックを提供するため、フォントが読み込まれない場合でもページは引き続きレンダリングされます。特定のタイプフェイスを使用するには、プロンプトまたはデザインシステムで名前を付けます。
 
-## スライド、デザイン、またはドキュメントテンプレートから開始する
+## テンプレートからアーティファクトを開始する
 
-ページをゼロから構築する代わりに、Claude は claude.ai アカウント上のテンプレートの 1 つからアーティファクトを開始できます。プレゼンテーション用の [Claude Slides](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them#h_11d5a9a5fa)、ビジュアルデザイン用の [Claude Design](https://support.claude.com/en/articles/14604416-get-started-with-claude-design)、または他の人が読んで編集するドキュメント用の [Claude Docs](https://support.claude.com/en/articles/16923645-get-started-with-claude-docs) です。各テンプレートは claude.ai 上の独自のエディターで開き、あなたとチームメンバーが直接変更するか Claude に変更を依頼でき、PowerPoint、PDF、Word などの形式にエクスポートできます。
+claude.ai アカウント上の[アーティファクトテンプレート](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them#h_11d5a9a5fa)は Claude Code からも使用できます。たとえば、ビジュアルデザインには [Claude Design](https://support.claude.com/en/articles/14604416-get-started-with-claude-design) テンプレートを、他の人が読んで編集するドキュメントには [Claude Docs](https://support.claude.com/en/articles/16923645-get-started-with-claude-docs) テンプレートを使用します。アカウントには Sheets、Whiteboards、Data などの他のテンプレートが含まれている場合もあります。セッションで利用できるテンプレートを確認するには、利用可能なアーティファクトテンプレートを一覧表示するよう Claude に依頼してください。
 
-テンプレートから開始するには、「移行ノートを木曜日のレビュー用のデッキに変換する」や「このプランをチーム用のドキュメントとして作成する」など、必要な内容を説明します。Claude は一致するテンプレートを選択し、リクエストとセッションが既に持っている内容から入力し、リンクを提供します。デッキまたはデザインの場合、`/slides` または `/design` をブリーフと共に実行することもできます。
+Claude Code からテンプレートを使用するには、次のものが必要です。
 
-> [!NOTE]
->
-> テンプレートはベータ版です。Pro、Max、Ultra、Team プランではデフォルトで有効になっています。Enterprise プランでは、Owner が **Organization settings > Artifacts** の下で [各テンプレートを有効にします](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans)。組織で Slides テンプレートが無効になっている場合、`/slides` は表示されません。Design テンプレートが無効になっている場合、`/design` はデザインを作成しません。両方のコマンドには Claude Code v2.1.265 以降と [アーティファクトが利用可能](#availability) なセッションが必要です。
+* [アーティファクトが利用可能](#availability)なセッション
+* Team プランと Enterprise プランでは、組織でそのテンプレートがオンになっていること。オフになっている場合は、claude.ai の **Organization settings > Artifacts** で[テンプレートをオンにする](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans#h_6e06d8f1a8)よう Owner に依頼してください。
+* カスタムロールを使用する Enterprise プランでは、[そのテンプレートを含む](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans#h_d830917488)ロール
+* Docs テンプレートと Sheets テンプレートの場合は、[Claude Docs コネクタ](#write-a-document-with-claude-docs)。Claude は両方のコンテンツを作成する際にこのコネクタを使用します。[コネクタをオフにした](https://code.claude.com/docs/ja/mcp.md#disable-claude-ai-connectors)場合は、先にオンに戻してください。
+* Design テンプレートを [`/design` コマンド](#draft-a-design-canvas)で開始する場合は、Claude Code v2.1.265 以降
 
-### スライドデッキを作成する
+テンプレートから開始するには、テンプレート名を指定するか、「このプランをチーム用のドキュメントとして作成する」や「共有タスクスプレッドシートを作成する」など、必要な内容を説明します。Claude は一致するテンプレートを選択し、リクエストとセッションが既に持っている内容から入力し、リンクを提供します。代わりにファイルを取得するには、`.csv` などの形式を指定します。
 
-デッキが何をカバーしているか、誰のためのものかを説明するブリーフと共に `/slides` を実行します。
-
-```text wrap theme={null}
-/slides a quarterly review of the platform team's reliability work, for the engineering all-hands
-```
-
-Claude は Claude Slides アーティファクトを作成し、リンクを提供します。デスクトップブラウザーで開いてデッキを編集またはプレゼンテーションします。ブリーフなしで `/slides` を実行した場合、Claude は何かを作成する前にデッキが何についてであるべきかを尋ねます。
+アーティファクトを自分で編集するには、リンクを開きます。リンクは claude.ai 上のそのテンプレートのエディターに移動します。セッションから引き続き Claude に変更を依頼することもできます。エクスポート形式については、[表示とエクスポート](https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them#h_1403132eb8)を参照してください。
 
 ### デザインキャンバスを作成する
 
@@ -357,7 +353,7 @@ UI、画面フロー、ランディングページ、またはポスターをモ
 
 Claude Docs は Claude Code にコマンドではなく claude.ai [コネクター](https://code.claude.com/docs/ja/mcp.md#use-mcp-servers-from-claude-ai) として到達します。接続されている場合、`/mcp` はそれを `claude.ai Claude Docs` としてリストします。他の人のためのドキュメントのリクエストは、アーティファクトページではなく Claude Docs に送られます。仕様、提案、またはセッションで作成したプランの書き込みです。Claude はドキュメントが作成されたときにドキュメントのリンクを提供します。
 
-README などのコードベースに属するドキュメントはファイルのままです。Claude が Claude Docs に配置するであろう何かのためにファイルを取得するには、`.docx` またはリポジトリ内の Markdown ファイルなどの形式を指定します。`claude.ai Claude Docs` コネクタのみをオフにするには、[claude.ai コネクタを無効にする](https://code.claude.com/docs/ja/mcp.md#disable-claude-ai-connectors) を参照してください。
+README などのコードベースに属するドキュメントはファイルのままです。Claude が Claude Docs に配置するであろう何かのためにファイルを取得するには、`.docx` またはリポジトリ内の Markdown ファイルなどの形式を指定します。`claude.ai Claude Docs` コネクタのみをオフにするには、[claude.ai コネクタを無効にする](https://code.claude.com/docs/ja/mcp.md#disable-claude-ai-connectors)を参照してください。Sheets テンプレートを使用する場合は、このコネクタも必要なため、オンのままにしてください。
 
 ## ページの制約
 

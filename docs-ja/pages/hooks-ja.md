@@ -303,7 +303,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 | `CwdChanged` | matcher サポートなし | すべての出現で常に発火 |
 | `DirectoryAdded` | ディレクトリが追加された方法 | `slash_command`、`register_repo_root` |
 | `FileChanged` | 監視するリテラル ファイル名（[FileChanged](#filechanged)を参照） | `.envrc\|.env` |
-| `StopFailure` | エラー タイプ | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
+| `StopFailure` | エラー タイプ | `rate_limit`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
 | `InstructionsLoaded` | ロード理由 | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact` |
 | `UserPromptExpansion` | コマンド名 | スキルまたはコマンド名 |
 | `Elicitation` | MCP サーバー名 | 設定された MCP サーバー名 |
@@ -807,7 +807,7 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 
 | stdout | 終了 0 | 終了 2 | その他の終了コード |
 | :- | :- | :- | :- |
-| [スキーマ検証](#json-output)に合格する JSON オブジェクト | 成功。フィールドが適用されます | ブロッキング エラー。Claude Code はフィールドを引き続き読み取りますが、それらでブロックを上書きすることはできません | 成功。Claude Code は終了コードを無視し、フィールドのみが結果を決定します。[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)の場合は、代わりに失敗としてカウントされます |
+| [スキーマ検証](#json-output)に合格する JSON オブジェクト | 成功。フィールドが適用されます | ブロッキング エラー。Claude Code はフィールドを引き続き読み取りますが、`"allow"` や `continue: false` を返しても `PreToolUse` の呼び出しはブロックされたままです。その他のイベントについては、[終了コード 2](#exit-code-2) を参照してください | 成功。Claude Code は終了コードを無視し、フィールドのみが結果を決定します。[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)の場合は、代わりに失敗としてカウントされます |
 | [解析できない](#exit-code-0)、またはスキーマ検証に失敗する JSON | 非ブロッキング エラー。通知には解析または検証のメッセージが含まれます | ブロッキング エラー。stderr が理由になります | 非ブロッキング エラー。通知には解析または検証のメッセージが含まれます |
 | [プレーン テキスト](#exit-code-0)、または何もなし | 成功 | ブロッキング エラー。stderr が理由になります | 非ブロッキング エラー。通知には stderr の最初の行が含まれます |
 
@@ -844,9 +844,10 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 
 ブロックに伴うメッセージはフックの stderr です。フックがブロッキング決定を行う JSON も出力した場合、Claude Code は代わりにその決定の理由を使用します。
 
-終了 2 は、フックが JSON を出力した場合でもブロックします。
+終了コード 2 は、フックが出力するほとんどの JSON に対しても引き続きブロックします。
 
-* **スキーマ検証に合格する JSON**: Claude Code は [JSON 出力](#json-output)フィールドを引き続き読み取りますが、それらでブロックを上書きすることはできません。`permissionDecision` が `"allow"` であっても、アクションは通過しません。`Elicitation` と `ElicitationResult` では、終了 2 のフックの `hookSpecificOutput` は無視されます。
+* **`continue: false` を設定する JSON**: `Stop` や `SubagentStop` などのイベントでは、このフィールドが終了コード 2 より優先されるため、Claude またはサブエージェントはターンを終了します。Claude またはサブエージェントに作業を続けさせるには、このフィールドを省略してください。`PreToolUse` では、このフィールドの有無にかかわらず、ツール呼び出しはブロックされたままです。
+* **スキーマ検証に合格するその他の JSON**: Claude Code は [JSON 出力](#json-output)フィールドを引き続き読み取ります。`permissionDecision` が `"allow"` であっても、アクションは通過しません。`Elicitation` と `ElicitationResult` では、終了 2 のフックの `hookSpecificOutput` は無視されます。
 * **スキーマ検証に失敗する JSON**: フックは引き続きブロックします。Claude Code は stderr をブロッキング理由として使用し、検証の失敗をデバッグ ログに記録します。
 
 このスクリプトは終了 2 によって `rm` コマンドをブロックし、それ以外のすべてのコマンドは通常の権限フローに任せます。
@@ -1022,6 +1023,8 @@ v2.1.309 より前は、メッセージは `blocking because Git Bash wasn't fou
 
 終了コード 2 は、フックが「停止、これをしないでください」と通知する方法です。効果はイベントに依存します。一部のイベントはブロック可能なアクション（まだ発生していないツール呼び出しなど）を表し、他のイベントはすでに発生したか防止できないことを表すためです。
 
+フックが 2 で終了し、さらに `continue: false` も設定している場合は、結果がイベントの行と異なることがあるため、まず[終了コード 2](#exit-code-2) を確認してください。
+
 | フック イベント | ブロック可能？ | 終了 2 で何が起こるか |
 | :- | :- | :- |
 | `PreToolUse` | はい | ツール呼び出しをブロック |
@@ -1079,7 +1082,7 @@ HTTP フックは終了コードと stdout の代わりに HTTP ステータス 
 
 > [!NOTE]
 >
-> フックごとに 1 つのアプローチを選択してください。終了コードのみでシグナリングするか、終了 0 して構造化制御のために JSON を出力するかのいずれかです。両方を混在させた場合、終了 2 は[ブロッキング効果](#exit-code-2-behavior-per-event)を維持し、Claude Code は引き続き JSON フィールドを読み取ります。ただし、[終了コード 2](#exit-code-2) で説明されている elicitation の例外が 1 つあります。
+> フックごとに 1 つのアプローチを選択してください。終了コードのみでシグナリングするか、終了 0 して構造化制御のために JSON を出力するかのいずれかです。両方を混在させた場合に何が起こるかについては、[終了コード出力](#exit-code-output)を参照してください。
 
 stdout には JSON オブジェクト以外何も出力しないでください。[非同期](#how-async-hooks-execute)でないフックの場合、シェル プロファイルがスタートアップ時に出力する行など、他のテキストがあると Claude Code はオブジェクトを JSON として読み取れなくなります。そのテキストを見つけて抑制する方法については、[フックの JSON が効果を持たない](https://code.claude.com/docs/ja/hooks-guide.md#hook-json-has-no-effect)を参照してください。
 
@@ -1200,7 +1203,7 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 | イベント | 決定パターン | キー フィールド |
 | :- | :- | :- |
 | UserPromptSubmit、UserPromptExpansion、PostToolUse、PostToolUseFailure、PostToolBatch、Stop、SubagentStop、ConfigChange、PreCompact | トップレベル `decision` | `decision: "block"`、`reason`。Stop と SubagentStop は[会話を続行する非エラー フィードバック](#stop-decision-control)のために `hookSpecificOutput.additionalContext` も受け入れます |
-| TeammateIdle、TaskCompleted | 終了コードまたは `continue: false` | 終了コード 2 は stderr フィードバックとともにアクションをブロックします。JSON `{"continue": false, "stopReason": "..."}` もチームメイトを完全に停止し、`Stop` フックの動作と一致します。[`TaskUpdate` ツールがイベントをトリガーした場合、TaskCompleted はこれを無視します](#taskcompleted-decision-control) |
+| TeammateIdle、TaskCompleted | 終了コードまたはトップレベル `decision` | 終了コード 2 または `decision: "block"` は、チームメイトに作業を続けさせるか、タスクを開いたままにします。`continue: false` を指定すると、チームメイトはアイドル状態になります。[Claude Code は `TaskUpdate` 呼び出しでは `continue: false` を無視します](#taskcompleted-decision-control) |
 | TaskCreated | 終了コードまたはトップレベル `decision` | 終了コード 2 または `decision: "block"` は[タスクをキャンセル](#taskcreated-decision-control)し、メッセージを Claude に返します。`continue: false` は無視されます |
 | PreToolUse | `hookSpecificOutput` | `permissionDecision`（allow/deny/ask/defer）、`permissionDecisionReason` |
 | PreModelSwitch | `hookSpecificOutput` またはトップレベル `decision` | `permissionDecision`（allow/deny/ask）、`permissionDecisionReason`。`decision: "block"` も[切り替えをキャンセル](#premodelswitch-decision-control)します |
@@ -1520,7 +1523,7 @@ InstructionsLoaded フックには決定制御がありません。指示の読�
 * `/loop` の反復を含む、[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)が発火したとき
 * [バックグラウンドのサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)が、それを開始したセッションに報告を返すとき
 * [別のセッションが送信したメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md)がメインの会話に届くとき
-* [Code Mode](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook) セッションにおける Claude のコードの出力（`command`、`http`、`mcp_tool` フックの場合で、コードをバックグラウンドで実行できるとき）
+* コードをバックグラウンドで実行できる場合に、[Code Mode](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook) セッションで Claude が実行するコードの出力（`command`、`http`、`mcp_tool` フックが対象）
 
 `UserPromptSubmit` フックのデフォルトのタイムアウトは、`command`、`http`、`mcp_tool` タイプで 30 秒です。これは、他のほとんどのイベントにおけるこれらのタイプのデフォルトである 600 秒より短い値です。このフックはすべてのプロンプトの前に実行され、完了するまでモデルの処理をブロックするため、フックが停止するとセッションも停止します。フックにより多くの時間が必要な場合は、フックエントリで `timeout` フィールドを設定してください。
 
@@ -1605,7 +1608,7 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
 
 #### UserPromptExpansion の入力
 
-[共通入力フィールド](#common-input-fields)に加えて、UserPromptExpansion フックは `expansion_type`、`command_name`、`command_args`、`command_source`、および元の `prompt` 文字列を受け取ります。`expansion_type` フィールドは、スキルとカスタムコマンドの場合は `slash_command`、MCP サーバーのプロンプトの場合は `mcp_prompt` です。
+[共通入力フィールド](#common-input-fields)に加えて、UserPromptExpansion フックは `expansion_type`、`command_name`、`command_args`、`command_source`、および `prompt` 文字列を受け取ります。`expansion_type` フィールドは、スキルとカスタムコマンドの場合は `slash_command`、MCP サーバーのプロンプトの場合は `mcp_prompt` です。
 
 ```json theme={null}
 {
@@ -1615,10 +1618,10 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
   "permission_mode": "default",
   "hook_event_name": "UserPromptExpansion",
   "expansion_type": "slash_command",
-  "command_name": "example-skill",
+  "command_name": "my-plugin:example-skill",
   "command_args": "arg1 arg2",
   "command_source": "plugin",
-  "prompt": "/example-skill arg1 arg2"
+  "prompt": "/my-plugin:example-skill arg1 arg2"
 }
 ```
 
@@ -2633,7 +2636,6 @@ v2.1.233 より前では、これらのセッションで `permission_prompt` �
   "cwd": "/Users/...",
   "hook_event_name": "Notification",
   "message": "Claude needs your permission",
-  "title": "Permission needed",
   "notification_type": "permission_prompt"
 }
 ```
@@ -2804,10 +2806,11 @@ TaskCompleted フックは matcher をサポートせず、すべての発生時
 
 #### TaskCompleted の決定制御
 
-TaskCompleted フックは、タスクの完了を制御する 2 つの方法をサポートしています。
+TaskCompleted フックを使用すると、タスクを開いたままにしたり、チームメイトをアイドル状態にしたりできます。
 
 * **終了コード 2**：タスクは完了としてマークされず、stderr メッセージがフィードバックとしてモデルに返されます。
-* **JSON `{"continue": false, "stopReason": "..."}`**：チームメイトがターンを終了したことでイベントが発生した場合、`Stop` フックの動作と同様に、チームメイトを完全に停止します。`stopReason` はユーザーに表示されます。`TaskUpdate` ツールによってイベントが発生した場合、Claude Code は `continue: false` を無視しますが、終了コード 2 では引き続き完了をブロックできます。
+* **JSON `{"decision": "block", "reason": "..."}`**: タスクは開いたままになります。Claude は `reason` を受け取り、作業を続けます。
+* **JSON `{"continue": false, "stopReason": "..."}`**: チームメイトのターンの終了時に、他の TaskCompleted フックがブロックしていても、チームメイトはタスクを進行中のままアイドル状態になります。`stopReason` はチームメイトのトランスクリプトに表示されます。`TaskUpdate` 呼び出しでは、Claude Code は `continue: false` を無視します。
 
 次の例はテストを実行し、失敗した場合はタスクの完了をブロックします。
 
@@ -2939,7 +2942,7 @@ API エラーによってターンが終了したときに、[Stop](#stop) の�
 
 | フィールド | 説明 |
 | :- | :- |
-| `error` | エラーの種類：`rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` のいずれか |
+| `error` | エラーの種類: `rate_limit`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` のいずれか。HTTP `529` の過負荷レスポンスの場合、値は `server_error` になります |
 | `error_details` | エラーに関する追加の詳細（利用可能な場合） |
 | `last_assistant_message` | 会話に表示されるレンダリング済みのエラーテキスト。このフィールドに Claude の会話の出力が含まれる `Stop` や `SubagentStop` とは異なり、`StopFailure` では `"API Error: Rate limit reached"` のような API エラー文字列そのものが含まれます |
 
@@ -2987,10 +2990,11 @@ TeammateIdle フックは matcher をサポートせず、すべての発生時�
 
 #### TeammateIdle の決定制御
 
-TeammateIdle フックは、チームメイトの動作を制御する 2 つの方法をサポートしています。
+TeammateIdle フックを使用すると、チームメイトに作業を続けさせたり、アイドル状態にさせたりできます。
 
-* **終了コード 2**：チームメイトは stderr メッセージをフィードバックとして受け取り、アイドル状態にならずに作業を続けます。
-* **JSON `{"continue": false, "stopReason": "..."}`**：`Stop` フックの動作と同様に、チームメイトを完全に停止します。`stopReason` はユーザーに表示されます。
+* **終了コード 2**: チームメイトは stderr のメッセージをフィードバックとして受け取り、作業を続けます。
+* **JSON `{"decision": "block", "reason": "..."}`**: チームメイトは `reason` を受け取り、作業を続けます。
+* **JSON `{"continue": false, "stopReason": "..."}`**: 他の TeammateIdle フックがブロックしていても、チームメイトは[アイドル状態になります](https://code.claude.com/docs/ja/agent-teams.md#start-your-first-agent-team)。`stopReason` はチームメイトのトランスクリプトに表示されます。
 
 次の例は、チームメイトがアイドル状態になるのを許可する前に、ビルドアーティファクトが存在することを確認します。
 
@@ -3889,7 +3893,7 @@ Claude Code は、v2.1.105 から v2.1.284 で修正されるまで、`Elicitati
 > }
 > ```
 
-フックが動作することを確認するには、`claude --debug` で Claude Code を起動し、サーバーがプロジェクトキーを尋ねるようなタスクを Claude に与えます。ダイアログは表示されず、[デバッグログ](#debug-hooks)に `Elicitation resolved by hook: {"action":"accept","content":{"project_key":"DOCS"}}` で終わる行が記録されます。
+フックが動作することを確認するには、`claude --debug` で Claude Code を起動し、サーバーがプロジェクトキーを尋ねるようなタスクを Claude に与えます。ダイアログは表示されず、[デバッグログ](#debug-hooks)に `Elicitation resolved by hook:` と `accept` を含む行が記録されます。
 
 ### ElicitationResult
 
@@ -4011,7 +4015,7 @@ Claude Code は、どの `action` を返した場合でも、ElicitationResult �
 * `WorktreeCreate`
 * `WorktreeRemove`
 
-`SessionStart` と `Setup` は `command` と `mcp_tool` フックをサポートしており、それらの `mcp_tool` フックがいつ実行されるかについては [MCP ツール フックのフィールド](#mcp-tool-hook-fields)で説明しています。これらは `http`、`prompt`、`agent` フックをサポートしていません。
+`Setup` は `command` フックのみをサポートします。`SessionStart` は `command` と `mcp_tool` フックのみをサポートしており、その `mcp_tool` フックがいつ実行されるかについては [MCP ツール フックのフィールド](#mcp-tool-hook-fields)で説明しています。
 
 ### プロンプト ベースのフックの仕組み
 
@@ -4079,8 +4083,8 @@ LLM は以下を含む JSON で応答する必要があります：
 * `PostToolUse`：デフォルトではターンが終了し、理由は警告行としてチャットに表示されます。`continueOnBlock: true` を設定して、理由を Claude にフィードバックし、ターンを続行する代わりに使用します
 * `PostToolBatch`、`UserPromptSubmit`、`UserPromptExpansion`：ターンが終了し、理由は警告行として表示されます。これらのイベントは `continue` に関係なく `decision: "block"` でターンを終了します
 * `PostToolUseFailure`、`TaskCreated`：理由は `continueOnBlock` に関係なくツール エラーとして Claude に返され、ターンが続行されます
-* `TaskCompleted`：ターン中にタスクが完了としてマークされたために発火した場合、理由は `continueOnBlock` に関係なくツール エラーとして Claude に返され、ターンが続行されます。チームメイトが停止したために発火した場合は、`TeammateIdle` と同様に動作し、デフォルトでチームメイトを停止します
-* `TeammateIdle`：デフォルトではチームメイトが停止し、理由は警告行として表示されます。`continueOnBlock: true` を設定して、理由をチームメイトにフィードバックし、代わりに作業を続行させます
+* `TaskUpdate` 呼び出し時の `TaskCompleted`：`continueOnBlock` に関係なく、Claude は理由をツール結果として受け取り、ターンが続行されます
+* `TeammateIdle`、およびチームメイトのターン終了時の `TaskCompleted`：デフォルトではチームメイトがアイドル状態になり、理由はそのトランスクリプトに表示されます。理由をチームメイトに送信して作業を続けさせるには、`continueOnBlock: true` を設定します
 * `PermissionRequest`：`ok: false` は効果がありません。フックから承認を拒否するには、[コマンド フック](#command-hook-fields)を使用して `hookSpecificOutput.decision.behavior: "deny"` を返します
 * `PermissionDenied`：`ok: false` は効果がありません。拒否は既に発生しているためです。このイベントが読み取る唯一の出力は `hookSpecificOutput.retry` です。プロンプト フックとエージェント フックはこれを設定できません。これらはこのイベントで実行されますが、その出力は破棄されます。`retry` を返すには、[コマンド フック](#command-hook-fields)を使用してください
 

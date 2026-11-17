@@ -431,7 +431,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、および
 | ユーザーがキャッシュされた設定ファイルを削除する | [初回起動動作](#fetch-and-caching-behavior)が発生します |
 | ユーザーが変更された Claude Code バイナリを実行する | 変更されたクライアントを実行できるユーザーは、クライアント側の制御をバイパスできます |
 | ユーザーが古い Claude Code バージョンを実行する | サーバー管理設定より前のバージョンは、これらをフェッチまたは適用しません |
-| API が利用不可 | キャッシュされた設定が利用可能で、[有効期限切れ](#fetch-and-caching-behavior)でない場合は適用されます。キャッシュがない場合、Claude Code は次の成功したフェッチまでサーバー管理設定を適用しません。Anthropic が設定を必須とする場合を含む例外については、[フェッチとキャッシュの動作](#fetch-and-caching-behavior)に記載されています。`forceRemoteSettingsRefresh: true` の場合、CLI は続行するのではなく終了します。ただし、[`claude auth` サブコマンド](#enforce-fail-closed-startup)を除きます。[Claude apps gateway](#platform-availability) を通じてサインインしているクライアントは、その設定がない場合でも起動時に終了します。同じ `claude auth` 除外があります |
+| API が利用不可 | キャッシュされた設定が利用可能で、[有効期限切れ](#fetch-and-caching-behavior)でない場合は適用されます。この条件を満たすキャッシュがない場合、Claude Code は次の成功したフェッチまでサーバー管理設定を適用しません。Anthropic が設定を必須とする場合を含む例外については、[フェッチとキャッシュの動作](#fetch-and-caching-behavior)に記載されています。`forceRemoteSettingsRefresh: true` の場合、CLI は続行するのではなく終了します。ただし、[`claude auth` サブコマンド](#enforce-fail-closed-startup)を除きます。[Claude apps gateway](#platform-availability) を通じてサインインしているクライアントは、その設定がない場合でも起動時に終了します。同じ `claude auth` 除外があります |
 | ユーザーが別の組織で認証する | 管理対象組織外のアカウントには設定が配信されません。これには [Console API キー](#platform-availability)で認証するセッションも含まれます |
 | ユーザーが[サードパーティモデルプロバイダー](#platform-availability)を構成する | サーバー管理設定はバイパスされます。これには `CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_MANTLE`、`CLAUDE_CODE_USE_VERTEX`、`CLAUDE_CODE_USE_FOUNDRY`、`CLAUDE_CODE_USE_ANTHROPIC_AWS`、またはデフォルト以外の `ANTHROPIC_BASE_URL` の設定が含まれます |
 | ネットワークトラフィックが傍受またはリダイレクトされる | TLS 検証が無効化されたか、傍受されたトラフィックは、クライアントが受け取る設定を変更できます |

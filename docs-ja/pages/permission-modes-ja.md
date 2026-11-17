@@ -597,7 +597,7 @@ auto モードがセッションのアクションを承認できない場合、
 >    * Claude が[他のユーザーが作成したアーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取る場合は、そのセクションに記載されている承認のケースが適用されます
 >    * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取りはプロンプトを表示します
 > 3. それ以外はすべて分類器に回されます。ただし、デフォルトの処理下にある[重要なパスの削除](#critical-paths)は除きます。ステップ 1 で直接プロンプトを表示するコネクタツールと `requiresUserInteraction` の MCP ツールも分類器には到達しないため、組織が必須とする承認も同意のステップも自動承認されることはありません
->    * [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) がオンの場合、Claude のコードは実行前に 1 回だけ分類器に回され、その中のツール呼び出しは回されません。`deny` ルールで呼び出しをブロックしたり、`ask` ルールでプロンプトを必須にしたりすることは引き続きできますが、Claude は[ルールが一致しない形式](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)で Bash コマンドを実行できます
+>    * [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) がオンの場合、Claude が書くコードは実行前に 1 回だけ分類器に回され、その中のツール呼び出しは回されません。`deny` ルールで呼び出しをブロックしたり、`ask` ルールでプロンプトを必須にしたりすることは引き続きできますが、Claude は[ルールが一致しない形式](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)で Bash コマンドを実行できます
 > 4. 分類器がブロックした場合、Claude はその理由を受け取ります。ほとんどのセッションでは、理由は文章による説明ではなく、`[Data Exfiltration]` のように分類器が一致したルールの名前で示されます。[拒否の確認](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を参照してください
 >
 > インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が `tool.check` を処理する場合、その mod もアクションを承認できます。その承認がルールやフックを通過しないケースについては、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。

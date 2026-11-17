@@ -81,7 +81,7 @@
 | :- | :- | :- |
 | クイックエスケープ | `\` + `Enter` | すべてのターミナルで機能 |
 | Option キー | `Option+Enter` | macOS で[Option を Meta として](https://code.claude.com/docs/ja/terminal-config.md#enable-option-key-shortcuts-on-macos)有効にした後 |
-| Shift+Enter | `Shift+Enter` | iTerm2、WezTerm、Ghostty、Kitty、Warp、Windows Terminal でネイティブ。他のターミナルについては、[複数行プロンプトを入力](https://code.claude.com/docs/ja/terminal-config.md#enter-multiline-prompts)を参照してください |
+| Shift+Enter | `Shift+Enter` | iTerm2、WezTerm、Ghostty、Kitty、Warp、Windows Terminal 1.25 以降でネイティブ。他のターミナルについては、[複数行プロンプトを入力](https://code.claude.com/docs/ja/terminal-config.md#enter-multiline-prompts)を参照してください |
 | 制御シーケンス | `Ctrl+J` | 設定なしで任意のターミナルで機能 |
 | ペーストモード | 直接貼り付け | コードブロック、ログの場合 |
 

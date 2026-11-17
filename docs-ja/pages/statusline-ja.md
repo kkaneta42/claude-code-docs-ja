@@ -15,7 +15,7 @@
 * 複数のセッション間で作業し、それらを区別する必要がある
 * git ブランチとステータスを常に表示したい
 
-ステータスラインは組み込みのフッターバッジの上にある独自の行にレンダリングされ、それらを置き換えません。カスタムステータスラインが設定されている場合、Claude Code はフッターのキーボードヒントのほとんどを表示しなくなります。これには `esc to interrupt`、`? for shortcuts` フォールバック、および `hold space to speak` [音声入力](https://code.claude.com/docs/ja/voice-dictation.md) ヒントが含まれます。会話内に ID が表示されたときにフッターにクリック可能なリンクバッジを追加する場合は、スクリプトを記述せずに [`footerLinksRegexes`](https://code.claude.com/docs/ja/settings-reference#footerlinksregexes) を設定してください。
+ステータスラインは組み込みのフッターバッジの上にある独自の行にレンダリングされ、それらを置き換えません。カスタムステータスラインが設定されている場合、Claude Code は `? for shortcuts` や `hold space to speak` [音声入力](https://code.claude.com/docs/ja/voice-dictation.md) ヒントなど、一部のフッターヒントを表示しなくなります。会話内に ID が表示されたときにフッターにクリック可能なリンクバッジを追加する場合は、スクリプトを記述せずに [`footerLinksRegexes`](https://code.claude.com/docs/ja/settings-reference#footerlinksregexes) を設定してください。
 
 以下は、最初の行に git 情報を表示し、2 番目の行にカラーコード化されたコンテキストバーを表示する [複数行ステータスライン](#display-multiple-lines) の例です。
 

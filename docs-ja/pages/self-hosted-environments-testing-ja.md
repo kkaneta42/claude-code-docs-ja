@@ -79,7 +79,7 @@ exit 0
 
 `--environment` および `--ref` のディスパッチフラグを使用するには、スクリプトを実行するマシンに Claude Code v2.1.224 以降が必要です。これはランナー自体と同じ最低バージョンです。フックを設定し、このホストでランナーを起動した状態で、テストスクリプトは次の処理を行います。
 
-1. `claude -p "<prompt>" --environment <environment-id> --output-format json` を使用して、テスト環境上にセッションを作成します。CLI が `origin` リモートからリポジトリを自動検出できるように、このコマンドは Git のチェックアウト内から実行してください。オプションの `--ref <branch>` を指定すると、セッションのチェックアウトをローカルの HEAD ではなく指定した ref に基づいて作成します。このコマンドは Claude の応答を待たずに終了します。出力される内容によって、スクリプトは結果を判断できます。
+1. `claude -p "<prompt>" --environment <environment-id> --output-format json` を使用して、テスト環境上にセッションを作成します。CLI が `origin` リモートからリポジトリを自動検出できるように、このコマンドは Git のチェックアウト内から実行してください。オプションの `--ref <branch>` を指定すると、セッションのチェックアウトを指定した ref に基づいて作成します。このコマンドは Claude の応答を待たずに終了します。出力される内容によって、スクリプトは結果を判断できます。
    * **セッションが作成された場合**: `{"ok":true,"session_id":"session_...","title":"...","url":"...","pool_id":"..."}` のような 1 行の JSON
    * **セッションの作成に失敗した場合**: `{"ok":false,"error":"..."}` という行が出力され、コマンドはステータス 1 で終了します
    * **それ以前の段階で発生する一部のエラー**（組織でクラウドセッションが利用できない場合や、プロンプトが指定されていない場合など）: JSON 行は出力されず、エラーが stderr に出力され、コマンドはステータス 1 で終了します
@@ -146,7 +146,7 @@ await_reply() {
 
 # 1. Create the session on the test environment. Run from a git checkout
 # so the CLI can auto-detect the repo. --ref pins the checkout to a named
-# ref regardless of local HEAD.
+# ref.
 TURN1="e2e-probe-$(date +%s)-$$: say exactly 'ok: custom tools are reachable' and nothing else"
 EXPECT1="ok: custom tools are reachable"
 create_json=$(claude -p "$TURN1" --environment "$CLAUDE_TEST_ENVIRONMENT_ID" \
@@ -194,7 +194,7 @@ exit 0
 
 ## CI から認証する
 
-`claude -p ... --environment` と `claude -p ... --cloud` の両方は claude.ai OAuth トークンで認証します。`sk-ant-xxxxx` などの API キーはどちらの呼び出しでも受け入れられません。2 つのアプローチにより、CI でトークンを利用できるようになります。
+`claude -p ... --environment` と `claude -p ... --cloud` の両方は claude.ai OAuth トークンで認証します。`sk-ant-xxxxx` などの API キーはどちらの呼び出しでも受け入れられません。
 
 ### 長期間存続する CI ホスト
 
@@ -206,7 +206,7 @@ CLI は各呼び出しで短期アクセストークンを自動的に更新し�
 
 現在、これに対する長期間存続する CI トークンはありません。クラウドセッション制御を付与するスコープ `user:sessions:claude_code` はサーバー側で 30 日間に制限されているため、1 年間の推論のみのトークンを発行する `claude setup-token` はこれをカバーしていません。[環境シークレット](https://code.claude.com/docs/ja/self-hosted-environments-quickstart.md#set-up-an-environment-and-runner)も受け入れられません。これは実行イメージが環境に登録することのみを認可し、セッションを作成することは認可しないためです。
 
-エフェメラル実行イメージに保存されたログインをプロビジョニングするには、[`CLAUDE_CODE_OAUTH_REFRESH_TOKEN` と `CLAUDE_CODE_OAUTH_SCOPES`](https://code.claude.com/docs/ja/env-vars#variables) を設定して、`claude auth login` がブラウザなしでトークンを交換できるようにします。リフレッシュグラントに対して同じ 30 日間の上限が適用されます。人間のアカウントにバインドされていないマシンアイデンティティパスが必要な場合は、Anthropic アカウントチームにお問い合わせください。
+代わりに、[長期間存続する CI ホスト](#long-lived-ci-host)から `claude -p` を実行してください。人間のアカウントにバインドされていないマシンアイデンティティパスが必要な場合は、Anthropic アカウントチームにお問い合わせください。
 
 ## 専用テスト環境を作成する
 

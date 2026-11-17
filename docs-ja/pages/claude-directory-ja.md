@@ -16,6 +16,192 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます�
 
 ツリー内のファイルをクリックして、各ファイルの機能、読み込みタイミング、および例を確認してください。
 
+Configuration files
+
+**`CLAUDE.md`**
+
+**When it loads**: セッション開始時にコンテキストに読み込まれます
+
+このリポジトリで Claude がどのように作業するかを方向付けるプロジェクト固有の指示です。規約、よく使うコマンド、アーキテクチャに関するコンテキストをここに記述します。
+
+**`.mcp.json`**
+
+**When it loads**: インタラクティブセッションでは、[承認](https://code.claude.com/docs/ja/mcp.md#project-scope)済みの MCP サーバーがセッション開始時に読み込まれます。ツールスキーマはデフォルトで遅延され、[ツール検索](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)によって必要に応じて読み込まれます
+
+データベース、API、ブラウザなどの外部ツールへのアクセスを Claude に提供する Model Context Protocol（MCP）サーバーを設定します。このファイルには、チーム全体で使用するプロジェクトスコープのサーバーを記述します。自分だけで使用する個人用サーバーは `~/.claude.json` に記述します。
+
+**`.worktreeinclude`**
+
+**When it loads**: `--worktree`、`EnterWorktree` ツール、またはサブエージェントの `isolation: worktree` によって Claude が [git worktree](https://code.claude.com/docs/ja/worktrees.md) を作成するときに読み込まれます
+
+メインリポジトリから新しい各 worktree にコピーする、gitignore されたファイルを列挙します。worktree は新しいチェックアウトであるため、`.env` などの追跡されていないファイルはデフォルトでは存在しません。ここでのパターンは `.gitignore` 構文を使用します。パターンに一致し、かつ gitignore されているファイルのみがコピーされます。
+
+**`.claude/`**
+
+プロジェクトの設定、ルール、スキル、サブエージェント、その他の設定です。git を使用している場合は、チームで共有できるようにこれらのファイルのほとんどをコミットし、`settings.local.json` などの個人用ファイルはコミットに含めないようにします。
+
+**`.claude/settings.json`**
+
+**When it loads**: セッション開始時に読み込まれます。ほとんどの編集は[実行中のセッションに適用されます](https://code.claude.com/docs/ja/settings.md#when-edits-take-effect)
+
+Claude Code が直接適用する設定です。権限は Claude が使用できるコマンドとツールを制御し、フックはセッション内の特定のタイミングでスクリプトを実行します。Claude がガイダンスとして読む CLAUDE.md とは異なり、これらは Claude が従うかどうかにかかわらず強制されます。
+
+[設定の優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence)において、このファイルは `~/.claude/settings.json` より上位で、`.claude/settings.local.json`、`--settings` フラグ、および管理設定より下位です。`model` などのほとんどの単一値キーでは、Claude Code は最も上位の値を使用します。`permissions.allow` などのほとんどのリストは[ファイル間でマージされます](https://code.claude.com/docs/ja/settings.md#lists-merge-instead-of-overriding)。
+
+**`.claude/settings.local.json`**
+
+**When it loads**: セッション開始時に読み込まれます。ほとんどの編集は[実行中のセッションに適用されます](https://code.claude.com/docs/ja/settings.md#when-edits-take-effect)
+
+このプロジェクト用の個人設定です。`settings.json` と同じ JSON 形式で、Claude Code が設定を保存する際に gitignore されます。
+
+[設定の優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence)において、このファイルは `.claude/settings.json` より上位で、`--settings` フラグおよび管理設定より下位です。`model` などのほとんどの単一値キーでは、Claude Code は最も上位の値を使用します。`permissions.allow` などのほとんどのリストは[ファイル間でマージされます](https://code.claude.com/docs/ja/settings.md#lists-merge-instead-of-overriding)。
+
+**`.claude/rules/`**
+
+**When it loads**: `paths:` フロントマターのないルールはセッション開始時に読み込まれます。`paths:` のあるルールは、Claude が一致するファイルを読み取り、書き込み、または編集するときに読み込まれます
+
+トピックごとのファイルに分割されたプロジェクトの指示です。CLAUDE.md と同様に、ルールは Claude Code が強制しないガイダンスです。強制される動作には[フック](https://code.claude.com/docs/ja/hooks.md)または[権限](https://code.claude.com/docs/ja/permissions.md)を使用します。
+
+**`.claude/skills/`**
+
+**When it loads**: `/skill-name` で呼び出されるか、Claude がタスクをスキルに一致させたときに呼び出されます
+
+各スキルは、`SKILL.md` ファイルと必要なサポートファイルを含むフォルダです。デフォルトでは、ユーザーと Claude の両方がスキルを呼び出せます。これを制御するには[フロントマター](https://code.claude.com/docs/ja/skills.md#frontmatter-reference)を使用します。`disable-model-invocation: true` を指定すると、Claude は `/deploy` のようなスキルを自ら呼び出せなくなり、`user-invocable: false` を指定すると、Claude のみがそのスキルを呼び出せるようになります。
+
+**`.claude/commands/`**
+
+**When it loads**: `/command-name` で呼び出されるか、Claude がタスクをコマンドに一致させたときに呼び出されます
+
+単一ファイルのコマンドを格納します。`.claude/commands/deploy.md` として保存されたプロンプトは `/deploy` として実行されます。新しいコマンドには[スキル](#ce-skills)を使用してください。スキルでは、プロンプトと一緒にリファレンスドキュメント、テンプレート、スクリプトをまとめることができます。
+
+**`.claude/output-styles/`**
+
+**When it loads**: ターミナルでの起動時に読み込まれるため、スタイルを追加または編集した後は Claude Code を再起動してください
+
+各 Markdown ファイルは、Claude の作業方法を調整する指示のセットである[出力スタイル](https://code.claude.com/docs/ja/output-styles.md#how-output-styles-work)を定義します。全員が使用するレビューモードのように、チームで共有するスタイルはここに配置します。スタイルの選択方法については [`~/.claude/output-styles/`](#ce-global-output-styles) を参照してください。
+
+**`.claude/agents/`**
+
+**When it loads**: 各サブエージェントは、ユーザーまたは Claude が呼び出したときに独自のコンテキストウィンドウで実行されます
+
+`name` と `description` のフロントマターを持つ各 Markdown ファイルは、独自のシステムプロンプト、ツールアクセス、および必要に応じて独自のモデルを持つサブエージェントを定義します。並列作業や分離されたタスクに便利です。
+
+**`.claude/workflows/`**
+
+**When it loads**: [ワークフローが有効](https://code.claude.com/docs/ja/workflows.md)な場合に起動時に読み込まれます。保存された各ワークフローは `/<name>` コマンドとして実行されます
+
+各 `.js` ファイルは[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)です。これは、多数のサブエージェントを起動して連携させるためにランタイムが実行するスクリプトです。追加するには、Claude にワークフローを作成させてから、セッションで `/workflows` を実行してここに保存します。
+
+**`.claude/agent-memory/`**
+
+**When it loads**: サブエージェントの `MEMORY.md` の最初の 200 行（上限 25KB）が、サブエージェントの実行時にそのシステムプロンプトに読み込まれます
+
+フロントマターに [`memory: project`](https://code.claude.com/docs/ja/sub-agents#enable-persistent-memory) を持つサブエージェントは、[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)が有効な間、ここに専用のメモリディレクトリを持ちます。各サブエージェントは、`~/.claude/projects/` にあるメインセッションの自動メモリとは別に、独自の `MEMORY.md` を読み書きします。
+
+**`.claude/agent-memory/<agent-name>/MEMORY.md`**
+
+**When it loads**: 最初の 200 行（上限 25KB）が、サブエージェントの実行時にそのシステムプロンプトに読み込まれます
+
+サブエージェントが保存したメモのインデックスです。サブエージェントは、メインの[自動メモリ](https://code.claude.com/docs/ja/memory.md#storage-location)のインデックスと同じ形式で、このファイルを自ら作成・更新します。
+
+**`~/.claude.json`**
+
+**When it loads**: 設定と MCP サーバーを取得するためにセッション開始時に読み込まれます。`/config` で[グローバル設定オプション](https://code.claude.com/docs/ja/settings-reference.md#global-config-settings)を変更したり、プロジェクトフォルダを信頼したりすると、Claude Code がこのファイルに書き戻します
+
+アカウント情報、プロジェクトごとの信頼の決定、個人用 MCP サーバー、UI の切り替え設定を保持します。
+
+**`~/.claude/`**
+
+プロジェクトの [`.claude/`](#ce-dot-claude) ディレクトリに対応するグローバルなディレクトリです。このディレクトリ内の設定ファイルは、このマシン上のすべてのプロジェクトでユーザーに適用されます。
+
+**`~/.claude/CLAUDE.md`**
+
+**When it loads**: このマシン上のすべてのプロジェクトでセッション開始時に読み込まれます
+
+グローバルな指示ファイルです。プロジェクトの CLAUDE.md と一緒に読み込まれます。両者が矛盾する場合、Claude はどちらに従うこともあります。このファイルには、応答スタイル、コミット形式、個人的な規約など、どこでも適用される好みのみを記述してください。
+
+**`~/.claude/settings.json`**
+
+**When it loads**: セッション開始時に読み込まれます。ほとんどの編集は[実行中のセッションに適用されます](https://code.claude.com/docs/ja/settings.md#when-edits-take-effect)
+
+プロジェクトの `settings.json` と同じ形式で、権限、フック、モデル、環境変数を指定します。許可ルール、好みのモデル、通知フックなど、すべてのプロジェクトで使用したい設定をここに記述します。
+
+[設定の優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence)において、このファイルはプロジェクトの設定ファイル、`--settings` フラグ、および管理設定より下位です。`model` などのほとんどの単一値キーでは、Claude Code は最も上位の値を使用します。`permissions.allow` などのほとんどのリストは[ファイル間でマージされます](https://code.claude.com/docs/ja/settings.md#lists-merge-instead-of-overriding)。
+
+**`~/.claude/keybindings.json`**
+
+**When it loads**: セッション開始時に読み込まれ、ファイルを編集するとホットリロードされます
+
+インタラクティブ CLI のキーボードショートカットを再割り当てします。セッションで `/keybindings` を実行すると、このファイルを作成または開くことができます。キーを選ぶ前に[予約済みショートカット](https://code.claude.com/docs/ja/keybindings.md#reserved-shortcuts)を確認してください。
+
+**`~/.claude/themes/`**
+
+**When it loads**: セッション開始時に読み込まれ、ファイルが変更されると[ホットリロード](https://code.claude.com/docs/ja/terminal-config.md#create-a-custom-theme)されます。`/theme` に一覧表示されます
+
+各 `.json` ファイルは、組み込みの `base` プリセットとカラートークンの `overrides` マップで構成されるカスタムカラーテーマを定義します。セッションで `/theme` を実行して作成するか、JSON を自分で記述します。カスタムテーマを選択すると、テーマの設定として `custom:<slug>` が保存されます。
+
+**`~/.claude/projects/`**
+
+**When it loads**: 自動メモリが有効な間、現在のプロジェクトの `memory/MEMORY.md` がセッション開始時に読み込まれます。そこに列挙されたトピックファイルは必要に応じて読み込まれます
+
+Claude がセッションをまたいで保存するメモである[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)を保持します。ユーザーの役割や好み、ユーザーが与えた修正、プロジェクトの決定事項、プロジェクト外の情報の所在などが含まれます。各プロジェクトには、リポジトリのパスをキーとする独自のメモリディレクトリがあります。
+
+**`~/.claude/projects/<project>/memory/MEMORY.md`**
+
+**When it loads**: [自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)が有効な間、最初の 200 行（上限 25KB）がセッション開始時に読み込まれます
+
+詳細を記したトピックファイルを指すインデックスです。Claude は作業しながらこのファイルを作成・更新します。ユーザーはこのファイルを編集または削除できます。
+
+**`~/.claude/projects/<project>/memory/user_role.md`**
+
+**When it loads**: 関連するタスクが発生したときに Claude が読み込みます
+
+トピックファイルの例です。Claude は各メモリを個別のトピックファイルに保存し、ファイル名を決めて、`MEMORY.md` に列挙します。
+
+**`~/.claude/rules/`**
+
+**When it loads**: `paths:` フロントマターのないルールはセッション開始時に読み込まれます。`paths:` のあるルールは、Claude が一致するファイルを読み取り、書き込み、または編集するときに読み込まれます
+
+プロジェクトの [`.claude/rules/`](#ce-rules) と同じ形式で、このマシン上のすべてのプロジェクトに適用されます。個人的なコードスタイルやコミットメッセージの形式など、すべての作業で適用したい規約に使用します。
+
+**`~/.claude/skills/`**
+
+**When it loads**: `/skill-name` で呼び出されるか、Claude がタスクをスキルに一致させたときに呼び出されます
+
+自分用に作成したスキルで、このマシン上のすべてのプロジェクトで使用できます。プロジェクトの [`.claude/skills/`](#ce-skills) と同じ形式です。
+
+**`~/.claude/commands/`**
+
+**When it loads**: `/command-name` で呼び出されるか、Claude がタスクをコマンドに一致させたときに呼び出されます
+
+プロジェクトの [`.claude/commands/`](#ce-commands) と同じ形式で、このマシン上のすべてのプロジェクトで使用できます。
+
+**`~/.claude/output-styles/`**
+
+**When it loads**: ターミナルでの起動時に読み込まれるため、スタイルを追加または編集した後は Claude Code を再起動してください
+
+各 Markdown ファイルは、Claude の作業方法を調整する指示のセットである[出力スタイル](https://code.claude.com/docs/ja/output-styles.md#how-output-styles-work)を定義します。スタイルを使用すると、Claude Code をコーディング以外の用途に適応させたり、教育モードやレビューモードを追加したりできます。
+
+セッションで `/output-style` または `/config` を使用するか、設定の `outputStyle` キーを使用して、組み込みまたはカスタムのスタイルを選択します。ここにあるスタイルは、このマシン上のすべてのプロジェクトで使用できます。プロジェクトのスタイルに同じ名前のものがある場合、Claude Code はプロジェクトのスタイルを使用します。
+
+**`~/.claude/agents/`**
+
+**When it loads**: 各サブエージェントは、ユーザーまたは Claude が呼び出したときに独自のコンテキストウィンドウで実行されます
+
+ここで定義されたサブエージェントは、このマシン上のすべてのプロジェクトで使用できます。プロジェクトの [`.claude/agents/`](#ce-agents) と同じ形式です。
+
+**`~/.claude/workflows/`**
+
+**When it loads**: [ワークフローが有効](https://code.claude.com/docs/ja/workflows.md)な場合に起動時に読み込まれます。保存された各ワークフローは `/<name>` コマンドとして実行されます
+
+ここに保存されたワークフロースクリプトは、このマシン上のすべてのプロジェクトで使用できます。`.claude/workflows/` に同じ名前のプロジェクトワークフローがある場合は、そちらが優先されます。
+
+**`~/.claude/agent-memory/`**
+
+**When it loads**: サブエージェントの `MEMORY.md` の最初の 200 行（上限 25KB）が、サブエージェントの実行時にそのシステムプロンプトに読み込まれます
+
+フロントマターに `memory: user` を持つサブエージェントは、[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)が有効な間、ここに知識を保存します。その知識はすべてのプロジェクトにわたって保持されます。プロジェクトスコープのサブエージェントメモリについては、[`.claude/agent-memory/`](#ce-agent-memory) を参照してください。
+
 ## 表示されないもの
 
 エクスプローラーは、あなたが作成および編集するファイルをカバーしています。いくつかの関連ファイルは他の場所にあります。
@@ -74,7 +260,7 @@ Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます�
 | [`commands/*.md`](#ce-commands) | プロジェクトおよびグローバル | ✓ | シングルファイルプロンプト。skills と同じメカニズム | [Skills](https://code.claude.com/docs/ja/skills.md) |
 | [`output-styles/*.md`](#ce-output-styles) | プロジェクトおよびグローバル | ✓ | Claude の動作方法を調整するカスタム指示セット | [出力スタイル](https://code.claude.com/docs/ja/output-styles.md) |
 | [`agents/*.md`](#ce-agents) | プロジェクトおよびグローバル | ✓ | 独自のプロンプトとツールを持つ subagent 定義 | [Subagents](https://code.claude.com/docs/ja/sub-agents.md) |
-| [`workflows/*.js`](#ce-workflows) | プロジェクトおよびグローバル | ✓ | Claude によって書かれた動的ワークフロースクリプト、`/workflows` から保存。各ファイルは `/<name>` コマンドになります | [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md) |
+| [`workflows/*.js`](#ce-workflows) | プロジェクトおよびグローバル | ✓ | Claude によって書かれ、`/workflows` から保存された動的ワークフロースクリプト。保存された各ワークフローは `/<name>` コマンドとして実行されます | [動的ワークフロー](https://code.claude.com/docs/ja/workflows.md) |
 | [`agent-memory/<name>/`](#ce-agent-memory) | プロジェクトおよびグローバル | ✓ | subagents の永続メモリ | [永続メモリ](https://code.claude.com/docs/ja/sub-agents.md#enable-persistent-memory) |
 | [`~/.claude.json`](#ce-claude-json) | グローバルのみ | | アプリ状態、アカウント詳細、UI トグル、個人 MCP サーバー。存在しない場合、Claude Code はセッションの開始時や `claude auth status` などのサブコマンドの実行時に作成しますが、`--version` や `--help` では作成しません。 | [グローバル設定](https://code.claude.com/docs/ja/settings-reference.md#global-config-settings) |
 | [`projects/<project>/memory/`](#ce-global-projects) | グローバルのみ | | Auto memory：Claude のセッション間のメモ | [Auto memory](https://code.claude.com/docs/ja/memory.md#auto-memory) |

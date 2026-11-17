@@ -688,7 +688,7 @@ matcher がない場合、フックはそのイベントが発生するたびに
 | `SubagentStop` | エージェントの種類 | `SubagentStart` と同じ値 |
 | `ConfigChange` | 設定のソース | `user_settings`、`project_settings`、`local_settings`、`policy_settings`、`skills` |
 | `DirectoryAdded` | ディレクトリが追加された方法 | `slash_command`、`register_repo_root` |
-| `StopFailure` | エラーの種類 | `rate_limit`、`overloaded`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
+| `StopFailure` | エラーの種類 | `rate_limit`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
 | `InstructionsLoaded` | 読み込みの理由 | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact` |
 | `Elicitation` | MCP サーバー名 | 設定済みの MCP サーバー名 |
 | `ElicitationResult` | MCP サーバー名 | `Elicitation` と同じ値 |

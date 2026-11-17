@@ -624,7 +624,7 @@ brew list --cask | grep claude-code
 The connection dropped while downloading the update (attempt 3/3: aborted). Check your network — proxies sometimes cut off large downloads.
 ```
 
-括弧内のテキストは、どの試行が失敗したかと、その根本的なネットワークエラーを示します。`claude update` は、このメッセージの前に stderr へ `Error: Failed to install native update` を出力します。
+括弧内のテキストは、どの試行が失敗したかと、その根本的なネットワークエラーを示します。`claude update` は、このメッセージの前に `Failed to install native update` を出力します。
 
 接続が維持されていても 10 分以内に完了しないダウンロードは、代わりに `Download timed out: exceeded the total deadline` で失敗します。期限内に完了できないほど遅い接続では、すぐに再試行しても完了しないため、Claude Code はタイムアウトしたダウンロードを再試行しません。以下の手順は両方のメッセージに当てはまります。
 
@@ -647,7 +647,7 @@ Release verification failed for Claude Code <version> (<reason>). The update was
 
 メッセージの括弧内の値に対応する手順を実行してください。
 
-* **`sidecar_fetch_` で始まる値**：シェルから同じコマンドを再度実行してください。`claude update` は `Successfully updated from` で始まる行を出力すれば成功しており、`claude install` は `Claude Code successfully installed!` を出力すれば成功しています。
+* **`sidecar_fetch_` で始まる値**：シェルから同じコマンドを再度実行してください。`claude update` は `to version <new version>` で終わる行を出力すれば成功しており、`claude install` は `Claude Code successfully installed!` を出力すれば成功しています。
 * **その他の値**：後で同じコマンドを再度試してください
 
 どの値の場合も、メッセージが繰り返し表示される場合は、完全なメッセージを添えて[問題を報告](#still-stuck)してください。

@@ -173,7 +173,7 @@ Microsoft Foundry では、Fable モデル、Sonnet 5 以降、Opus 4.7 以降�
 
 代わりに 200K のウィンドウを維持するには、[`CLAUDE_CODE_DISABLE_1M_CONTEXT=1`](https://code.claude.com/docs/ja/model-config#turn-off-1m-context) を設定します。
 
-Claude Code がデプロイ名をモデルと照合できない場合、デフォルトで 1M のウィンドウを想定します。そのため、デプロイしたモデルが受け付けるウィンドウがそれより小さい場合は、[実際のウィンドウを設定](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)してください。
+Claude Code がデプロイ名をモデルと照合できない場合、デフォルトで 1M のウィンドウを想定します。そのため、デプロイしたモデルが受け付けるウィンドウがそれより小さい場合は、[実際のウィンドウを設定](https://code.claude.com/docs/ja/model-config.md#correct-the-window-for-a-gateway-or-custom-model-id)してください。v2.1.323 より前では、Claude Code はデフォルトで 200K を想定していたため、これらのバージョンでは、モデルが 1M を受け付ける場合、モデル変数に設定した名前に `[1m]` を付加してください。
 
 Opus 4.6 と Sonnet 4.6 は、[サードパーティデプロイ向けにモデルを固定する](https://code.claude.com/docs/ja/model-config.md#pin-models-for-third-party-deployments)で説明されているように、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のデプロイ名に `[1m]` を付加すると 1M のウィンドウを利用できます。v2.1.287 より前では、Microsoft Foundry 上の Fable モデルおよび Opus 4.7 以降でもこのサフィックスが必要で、付けない場合はデフォルトで 200K のウィンドウで動作していました。
 

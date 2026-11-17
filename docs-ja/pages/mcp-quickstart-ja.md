@@ -63,7 +63,7 @@ claude mcp list
 | `! Needs authentication` | サーバーに到達可能ですが、ブラウザサインインが必要です。または `--header` で渡されたトークンが必要です。[サインインが必要なサーバーに接続する](#connect-a-server-that-requires-sign-in)を参照してください |
 | `✘ Failed to connect` | サーバーが応答しませんでした。[トラブルシューティング](#troubleshooting)を参照してください |
 | `✘ Connection error` | 接続試行がエラーをスローしました。[トラブルシューティング](#troubleshooting)を参照してください |
-| `⏸ Pending approval (run `claude` to approve)` | まだ承認していないプロジェクトスコープのサーバー。[.mcp.json を直接編集する](#edit-mcp-json-directly)を参照してください |
+| ``⏸ Pending approval (run `claude` to approve)`` | まだ承認していないプロジェクトスコープのサーバー。[.mcp.json を直接編集する](#edit-mcp-json-directly)を参照してください |
 | `⊘ Disabled for this project (re-enable via /mcp)` | このプロジェクトのプロジェクトの `disabledMcpServers` リストによってこのプロジェクトに対してオフにされたサーバー。[サーバーを削除せずに無効にする](https://code.claude.com/docs/ja/mcp.md#disable-a-server-without-removing-it)を参照してください |
 | `✘ Blocked by enterprise managed policy` | 組織のいずれかのポリシーがこのサーバーをブロックしているため、Claude Code は接続しません。どのポリシーかを管理者に確認してください。[サーバーステータス](https://code.claude.com/docs/ja/mcp.md#server-status)を参照してください |
 
@@ -191,7 +191,7 @@ Playwright はマシンに既にインストールされている Chrome を駆�
 claude mcp list
 ```
 
-最初のチェックは `npx` がパッケージをダウンロードしている間に `✔ Failed to connect` を表示できるため、少し待ってから再度実行してください。ダウンロードが完了すると、ステータスは `✔ Connected` に変わります。数回の再試行後も `✘ Failed to connect` が表示される場合は、[トラブルシューティング](#troubleshooting)を参照してください。
+最初のチェックは `npx` がパッケージをダウンロードしている間に `✘ Failed to connect` を表示できるため、少し待ってから再度実行してください。ダウンロードが完了すると、ステータスは `✔ Connected` に変わります。数回の再試行後も `✘ Failed to connect` が表示される場合は、[トラブルシューティング](#troubleshooting)を参照してください。
 
 **3. ブラウザを使用する**
 

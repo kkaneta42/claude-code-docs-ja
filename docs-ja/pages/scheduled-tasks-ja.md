@@ -126,7 +126,7 @@ quiet, say so in one line.
 
 ### ループを停止する
 
-* **[自分のペースで実行するループ](#let-claude-choose-the-interval)**: ループが次の反復を待機している間に `Esc` を押すと停止します。Claude がアイドル状態のときは `Ctrl+C` で停止することもできます。ただし、[アタッチしたバックグラウンドセッション](#detach-without-stopping-a-loop)では除きます。`Pending wakeup cancelled` という通知により、ループが再度実行されないことを確認できます。
+* **[自分のペースで実行するループ](#let-claude-choose-the-interval)**: ループが次の反復を待機している間に、空のプロンプトで `Esc` を押すと停止します。Claude がアイドル状態のときは `Ctrl+C` で停止することもできます。ただし、[アタッチしたバックグラウンドセッション](#detach-without-stopping-a-loop)では除きます。`Pending wakeup cancelled` という通知により、ループが再度実行されないことを確認できます。
 * **[固定間隔のループ](#run-on-a-fixed-interval)**: `/loop 5m` などのループを停止するには、Claude にキャンセルを依頼します（例: `cancel the deploy check loop`）。`Esc` と `Ctrl+C` では、このループも、[Claude に直接依頼してスケジュールした](#manage-scheduled-tasks)タスクも停止しません。キャンセルしないループは [7 日が経過](#seven-day-expiry)すると終了します。
 
 [自分のペースモード](#let-claude-choose-the-interval)では、Claude はタスクが完了したら自分でループを終了することもできます。Claude は [`ScheduleWakeup` ツール](https://code.claude.com/docs/ja/tools-reference)を `stop: true` で呼び出し、保留中のウェイクアップを直ちにキャンセルします。反復がスケジュール変更またはスケジュール停止のいずれも行わずに終了した場合、Claude Code は約 20 分後にフォールバックウェイクアップをスケジュールし、その反復がスケジュール変更も行わない場合にループを終了します。

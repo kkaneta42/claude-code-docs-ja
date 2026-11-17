@@ -40,7 +40,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **macOS、Linux、WSL：**
 >
-> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```bash theme={null}
 > curl -fsSL https://claude.ai/install.sh | bash
 > ```
 >
@@ -48,13 +48,13 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **Windows PowerShell：**
 >
-> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```powershell theme={null}
 > irm https://claude.ai/install.ps1 | iex
 > ```
 >
 > **Windows CMD：**
 >
-> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```batch theme={null}
 > curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 > ```
 >
@@ -72,7 +72,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] Homebrew
 >
-> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```bash theme={null}
 > brew install --cask claude-code
 > ```
 >
@@ -84,7 +84,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] WinGet
 >
-> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
+> ```powershell theme={null}
 > winget install Anthropic.ClaudeCode
 > ```
 >
@@ -236,7 +236,7 @@ apt、dnf、および apk リポジトリからのインストールは、この
 
 最小値は、`/config` で設定すると Claude Code が現在のバージョンを自動で入力し、設定ファイルで設定すると番号を自分で入力します。
 
-* **`/config` の場合**: **自動更新チャネル**を stable に切り替えてから、**現在のバージョンに留まる**を選択します。`/config` で latest に戻すと、Claude Code は最小値をクリアします。
+* **`/config` の場合**: **自動更新チャネル**を stable に切り替えてから、現在のバージョンに留まるオプションを選択します。`/config` で latest に戻すと、Claude Code は最小値をクリアします。
 * **[設定ファイル](https://code.claude.com/docs/ja/settings.md)の場合**: シェルで `claude --version` を実行し、出力の先頭にある番号を `minimumVersion` に設定します。同じ編集で、`autoUpdatesChannel` を `"stable"` に設定します。
 
 次の `~/.claude/settings.json` は、バージョン 2.1.323 のインストールを stable に切り替えます。
@@ -280,11 +280,11 @@ apt、dnf、および apk リポジトリからのインストールは、この
 claude update
 ```
 
-更新がインストールされると、コマンドは `Successfully updated from <old version> to version <new version>` を報告します。既に最新バージョンを使用している場合は、`Claude Code is up to date (<version>)` を報告します。Homebrew、WinGet、または apk で管理されるインストールは、代わりに `Claude is up to date!` を報告します。
+更新がインストールされると、コマンドは `to version <new version>` で終わる行を出力します。既に最新バージョンを使用している場合は、`Claude Code is up to date (<version>)` を報告します。Homebrew、WinGet、または apk で管理されるインストールは、代わりに `Claude is up to date!` を報告します。
 
 ## 高度なインストールオプション
 
-これらのオプションは、バージョンピニング、Linux パッケージマネージャー、npm、ネットワークストレージ、およびバイナリ整合性の検証用です。
+これらのオプションは、特定のバージョンのインストール、Linux パッケージマネージャー、npm、ネットワークストレージ、およびバイナリ整合性の検証用です。
 
 ### 特定のバージョンをインストール
 

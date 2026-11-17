@@ -224,7 +224,7 @@ Claude Code は、起動したディレクトリと、そこからリポジト�
 
 ### Cowork とクラウドセッションでスキルを使う
 
-[Cowork](https://claude.com/product/cowork) セッションと、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)を含む[クラウドセッション](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)は、マシン上の `~/.claude/skills/` を読み込みません。対話型とスケジュール型のどちらの Cowork セッションも、セッション開始時に同期された、claude.ai アカウントで有効なスキルを読み込みます。これらは Desktop アプリのサイドバーの **Customize** から、または claude.ai のスキル設定から管理します。
+[Cowork](https://claude.com/product/cowork) セッションと、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)を含む[クラウドセッション](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)は、マシン上の `~/.claude/skills/` を読み込みません。対話型とスケジュール型のどちらの Cowork セッションも、セッション開始時に同期された、claude.ai アカウントで有効なスキルを読み込みます。これらのスキルは [claude.ai/customize/skills/yours](https://claude.ai/customize/skills/yours) で管理します。
 
 スキルがマシン上の `~/.claude/skills/` にしか存在しない場合、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)がそれを呼び出すと、Claude Code はスキルが見つからないと報告します。これは、各実行が新しいクラウドセッションとして開始されるためです。個人のスキルをこれらのセッションで利用できるようにするには、次のようにします。
 

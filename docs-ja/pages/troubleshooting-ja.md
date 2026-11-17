@@ -121,9 +121,9 @@ Claude がテキストをこれらのツールにパイプする場合、`pbcopy
 
 ### SSH 経由でコピーされたテキストがローカルクリップボードに到達しない
 
-Claude Code がリモートマシンで SSH 経由で実行されている場合、ローカルマシンでクリップボードツールを実行できません。tmux の外では、[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)でテキストを選択するか `/copy` を実行すると、Claude Code はテキストを OSC 52 エスケープシーケンスとしてターミナルに送信します。ターミナルがそれをクリップボードに配置するかどうかを決定します。`/copy` は、テキストが到達したかどうかに関わらず `Copied to clipboard` を報告し、tmux の外では選択通知は `sent N chars via OSC 52` と表示されます。
+Claude Code がリモートマシンで SSH 経由で実行されている場合、ローカルマシンでクリップボードツールを実行できません。tmux の外では、[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)でテキストを選択するか `/copy` を実行すると、Claude Code は代わりにテキストを OSC 52 エスケープシーケンスとしてターミナルに送信します。ターミナルがそれをクリップボードに配置するかどうかを決定します。
 
-一部のターミナルは OSC 52 に対応していません。iTerm2 は **Settings > General > Selection > Applications in terminal may access clipboard** をオンにするまで無視し、macOS Terminal.app はそれをサポートしていません。
+一部のターミナルは OSC 52 に対応していません。iTerm2 は **Settings > General > Selection > Applications in terminal may access clipboard** をオンにするまで無視し、macOS Terminal.app はそれをサポートしていません。`/copy` のメッセージも `sent N chars via OSC 52` 通知も、テキストが到達したことを確認するものではありません。
 
 OSC 52 なしでテキストを取得するには：
 

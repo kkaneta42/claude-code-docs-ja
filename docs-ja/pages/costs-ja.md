@@ -20,7 +20,7 @@ Claude Code は API トークン消費によって課金されます。サブス
 >
 > `/usage` のセッションブロックは API トークン使用量を表示し、API ユーザーを対象としています。Claude Pro、Max、および Ultra サブスクライバーはサブスクリプションに使用量が含まれているため、セッションコスト数値は請求目的では関連がありません。サブスクライバーは同じ画面でプラン使用量バー、アクティビティ統計、および使用量の内訳を表示します。
 
-`/usage` の上部のセッションブロックは、現在のセッションの詳細なトークン使用統計を表示します。
+Claude Code のプロンプトで `/usage` を実行し、**Session** 見出しの下で現在のセッションのトークン使用量を確認します。
 
 Claude Code は、[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効でない限り、トークン数から定価に基づいてドル数値をローカルで計算します。管理者は組織の管理設定でこのテーブルを設定し、数値が契約レートを使用するようにします。テーブルが有効な間、`Total cost` 行には `at your organization's configured rates` という注記が付きます。この数値は推定値であるため、正式な請求情報については [組織のコストを管理する](#manage-costs-for-your-organization) を参照してください。
 

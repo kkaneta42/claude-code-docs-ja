@@ -49,14 +49,15 @@ Code Mode をオンにする前に、次の制限を受け入れられるか確�
 ## 要件
 
 * **バージョン**: Claude Code v2.1.323 以降（どちらの[リリースチャネル](https://code.claude.com/docs/ja/setup.md#configure-release-channel)でも可）。古いバージョンでは、理由 `it isn't open to your account yet` の表示の有無にかかわらず、Code Mode なしで起動します
-* **アカウント**: Claude のサブスクリプションまたは Console アカウント。ゲートウェイ、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry を経由して Code Mode を使うことはできません
+* **アカウント**: Claude のサブスクリプションまたは Console アカウント。ゲートウェイ、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md) を経由して Code Mode を使うことはできません
 * **組織**: 組織が [HIPAA 構成](https://code.claude.com/docs/ja/hipaa-setup.md)や[ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md)を使用していないこと
 * **モデル**: Claude Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable 5.2
 * **サーフェス**: ターミナルでの対話型の `claude` セッション。Code Mode は `-p`、Agent SDK、VS Code パネル、Desktop アプリ、クラウドセッションでは動作しません
+* **エージェントチーム**: [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)をオンにした状態で Code Mode を使用するには、v2.1.326 以降が必要です。チームメイトは、デフォルトの[インプロセス表示モード](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)では Code Mode で実行され、分割ペインでは Code Mode なしで起動します
 * **インストール**: Claude Code の[ネイティブビルド](https://code.claude.com/docs/ja/setup.md)
 * **Windows**: [Git for Windows](https://git-scm.com/downloads/win) がインストールされていること
 
-また、API キーヘルパー、エージェントチーム、OpenTelemetry エクスポート、`DISABLE_TELEMETRY` など、一部の設定がオンになっている場合も Code Mode を開始できません。それぞれの対処方法については、[Code Mode が起動しない](#code-mode-doesnt-start)を参照してください。
+また、API キーヘルパー、OpenTelemetry エクスポート、`DISABLE_TELEMETRY` など、一部の設定がオンになっている場合も Code Mode を開始できません。それぞれの対処方法については、[Code Mode が起動しない](#code-mode-doesnt-start)を参照してください。
 
 ## Code Mode を試す
 
@@ -143,16 +144,18 @@ Code Mode のセッション中のユーザーは、Claude Code を終了また�
 
 ## 権限と長時間実行されるコード
 
-権限モードによって、Claude のコードがどのようにチェックされるか、またコードの実行中に Claude と会話できるかどうかが決まります。
+権限モードによって、Claude が書くコードがどのようにチェックされるか、またコードの実行中に Claude と会話できるかどうかが決まります。
 
 ### 権限チェック
 
-Claude のコードが行う各ツール呼び出しは、`deny` と `ask` の[権限ルール](https://code.claude.com/docs/ja/permissions.md)および [`PreToolUse` フック](https://code.claude.com/docs/ja/hooks#pretooluse)を通過します。`Bash` などのツールのルールや matcher を変更する必要はありません。ルールとフックに加えて、auto モードでは分類器がコードをレビューし、確認を求めるモードではプロンプトに応答します。
+Claude がコードを実行すると、その中の各ツール呼び出しは、`Bash` などのツールの通常の名前で、`deny` と `ask` の[権限ルール](https://code.claude.com/docs/ja/permissions.md)および [`PreToolUse` フック](https://code.claude.com/docs/ja/hooks#pretooluse)を通過します。ルールとフックに加えて、auto モードでは分類器がコードをレビューし、確認を求めるモードではプロンプトに応答します。
 
 * **[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)**: 分類器は、各ツール呼び出しではなく、実行前の各コードをレビューします。検索出力から取得したパスなど、実行時に計算される値は分類器には見えないため、制御する必要がある呼び出しにはルールやフックを残しておいてください。それでも、[以前のコードの実行中に新しいコードが開始されると、プロンプトが表示される](#permission-prompt-with-a-countdown)ことがあります
 * **その他の[権限モード](https://code.claude.com/docs/ja/permission-modes.md)**: コードはレビューなしで開始され、そのモードでプロンプトが表示されるツール呼び出しごとにプロンプトが表示されます
 
-コード自体をチェックするには、Claude のコードを実行するツールである `REPL` にマッチする `PreToolUse` フックを書き、`tool_input.code` から JavaScript を読み取ります。
+シェルコマンドを許可またはブロックする `PreToolUse` フックがある場合は、[Bash ルールと同様に](https://code.claude.com/docs/ja/permissions.md#compound-commands)、コマンドの各部分をチェックするようにしてください。Code Mode では、`app` という名前のフォルダでの `git push` が、`cd 'app' && git push` としてフックに届くことがあります。
+
+コード自体をチェックするには、コードを実行するツールである `REPL` にマッチする `PreToolUse` フックを書き、`tool_input.code` から JavaScript を読み取ります。
 
 > [!WARNING]
 >
@@ -179,15 +182,16 @@ Claude のコードが行う各ツール呼び出しは、`deny` と `ask` の[�
 
 | 理由に含まれる文字列 | 対処方法 |
 | :- | :- |
-| `it isn't open to your account yet` | バージョンが v2.1.323 より古い場合は、[更新](#try-code-mode)してください。それ以外の場合は、ネットワーク接続を確認して再度起動してください。理由が変わらない場合は、別の日に再試行してください |
-| `it only works with the Anthropic API` | クラウドプロバイダー、ゲートウェイ、またはカスタムの `ANTHROPIC_BASE_URL` を経由してリクエストをルーティングする設定を削除してください |
+| `it isn't open to your account in this version` または `it isn't open to your account yet` | バージョンが v2.1.323 より古い場合は、[更新](#try-code-mode)してください。それ以外の場合は、ネットワーク接続を確認して再度起動してください。理由が変わらない場合は、別の日に再試行してください |
+| `it only works directly with the Anthropic API` または `it only works with the Anthropic API` | クラウドプロバイダー、ゲートウェイ、またはカスタムの `ANTHROPIC_BASE_URL` を経由してリクエストをルーティングする設定を削除してください |
 | `it doesn't work with an API key helper` | `apiKeyHelper`、`ANTHROPIC_AUTH_TOKEN`、および `ANTHROPIC_CUSTOM_HEADERS` 内の `Authorization` または `X-Api-Key` ヘッダーを削除してください。その後、サインインするか `ANTHROPIC_API_KEY` を設定してください |
 | `it only works with Opus 5.5, Sonnet 5.5 and later models` | [サポートされているモデル](#requirements)で起動してください（例: `--model opus`）。Haiku 5.5 と Fable 5.2 も動作します |
-| `it doesn't work in background jobs` | `--remote-control` なしでフォアグラウンドで起動してください |
+| `it doesn't work in background jobs` | `--remote-control` なしでフォアグラウンドで起動してください。チームメイトの分割ペインに理由が表示される場合は、[in-process 表示モード](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)を使用して、チームメイトを Code Mode で実行してください |
 | `it needs settings that Claude Code downloads from Anthropic` | `DISABLE_TELEMETRY` など、[機能フラグの取得をオフにする](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)変数の設定を解除してください |
 | `OpenTelemetry is on` | [OpenTelemetry エクスポート](https://code.claude.com/docs/ja/monitoring-usage.md)なしで作業できる場合は、`CLAUDE_CODE_ENABLE_TELEMETRY` と `ENABLE_BETA_TRACING_DETAILED` の設定を解除してください |
+| `it doesn't yet work with the plugin` | セッションで `/plugin` を実行し、理由に名前が挙がっている各プラグインを無効にしてください。組織がプラグインをオンにしている場合は、管理者にオフにするよう依頼してください |
 | `it doesn't yet work with an installed mod` | ツール呼び出しをチェックする [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) をオフにしてください |
-| `it can't be used together with agent teams yet` | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` の設定を解除してください |
+| `it can't be used together with agent teams yet` | エージェントチームをオンのままにするには、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.326 以降にしてください。現在のバージョンを使い続ける場合は、`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` の設定を解除してください |
 | `this launch's tool options` | `--restricted` なしで起動し、`--tools` に `REPL` を追加して、`--disallowedTools` と `deny` ルールから `REPL` を削除してください |
 | `couldn't save your answer` | `~/.claude.json` を書き込み可能にしてください |
 | `your organization's settings don't allow it` | [管理設定](#block-code-mode-for-your-organization)について管理者に問い合わせてください |
@@ -208,14 +212,14 @@ Claude Code will automatically block this request in 1:59, to avoid holding up a
 
 Claude がツール呼び出しの拒否を報告した場合は、エラーテキストを尋ねてください。次のエラーは、`PreToolUse` フックが判定を返さなかったことを意味し、[`onFailure`](https://code.claude.com/docs/ja/hooks#block-the-action-when-a-hook-fails) が設定されていない場合でも呼び出しは拒否されます。
 
-* **`the hook failed`**: Claude のコードからの呼び出しで、フックが開始できなかった、強制終了された、126、127、または 128 を超えるコードで終了した、あるいは HTTP エラーや無効な出力を返しました。フックを修正してください
-* **`the hook did not finish`**: Claude のコードからの呼び出し、または Claude がセッション内でコードを実行した後のその他のツール呼び出しで、フックがタイムアウトしました。フックの [`timeout`](https://code.claude.com/docs/ja/hooks#common-fields) を引き上げてください
+* **`the hook failed`**: コードからの呼び出しで、フックが開始できなかった、強制終了された、126、127、または 128 を超えるコードで終了した、あるいは HTTP エラーや無効な出力を返しました。フックを修正してください
+* **`the hook did not finish`**: コードからの呼び出し、または Claude がセッション内でコードを実行した後のその他のツール呼び出しで、フックがタイムアウトしました。フックの [`timeout`](https://code.claude.com/docs/ja/hooks#common-fields) を引き上げてください
 
 `command` または `http` フックが失敗またはタイムアウトしたときに呼び出しを続行させるには、そのフックに `"onFailure": "continue"` を設定します。`command` フックが 1 などの通常のコードで終了した場合、`"onFailure": "block"` を設定した場合を除き、呼び出しは続行されます。
 
 ### フックによってコードの出力が保留された
 
-Claude のコードからの出力を期待していたところで Claude がフックのブロック理由を報告した場合は、[`UserPromptSubmit`](https://code.claude.com/docs/ja/hooks#userpromptsubmit) フックを確認してください。[コードをバックグラウンドで実行できる](#long-running-code)場合、そのイベントの `command`、`http`、`mcp_tool` フックはコードの出力に対しても実行されます。出力を通過させるには、入力の `source` が `poll_event` のときにブロックしないようにフックを変更してください。
+コードからの出力を期待していたところで Claude がフックのブロック理由を報告した場合は、[`UserPromptSubmit`](https://code.claude.com/docs/ja/hooks#userpromptsubmit) フックを確認してください。[コードをバックグラウンドで実行できる](#long-running-code)場合、そのイベントの `command`、`http`、`mcp_tool` フックはコードの出力に対しても実行されます。出力を通過させるには、入力の `source` が `poll_event` のときにブロックしないようにフックを変更してください。
 
 ## 関連リソース
 

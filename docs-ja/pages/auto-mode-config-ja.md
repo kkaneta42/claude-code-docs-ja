@@ -224,7 +224,7 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
 
 > [!NOTE]
 >
-> [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) セッションでは、分類器は Claude のコードをレビューする際に `hard_deny` と `soft_deny` を適用し、コードが行う個々のツール呼び出しには適用しません。`permissions.deny` ルールは個々の呼び出しに適用されます。
+> [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) セッションでは、分類器はコードが実行される前に、各コード片の全体に対して `hard_deny` と `soft_deny` を適用します。コードが行う特定のツール呼び出しをブロックするには、`permissions.deny` ルールを使用します。
 
 分類器内では、優先順位は 4 つのレベルで機能します。
 

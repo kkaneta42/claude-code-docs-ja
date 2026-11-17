@@ -216,7 +216,7 @@ Claude はコメントを読み取り、要求された変更を加えます。�
 
 ローカル、[SSH](#ssh-sessions)、および [WSL](https://code.claude.com/docs/ja/desktop-wsl.md) セッションでは、結果はファイルごとにグループ化された **Code review** カードとして表示されます。カードを使用して結果に対応します：
 
-* **Walk through in diff** をクリックすると、差分ビューが開き、結果を 1 つずつ確認できます。現在の差分内の結果は該当する行に表示され、そこで **Fix this one** をクリックするか、結果を却下できます。
+* **Walk through in Changes** をクリックすると、差分ビューが開き、結果を 1 つずつ確認できます。現在の差分内の結果は該当する行に表示され、そこで **Fix this one** をクリックするか、結果を却下できます。
 * **Apply fixes** をクリックすると、まだ未対応の結果を修正するよう Claude に依頼します。
 
 どのセッションでも、プロンプトボックスで Claude にレビュー結果の修正を依頼することもできます。`/code-review` が確認する内容と受け付ける引数については、[`/code-review` でローカルにレビューする](https://code.claude.com/docs/ja/code-review-local)を参照してください。
@@ -620,7 +620,7 @@ Dispatch は、ターミナルから離れているときに Claude で作業す
 
 ## Claude Code を拡張する
 
-外部サービスの接続、再利用可能なワークフローの追加、Claude の動作のカスタマイズ、プレビューサーバーの設定を行えます。コネクタ、スキル、プラグインを一か所で管理するには、サイドバーの **Customize** をクリックします。デスクトップアプリの [Cowork](https://claude.com/product/cowork) は、スキル、プラグイン、コネクタを CLI の `~/.claude` ディレクトリからではなく、claude.ai アカウントを通じて同期されるこの Customize の設定から取得します。
+外部サービスの接続、再利用可能なワークフローの追加、Claude の動作のカスタマイズ、プレビューサーバーの設定を行えます。コネクタ、スキル、プラグインを一か所で管理するには、サイドバーの **Customize** または **Plugins** をクリックします。デスクトップアプリの [Cowork](https://claude.com/product/cowork) は、スキル、プラグイン、コネクタを CLI の `~/.claude` ディレクトリからではなく、claude.ai アカウントを通じて同期されるこの設定から取得します。
 
 Claude Code は、同じアカウントでサインインしたターミナルセッションでも、claude.ai アカウントで有効になっているスキルとプラグインを読み込みます。[claude.ai から同期されたスキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)および [claude.ai から同期されたプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)を参照してください。
 
@@ -628,7 +628,11 @@ Claude Code は、同じアカウントでサインインしたターミナル�
 
 コネクタは、グラフィカルなセットアップフローを備えた [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)です。
 
-Claude アカウントを使用するローカルセッションまたは [SSH](#ssh-sessions) セッションでコネクタを追加するには、セッションの開始前または開始後に、プロンプトボックスの横にある **+** をクリックします。**Add connectors** を選択するとコネクタディレクトリが開きます。メニューに **Connectors** が表示される場合は、それを選択してから **Browse connectors** を選択します。
+Claude アカウントを使用するローカルセッションまたは [SSH](#ssh-sessions) セッションでコネクタを追加するには、セッションの開始前または開始後に、プロンプトボックスの横にある **+** をクリックします。メニューに表示される項目からコネクタディレクトリを開きます。
+
+* **Add connectors**：これを選択します
+* **Connectors**：これを選択してから、**Browse connectors** を選択します
+* **どちらの項目もない場合**：サイドバーの **Plugins** をクリックします。そこのディレクトリにはコネクタとプラグインがまとめて一覧表示されます
 
 > [!NOTE]
 >
@@ -637,9 +641,9 @@ Claude アカウントを使用するローカルセッションまたは [SSH](
 > * **WSL セッションで Connectors がグレーアウトしている場合**：[ターミナルまたはコネクタが利用できない場合](https://code.claude.com/docs/ja/desktop-wsl.md#check-for-the-terminal-and-connectors)を参照してください
 > * **クラウドセッション**：[コネクタが Claude Code に届く仕組み](https://code.claude.com/docs/ja/mcp.md#how-connectors-reach-claude-code)を参照してください
 
-接続すると、Claude はカレンダーの読み取り、メッセージの送信、issue の作成など、ツールを直接操作できるようになります。セッションで設定されているコネクタを Claude に尋ねることもできます。コネクタを管理または切断するには、サイドバーの **Customize** をクリックし、**Connectors** を開きます。
+接続すると、Claude はカレンダーの読み取り、メッセージの送信、issue の作成など、ツールを直接操作できるようになります。セッションで設定されているコネクタを Claude に尋ねることもできます。コネクタを管理または切断するには、サイドバーの **Customize** をクリックし、**Connectors** を開きます。サイドバーに代わりに **Plugins** が表示されている場合は、それをクリックして **Your plugins** の下を確認します。
 
-Connectors に掲載されていないインテグレーションについては、[設定ファイル](https://code.claude.com/docs/ja/mcp.md#installing-mcp-servers)を使用して MCP サーバーを手動で追加します。[カスタムコネクタを作成する](https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp)こともできます。
+コネクタディレクトリにないインテグレーションについては、[設定ファイル](https://code.claude.com/docs/ja/mcp.md#installing-mcp-servers)を使用して MCP サーバーを手動で追加します。[カスタムコネクタを作成する](https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp)こともできます。
 
 ### スキルを使用する
 
@@ -655,7 +659,12 @@ Claude の作業中でも、他のメッセージと同様にコマンドを送�
 
 [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)は、スキル、エージェント、フック、MCP サーバー、LSP 設定を Claude Code に追加する再利用可能なパッケージです。ターミナルを使用せずに、デスクトップアプリからプラグインをインストールできます。
 
-ローカルセッションまたは [SSH セッション](#ssh-sessions)で、プロンプトボックスの横にある **+** をクリックし、**Add plugins** を選択するとプラグインブラウザが開きます。メニューに **Plugins** が表示される場合は、それを選択してから **Browse plugins** を選択します。プラグインを有効化、無効化、またはアンインストールするには **Manage plugins** を選択します。
+ローカルセッションまたは [SSH セッション](#ssh-sessions)で、プロンプトボックスの横にある **+** をクリックします。メニューに表示される項目からプラグインブラウザを開きます。
+
+* **Add plugins**：これを選択します
+* **Plugins**：これを選択してから、**Browse plugins** を選択します。これがない場合は、**Manage plugins** を選択します。
+
+**+** メニューに **Plugins** が表示される場合にプラグインを有効化、無効化、またはアンインストールするには、**Plugins > Manage plugins** を選択します。ローカルセッションでは、サイドバーの **Customize** または **Plugins** をクリックすることもできます。
 
 プラグインのスコープは、ユーザーアカウント、特定のプロジェクト、またはローカルのみに設定できます。組織がプラグインを一元管理している場合、それらのプラグインは CLI と同じようにデスクトップセッションでも利用できます。ただし、デスクトップアプリが [`disableSideloadFlags` により保留する](https://code.claude.com/docs/ja/settings-reference#disablesideloadflags)ものは除きます。
 

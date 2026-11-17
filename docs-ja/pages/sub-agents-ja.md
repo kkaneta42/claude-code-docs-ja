@@ -342,7 +342,7 @@ experimental:
 
 ##### セッション前に `agents` ディレクトリをチェックする
 
-`agents` ディレクトリ内でフロントマターを解析できないファイルを見つけるには、`.claude/agents` や `~/.claude/agents` などのディレクトリに対して `claude plugin validate` を実行します。Claude Code は[指定したディレクトリ](https://code.claude.com/docs/ja/plugins/cli-reference.md#validate-a-directory)のみをチェックし、フロントマターは解析できるが `name` がないファイルは指摘しません。Claude Code v2.1.233 以降が必要です。
+`agents` ディレクトリ内でフロントマターを解析できないファイルを見つけるには、`.claude/agents` や `~/.claude/agents` などのディレクトリに対して `claude plugin validate` を実行します。Claude Code は[指定したディレクトリ](https://code.claude.com/docs/ja/plugins/cli-reference.md#validate-a-directory)のみをチェックし、フロントマターは解析できるが `name` がないファイルは指摘しません。
 
 ### モデルを選択する
 
@@ -868,7 +868,7 @@ Claude は、リクエスト内のタスクの説明、サブエージェント�
 自動委任だけでは不十分な場合は、自分でサブエージェントを要求できます。1 回限りの提案からセッション全体のデフォルトまで、段階的な 3 つのパターンがあります。
 
 * **自然言語**: プロンプト内でサブエージェントの名前を挙げます。委任するかどうかは Claude が判断します
-* **@ メンション**: 1 つのタスクについて、そのサブエージェントが確実に実行されます
+* **@ メンション**: 1 つのタスクについて、そのサブエージェントを実行するよう Claude に指示します
 * **セッション全体**: `--agent` フラグまたは `agent` 設定により、セッション全体がそのサブエージェントとして実行されます
 
 自然言語の場合、特別な構文はありません。サブエージェントの名前を挙げれば、Claude は通常そのサブエージェントに委任します。
@@ -878,13 +878,13 @@ Use the test-runner subagent to fix failing tests
 Have the code-reviewer subagent look at my recent changes
 ```
 
-**サブエージェントを @ メンションする。** ファイルを @ メンションするのと同じ要領で、`@` を入力して入力候補からサブエージェントを選びます。これにより、選択を Claude に任せるのではなく、特定のサブエージェントが確実に実行されます。
+**サブエージェントを @ メンションする。** ファイルを @ メンションするのと同じ要領で、`@` を入力して入力候補からサブエージェントを選びます。
 
 ```text wrap theme={null}
 @"code-reviewer (agent)" look at the auth changes
 ```
 
-メッセージ全体は引き続き Claude に送られ、Claude はユーザーの依頼内容に基づいてサブエージェントのタスクプロンプトを作成します。@ メンションが制御するのは Claude がどのサブエージェントを呼び出すかであり、そのサブエージェントがどのようなプロンプトを受け取るかではありません。
+メッセージ全体は引き続き Claude に送られ、Claude はユーザーの依頼内容に基づいてサブエージェントのタスクプロンプトを作成します。
 
 有効化された[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)が提供するサブエージェントは、`my-plugin:code-reviewer` のようなスコープ付きの名前で入力候補に表示されます。プラグインが[エージェントをサブフォルダーに整理している](#choose-the-subagent-scope)場合は、`my-plugin:review:security` のようになります。セッション内で現在実行中の名前付きバックグラウンドサブエージェントも入力候補に表示され、名前の横にステータスが示されます。
 

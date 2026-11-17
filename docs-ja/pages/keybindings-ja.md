@@ -110,7 +110,7 @@ v2.1.205 より前では、`Doctor` コンテキストと `/doctor` 診断スク
 | :- | :- | :- |
 | `chat:cancel` | Escape | 現在の入力をキャンセルします |
 | `chat:clearInput` | Ctrl+L | 入力と会話を保持したまま、画面全体を強制的に再描画します |
-| `chat:clearScreen` | Cmd+K | `chat:clearInput` と同じです。iTerm2 と Terminal.app での Cmd+K の動作については、[会話をクリアする](https://code.claude.com/docs/ja/fullscreen.md#clear-the-conversation)を参照してください |
+| `chat:clearScreen` | Cmd+K | `chat:clearInput` と同じです。iTerm2 での Cmd+K の動作については、[会話をクリアする](https://code.claude.com/docs/ja/fullscreen.md#clear-the-conversation)を参照してください |
 | `chat:killAgents` | Ctrl+X Ctrl+K | このセッションで実行中のすべての[バックグラウンドサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)を停止し、セッションの残りの間は[アーティファクトの自動返信](https://code.claude.com/docs/ja/artifacts.md#let-claude-reply-to-comments-on-its-own)をオフにします。確認のため、3 秒以内にショートカットを 2 回押します。バックグラウンドサブエージェントの権限プロンプトが開いている間も押すことができます |
 | `chat:cycleMode` | Shift+Tab\* | 権限モードを順に切り替えます |
 | `chat:modelPicker` | Meta+P | モデルピッカーを開きます |

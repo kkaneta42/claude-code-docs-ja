@@ -744,7 +744,7 @@ secrets:
 セッションが実行するバージョンと、それを変更するタイミングを選択します。
 
 * **バージョンをピンする前に**：セッションが使用するすべてのモデルについて [モデルが必要とする Claude Code バージョン](https://code.claude.com/docs/ja/model-config.md#available-models) を確認してください。モデルがセッションで実行されるバージョンより新しいバージョンを必要とする場合、サーバーはそのモデルのリクエストを [Claude Code does not support this model](https://code.claude.com/docs/ja/errors.md#claude-code-does-not-support-this-model) で拒否します。
-* **フリートを 1 つのバージョンに保持するには**：ピンされたバージョンでイメージをビルドするか、ベアホストで特定のバージョンをインストールし、[オートアップデートを無効にしてください](https://code.claude.com/docs/ja/setup.md#disable-auto-updates)
+* **フリートを 1 つのバージョンに保持するには**：ピンされたバージョンでイメージをビルドするか、ベアホストで[特定のバージョンをインストール](https://code.claude.com/docs/ja/setup.md#install-a-specific-version)し、[オートアップデートを無効にしてください](https://code.claude.com/docs/ja/setup.md#disable-auto-updates)
 * **固定フリートをアップグレードするには**：現在のバージョンとインストールするバージョンの間の [changelog](https://code.claude.com/docs/en/changelog.md) のエントリを確認してから、新しいバージョンをインストールするか、イメージを再ビルドしてランナーを再起動してください
 * **オンデマンドランナーをアップグレードするには**：現在のバージョンとインストールするバージョンの間の [changelog](https://code.claude.com/docs/en/changelog.md) のエントリを確認してから、[`spawn-runner` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#the-spawn-runner-hook)が起動するイメージを変更してください。新しいランナーにはそれぞれ新しいバージョンが適用されます。すでに起動しているランナー（[`--min-idle`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) によって起動されたスタンバイランナーを含む）は、終了するまでそのバージョンを維持します。その作業指示は一度しか使用できないため、再起動しないでください。
 * **セッションが別のバイナリを起動する場合**：[`--exec-path`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) または [`command` フック](https://code.claude.com/docs/ja/self-hosted-environments-configuration#command)を使用してランナー独自のもの以外の Claude Code バイナリを起動する場合、セッションはそのバイナリのバージョンを実行します。ランナーをアップデートするときは、そのバイナリもアップデートしてください。

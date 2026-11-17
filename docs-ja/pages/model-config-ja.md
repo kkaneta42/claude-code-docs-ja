@@ -143,21 +143,13 @@ Enterprise プランで claude.ai アカウントでログインしており、`
 
 `/model` でモデルを切り替えると、その切り替えは[メインの会話のモデルを継承するサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)にも反映されます。Claude がサブエージェントを起動する際、Claude Code はセッションで使用しているモデルからそのモデルを解決するためです。Claude が調査やテスト実行をサブエージェントに委任する前に Opus に切り替えると、その作業も Opus で実行されます。カスタムサブエージェントを小さなモデルのままにするには、その定義で `model` を設定してください。
 
-`-p` フラグを使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)で `/model` によってモデルを設定した場合、選択は現在のセッションにのみ適用され、デフォルトとしては保存されません。このモードでの `/model` には Claude Code v2.1.205 以降が必要です。プロジェクト設定と管理設定は引き続き優先され、次回の起動時に再適用されます。管理者がユーザーの選択を上書きするように設定した[組織のデフォルトモデル](#organization-default-model)も、次回の起動時に再適用されます。
+`-p` フラグを使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)で `/model` によってモデルを設定した場合、選択は現在のセッションにのみ適用され、デフォルトとしては保存されません。このモードでの `/model` には Claude Code v2.1.205 以降が必要です。
 
 v2.1.144 から v2.1.152 では、`/model` は現在のセッションにのみ適用され、ピッカーで `d` を押すとデフォルトが保存されていました。
 
 `--model` フラグと `ANTHROPIC_MODEL` 環境変数は、それらを指定して起動したセッションにのみ適用されます。異なるターミナルで異なるモデルを同時に実行するには、`/model` で切り替えるのではなく、それぞれ独自の `--model` フラグを指定して起動してください。
 
 `/model` ピッカーの価格は、Claude Code が Anthropic API と直接、またはそれをプロキシする [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由で通信している場合に表示され、各行の価格はその行が選択するモデルの価格です。Amazon Bedrock などの[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)や [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) では、支払う金額はプロバイダーまたはゲートウェイによって決まるため、ピッカーの行には価格が表示されません。価格は表示用のラベルにすぎず、行が選択するモデルやプロバイダーの請求額には影響しません。v2.1.206 より前は、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) とゲートウェイのセッションで Anthropic の定価が表示され、行が選択するモデルとは異なるモデルの価格が表示されることがありました。
-
-`claude --resume`、`--continue`、または `/resume` ピッカーで再開したセッションは、トランスクリプトが保存された時点で使用していたモデルを維持します。復元されたモデルが廃止されている場合や [`availableModels`](#restrict-model-selection) によって除外されている場合、セッションは通常の優先順位に従います。Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry など、Anthropic のモデル ID ではなくプロバイダー固有のデプロイ ID を使用するプロバイダーでは、トランスクリプトのモデルはまったく復元されず、セッションは通常の優先順位に従ってモデルを解決します。
-
-`model` 設定が `haiku` の場合、Haiku モデルで保存されたセッションは、現在 `haiku` が解決されるモデルで再開されます。たとえば、`haiku` が Haiku 5.5 に解決されるようになると、Haiku 4.5 で保存されたセッションは Haiku 5.5 で再開されます。
-
-新しい起動時に `--model` または `ANTHROPIC_MODEL` で選択したモデルは、引き続き復元されたモデルより優先されます。v2.1.195 以降は、[`ANTHROPIC_DEFAULT_OPUS_MODEL`](#environment-variables) 系の変数も同様に優先されます。[`ANTHROPIC_DEFAULT_MODEL`](#set-a-default-model-for-new-sessions) も、そのセクションに記載されている条件の下で優先されます。
-
-起動時のアクティブなモデルが自分の選択ではなくプロジェクト設定または管理設定に由来する場合、起動時のヘッダーにどの設定ファイルで設定されたかが表示されます。上書きするには `/model` を実行します。プロジェクト設定または管理設定は次回の起動時に再適用されます。Claude Code を組み込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定しているプラットフォームでは、ホストのモデル設定が管理設定のモデル設定より優先されます。一方、管理設定の `availableModels` 許可リストは、ホストが独自のものを提供しない限り有効なままです。ホストがどのキーと変数を上書きするかについては、[管理設定の優先順位の例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を参照してください。
 
 ユーザーまたは組織が [PreModelSwitch フック](https://code.claude.com/docs/ja/hooks.md#premodelswitch)を設定している場合、それらは要求された切り替えが適用される前に実行され、切り替えをブロックしたり確認を求めたりできます。フックが切り替えをブロックした理由と対処方法については、[Model switch was blocked by a PreModelSwitch hook](https://code.claude.com/docs/ja/errors.md#model-switch-was-blocked-by-a-premodelswitch-hook) を参照してください。
 
@@ -203,6 +195,22 @@ claude --model opus
 }
 ```
 
+起動時のアクティブなモデルが自分の選択ではなくプロジェクト設定または管理設定に由来する場合、起動時のヘッダーにどの設定ファイルで設定されたかが表示されます。上書きするには `/model` を実行します。プロジェクト設定または管理設定は新しいセッションで再適用されます。
+
+Claude Code を組み込み、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定しているプラットフォームでは、ホストのモデル設定が管理設定のモデル設定より優先されます。管理設定の `availableModels` 許可リストは、ホストが独自のものを提供しない限り有効なままです。ホストがどのキーと変数を上書きするかについては、[管理設定の優先順位の例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を参照してください。
+
+#### 再開したセッションで使用されるモデル
+
+`claude --resume` または `--continue` で再開したセッションは、保存されたときのモデルを維持します。ただし、次のような場合は代わりに[優先順位](#setting-your-model)に従います。
+
+* [`ANTHROPIC_DEFAULT_OPUS_MODEL`](#environment-variables) などのエイリアス変数を設定している、またはそのセクションに記載されている条件の下で [`ANTHROPIC_DEFAULT_MODEL`](#set-a-default-model-for-new-sessions) を設定している
+* 保存されたモデルが廃止されている、または [`availableModels`](#restrict-model-selection) によって除外されている
+* Amazon Bedrock、Google Cloud's Agent Platform、Microsoft Foundry のように、プロバイダーが Anthropic のモデル ID ではなくプロバイダー固有のデプロイ ID を使用している
+* `model` 設定が `haiku` で、セッションが Haiku または Sonnet モデルで保存されている。たとえば、`haiku` が Haiku 5.5 に解決されるようになると、Haiku 4.5 で保存されたセッションは Haiku 5.5 で再開されます。
+* `model` 設定が `opusplan` で、セッションが Opus または Sonnet モデルで保存されている
+
+選択したモデルで再開するには、`--model` を渡すか、`ANTHROPIC_MODEL` を設定してください。
+
 #### 誤入力されたモデル名を修正する
 
 次のいずれかの警告は、設定したモデル ID を Claude Code が認識しておらず、その ID が Claude Code が認識するモデル名またはエイリアスに近いつづりであることを意味します。
@@ -237,16 +245,16 @@ Claude Code が新しいセッションをこの変数のモデルで開始す�
 * 組織の[モデル制限](#restrict-model-selection)によってそのモデルが除外されている
 * そのモデルがアカウントで利用できない
 
-新しいセッションがこの変数のモデルで開始される場合、`claude --resume`、`--continue`、または `/resume` ピッカーで再開したセッションもそのモデルで開始されます。Claude Code はそのセッションのトランスクリプトに保存されたモデルを復元しません。それ以外の場合、[セッションを再開](#setting-your-model)するときに Claude Code はこの変数を使用しません。
+新しいセッションがこの変数のモデルで開始される場合、`claude --resume`、`--continue`、または `/resume` ピッカーで再開したセッションもそのモデルで開始されます。Claude Code はそのセッションのトランスクリプトに保存されたモデルを復元しません。それ以外の場合、[セッションを再開](#which-model-a-resumed-session-uses)するときに Claude Code はこの変数を使用しません。
 
 #### 新しいセッションが選択したものとは異なるモデルで開始される
 
 `/model` でモデルを選択したのに次のセッションが別のモデルで開始される場合、通常は次のような原因があります。
 
 * **1 つのセッションのみを対象に選択した。** ピッカーで `s` を押す、`--model` で起動する、非対話モードで `/model` を実行する、のいずれも現在のセッションにのみ適用され、保存されたデフォルトは変更されません。
-* **より優先順位の高いものがモデルを設定している。** プロジェクト設定や管理設定にある `model` の値、シェルの `ANTHROPIC_MODEL`、または管理者がユーザーの選択を上書きするように設定した[組織のデフォルト](#organization-default-model)は、起動のたびに再適用されます。`/model` での選択は保存されていますが、優先順位で負けています。プロジェクト設定または管理設定がモデルを設定している場合、起動時のヘッダーにそのファイル名が表示されます。
+* **より優先順位の高いものがモデルを設定している。** プロジェクト設定や管理設定にある `model` の値、シェルの `ANTHROPIC_MODEL`、または管理者がユーザーの選択を上書きするように設定した[組織のデフォルト](#organization-default-model)は、新しいセッションを起動するたびに再適用されます。`/model` での選択は保存されていますが、優先順位で負けています。プロジェクト設定または管理設定がモデルを設定している場合、起動時のヘッダーにそのファイル名が表示されます。
 * **Claude Code が選択を保存できなかった。** `/model` は `~/.claude/settings.json` に `model` を書き込みます。別のツールがそのファイルを生成している、または読み取り専用のコピーにリンクしているなどの理由でそのファイルに書き込めない場合、選択したモデルはそのセッションの間だけ有効で、次回の起動時には古い値が読み込まれます。ファイルを生成しているツールで `model` を設定するか、ファイルを書き込み可能にしてください。[Claude Code で行った変更が新しいセッションで失われる](https://code.claude.com/docs/ja/settings.md#a-change-you-made-in-claude-code-is-lost-in-new-sessions)を参照してください。
-* **セッションを再開した。** `claude --resume` または `--continue` で再開したセッションは、通常、現在のデフォルトではなく[使用していたモデルを維持](#setting-your-model)します。
+* **セッションを再開した。** `claude --resume` または `--continue` で再開したセッションは、通常、現在のデフォルトではなく[使用していたモデルを維持](#which-model-a-resumed-session-uses)します。
 
 ## モデル選択を制限する
 
@@ -449,9 +457,9 @@ Claude Enterprise プランの組織管理者は、claude.ai の管理コンソ�
 * [管理設定](https://code.claude.com/docs/ja/managed-settings.md)内の `model` の値、または `--settings` で指定された `model` の値
 * ユーザー、プロジェクト、またはローカル設定内の `model` の値（`/model` で保存したモデルを含む）
 
-管理者は、組織のデフォルトがユーザーの選択を上書きするように設定することもできます。上書きが有効な場合、組織のデフォルトはユーザー、プロジェクト、ローカル設定内の `model` の値よりも優先されるため、`/model` で保存したモデルは現在のセッションにのみ適用され、次回の起動時には組織のデフォルトに戻ります。ユーザーの選択が異なる場合、`/model` には `Your organization's default (<model>) applies on restart` と表示されます。上書きが有効な場合でも、`--model` フラグ、`ANTHROPIC_MODEL`、管理設定、`--settings` は引き続き優先されます。
+管理者は、組織のデフォルトがユーザーの選択を上書きするように設定することもできます。上書きが有効な場合、組織のデフォルトはユーザー、プロジェクト、ローカル設定内の `model` の値よりも優先されます。その場合、`/model` で保存したモデルは現在のセッションに適用され、新しいセッションでは組織のデフォルトに戻ります。ユーザーの選択が異なる場合、`/model` には `Your organization's default (<model>) applies on restart` と表示されます。
 
-メンバーが選択できるモデルを制限するには、代わりに[組織のモデル制限](#organization-model-restrictions)または [`availableModels`](#restrict-model-selection) を使用してください。
+上書きが有効な場合でも、`--model` フラグ、`ANTHROPIC_MODEL`、管理設定、`--settings` は引き続き優先されます。メンバーが選択できるモデルを制限するには、代わりに[組織のモデル制限](#organization-model-restrictions)または [`availableModels`](#restrict-model-selection) を使用してください。
 
 Claude Code は起動時に一度だけ組織のデフォルトを読み込むため、セッション中に管理者がデフォルトを変更した場合は、次回の起動時に反映されます。
 
@@ -459,7 +467,7 @@ Claude Code は起動時に一度だけ組織のデフォルトを読み込む�
 
 組織のデフォルトは、採用される前に次の制限チェックを通過します。
 
-* デフォルトのプレフィックスマッチングでは、[`availableModels`](#restrict-model-selection) 単体では組織のデフォルトに適用されないため、許可リストに含まれない組織のデフォルトも引き続き適用されます。[`enforceAvailableModels`](#enforce-the-allowlist-for-the-default-model) も設定されている場合は、許可リストに含まれない組織のデフォルトも許可リストの最初のエントリに再マッピングされます
+* デフォルトのプレフィックスマッチングで [`enforceAvailableModels`](#enforce-the-allowlist-for-the-default-model) が設定されている場合、[`availableModels`](#restrict-model-selection) の許可リストに含まれない組織のデフォルトは、そのリスト上のモデルに再マッピングされます
 * [組織のモデル制限](#organization-model-restrictions)によってユーザーのアカウントで拒否されている組織のデフォルトは、同じファミリー内で許可されている最新のモデルに置き換えられます。そのファミリーのすべてのバージョンが制限されている場合は、より低コストのファミリーに置き換えられます
 * `deniedModels` または `"exact"` リストによってブロックされる組織のデフォルトについては、[特定のモデルまたはバージョンをブロックする](#block-specific-models-or-versions)を参照してください
 * ユーザーのアカウントでまったく利用できない組織のデフォルトはスキップされ、Default オプションは[組織のデフォルトがない場合](#default-model-setting)と同様に解決されます
@@ -1033,7 +1041,7 @@ Amazon Bedrock と Google Cloud's Agent Platform では、ユーザーが `--mod
 デフォルトでは、次の場合に Claude Code は固定した ID を [1M コンテキストウィンドウ](#extended-context)を持つものとして扱い、`[1m]` サフィックスは不要です。
 
 * **Opus 4.8 や Sonnet 5 など、ネイティブで 1M ウィンドウを持つモデルと Claude Code が照合する ID**: ID は、`us.anthropic.claude-opus-4-8` が `claude-opus-4-8` を含むようにモデルの Anthropic API ID を含む場合、または [`modelOverrides`](#override-model-ids-per-version) のエントリがモデルをその ID にマッピングしている場合に一致します
-* **Claude Code がモデルと照合できない ID**: ID の背後にあるモデルが受け付けるウィンドウがこれより小さい場合は、[実際のウィンドウを設定](#correct-the-window-for-a-gateway-or-custom-model-id)してください
+* **Claude Code がモデルと照合できない ID**: ID の背後にあるモデルが受け付けるウィンドウがこれより小さい場合は、[実際のウィンドウを設定](#correct-the-window-for-a-gateway-or-custom-model-id)してください。v2.1.323 より前は、Claude Code はデフォルトで 200K を想定していたため、それらのバージョンでは、モデルが 1M を受け付ける場合は ID に `[1m]` を付加してください。
 
 Opus 4.6 や Sonnet 4.6 など、`[1m]` バリアントを通じて 1M に対応するモデルの場合は、`ANTHROPIC_DEFAULT_OPUS_MODEL` または `ANTHROPIC_DEFAULT_SONNET_MODEL` のモデル ID に `[1m]` を付加して拡張コンテキストを有効にします。
 

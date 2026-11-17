@@ -352,7 +352,20 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 
 ケースが付与しなかったツールを要求した場合、進捗出力は `not granted` としてリストします。[モックされた](#mock-mcp-servers) MCP サーバー上のツールは許可が不要です。実際のプラグイン MCP サーバー上のツールは、サーバーが開始されている必要があります（`--allow-real-servers` または `--mocks off` で）、および `--allow-tools "mcp__plugin_my-plugin_github__*"` などの名前による付与。プラグインの MCP ツールは `mcp__plugin_<plugin>_<server>__<tool>` という名前です。
 
+#### シェルの付与にはサンドボックスが必要
+
 任意の形式で `Bash` を付与すると、すべてのコマンドは Claude Code の [OS レベルサンドボックス](https://code.claude.com/docs/ja/sandboxing.md) の下で実行されます。書き込みは実行のワークスペースに限定され、ホームディレクトリと Claude Code 設定は読み取り不可で、ネットワークアクセスは `--allow-tools "WebFetch(domain:example.com)"` で付与するドメインに限定されます。サンドボックスバックエンドのないマシンで Bash または PowerShell を付与すると、Claude Code は制限なしで実行するのではなく各実行を拒否し、ケースは実行エラーを表示し、通常はスコア 0 になります。ネイティブ Windows にはバックエンドがないため、WSL2 の下でシェル付与スイートを実行します。Linux では、最初に `bubblewrap` と `socat` をインストールします。[サンドボックスの前提条件](https://code.claude.com/docs/ja/sandboxing.md) を参照してください。
+
+#### 管理対象マシンでシェルの付与が拒否される
+
+組織が管理するマシンでシェルを付与した実行が拒否される場合、そのマシンの[管理設定](https://code.claude.com/docs/ja/managed-settings.md)にある `sandbox` キーが原因である可能性があります。エラーは `A shell tool (Bash or PowerShell) was granted but this machine cannot confine it (no sandbox backend on this platform, or it is not installed)` で始まります。このエラーは、バックエンドがインストールされている場合でも、バックエンドが存在しないことを示します。
+
+管理キーが原因の場合、メッセージは `this machine's managed settings:` とそのキーで終わりますが、実行ごとの進捗行ではこの部分が切り詰められます。
+
+* **`--json` なしの場合**：サマリーテーブルの `NOTES` 列から読み取ります（例：`sandbox.enabled is false`）
+* **`--json` ありの場合**：[JSON 結果](#json-result)の、その実行の `error` フィールドから読み取ります
+
+その設定をマシンに対して変更できるかどうかを管理者に確認するか、その実行からシェルの付与を削除してください。
 
 ### コマンドオプション
 
@@ -685,6 +698,8 @@ Error: formatter@my-marketplace cannot be evaluated where sessions load it: no s
 ### ツールが拒否される、MCP ツールが見つからない、または Bash が実行されない
 
 読み取り専用セット以外のすべてのものには、`--allow-tools Bash Write` などの許可が必要です。個人用 MCP サーバーは実行中に読み込まれません。プラグイン自体のサーバーは、[オプトイン](#mock-mcp-servers)しない限り開始されず、それらのツールは `--allow-tools "mcp__plugin_<plugin>_<server>__*"` 許可も必要です。モック化されたツールはどちらも必要ありません。
+
+Bash を許可したにもかかわらず実行が拒否される場合は、完全なエラーを確認してください。実行ごとの進行状況の行ではエラーが途中で切り詰められます。完全なエラーは、サマリーテーブルの `NOTES` 列、または `--json` 指定時は実行の `error` フィールドにあります。完全なエラーに管理設定の名前が示されている場合は[管理対象マシンでシェル許可が拒否される](#shell-grants-refused-on-a-managed-machine)を、示されていない場合は[シェル許可にはサンドボックスが必要](#shell-grants-need-a-sandbox)を参照してください。
 
 ### 実行が 1 で終了するが、結果は問題ないように見える
 

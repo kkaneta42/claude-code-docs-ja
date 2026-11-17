@@ -124,7 +124,7 @@ Claude が `Co-Authored-By` トレーラーをコミットに追加するなど�
 
 * CLAUDE.md ファイル
 * [出力スタイル](https://code.claude.com/docs/ja/output-styles.md) の指示
-* Claude が以前に読んだファイルがディスク上で変更されたときのメモ
+* Claude が以前に編集したファイルがその後ディスク上で変更されたことを示すメモ
 * コミットとプルリクエストの属性行
 
 属性行を変更または削除するには、[`attribution`](https://code.claude.com/docs/ja/settings-reference#attribution) を設定します。Claude Code の組み込みコミットおよびプルリクエスト指示を削除するには、[`includeGitInstructions`](https://code.claude.com/docs/ja/settings-reference#includegitinstructions) を `false` に設定します。その他のスイッチについては、[エージェントが置き換えるコンテキストをオフにする](https://code.claude.com/docs/ja/agent-sdk/modifying-system-prompts.md#turn-off-the-context-your-agent-replaces) を参照してください。

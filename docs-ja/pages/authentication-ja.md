@@ -96,7 +96,7 @@ API ベースの請求を希望する組織の場合、Claude Console を通じ�
 
 以下のいずれかの方法でユーザーを追加できます。
 
-* [platform.claude.com/settings/members](https://platform.claude.com/settings/members) にある Console の Members ページからユーザーを一括招待します。**Invite** をクリックします
+* [platform.claude.com/settings/members](https://platform.claude.com/settings/members) にある Console の Members ページからユーザーを一括招待します。**Invite to organization** をクリックします
 * [SSO を設定](https://support.claude.com/en/articles/13132885-setting-up-single-sign-on-sso)
 
 **3. ロールを割り当て**
