@@ -2360,6 +2360,10 @@ Code タブを使用するときに`Error 403: Forbidden`またはその他の�
 
 `Failed to load session`が表示される場合、選択したフォルダが存在しなくなった可能性があります。Git リポジトリがインストールされていない Git LFS を必要とする可能性があります。またはファイル権限がアクセスを防ぐ可能性があります。別のフォルダを選択するか、アプリを再起動してみてください。
 
+### Claude Code が「newer than the maximum version allowed by your organization」と表示される
+
+デスクトップアプリの[独自の Claude Code のコピー](#claude-code-version-in-the-code-tab)が、組織が [`requiredMaximumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredmaximumversion) で設定した上限より新しい場合、ローカルセッションは失敗し、エラーの詳細にこのメッセージが表示されます。上限をメッセージに記載されている Claude Code のバージョン以上に引き上げるか、上限を削除するよう管理者に依頼してください。
+
 ### セッションがインストール済みツールを見つけられない
 
 Claude が`npm`、`node`、またはその他の CLI コマンドなどのツールを見つけられない場合、ツールが通常のターミナルで機能することを確認し、シェルプロファイルが PATH を正しく設定していることを確認し、デスクトップアプリを再起動して環境変数を再度読み込みます。

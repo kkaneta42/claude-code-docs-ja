@@ -14,7 +14,9 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 
 > [!NOTE]
 >
-> [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器がほとんどの権限プロンプトを決定します。`Permission required` 列は、ツールが[マニュアルモード](https://code.claude.com/docs/ja/permission-modes.md)で作業ディレクトリ内のパスに対してプロンプトを表示するかどうかを示します。`Read`、`Grep`、`Glob` を含むファイルアクセスツールは「いいえ」とマークされていますが、[作業ディレクトリと追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスに対してはプロンプトを表示します。`Bash` は「はい」とマークされていますが、プロンプトなしで組み込みの[読み取り専用コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)セットを実行します。
+> [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器がほとんどの権限プロンプトを決定します。`Permission required` 列は、ツールが[マニュアルモード](https://code.claude.com/docs/ja/permission-modes.md)で作業ディレクトリ内のパスに対してプロンプトを表示するかどうかを示します。`Read`、`Grep`、`Glob` を含むファイルアクセスツールは「いいえ」とマークされていますが、Claude Code 自体が必要とするファイルを除き、[作業ディレクトリと追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のパスに対してはプロンプトを表示します。
+>
+> `Bash` は「はい」とマークされていますが、プロンプトなしで組み込みの[読み取り専用コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)セットを実行します。
 
 | ツール | 説明 | 権限が必要 |
 | :- | :- | :- |

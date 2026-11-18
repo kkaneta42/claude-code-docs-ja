@@ -425,7 +425,7 @@ auto モードがアクションをブロックすると通知が届き、その
 
 > [!WARNING]
 >
-> 設定するすべてのリストに `"$defaults"` を残してください。これがないと、エントリはそのリストの組み込みルールに追加されるのではなく、組み込みルールを*置き換えます*。`environment` と `allow` では組み込みのコンテキストと例外が失われ、`soft_deny` リストでこれを省くと、force push や本番デプロイに対する組み込みのブロックがなくなります。
+> 設定するすべてのリストに `"$defaults"` を残してください。これがないと、エントリはそのリストの組み込みルールに追加されるのではなく、組み込みルールを[置き換える](https://code.claude.com/docs/ja/auto-mode-config.md#override-the-block-and-allow-rules)ことがあります。`environment` の組み込みコンテキスト、`allow` の例外、`soft_deny` の force push や本番デプロイに対するブロックが失われる可能性があります。
 >
 > `autoMode` ブロックは、プロジェクトではなく `~/.claude/settings.json` に置く必要もあります。分類器はプロジェクト設定内の `autoMode` を無視するためです。
 

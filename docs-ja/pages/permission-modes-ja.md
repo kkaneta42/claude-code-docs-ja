@@ -43,6 +43,8 @@ Claude Code は、`bypassPermissions` を含むどのモードでも、次の操
   ディレクトリを複数回変更するコマンドやサブシェルを実行するコマンドなど、シェルパーサーが追跡できないコマンドは、外部のパスを指定していない場合でも同じようにプロンプトを表示します。このプロンプトは、コマンドが[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)内で実行され、サンドボックスがブロックを強制している場合には適用されません。
 * [`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効な間の作業ディレクトリ外への書き込み: Claude Code は、[Claude Code 自身の一部のファイル](https://code.claude.com/docs/ja/settings-reference.md#what-the-write-block-refuses-and-what-stays-writable)を除き、作業ディレクトリ外での `Write`、`Edit`、`NotebookEdit` の呼び出しを拒否します。このキーはシェルコマンド、MCP ツール、フックが実行するプログラムを制限しないため、シェルコマンドの書き込み先を制限するには[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)を使用してください。Claude Code v2.1.314 以降が必要です。
 
+Claude Code は、`could not fully check your permission rules` としてフラグが付けられた PowerShell コマンドも自動承認しません。コマンドを信頼できる場合はプロンプトで承認してください。Claude Code がコマンドを拒否した場合は、Claude にコマンドを書き換えるよう依頼してください。
+
 ## 一般的なセットアップ
 
 権限モードは Claude がアクションの前に確認するかどうかを決定し、[Bash サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)と外側の[隔離境界](https://code.claude.com/docs/ja/sandbox-environments.md)は、アクションが実行されると何に到達できるかを決定します。以下の各行は、目標をフラグまたは設定と、必要な隔離とペアにします。これは開始点です。[利用可能なモード](#available-modes)は、各モードでプロンプトなしで実行されるものをリストしています。
@@ -80,7 +82,7 @@ VS Code 拡張機能が開始する会話は、[権限モードを切り替え�
 | :- | :- |
 | 設定ファイルが `disableAutoMode` を `"disable"` に設定 | `default` |
 | `claude -p` または [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/permissions.md#permission-modes) | `default` |
-| 組織に [HIPAA 設定](#hipaa-configuration)が適用されており、セッションが[その対象](https://code.claude.com/docs/ja/hipaa-setup.md#check-how-developers-sign-in-and-connect)である | Claude Code v2.1.285 以降では `default`。auto モードへの切り替えは引き続き可能です |
+| 組織に [HIPAA 設定](#hipaa-configuration)が適用されており、セッションが[その対象](https://code.claude.com/docs/ja/hipaa-setup.md#check-how-developers-sign-in-and-connect)である | v2.1.285 から v2.1.325 では `default`。その他のバージョンは次の行に従います |
 | ターミナルまたは [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)を通じて | Claude Code v2.1.283 以降では `auto`。以前のバージョンでは、Pro、Max、Ultra、または Team プランで [フィーチャーフラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)するセッションでは `auto`、それ以外は `default` |
 
 フラグ、設定ファイル、または組み込みデフォルトが `auto` を選択しても、auto モードがセッションで利用できない場合、Claude Code はセッションを Manual で開始します。Auto モードは、セッションが [利用可能性要件](#eliminate-prompts-with-auto-mode)を満たさない場合（設定ファイルがそれをオフにするか、サポートしていないモデルなど）、または Anthropic がサーバー側で一時的にそれをオフにした場合に利用できません。
@@ -138,7 +140,7 @@ v2.1.302 より前は、[フィーチャーフラグを取得](https://code.clau
 | 開始しようとしている 1 つのセッション | 権限モードをフラグとして渡します。例えば `claude --permission-mode default` |
 | このマシンで開始するすべてのターミナルセッション | `~/.claude/settings.json` で `permissions.defaultMode` を設定します。VS Code 拡張機能が読み取る内容については、[権限モードを切り替える](#switch-permission-modes)を参照してください |
 | 1 つのプロジェクトで開始するすべてのターミナルセッション | プロジェクトの `.claude/settings.json` で `permissions.defaultMode` を設定します。ターミナルで開始するセッションは `auto` と `bypassPermissions` を除くすべての値を尊重します。VS Code 拡張機能が開始するセッションはプロジェクト設定を開始権限モードに読み込みません |
-| 組織内のすべてのターミナルセッション | [管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `permissions.defaultMode` を設定します。ターミナルセッションはそのモードで開始し、ユーザーは依然として auto モードに切り替えることができます。VS Code 拡張機能が読み取る内容については、[権限モードを切り替える](#switch-permission-modes)を参照してください。auto モードを削除してユーザーが選択できないようにするには、代わりに `permissions.disableAutoMode` を `"disable"` に設定します |
+| 組織内のすべてのターミナルセッション | [管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `permissions.defaultMode` を設定します。ユーザーは引き続き auto モードに切り替えることができます。VS Code 拡張機能が読み取る内容については、[権限モードを切り替える](#switch-permission-modes)を参照してください。auto モードを削除して誰も選択できないようにするには、代わりに `permissions.disableAutoMode` を `"disable"` に設定します |
 
 この例は、マシン上のすべてのターミナルセッションを Manual モード（その設定値は `default`）で開始するようにします。`~/.claude/settings.json` に保存します。
 
@@ -154,12 +156,10 @@ v2.1.302 より前は、[フィーチャーフラグを取得](https://code.clau
 
 ### HIPAA 設定での権限モード
 
-[HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md)が適用されている組織では、[組み込みの `auto` デフォルト](#which-mode-a-session-starts-in)は適用されません。開始権限モードを他に選択するものがない場合、ターミナルまたは VS Code のセッションは Manual モードで開始します。ターミナルセッションでは `Auto mode isn't the default for your organization · Shift+Tab to switch` も表示され、VS Code 拡張機能では通知は表示されません。これが適用されるセッションについては、[開発者のサインイン方法と接続方法を確認する](https://code.claude.com/docs/ja/hipaa-setup.md#check-how-developers-sign-in-and-connect)に記載されています。
+組織に [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md)が適用されている場合、Claude Code v2.1.326 以降のターミナルおよび VS Code のセッションは[デフォルトで](#which-mode-a-session-starts-in) auto モードで開始します。v2.1.285 から v2.1.325 では、[対象となるセッション](https://code.claude.com/docs/ja/hipaa-setup.md#check-how-developers-sign-in-and-connect)はデフォルトで Manual モードで開始します。
 
-auto モードと `bypassPermissions` は引き続き利用できます。
+引き続き Manual モードで開始するには、[異なる権限モードで開始する](#start-in-a-different-mode)を参照してください。組織で auto モードまたは `bypassPermissions` をオフにするには、次のようにします。
 
-* **auto モードに切り替える**: `Shift+Tab` を押すか、[使用しているインターフェースのコントロール](#switch-permission-modes)を使用します
-* **auto モードで開始する**: `--permission-mode auto` を渡すか、ユーザー設定で `permissions.defaultMode` を `auto` に設定します。組織全体に対しては管理設定で設定します。[異なる権限モードで開始する](#start-in-a-different-mode)を参照してください
 * **auto モードを削除する**: 管理設定で [`permissions.disableAutoMode`](https://code.claude.com/docs/ja/settings-reference#disableautomode) を `"disable"` に設定します
 * **`bypassPermissions` をブロックする**: 管理設定で [`permissions.disableBypassPermissionsMode`](https://code.claude.com/docs/ja/settings-reference#permissions-disablebypasspermissionsmode) を `"disable"` に設定します
 
@@ -329,8 +329,6 @@ claude --permission-mode plan
 auto モードを使用すると、Claude は日常的な権限プロンプトなしで実行できます。別の分類器モデルが実行前にアクションをレビューし、リクエストの範囲を超えるもの、認識されていないインフラストラクチャを対象とするもの、または Claude が読んだ悪意のあるコンテンツによって駆動されているように見えるものをブロックします。明示的な [ask ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)は引き続きプロンプトを強制します。
 
 Claude Code v2.1.283 以降では、auto モードはすべてのプランとプロバイダーにおいて、インタラクティブなターミナルセッションと VS Code セッションの[組み込みの開始権限モード](#which-mode-a-session-starts-in)です。それより前のバージョンでは、Pro、Max、Ultra、Team プランでのみ組み込みの開始権限モードです。
-
-分類器は、auto モードと [plan モードで分類器がコマンドをレビューしている間](#analyze-before-you-edit-with-plan-mode)の両方で、Claude が [`SendMessage`](https://code.claude.com/docs/ja/tools-reference) を使用して別のエージェントに送信する各メッセージ（プレーンテキストか構造化された[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)メッセージかを問わず）も、Claude Code が配信する前にレビューします。送信のレビューには Claude Code v2.1.222 以降が必要です。
 
 デフォルトでは、分類器は `rm -rf /` や `rm -rf ~` など、認識された `rm` および `rmdir` によるクリティカルパスの削除をレビューしません。各権限モードでこれらがどのように扱われるかについては、[クリティカルパス](#critical-paths)を参照してください。
 
@@ -526,7 +524,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 
 サンドボックス化されたコマンドは、デフォルトではネットワークアクセスを持ちません。Claude はコマンドに必要なホストをコマンド自体に明示し、分類器はそれらをコマンドと一緒にレビューし、承認されたリストによってそのコマンドに限りそれらのホストへのアクセスが開かれます。リストで開けるものと開けないもの、およびコマンドがリストにないホストにアクセスしようとした場合の動作については、[コマンドごとの許可ドメイン](https://code.claude.com/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode)を参照してください。
 
-`claude auto-mode defaults` を実行すると、完全なルールリストが JSON として出力されます。日常的なアクションがブロックされる場合、管理者は `autoMode.environment` 設定で信頼できるリポジトリ、バケット、サービスを追加できます。[auto モードを設定する](https://code.claude.com/docs/ja/auto-mode-config.md)を参照してください。
+`claude auto-mode defaults` を実行すると、Claude Code に組み込まれたルールリストが JSON として出力されます。日常的なアクションがブロックされる場合、管理者は `autoMode.environment` 設定で信頼できるリポジトリ、バケット、サービスを追加できます。[auto モードを設定する](https://code.claude.com/docs/ja/auto-mode-config.md)を参照してください。
 
 作業中のリポジトリの任意のブランチへのプッシュと、リクエストに沿ったプルリクエストの作成は、シークレットや機密データがリポジトリの外に出る場合や、プルリクエストが別のリポジトリや組織を対象とする場合など、そのプッシュやプルリクエストが[ブロックリスト](#what-the-classifier-blocks-by-default)に該当しない限り、プロンプトなしで実行されます。auto モードのまま、これらのコマンドの前に人間によるチェックポイントを設けるには、コマンドに[記述されたとおりに](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)マッチする `permissions.ask` ルールを追加します。[一般的な境界](https://code.claude.com/docs/ja/auto-mode-config.md#common-boundaries)を参照してください。
 
@@ -553,7 +551,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 
 ブロックされたアクションを許可すると Claude に伝えると、分類器はそれをユーザーの承認と解釈し、ブロックを解除できます。伝え方によって、アクションが実行されるかどうかと、承認がどこまで及ぶかが決まります。
 
-* **アクションとその詳細を明示する**: メッセージでは、アクションと、force push の対象ブランチなど、それを危険にしている具体的な要素を明示する必要があります。動詞だけを示しても何も解除されないため、「force-push してもいいよ」ではブロックは残ります。
+* **アクションとその詳細を明示する**: force push の対象ブランチなど、それを危険にしている具体的な要素を含めてください。「force-push してもいいよ」のように動詞だけを示した場合、ブロックが残ることがあります。
 * **1 つのアクションにのみ適用されると考える**: 承認は明示した破壊的アクションに適用されるため、継続的な承認として与えない限り、後のアクションは再びブロックされます。日常的なパターンを 1 つずつ承認するのをやめるには、[`autoMode.allow`](https://code.claude.com/docs/ja/auto-mode-config#override-the-block-and-allow-rules) に追加してください。
 * **一部のブロックは解除されない**: [分類器の優先順位](https://code.claude.com/docs/ja/auto-mode-config.md#override-the-block-and-allow-rules)に、承認で解除できるブロックが定められています。承認で解除されない手順を実行するには、[auto モードを終了して](#switch-permission-modes)権限プロンプトに回答してください。
 
@@ -592,22 +590,26 @@ auto モードがセッションのアクションを承認できない場合、
 >    * [シンボリックリンクのチェック](https://code.claude.com/docs/ja/permissions.md#symlinks)によって保護されたパスに解決される書き込みは、Claude が要求したパス自体が保護されていない場合にプロンプトを表示します
 >    * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取りは、許可ルールに一致する場合でもプロンプトを表示します
 > 2. 読み取り専用のアクションと作業ディレクトリ内のファイル編集は自動承認されます。ただし、[保護されたパス](#protected-paths)への書き込みと、プロンプトが表示される[作業ディレクトリ外での最初の読み取り](#first-read-outside-the-working-directories)は除きます
->    * [サーバー側の分類器レビュー](#server-side-classifier-review)があるセッションでは、読み取り専用のシェルコマンドと[サンドボックス化された](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)シェルコマンドはそのレビューを待ち、レビューで警告された場合はブロックされます
+>    * [サーバー側の分類器レビュー](#server-side-classifier-review)があるセッションでは、ファイル編集、読み取り専用のシェルコマンド、および[サンドボックス化された](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)シェルコマンドはそのレビューを待ち、レビューで警告された場合はブロックされます
 >    * 作業ディレクトリ内への書き込みのうち、[シンボリックリンクのチェック](https://code.claude.com/docs/ja/permissions.md#symlinks)によって作業ディレクトリ外の場所に解決されるものはプロンプトを表示します
 >    * Claude が[他のユーザーが作成したアーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取る場合は、そのセクションに記載されている承認のケースが適用されます
 >    * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取りはプロンプトを表示します
 > 3. それ以外はすべて分類器に回されます。ただし、デフォルトの処理下にある[重要なパスの削除](#critical-paths)は除きます。ステップ 1 で直接プロンプトを表示するコネクタツールと `requiresUserInteraction` の MCP ツールも分類器には到達しないため、組織が必須とする承認も同意のステップも自動承認されることはありません
 >    * [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) がオンの場合、Claude が書くコードは実行前に 1 回だけ分類器に回され、その中のツール呼び出しは回されません。`deny` ルールで呼び出しをブロックしたり、`ask` ルールでプロンプトを必須にしたりすることは引き続きできますが、Claude は[ルールが一致しない形式](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)で Bash コマンドを実行できます
-> 4. 分類器がブロックした場合、Claude はその理由を受け取ります。ほとんどのセッションでは、理由は文章による説明ではなく、`[Data Exfiltration]` のように分類器が一致したルールの名前で示されます。[拒否の確認](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を参照してください
+>    * Code Mode 以外では、分類器は Claude が [`SendMessage`](https://code.claude.com/docs/ja/tools-reference) で別のエージェントに送信するメッセージを、Claude Code が配信する前にレビューします。許可ルールが `SendMessage` に一致する場合、または `PreToolUse` フックが `"allow"` を返す場合、メッセージはこのレビューをスキップできます。このレビューは [plan モードで分類器がコマンドをレビューしている間](#analyze-before-you-edit-with-plan-mode)も実行されます。Claude Code v2.1.222 以降が必要です。
+> 4. 分類器がブロックした場合、Claude はその理由を受け取ります。ほとんどのセッションでは、理由は `[Destructive or Unwanted Actions]` のように分類器が一致した[ポリシー](https://code.claude.com/docs/ja/auto-mode-config.md#fix-a-policy-denial)またはルールの名前です。[拒否の確認](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を参照してください
 >
-> インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が `tool.check` を処理する場合、その mod もアクションを承認できます。その承認がルールやフックを通過しないケースについては、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。
+> インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) もアクションを承認できます。その承認がルールやフックを上書きしないケースについては、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。
 >
 > VS Code 拡張機能で [Claude in Chrome](https://code.claude.com/docs/ja/chrome.md) のブラウザアクションがどのように承認されるかについては、[VS Code セッションでの権限プロンプト](https://code.claude.com/docs/ja/chrome.md#permission-prompts-in-vs-code-sessions)を参照してください。
 >
-> auto モードに入ると、任意のコード実行を許可する広範な allow ルールは除外されます。
+> auto モードに入ると、任意のコード実行を許可する広範な許可ルールは削除されます。これには次のものが含まれます：
 >
 > * 包括的な `Bash(*)` または `PowerShell(*)`
 > * `Bash(python*)` のようなワイルドカード付きのインタープリター
+> * `Bash(timeout *)` のように、ワイルドカードだけが後に続く[ラッパー](https://code.claude.com/docs/ja/permissions.md#process-wrappers)
+> * `Bash(* --version)` のように、ワイルドカードで始まるシェルルール
+> * `Bash($HOME/bin/*)` や `PowerShell(C:\tools\x.exe *)` のような一部のワイルドカード付きパス
 > * パッケージマネージャーの run コマンド
 > * `Agent` の allow ルール
 > * [`Monitor`](https://code.claude.com/docs/ja/tools-reference#monitor-tool) の allow ルール（Claude Code は Monitor のコマンドをシェル経由で実行するため）
@@ -634,7 +636,9 @@ auto モードがセッションのアクションを承認できない場合、
 >
 > Claude Code の分類器リクエストは、`/model` での選択とは異なるモデルで実行される場合があります。[どのモデルで実行されるか](#default-classifier-model)を参照してください。
 >
-> Enterprise プラン、および Claude API、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用するアカウントでは、分類器の呼び出しはトークン使用量にカウントされます。各チェックではトランスクリプトの一部と保留中のアクションが送信され、実行前に往復の通信が 1 回加わります。読み取りと、保護されたパス以外での作業ディレクトリ内の編集は分類器をスキップするため、オーバーヘッドは主にシェルコマンドとネットワーク操作から生じます。サーバーがセッションのモデルリクエストの一部としてアクションをレビューする場合は、カウントされる個別の分類器呼び出しはありません。[サーバー側の分類器レビュー](#server-side-classifier-review)を参照してください。
+> Enterprise プランでは、分類器の呼び出しはトークン使用量にカウントされます。Claude API、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md)、Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用するアカウントでもカウントされます。各チェックではトランスクリプトの一部と保留中のアクションが送信され、実行前に往復の通信が 1 回加わります。
+>
+> サーバーがセッションのモデルリクエストの一部としてアクションをレビューする場合は、カウントされる個別の分類器呼び出しはありません。[サーバー側の分類器レビュー](#server-side-classifier-review)を参照してください。
 >
 > サンドボックス化されたネットワークアクセスによって、接続ごとの分類器リクエストが追加されることはありません。分類器は[コマンドが明示するホスト](https://code.claude.com/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode)をコマンドと一緒に 1 回のレビューで判断し、Claude Code は分類器を再度呼び出すことなく、各接続を承認済みのリストと照合します。
 

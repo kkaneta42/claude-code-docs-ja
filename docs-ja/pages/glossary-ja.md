@@ -295,7 +295,7 @@ Bash ツールの OS レベルのファイルシステムおよびネットワ�
 
 ### Settings layers
 
-Claude Code が設定を読み取る階層。優先順位の高い順から低い順: [managed policy](#managed-settings)、`--settings` フラグで渡す設定、`.claude/settings.local.json` のローカル設定、`.claude/settings.json` のプロジェクト設定、`~/.claude/settings.json` のユーザー設定。配列はレイヤー全体でマージされます。スカラーは高いレイヤーの値が低いレイヤーの値を上書きします。[Settings precedence](https://code.claude.com/docs/ja/settings.md#settings-precedence) を参照してください。
+Claude Code が設定を読み取る階層。優先順位の高い順に、[managed policy](#managed-settings)、`--settings` フラグで渡す設定、`.claude/settings.local.json` のローカル設定、`.claude/settings.json` のプロジェクト設定、`~/.claude/settings.json` のユーザー設定のレイヤーがあります。`permissions.allow` などのほとんどのリストは、[ファイル間でマージされます](https://code.claude.com/docs/ja/settings.md#lists-merge-instead-of-overriding)。[Settings precedence](https://code.claude.com/docs/ja/settings.md#settings-precedence) を参照してください。
 
 詳細情報: [Settings files](https://code.claude.com/docs/ja/settings.md#where-settings-live)
 

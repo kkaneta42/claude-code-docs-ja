@@ -40,7 +40,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **macOS、Linux、WSL：**
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.sh | bash
 > ```
 >
@@ -48,13 +48,13 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **Windows PowerShell：**
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > irm https://claude.ai/install.ps1 | iex
 > ```
 >
 > **Windows CMD：**
 >
-> ```batch theme={null}
+> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 > ```
 >
@@ -72,7 +72,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] Homebrew
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > brew install --cask claude-code
 > ```
 >
@@ -84,7 +84,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] WinGet
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > winget install Anthropic.ClaudeCode
 > ```
 >
@@ -254,7 +254,7 @@ apt、dnf、および apk リポジトリからのインストールは、この
 
 [管理設定](https://code.claude.com/docs/ja/managed-settings.md)では、`minimumVersion` はユーザーおよびプロジェクト設定が上書きできない組織全体の最小値を適用します。
 
-`minimumVersion` ピンは更新のみを制約します。Claude Code がバージョン範囲外で起動することを拒否するようにするには、代わりに管理設定の `requiredMinimumVersion` と `requiredMaximumVersion` を使用します。更新は `requiredMaximumVersion` の上限も尊重します。[`requiredMinimumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredminimumversion)と[`requiredMaximumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredmaximumversion)を参照してください。
+`minimumVersion` ピンは更新のみを制約します。Claude Code がバージョン範囲外で起動することを拒否するようにするには、代わりに管理設定の `requiredMinimumVersion` と `requiredMaximumVersion` を使用します。[`requiredMinimumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredminimumversion)と[`requiredMaximumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredmaximumversion)を参照してください。
 
 ### 自動更新を無効にする
 

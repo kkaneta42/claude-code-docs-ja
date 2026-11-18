@@ -654,7 +654,7 @@ Implement API endpoints. Follow the conventions and patterns from the preloaded 
 
 #### 永続メモリを有効にする
 
-`memory` フィールドは、会話をまたいで保持される永続ディレクトリをサブエージェントに与えます。サブエージェントはこのディレクトリを使用して、コードベースのパターン、デバッグの知見、アーキテクチャ上の決定などの知識を時間をかけて蓄積します。
+`memory` フィールドは、会話をまたいで保持される永続ディレクトリをサブエージェントに与えます。サブエージェントはこのディレクトリを使用して、ユーザーの好み、ユーザーによる修正、プロジェクトの決定事項などの知識を時間をかけて蓄積します。
 
 ```yaml theme={null}
 ---
@@ -664,7 +664,7 @@ memory: user
 ---
 
 You are a code reviewer. As you review code, update your agent memory with
-patterns, conventions, and recurring issues you discover.
+the review preferences and corrections you're given.
 ```
 
 メモリをどの程度広く適用するかに応じてスコープを選択します。
@@ -691,10 +691,10 @@ patterns, conventions, and recurring issues you discover.
 * サブエージェントが自らのナレッジベースを積極的に維持するよう、サブエージェントの markdown ファイルにメモリの指示を直接含めます。
 
   ```markdown theme={null}
-  Update your agent memory as you discover codepaths, patterns, library
-  locations, and key architectural decisions. This builds up institutional
-  knowledge across conversations. Write concise notes about what you found
-  and where.
+  Update your agent memory as you learn the team's preferences, project
+  constraints, and the reasons behind key decisions. This builds up
+  institutional knowledge across conversations. Write concise notes about
+  what you learned and why it matters.
   ```
 
 #### フックによる条件付きルール

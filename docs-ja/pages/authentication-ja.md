@@ -233,15 +233,18 @@ Claude Code は認証情報を安全に管理します。
 
 `/login` で作成したログインが期限切れまで 3 日以内になると、Claude Code はスタートアップ時に警告を表示します。`Your login expires in 3 days · run /login to renew`。
 
-`/login` を実行して更新します。警告は情報提供のみであり、リクエストをブロックすることはありません。ログインが実際に期限切れになるまで認証は機能し続けます。
+`/login` を実行して更新します。警告は claude.ai ログインがアクティブな認証情報である場合にのみ表示されます。
 
-保存されたログインが期限切れになり、更新できなくなると、再度サインインするまで、各モデルリクエストは [`Login expired · Please run /login`](https://code.claude.com/docs/ja/errors#login-expired) で失敗します。
+#### ログインの期限切れ後
 
-リクエストが失敗する前にこの状態を確認できます。[`/status`](https://code.claude.com/docs/ja/commands) は `Login` 行に `Expired — log in again` を表示し、期限切れのログインに保存されている組織とメールアドレスを表示します。この行は、保存されている claude.ai ログインがアクティブな認証情報である場合にのみ表示されます。この行には Claude Code v2.1.210 以降が必要です。
+保存されたログインが期限切れになり、更新できなくなった場合は、`/login` を実行して再度サインインしてください。サインインするまで、リクエストは失敗するか、保存されている別の認証情報を使用します。
 
-警告は claude.ai ログインがアクティブな認証情報である場合にのみ表示され、クラウドプロバイダー、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` が認証情報を提供する場合には表示されません。
+* **他の認証情報がない場合**: モデルリクエストは [`Login reached its time limit` または `Login expired`](https://code.claude.com/docs/ja/errors#login-expired) で失敗します。
+* **別の認証情報がある場合**（[`ant auth login` プロファイル](#anthropic-profiles-and-federation-credentials)など）: リクエストは代わりにその認証情報を使用でき、その認証情報の組織に請求されます。
 
-更新を早期に行うことは、無人で実行されるセッションにとって最も重要です。[agent view のバックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)または [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションがログインより長く実行される場合、認証情報が期限切れになると進行が停止し、再度サインインするまで復旧できません。
+リクエストが失敗する前に、期限切れのログインを確認できます。[`/status`](https://code.claude.com/docs/ja/commands) は `Expired — log in again` と表示される `Login` 行を表示します。
+
+早めの更新は、無人で実行されるセッションにとって最も重要です。ログインより長く実行される [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションは、再度サインインするまで切断されます。[agent view のバックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)は、保存されている他の認証情報がない場合、進行が停止します。
 
 ### 認証の優先順位
 
@@ -255,7 +258,7 @@ Claude Code は認証情報を安全に管理します。
 6. Anthropic プロファイルおよびフェデレーション認証情報。`ant` CLI および Workload Identity Federation が使用する認証情報。`ant auth login` が書き込んだプロファイルは、`ANTHROPIC_PROFILE` で名前を付けた場合にのみここにランク付けされます。そうでない場合は `/login` より下にランク付けされます。[Anthropic プロファイルおよびフェデレーション認証情報](#anthropic-profiles-and-federation-credentials)を参照してください。
 7. `/login` からのサブスクリプション OAuth 認証情報。これは Claude Pro、Max、Ultra、Team、および Enterprise ユーザーのデフォルトです。
 
-署名済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッションはこのリストの外に位置します。これは Amazon Bedrock または Google Cloud の Agent Platform のようなプロバイダー選択であり、それらより優先されます。ゲートウェイセッションが存在する場合、CLI は `CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_VERTEX`、または `CLAUDE_CODE_USE_FOUNDRY` が設定されていても、ゲートウェイトークンで認証され、ベアラートークン、API キー、`apiKeyHelper`、およびプロファイルなどの上記の認証情報ソースは使用されません。
+サインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッションは、このリストの対象外です。これは Amazon Bedrock や Google Cloud の Agent Platform と同様のプロバイダー選択であり、それらより優先されます。ゲートウェイセッションが存在する場合、`CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_VERTEX`、または `CLAUDE_CODE_USE_FOUNDRY` が設定されていても CLI はゲートウェイトークンで認証し、ベアラートークン、API キー、`apiKeyHelper`、プロファイルなど上記の認証情報ソースは使用されません。
 
 マシンの[管理設定](https://code.claude.com/docs/ja/managed-settings.md)が [`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定するか、[`forceLoginGatewayUrl`](https://code.claude.com/docs/ja/settings-reference#forcelogingatewayurl) を設定しており、`CLAUDE_CODE_USE_BEDROCK` や `CLAUDE_CODE_USE_VERTEX` などの変数を通じてクラウドプロバイダーを選択していない場合、セッションはゲートウェイサインインのみを使用します。Claude Code は他の認証情報ソースをスキップし、`/login` でサインインするよう求めます。残っている各認証情報で表示される内容については、[Administrator policy requires a Cloud gateway sign-in](https://code.claude.com/docs/ja/errors.md#administrator-policy-requires-a-cloud-gateway-sign-in) を参照してください。Claude Code v2.1.261 以降が必要です。`forceLoginGatewayUrl` のみを設定するマシンでは v2.1.265 以降が必要です。
 

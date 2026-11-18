@@ -82,7 +82,7 @@ Claude Code はローカルで実行されます。LLM と相互作用するた�
 | Anthropic API | インフラストラクチャレベルのディスク暗号化（AES-256）。サーバー側の永続化がないようにするには、[Zero Data Retention](https://code.claude.com/docs/ja/zero-data-retention.md) を有効にしてください。 |
 | Amazon Bedrock | AWS 管理キーを使用した AES-256。AWS KMS 経由でカスタマー管理キーを利用可能です。 |
 | Google Cloud の Agent Platform | Google 管理の暗号化キー。CMEK を利用可能です。 |
-| Microsoft Foundry | デプロイメントの[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)によって異なります。Azure でホストされているデプロイメントの場合、プロンプトと完了は Azure 内に留まり、使用状況メタデータと Anthropic のセーフティシステムでフラグが付けられたコンテンツのみが Anthropic に送信されます。Anthropic でホストされているデプロイメントの場合、リクエストは AES-256 ディスク暗号化を使用して Anthropic インフラストラクチャにルーティングされます。 |
+| Microsoft Foundry | デプロイの[ホスティングオプション](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)によって異なります。Azure でホストされているデプロイについては、[データが処理および保存される場所](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry#hosting-options)を参照してください。Anthropic でホストされているデプロイの場合、リクエストは AES-256 ディスク暗号化を使用した Anthropic インフラストラクチャにルーティングされます。 |
 
 Claude Code は Anthropic の API 上に構築されています。API ロギング手順を含む API セキュリティコントロールの詳細については、[Anthropic Trust Center](https://trust.anthropic.com) のコンプライアンスアーティファクトを参照してください。
 

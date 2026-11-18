@@ -138,7 +138,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 }
 ```
 
-`claude mcp add` は上記のエンタープライズポリシーエラーで失敗します。ユーザーが以前に構成したサーバーは、次回セッションを開始するときに読み込まれなくなります。ポリシーが理由であることについての警告はありません。`managedMcpServers` を通じて提供するサーバーと、マネージドセットと共に許可するその他のすべてのものは、空のマップの下でも[読み込まれる](#exclusive-control-with-managed-mcp-json)ため、それらのキーを設定しないままにしてください。
+`claude mcp add` は上記のエンタープライズポリシーエラーで失敗します。ユーザーが以前に構成したサーバーは、各ユーザーの次回のセッションまでに読み込まれなくなります。`managedMcpServers` を通じて提供するサーバーと、マネージドセットと共に許可するその他のすべてのものは、空のマップの下でも[読み込まれる](#exclusive-control-with-managed-mcp-json)ため、それらのキーを設定しないままにしてください。
 
 ### マネージドセットと共に claude.ai コネクタを許可する
 
@@ -523,6 +523,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows で
 | サーバーがアローリストになく、ユーザーが `claude mcp add` を実行する | `Cannot add MCP server "<name>": not allowed by enterprise policy` |
 | [`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization) が `true` であるか `mcp` を含み、ユーザーが `claude mcp add` を実行する | [`Cannot add MCP server: your organization's managed settings allow only MCP servers that plugins provide`](https://code.claude.com/docs/ja/errors#cannot-add-mcp-server-when-managed-settings-allow-only-plugin-servers) |
 | ユーザーが `managedMcpServers` のサーバーで `claude mcp remove` を実行する | `MCP server "<name>" is provided by your organization (managed settings) and cannot be removed locally.` |
+| ターミナルセッションが開いている間に `managed-mcp.json` が有効になる | `Your organization now manages MCP servers on this computer` で始まる通知 |
 | 以前に設定されたサーバーがポリシーによってブロックされるようになった | サーバーは `/mcp` と `claude mcp list` から消える |
 | セッション実行中にサーバーがブロックされ、ユーザーが **Reconnect** を選択するか、`/mcp` でそれをオンに戻す | [`MCP server <name> is blocked by enterprise managed policy`](https://code.claude.com/docs/ja/errors#mcp-server-is-blocked-by-enterprise-managed-policy) |
 

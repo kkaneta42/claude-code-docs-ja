@@ -265,9 +265,11 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 
 フックエントリは、設定レベル間で互いに置き換えられるのではなくマージされます。ユーザー、プロジェクト、ローカルの設定は管理フックを削除せずに独自のフックを追加します。また、[`disableAllHooks`](#disable-or-remove-hooks) 設定は、管理設定の外からは管理フックを無効化できません。
 
-[HTTP フックの許可リスト](https://code.claude.com/docs/ja/settings-reference.md#hook-and-skill-settings)は、管理ポリシー設定を含むすべてのソースからのフックに適用されます。
+#### HTTP フックを制限する
 
-* `allowedHttpHookUrls`: いずれかの設定レベルで定義されている場合、Claude Code は URL がマージされた許可リストに一致する HTTP フックハンドラーのみを実行します
+組織がデプロイするフックを対象にするには管理設定で、その他のフックを対象にするには任意の設定ファイルで、これらの [HTTP フックの許可リスト](https://code.claude.com/docs/ja/settings-reference.md#hook-and-skill-settings)を設定します。
+
+* `allowedHttpHookUrls`: 定義されている場合、Claude Code は URL がマージされた許可リストに一致する HTTP フックハンドラーのみを実行します
 * `httpHookAllowedEnvVars`: 定義されている場合、Claude Code はそのリストにある環境変数のみをフックヘッダーに補間します
 
 ### Matcher パターン
@@ -2530,7 +2532,13 @@ PostToolUseFailure フックは、PostToolUse と同じ `tool_name` と `tool_in
 
 | フィールド | 説明 |
 | :- | :- |
-| `reason` | 拒否の理由。分類器の判定による場合、ほとんどのセッションでは `[Data Exfiltration]` のように、一致したルール名が角括弧で囲まれて示されます。その他の形式については[拒否を確認する](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を参照してください。[判定なしの拒否](#permissiondenied-decision-control)の場合は、`Auto mode could not evaluate this action and is blocking it for safety` で始まります。分類器モデルが利用できなかったことによる拒否の場合は、固定テキスト `Classifier unavailable` になります |
+| `reason` | 拒否の理由 |
+
+拒否をログに記録する場合、`reason` には次のようなテキストが含まれることを想定してください。
+
+* **分類器の判定**: ほとんどのセッションでは、`[Destructive or Unwanted Actions]` のように、マッチした[ポリシー](https://code.claude.com/docs/ja/auto-mode-config.md#fix-a-policy-denial)またはルールが角括弧で囲まれて示されます。その他の形式については、[拒否を確認する](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)を参照してください。
+* **[分類器からの判定なし](#permissiondenied-decision-control)**: `Auto mode could not evaluate this action and is blocking it for safety` で始まります
+* **分類器モデルが利用できない場合、または[失敗もしくはタイムアウトしたサーバーチェック](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)**: テキスト `Classifier unavailable`
 
 #### PermissionDenied の決定制御
 

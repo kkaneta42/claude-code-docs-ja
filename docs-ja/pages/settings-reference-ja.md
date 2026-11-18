@@ -848,13 +848,13 @@ Claude が何を確認なしで実行できるか、新しいセッションの�
 
 ### `autoMode`
 
-[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器がブロックおよび許可するものに独自のルールを追加します。これを使用して、分類器に組織が信頼するリポジトリ、バケット、ドメインを伝え、日常的な内部操作のブロックを停止させます。分類器には[組み込みの許可および拒否ルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)が付属しています。リテラル文字列 `"$defaults"` を配列に含めて、それらの組み込みルールをその位置に保持し、その周りに独自のルールを追加します。省略すると、それらを独自のルールに置き換えます。
+[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器がブロックおよび許可するものに独自のルールを追加します。これを使用して、分類器に組織が信頼するリポジトリ、バケット、ドメインを伝え、日常的な内部操作のブロックを停止させます。分類器には[組み込みの許可および拒否ルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)があります。設定するすべての配列にリテラル文字列 `"$defaults"` を含めて、独自のルールが組み込みルールに追加されるようにしてください。省略すると、独自のルールが組み込みルールを[置き換える場合があります](https://code.claude.com/docs/ja/auto-mode-config.md#override-the-block-and-allow-rules)。
 
 * **スコープ**: [`User or managed`](#scopes)
 * **タイプ**: `environment`、`allow`、`soft_deny`、`hard_deny` の散文ルール配列、および [`classifyAllShell`](#automode-classifyallshell) ブール値を含むオブジェクト
 * **デフォルト**: 未設定。分類器は[組み込みルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)のみを使用します
 
-この例は、`"$defaults"` を通じて組み込みの `soft_deny` ルールを保持し、`terraform apply` をブロックするルールを 1 つ追加します。
+この例は、組み込みの `soft_deny` ルールを保持し、`terraform apply` をブロックするルールを 1 つ追加します。
 
 ```json settings.json theme={null}
 {
@@ -3587,7 +3587,7 @@ Claude Code が [クラウド](https://code.claude.com/docs/ja/claude-code-on-th
 
 ### `allowedHttpHookUrls`
 
-[HTTP フック](https://code.claude.com/docs/ja/hooks.md#http-hook-fields)がターゲットできる URL を制限します。このキーを定義すると、Claude Code は HTTP フックを実行するのはその URL がパターンの 1 つと一致する場合のみで、残りはブロックして実行しません。空の配列はすべての HTTP フックをブロックします。
+[HTTP フック](https://code.claude.com/docs/ja/hooks.md#http-hook-fields)がターゲットにできる URL を制限します。組織がデプロイするフックを対象にするには管理設定でこのキーを設定し、その他のフックを対象にするには任意の設定ファイルで設定します。Claude Code が対象のフックを実行するのは、その URL が設定ファイル全体でマージされたリスト内のパターンと一致する場合のみです。
 
 * **スコープ**: [`Any file`](#scopes)。配列は設定ファイル全体でマージされます。
 * **型**: URL パターンの配列。ワイルドカードとして `*` を使用
@@ -3601,7 +3601,7 @@ Claude Code が [クラウド](https://code.claude.com/docs/ja/claude-code-on-th
 }
 ```
 
-ホスト名マッチングは大文字と小文字を区別せず、完全修飾ドメイン名を示す末尾のドット付きの `hooks.example.com.` を `hooks.example.com` と同じように扱います。これは DNS の扱い方と同じです。許可リストはすべてのソースからのフック（管理設定を含む）に適用されます。
+ホスト名マッチングは大文字と小文字を区別せず、完全修飾ドメイン名を示す末尾のドット付きの `hooks.example.com.` を `hooks.example.com` と同じように扱います。これは DNS の扱い方と同じです。
 
 Agent SDK の `managedSettings` オプションでは、リストにエントリがある場合、Claude Code はこのキーを無視するため、代わりに SDK の [`settings` オプション](https://code.claude.com/docs/ja/agent-sdk/typescript#options)でリストを渡してください。[親設定で空のリストがどのように動作するか](https://code.claude.com/docs/ja/claude-apps-gateway#how-hook-and-skill-keys-in-parent-settings-take-effect)を参照してください。
 
@@ -3742,7 +3742,9 @@ Claude Code のライフサイクルの特定の時点（ツール呼び出し�
 
 ### `httpHookAllowedEnvVars`
 
-[HTTP フック](https://code.claude.com/docs/ja/hooks.md#http-hook-fields)は環境変数の値をリクエストヘッダーに入れることができます。例えば `Authorization: Bearer $HOOK_TOKEN` ヘッダーですが、フックが独自の `allowedEnvVars` でリストしている変数のみです。このキーはすべての HTTP フックのそのリストに外側の制限を設定します: フックは変数を使用できるのは、独自の `allowedEnvVars` とこのキーの両方がそれを名前付けしている場合のみです。フックの定義がそれを要求している場合でも、フックが読むべきではないシークレットを読むのを防ぐために使用します。
+[HTTP フック](https://code.claude.com/docs/ja/hooks.md#http-hook-fields)は環境変数の値をリクエストヘッダーに入れることができます。例えば `Authorization: Bearer $HOOK_TOKEN` ヘッダーですが、フックが独自の `allowedEnvVars` でリストしている変数のみです。
+
+組織がデプロイするフックを対象にするには管理設定でこのキーを設定し、その他のフックを対象にするには任意の設定ファイルで設定します。対象のフックが変数を使用できるのは、フック独自の `allowedEnvVars` と、設定ファイル全体でマージされたこのキーのリストの両方がその変数を指定している場合のみです。
 
 * **スコープ**: [`Any file`](#scopes)。配列は設定ファイル全体でマージされます。
 * **型**: 環境変数名の配列
@@ -3755,8 +3757,6 @@ Claude Code のライフサイクルの特定の時点（ツール呼び出し�
   "httpHookAllowedEnvVars": ["MY_TOKEN", "HOOK_SECRET"]
 }
 ```
-
-許可リストはすべてのソースからのフック（管理設定を含む）に適用されます。
 
 Agent SDK の `managedSettings` オプションでは、リストにエントリがある場合、Claude Code はこのキーを無視するため、代わりに SDK の [`settings` オプション](https://code.claude.com/docs/ja/agent-sdk/typescript#options)でリストを渡してください。[親設定で空のリストがどのように動作するか](https://code.claude.com/docs/ja/claude-apps-gateway#how-hook-and-skill-keys-in-parent-settings-take-effect)を参照してください。
 
@@ -5453,7 +5453,9 @@ Claude Code は `/config` の **Auto-update channel** で選択すると、ユ�
 }
 ```
 
-バックグラウンド自動更新と `claude update` は上限より上のバージョンをスキップするため、範囲内のインストールは範囲内にとどまります。`claude update`、`claude install`、および `claude doctor` は、ユーザーが復旧できるように上限より上で機能し続けます。[`requiredMinimumVersion`](#requiredminimumversion) とペアにして、範囲を強制します。
+ネイティブインストールと npm インストールでは、バックグラウンド自動更新と `claude update` は上限より上のバージョンをスキップします。`claude update`、`claude install`、および `claude doctor` は、ユーザーが復旧できるように上限より上で機能し続けます。[`requiredMinimumVersion`](#requiredminimumversion) とペアにして、範囲を強制します。
+
+デスクトップアプリが更新されると、アプリ自体に含まれる Claude Code のコピーが上限より新しくなることがあり、その場合は [Code タブのローカルセッションが開始されません](https://code.claude.com/docs/ja/desktop.md#version-above-your-organizations-limit)。macOS と Windows でこのコピーが変更されないようにするには、[デスクトップアプリの自動更新をオフにします](https://code.claude.com/docs/ja/desktop.md#device-management-policies)。Microsoft Store からインストールした場合は、引き続き Microsoft Store によって更新されます。
 
 ### `requiredMinimumVersion`
 

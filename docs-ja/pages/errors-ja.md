@@ -105,6 +105,9 @@
 | `Not signed in to the Cloud gateway — run /login.` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
 | `Administrator policy requires a Cloud gateway sign-in on this machine` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
 | `Failed to authenticate: OAuth session expired and could not be refreshed` | [認証](#login-expired) |
+| `Login reached its time limit · Please run /login` / `Failed to authenticate: this login reached its time limit` | [認証](#login-expired) |
+| `Failed to authenticate: your claude.ai login expired` | [ログインの有効期限が切れた後](https://code.claude.com/docs/ja/authentication.md#after-the-login-expires) |
+| `claude.ai login ended · usage now billed to` / `Warning: the claude.ai login on this machine has ended` | [ログインの有効期限が切れた後](https://code.claude.com/docs/ja/authentication.md#after-the-login-expires) |
 | `Could not refresh your login because another Claude Code process is refreshing it` | [認証](#could-not-refresh-your-login) |
 | `Failed to refresh OAuth token: another Claude Code process is refreshing it or exited mid-refresh` | [認証](#could-not-refresh-your-login) |
 | `Could not refresh your login: the disk that holds the Claude Code config directory (~/.claude by default), or your disk quota on it, is full` | [認証](#could-not-refresh-your-login-disk-full) |
@@ -369,6 +372,7 @@
 | `This call was not run. Claude Code could not confirm that the shell is back in the directory`（v2.1.323 以降） | [ツールエラー](#command-approved-before-a-restart-was-not-run) |
 | `File is too large to read as an image (the limit is 128MB)` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
 | `Cannot read this as an image: <path> is a pipe or a device` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
+| `could not fully check your permission rules` | [どのモードでも自動承認されないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves) |
 | `subagent_type is required: the general-purpose agent is not available in this session` | [ツールエラー](#subagent-type-is-required) |
 | `Error: this write left the memory index at MEMORY.md at ..., over its ... read limit` | [ツールエラー](#memory-index-is-over-its-read-limit) |
 | `Sandbox is required but failed to initialize: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
@@ -730,8 +734,6 @@ Claude がテキストまたはツール呼び出しを開始する前にドロ�
 
 [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) がアクションを分類するために使用するモデルが決定を生成できなかったため、auto モードはアクションを自動的に承認しませんでした。表示されるメッセージは、分類器が失敗した方法によって異なります。
 
-作業ディレクトリ内の読み取り、検索、編集は分類器をスキップするため、これらすべてのケースで動作し続けます。
-
 分類器モデルが利用できない場合：
 
 ```text theme={null}
@@ -1060,6 +1062,7 @@ Console の組織のプリペイドクレジットが不足しているか、サ
 
 ```text theme={null}
 Credit balance is too low
+Credit balance too low · Add funds: https://platform.claude.com/settings/billing
 ```
 
 **対処方法:**
@@ -1415,7 +1418,7 @@ v2.1.238 より前では、どちらの場合も、Claude Code は [Remote Contr
 
 保存済みのログインが無効になっています。トークンが取り消された場合は、すべての場所からサインアウトしたか、管理者がアクセスを削除したことを意味します。トークンの有効期限が切れた場合は、セッション中に自動更新が失敗したことを意味します。
 
-どちらのメッセージも、Claude Code が送信したリクエストに対して API が返した拒否を報告するものです。更新の失敗後に保存済みのログインがすでにクリアされている場合は、代わりに [Login expired](#login-expired) が表示されます。[`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/env-vars) の長期間有効なトークンで認証している場合、そのトークンの有効期限が切れるか取り消されたときにも同じメッセージが表示されます。
+どちらのメッセージも、Claude Code が送信したリクエストに対して API が返した拒否を報告するものです。更新の失敗後に保存済みのログインがすでに消去されている場合は、代わりに [Login expired](#login-expired) を参照してください。[`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/env-vars) の長期間有効なトークンで認証している場合、そのトークンが期限切れになるか取り消されると、同じメッセージが表示されます。
 
 ```text theme={null}
 OAuth token revoked · Please run /login
@@ -1457,9 +1460,7 @@ Please run /login · API Error: 401 Invalid authentication credentials
 
 ### Login expired
 
-Claude Code が保存済みの claude.ai ログインを更新しようとしましたが、OAuth サービスが保存済みのリフレッシュトークンを拒否したため、Claude Code は保存済みの認証情報をクリアしました。その後は、新しい認証情報を作成できるのは `/login` だけであるため、各モデルリクエストは API に到達する前に、このメッセージでローカルに停止します。
-
-v2.1.206 より前では、Claude Code は環境に残っている認証情報でそのままモデルリクエストを送信し、サインインを求める代わりに、すべてのモデルが [There's an issue with the selected model](#theres-an-issue-with-the-selected-model) または 401 で失敗していました。
+Claude Code が保存済みの claude.ai ログインを更新しようとしたところ、OAuth サービスが保存されているリフレッシュトークンを拒否したため、Claude Code は保存済みの認証情報を消去しました。[ほかに保存済みの認証情報](https://code.claude.com/docs/ja/authentication.md#after-the-login-expires)がない場合、その後のモデルへのリクエストはこのメッセージで停止します：
 
 ```text theme={null}
 Login expired · Please run /login
@@ -1471,15 +1472,13 @@ Login expired · Please run /login
 Failed to authenticate: OAuth session expired and could not be refreshed
 ```
 
-`or re-authenticate your Anthropic profile` で終わる `Login expired` メッセージについては、[Anthropic profile login expired](#anthropic-profile-login-expired) を参照してください。
+ログインが時間制限に達した場合、Claude Code v2.1.318 以降では、どちらのメッセージも代わりに `reached its time limit` と表示されます。`or re-authenticate your Anthropic profile` で終わる `Login expired` メッセージについては、[Anthropic profile login expired](#anthropic-profile-login-expired) を参照してください。
 
-これは [OAuth token revoked or expired](#oauth-token-revoked-or-expired) と同じ状態ではありません。そちらのメッセージは API が返した拒否を報告します。`Login expired` は、すでに更新に失敗したログインに対して Claude Code 自身が生成するもので、リクエストは送信されません。ログインが古いのではなくアカウント自体が停止されているために更新が失敗した場合、Claude Code は代わりに [Your account is on hold](#your-account-is-on-hold) を表示します。
-
-リクエストが失敗する前にこの状態を確認できます。[`/status`](https://code.claude.com/docs/ja/commands) には `Expired — log in again` と表示される `Login` 行と、期限切れのログインについて保存されている組織とメールアドレスが表示されます。この行は、保存済みのログインが有効な認証情報であり、もう更新できない場合にのみ表示されます。別の方法で認証されたセッションでは、期限切れのログインが保存されたままであっても、この行は表示されません。v2.1.210 より前では、クリアされた認証情報により報告する内容がなかったため、この状態の `/status` にはログインが存在していたことを示すものが何も表示されませんでした。
+アカウント自体が停止されているために更新が失敗した場合、Claude Code は代わりに [Your account is on hold](#your-account-is-on-hold) を表示します。
 
 **対処方法：**
 
-* `/login` を実行して再度サインインします。サインインせずに再試行すると、すべてのリクエストで同じメッセージが表示されます。
+* `/login` を実行して再度サインインします。
 * 別の Claude Code ウィンドウで claude.ai アカウントを使ってサインインする場合、このセッションが自動的にそのログインを使い始める条件については [Not logged in](#not-logged-in) を参照してください。
 * 非対話モードでは、同じ環境で `claude` を実行して `/login` を完了してから、コマンドを再実行します。対話的にサインインできない自動化では、`ANTHROPIC_API_KEY` で認証するか、[`claude setup-token` で長期間有効なトークンを生成](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token)します。
 * サインインが失敗し続ける場合は、[ログインと認証](https://code.claude.com/docs/ja/troubleshoot-install.md#login-and-authentication)を参照してください
@@ -2376,7 +2375,7 @@ Claude Code は、マシンが長時間オフラインになり、マシンが�
 Couldn't share the transcript.
 ```
 
-アップロードは 8 MiB の上限内に収まる必要があります。長いセッションでは、Claude Code は共有内容の一部を段階的に削除します。まず最後のリクエストのモデル設定、次に構造化された会話とサブエージェントのトランスクリプトです。縮小したバージョンを送信できない場合、またはネットワークエラーやサーバーエラーでアップロードが止まった場合に、このメッセージを表示します。Claude Code が代わりにローカルアーカイブを保存する場合、このメッセージはアーカイブを書き込めなかったことを意味します。
+アップロードは 8 MiB の上限内に収まる必要があります。長いセッションでは、Claude Code は共有内容の一部を段階的に削除します。縮小したバージョンを送信できない場合、またはネットワークエラーやサーバーエラーでアップロードが止まった場合に、このメッセージを表示します。Claude Code が代わりにローカルアーカイブを保存する場合、このメッセージはアーカイブを書き込めなかったことを意味します。
 
 **対処方法:**
 
@@ -2750,7 +2749,7 @@ There's an issue with the selected model (claude-...). It may not exist or you m
 * **Agent SDK**：モデルはプログラムで設定されるため、エラーテキストはヒントを省略します。TypeScript で [`Options` の `model`](https://code.claude.com/docs/ja/agent-sdk/typescript#options) を設定するか、Python で [`ClaudeAgentOptions(model=...)`](https://code.claude.com/docs/ja/agent-sdk/python#claudeagentoptions) を設定し、構造化された `model_not_found` エラーを処理して、独自の再試行またはモデルピッカーを表示してください。
 * 完全なバージョン付き ID ではなく、`sonnet` や `opus` などのエイリアスを使用してください。エイリアスは保守されたデフォルトに解決されるため、古くなりません。[モデル設定](https://code.claude.com/docs/ja/model-config.md)を参照してください。
 * 間違ったモデルが CLI で戻り続ける場合は、古い ID がどこかに設定されています。[優先順位順](https://code.claude.com/docs/ja/model-config.md#setting-your-model)でモデルを設定できる場所を確認し、古い値を削除してください。
-* Claude Code は期限切れの claude.ai ログインを、このエラーではなく [ログイン期限切れ](#login-expired)として報告します。v2.1.206 より前では、更新できなくなった期限切れのログインはすべてのモデルでこのエラーにより失敗しました。古いバージョンでこれが表示される場合は、`/login` を実行してください。
+* v2.1.206 より前は、更新できなくなった期限切れの claude.ai ログインにより、すべてのモデルがこのエラーで失敗していました。これらのバージョンでは `/login` を実行してください。
 * [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)を指していて、すべてのモデルがこのように失敗する場合は、ゲートウェイとそのアップストリームが[ツール検索](https://code.claude.com/docs/ja/mcp.md#tool-search-through-a-gateway)フィールドを受け付けることを確認してください。デフォルトでは、Claude Code は `defer_loading` ツールフィールドと `tool_reference` ブロックを、それらを有効にする `anthropic-beta` ヘッダーとともに送信します。v2.1.304 より前は、`ENABLE_TOOL_SEARCH` でオンにしない限り、ゲートウェイ経由ではツール検索はオフでした。
 * Google Cloud の Agent Platform デプロイについては、[Google Cloud の Agent Platform トラブルシューティング](https://code.claude.com/docs/ja/google-vertex-ai.md#troubleshooting)を参照してください。
 

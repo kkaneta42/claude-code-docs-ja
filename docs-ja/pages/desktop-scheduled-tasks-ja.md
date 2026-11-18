@@ -188,6 +188,8 @@ Claude に尋ねる、タスク自身に更新させる、またはディスク�
 * **タスク自身に更新させる**: タスクが `update_scheduled_task` MCP ツールを使用して自身のスケジュールまたはプロンプトを変更できるようにするには、**Run now** をクリックし、その呼び出しを毎回承認してください
 * **ディスク上のプロンプトを編集する**: `~/.claude/scheduled-tasks/<task-name>/SKILL.md`、またはその変数を設定している場合は [`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) 配下の `scheduled-tasks/<task-name>/SKILL.md` を開きます。ファイルは `name` と `description` の YAML フロントマターを使用し、プロンプトが本文です。変更は次の実行時に有効になります。スケジュール、フォルダ、および有効な状態はこのファイルにはありません。Edit フォームを通じて変更するか、Claude に尋ねます。
 
+既に実行されたローカルの一回限りのタスクが **Scheduled tasks** ページに表示されない場合は、リストの上にある並べ替えアイコンをクリックし、**Include completed** を選択します。
+
 ## 関連リソース
 
 * [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md): クラウドでタスクを実行し、スケジュール、API 呼び出し、または GitHub イベントに応答して実行します。コンピュータがオフの場合でも実行できます

@@ -125,7 +125,7 @@ SIGTERM では、Claude Code はまだ実行中の Bash コマンドのプロセ
 
 ### Claude にデータをパイプする
 
-非対話モードは stdin を読み込むため、他のコマンドラインツールと同様にデータをパイプで渡し、応答をリダイレクトできます。
+非対話モードは stdin を読み込むため、データをパイプで渡し、応答をリダイレクトできます。
 
 この例は、ビルドログを Claude にパイプして、説明をファイルに書き込みます。
 
@@ -370,7 +370,7 @@ claude -p "Look at my staged changes and create an appropriate commit" \
   --allowedTools "Bash(git diff *),Bash(git log *),Bash(git status *),Bash(git commit *)"
 ```
 
-`--allowedTools` フラグは[権限ルールの構文](https://code.claude.com/docs/ja/settings-reference.md#permission-rule-syntax)を使用します。末尾の ` *` はプレフィックスマッチングを有効にするため、`Bash(git diff *)` は `git diff` で始まるすべてのコマンドを許可します。`*` の前のスペースは重要です。スペースがないと、`Bash(git diff*)` は `git diff-index` にも一致します。
+`--allowedTools` フラグは[権限ルールの構文](https://code.claude.com/docs/ja/settings-reference.md#permission-rule-syntax)を使用します。末尾に ` *` があるため、`Bash(git diff *)` は引数の有無にかかわらず `git diff` に一致します。`*` の前のスペースは重要です。スペースがないと、`Bash(git diff*)` は `git diff-index` にも一致します。
 
 > [!NOTE]
 >

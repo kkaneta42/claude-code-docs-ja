@@ -104,6 +104,7 @@ Team、Enterprise、または Console 組織を管理している場合は、[�
 > * View Channels
 > * Send Messages
 > * Send Messages in Threads
+> * Create Public Threads
 > * Read Message History
 > * Attach Files
 > * Add Reactions

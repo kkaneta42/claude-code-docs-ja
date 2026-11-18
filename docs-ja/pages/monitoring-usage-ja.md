@@ -761,7 +761,7 @@ Claude Code は、OpenTelemetry の logs/events を介して次のイベント�
 | - | - |
 | `prompt.id` | 単一のユーザープロンプトの処理中に生成されたすべてのイベントを結び付ける UUID v4 識別子 |
 | `event.sequence` | イベントを順序付けるための 0 始まりのカウンター。セッションごとではなく、Claude Code プロセスごとにカウントされます |
-| `message.uuid` | セッションのトランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保存されたメッセージの UUID。`assistant_response`、`api_response_body`、および `user_prompt` に含まれます。ただし、`user_prompt` のうち、0 個または複数のメッセージを生成する可能性があるコマンドのディスパッチには含まれません。`assistant_response` と `api_response_body` では、これは応答の最後のトランスクリプトエントリであり、次のターンの `parentUuid` はこれにチェーンされます。`api_response_body` では Claude Code v2.1.274 以降が必要です |
+| `message.uuid` | セッショントランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保存されたメッセージの UUID。`assistant_response`、`api_response_body`、および `user_prompt` に含まれます。ただし、0 個または複数のメッセージを生成する可能性があるコマンドディスパッチの場合は含まれません。`assistant_response` と `api_response_body` では、これは応答の最後のトランスクリプトエントリであり、次のターンの `parentUuid` はここから連鎖します。`api_response_body` では Claude Code v2.1.274 以降が必要です |
 | `request_id` | `request-id` レスポンスヘッダーから読み取られる、サーバーが割り当てた API リクエストの ID（例: `req_011...`）。[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md) のように `request-id` ヘッダーのないレスポンスでは、代わりに `x-amzn-requestid` ヘッダーから値が取得されます。レスポンスにいずれかのヘッダーが含まれる場合、`api_request`、`api_error`、`api_refusal`、`assistant_response`、`api_response_body`、[`tool_result`](#tool-result-event)、[`tool_decision`](#tool-decision-event) に含まれます。`llm_request` トレーススパンの同じ属性と一致します。`x-amzn-requestid` からの取得には Claude Code v2.1.282 以降が必要です |
 | `client_request_id` | `x-client-request-id` リクエストヘッダーとして送信される、クライアントが生成した UUID。ファーストパーティの API 接続では `api_request` と `api_error` に含まれます。サードパーティプロバイダーのバックエンドでは含まれず、非ストリーミングのフォールバックを通じてリクエストが再試行された場合も含まれません。リクエストとそのレスポンスを対応付け、サーバーの `request_id` を生成しなかったタイムアウトなどの失敗でも利用できます。`llm_request` トレーススパンの同じ属性と一致します |
 
@@ -1020,12 +1020,12 @@ API リクエストが `stop_reason: "refusal"` を返したときに記録さ�
   * Claude Code が auto モードで分類器に問い合わせずに呼び出しを承認した
   * [ブロックが繰り返された](https://code.claude.com/docs/ja/permission-modes.md#repeated-block-thresholds)後に Claude Code が表示したプロンプトにユーザーが回答した
   * `--permission-prompt-tool` なしの `-p` 実行で、プロンプトに回答できる人がいなかったため、ブロックが繰り返された後に Claude Code が呼び出しを拒否した。このイベントは `decision` を `"reject"`、`source` を `"config"` として報告します
-* `classifier_category`（`OTEL_LOG_TOOL_DETAILS=1` の場合）: 分類器が呼び出しをブロックしたときに挙げた[組み込みルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)の名前。小文字とアンダースコアで表され、たとえば Data Exfiltration ルールの場合は `"data_exfiltration"` です。Claude Code v2.1.301 以降が必要です。この属性は、次の両方が成り立つ場合に含まれます:
+* `classifier_category`（`OTEL_LOG_TOOL_DETAILS=1` の場合）: 分類器が呼び出しをブロックしたときに挙げた[ポリシー](https://code.claude.com/docs/ja/auto-mode-config.md#fix-a-policy-denial)または[組み込みルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)の名前。小文字とアンダースコアで表されます（Data Exfiltration ルールの場合は `"data_exfiltration"` など）。Claude Code v2.1.301 以降が必要です。この属性は、以下の両方が成り立つ場合に付きます。
 
   * `classifier_verdict` が `"block"` である
-  * 分類器がちょうど 1 つのルールを挙げており、そのルールがユーザーが作成したものではなく組み込みのものである
+  * 分類器がちょうど 1 つの名前を挙げ、Claude Code がそれをポリシーまたは組み込みルールとして認識している
 
-  v2.1.302 より前では、[サーバー側の分類器レビュー](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)が決定したブロックでもこの属性は含まれていませんでした。
+  v2.1.302 より前では、[サーバー側の分類器レビュー](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)が決定したブロックでもこの属性は付きませんでした。v2.1.323 より前では、ポリシーを挙げたブロックでは付きませんでした。
 * `permission_mode`: この呼び出しの権限チェックが開始されたときにアクティブだった[権限モード](https://code.claude.com/docs/ja/permission-modes.md): `"default"`、`"plan"`、`"acceptEdits"`、`"bypassPermissions"`、`"dontAsk"`、または `"auto"`。Manual モードは `"default"` として表示されます。[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#permission-modes)の呼び出しでは、セッションの権限モードではなくサブエージェントの権限モードが報告されます。Claude Code v2.1.301 以降が必要です
 * `tool_parameters`（`OTEL_LOG_TOOL_DETAILS=1` の場合）: ツール固有のパラメーターを含む JSON 文字列。[ツール結果イベント](#tool-result-event)と同じ形式ですが、`git_commit_id` などの実行後のフィールドは含まれません。権限決定が `updatedInput` を介してツール入力を書き換えた場合、承認された呼び出しでは値が `tool_result` と異なることがあります。`decision` が `"reject"` の場合にどのコマンドが拒否されたかを確認するには、この属性を使用してください。
   * `"sdk_host_builtin_mcp"` ツールの場合: ホストアプリケーションがこれらの名前を定義しているため、`OTEL_LOG_TOOL_DETAILS` がオフでも `mcp_server_name` と `mcp_tool_name` が含まれます。これらがないと、これらの組み込みサーバーのいずれかへの拒否された呼び出しは、デフォルトのストリームでは帰属を特定できなくなります。ユーザーが設定した MCP サーバーの場合、イベントの `tool_name` は常にリテラル `"mcp_tool"` であり、サーバー名とツール名はフラグがオンの場合にのみ `tool_parameters` に表示されます。引数の内容は、どの場合でもフラグが必要です。
@@ -1078,7 +1078,7 @@ Claude Code は `claude_code.safety_event` の送信を停止しました:
 * `rule_source`: 関係するルールの設定ソース（`"policySettings"`、`"userSettings"`、`"projectSettings"`、`"localSettings"`、`"flagSettings"`、`"cliArg"`、`"session"` など）
 * `grant_scope`: 設定ファイルにルールを保存せずに承認されたプロンプトの場合は `"once"` または `"session"`
 * `circuit_breaker`: 組み込みの安全チェック（`"dangerousRemoval"`、`"outsideReadsBlocked"`、`"claudeSettingsFile"` など）
-* `classifier_category`: `OTEL_LOG_TOOL_DETAILS=1` の場合、auto モードのブロックの背後にある[組み込みルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)（`"data_exfiltration"` など）
+* `classifier_category`: `OTEL_LOG_TOOL_DETAILS=1` の場合、auto モードのブロックの背後にある[組み込みルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)（`"data_exfiltration"` など）。含まれる条件は [`tool_decision`](#tool-decision-event) と同じです
 * `hook_event`: `PreToolUse` フックの場合は `"pre_tool_use"`、`"hook_review"` イベントでは `"post_tool_use"`、`"post_tool_use_failure"`、`"stop"`、または `"subagent_stop"`
 * `tool_class`: Bash と [Monitor](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) の場合は `"bash"`、`"powershell"`、Read、Edit、Write、NotebookEdit、Glob、Grep の場合は `"file"`、WebFetch と WebSearch の場合は `"web"`、`"mcp"`、または `"other"`
 * `tool_name`: ツールの名前。組み込みツールの場合は `"Bash"` など、または `"mcp_tool"`、`"skill_tool"`、`"dynamic_tool"`、`"other_tool"`

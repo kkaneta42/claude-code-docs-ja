@@ -365,7 +365,7 @@ What's the structure of @src/components?
 Show me the data from @github:repos/owner/repo/issues
 ```
 
-これにより、@server:resource 形式を使用して接続された MCP サーバーからデータを取得します。詳細については、[MCP リソース](https://code.claude.com/docs/ja/mcp.md#use-mcp-resources)を参照してください。
+詳細については、[MCP リソース](https://code.claude.com/docs/ja/mcp.md#use-mcp-resources)を参照してください。
 
 > [!TIP]
 >
@@ -490,7 +490,7 @@ subagent は独自のコンテキストウィンドウでファイルを読み�
 
 ## Claude をスクリプトにパイプする
 
-CI、プリコミットフック、またはバッチ処理用に Claude を非対話的に実行します。stdin と stdout は任意の Unix ツールのように機能します。
+CI、プリコミットフック、またはバッチ処理用に Claude を非対話的に実行します。
 
 ```bash theme={null}
 git log --oneline -20 | claude -p "summarize these recent commits"

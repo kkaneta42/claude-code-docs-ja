@@ -39,7 +39,7 @@ Claude Code はほとんどの開発環境で動作するように設計され�
 1. `/compact` を定期的に使用してコンテキストサイズを削減します。`Not enough messages to compact.` が返される場合、カンバセーションのターン数が少なすぎて要約できません。これは、単一の大規模なペーストがコンテキストを満杯にした場合でも、コンテキストが満杯でも発生する可能性があります
 2. 主要なタスク間で Claude Code を閉じて再起動します
 3. 大規模なビルドディレクトリを `.gitignore` ファイルに追加することを検討してください
-4. [`claude --safe-mode`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で再起動して、プラグイン、MCP サーバー、またはフックが原因かどうかを確認します。セッション中のすべてのカスタマイズが無効になります。使用量が低下した場合は、[設定をデバッグする](https://code.claude.com/docs/ja/debug-your-config.md#test-against-a-clean-configuration)を参照して、どれが原因かを特定します
+4. [`claude --safe-mode`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で再起動して、プラグイン、MCP サーバー、またはフックが原因かどうかを確認します。使用量が低下した場合は、[設定をデバッグする](https://code.claude.com/docs/ja/debug-your-config.md#test-against-a-clean-configuration)を参照して、どれが原因かを特定します
 
 セッションのヒープメモリが 2.5GB を超える場合、重大なメモリ使用量警告が表示されます。メモリを解放するには、Claude Code を再起動して [`claude --continue`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を実行し、新しいプロセスでカンバセーションを再開します。
 

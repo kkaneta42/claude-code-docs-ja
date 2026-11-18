@@ -2,9 +2,9 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# オートモードの設定
+# auto モードの設定
 
-> オートモード分類器に、組織が信頼するリポジトリ、バケット、ドメインを指定します。環境コンテキストを設定し、デフォルトのブロックおよび許可ルールをオーバーライドし、オートモード CLI サブコマンドで有効な設定を検査します。
+> auto モード分類器に、組織が信頼するリポジトリ、バケット、ドメインを指定し、独自のブロックルールと許可ルールを設定して、設定内容を確認します。
 
 [オートモード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を使用すると、Claude Code は、ツール呼び出しを分類器にルーティングして、不可逆的、破壊的、または環境外を対象とした操作をブロックすることで、定期的な権限プロンプトなしで実行できます。拒否および明示的な質問ルールは分類器の前に評価され、引き続きブロックまたはプロンプトを表示します。`autoMode` 設定ブロックを使用して、その分類器に組織が信頼するリポジトリ、バケット、ドメインを指定し、定期的な内部操作のブロックを停止させます。
 
@@ -119,7 +119,7 @@ Claude のプッシュおよびプルリクエストコマンドの前に人間�
 }
 ```
 
-設定を保存した後、`claude auto-mode config` を実行して、[有効なルールがエントリを含む](#inspect-the-defaults-and-your-effective-config)ことを確認します。
+設定を保存したら、`claude auto-mode config` を実行して、[ルールに自分のエントリが含まれていることを確認します](#inspect-the-defaults-and-your-effective-config)。
 
 エントリは散文であり、正規表現やツールパターンではありません。分類器はそれらを自然言語ルールとして読み取ります。新しいエンジニアにインフラストラクチャを説明する方法で記述してください。十分な環境セクションは以下をカバーします。
 
@@ -184,7 +184,7 @@ Claude Code はバックグラウンドでスキャンを行い、その後草�
 * Claude Code は、草案がエントリを追加する `allow`、`soft_deny`、`hard_deny` の各リストに `"$defaults"` を含めます（ただし、`"$defaults"` を含まない `allow` リストをすでに書いている場合を除きます）。これにより、置き換えていない[組み込みルール](#override-the-block-and-allow-rules)が引き続き有効になります
 * 保存後、Claude Code は `~/.claude/settings.json` 内の `permissions.allow` ルールのうち、`Bash(*)` のように auto モードが無視するもの、または破壊的なコマンドを自動承認するものを削除するよう提案します
 
-その後、`claude auto-mode config` を実行して[実際に適用される結果を確認](#inspect-the-defaults-and-your-effective-config)してください。
+次に `claude auto-mode config` を実行して[結果を確認します](#inspect-the-defaults-and-your-effective-config)。
 
 ### `/auto-mode-setup` をオフにする
 
@@ -214,7 +214,7 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
 
 ## ブロックルールと許可ルールをオーバーライドする
 
-3 つの追加フィールドを使用すると、分類器の組み込みルールリストを置き換えることができます。
+分類器の組み込みルールに追加するには、3 つの追加フィールドのいずれかを設定し、そのリストにリテラル文字列 `"$defaults"` を含めます。
 
 * `autoMode.hard_deny`：ユーザーが求めた場合でもブロックするアクション
 * `autoMode.soft_deny`：ユーザーの意図でクリアできる破壊的なアクション
@@ -236,8 +236,6 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
 一般的なリクエストは明示的な意図としてカウントされません。Claude に「リポジトリをクリーンアップする」ように依頼することは force push を認可しませんが、「このブランチを force push する」ように依頼することは認可します。
 
 緩和するには、分類器がデフォルトの例外がカバーしていない日常的なパターンを繰り返し警告する場合、`allow` に追加します。厳しくするには、環境に固有でデフォルトが見落としている破壊的なリスクについて `soft_deny` に追加するか、ユーザーが求めた場合でもブロックするアクションについて `hard_deny` に追加します。
-
-組み込みルールを保持しながら独自のルールを追加するには、配列にリテラル文字列 `"$defaults"` を含めます。デフォルトルールはその位置に挿入されるため、カスタムルールはそれらの前後に配置でき、リリース全体でビルトインリストが変更されるにつれて更新を継続して継承します。
 
 次の例は、すべての 4 つのリストでデフォルトを保持し、各リストに組織固有のルールを追加しています。
 
@@ -268,14 +266,9 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
 
 > [!CAUTION]
 >
-> `environment`、`allow`、`soft_deny`、または `hard_deny` のいずれかを `"$defaults"` なしで設定すると、そのセクション全体のデフォルトリストが置き換わります。`"$defaults"` なしで配列を設定する場合、そのセクションの組み込みルールを破棄します。
->
-> * `soft_deny`：force push、`curl | bash`、本番環境へのデプロイ、およびオートモードバイパスを含むすべての組み込みソフトブロックルール
-> * `hard_deny`：組み込みのデータ流出ルール
+> 設定するすべてのリストに `"$defaults"` を含めてください。そうすることで、`"$defaults"` が保持する[組み込みルール](#inspect-the-defaults-and-your-effective-config)を失わずに済みます。
 
 各セクションは独立して評価されるため、`environment` のみを設定すると、デフォルトの `allow`、`soft_deny`、および `hard_deny` リストはそのままになります。
-
-`"$defaults"` は、リストの完全な所有権を取得する意図がある場合のみ省略します。その場合、`claude auto-mode defaults` を実行して組み込みルールを出力し、それらを設定ファイルにコピーしてから、各ルールを独自のパイプラインとリスク許容度に対して確認します。
 
 ## `/permissions` から編集ルール
 
@@ -289,7 +282,7 @@ Claude Code は [管理設定](https://code.claude.com/docs/ja/server-managed-se
 
 ## シェルの許可ルールを一時停止する
 
-デフォルトでは、狭い Bash および PowerShell の許可ルール（`Bash(npm test)` など）はオートモードで有効なままであり、Claude Code は分類器が実行される前にそれらを解決します。ただし、コマンドが [コマンドごとの許可ドメイン](https://code.claude.com/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode) を含む場合は除きます。Claude Code は、`Bash(*)` やワイルドカード化されたインタープリターなどの任意のコード実行を許可する広いルール、および [`Monitor`](https://code.claude.com/docs/ja/tools-reference#monitor-tool) という名前のすべてのルールを一時停止します。Monitor コマンドはシェルを通して実行されるためです。これは、狭いルールが、分類器が見ることなく、破壊的な引数（スクリプトパスやルールのプレフィックスが予想しなかったフラグなど）を通す可能性があることを意味します。
+auto モードでは、Claude Code は `Bash(*)` などの[広い許可ルール](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)を除外します。デフォルトでは、狭い Bash および PowerShell の許可ルール（`Bash(npm test)` など）は有効なままです。Claude Code は分類器が実行される前にそれらを解決します。ただし、コマンドが[コマンドごとの許可ドメイン](https://code.claude.com/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode)を含む場合は除きます。狭いルールでも、分類器が見ることなく、破壊的な引数（スクリプトパスやルールのプレフィックスが予想しなかったフラグなど）を通してしまう可能性があります。
 
 `autoMode.classifyAllShell` を `true` に設定すると、auto モードがアクティブな間、および[分類器がコマンドをレビューしている間の plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)で、Bash および PowerShell の許可ルールが一時停止されます。[Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) セッションでは、この設定がオンの場合でも、分類器はコマンドを実行するコードをレビューします。
 
@@ -307,7 +300,7 @@ auto モードと plan モードでは、許可ルールによってのみ承認
 
 `claude auto-mode` サブコマンドは、設定を確認、検証、リセットするのに役立ちます。
 
-組み込みの `environment`、`allow`、`soft_deny`、`hard_deny` ルールを JSON として出力します：
+Claude Code に組み込まれている `environment`、`allow`、`soft_deny`、`hard_deny` ルールを出力します：
 
 ```bash theme={null}
 claude auto-mode defaults
@@ -315,7 +308,11 @@ claude auto-mode defaults
 
 `jq` にパイプしなくても 1 つのルールの完全な文言を読むには、`--label` にルールのラベルの開始部分を渡します。例えば `claude auto-mode defaults --label 'Git Destructive'` のようにします。マッチングは各ルールのラベルに対する大文字小文字を区別しないプレフィックスであり、マッチしないセクションは空のリストとして出力されます。
 
-分類器が実際に使用する設定を JSON として出力します。設定が指定されている場合はその設定を、そうでない場合はデフォルトを適用します：
+> [!NOTE]
+>
+> auto モードで `/status` が [`Auto mode server`](https://code.claude.com/docs/ja/permission-modes#server-side-classifier-review) を `Enabled` と表示している間は、サーバーの組み込みルールがこの出力と異なる場合があり、それらを出力する `claude auto-mode` サブコマンドはありません。
+
+4 つのリストを出力します。設定が指定されている場合はその設定を、そうでない場合はデフォルトを適用します：
 
 ```bash theme={null}
 claude auto-mode config
@@ -402,19 +399,36 @@ Claude にすぐに再試行させたくない場合は、アクションを後�
 
 * **Recently blocked タブ**：アクションの行をハイライトします。[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、すべてのコマンドと入力がリストの前に表示されます。
 * **フック**：拒否の正確な入力をプログラムで取得するには、[`PermissionDenied` フック](https://code.claude.com/docs/ja/hooks#permissiondenied)を追加します。これは `tool_input` として入力を受け取ります。フックが `reason` を読み取る場合、`Auto mode:` プレフィックスは付かず、`No reason provided` の代わりに `Blocked by classifier` のようなテキストが入ることに注意してください。
-* **会話**：ツール呼び出しを見つけます。呼び出しが短縮されているか、`Ran 3 shell commands` のような概要行に折りたたまれている場合は、`Ctrl+O` を押して[トランスクリプトビューア](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)を開き、展開します。
+* **会話**：ツール呼び出しを見つけます。呼び出しが短縮されているか、概要行に折りたたまれている場合は、`Ctrl+O` を押して[トランスクリプトビューア](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)を開きます。
 
 呼び出しの下のテキストは、修正すべきことがあるかどうかを示します。薄く表示された `Not run · auto mode's check had no usable answer` の行、または分類器自体の問題を報告するテキスト（`Auto mode could not evaluate this action` など）は、Claude Code が分類器からの判定なしに呼び出しをブロックしたことを意味します。`Not run` の行の場合は、`Ctrl+O` を押してメッセージ全文を読み、対処方法については[auto モードがアクションの安全性を判定できない](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)または[サーバーが安全性の判定を返さなかった](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)を参照してください。
 
 それ以外の場合、`Blocked by auto mode` の行は、分類器が呼び出しを安全でないと判定したことを意味します。呼び出しを通すには、Claude が到達しようとしていたもの、または実行しようとしていたことに合った手順を実行します。
 
 * タスク全体を通じて Claude が必要とする宛先（パッケージレジストリ、内部ドメイン、リポジトリホストなど）：`autoMode.environment` に追加します。
-* これからレビューなしで実行したいコマンド：`allow` ルールを追加します。
+* 今後許可したいコマンド：`allow` ルールを追加します。
 * 実際に意図した 1 回限りのアクション：次のメッセージでその意図を述べて、Claude に再試行させます。
 
 環境エントリまたは `allow` ルールは、`/permissions` ダイアログの[**Auto mode** タブ](#edit-rules-from-permissions)から追加できます。
 
-角括弧内のテキスト（`[Data Exfiltration]` など）は、分類器がマッチしたルールの名前です。そのルールの完全な文言を読むには、[デフォルトと有効な設定を確認する](#inspect-the-defaults-and-your-effective-config)を参照してください。
+角括弧内のテキストは、分類器がマッチした対象を示します。それが Claude Code に組み込まれたルールである場合は、角括弧を除いたその名前を [`claude auto-mode defaults --label`](#inspect-the-defaults-and-your-effective-config) に渡すと、完全な文言を読むことができます。
+
+### `Destructive or Unwanted Actions` などのポリシーによる拒否を修正する
+
+拒否に次のいずれかの名前が表示される場合は、[サーバー側の分類器](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)が呼び出しをブロックし、広範なポリシーをその理由として示しています。
+
+* `[Destructive or Unwanted Actions]`
+* `[Unauthorized Access]`
+* `[Undermining Oversight]`
+* `[Unsanctioned Communication]`
+
+ポリシー名はカテゴリにすぎず、`claude auto-mode defaults` にはその文言は表示されません。会話でブロックされた呼び出しを読むか、ターミナルのセッションで `/permissions` を実行して **Recently blocked** の下を確認してください。それが Claude に実行させるつもりだったものであれば、分類器により多くのコンテキストを与えます。
+
+* **この呼び出しのみの場合**：アクションとその対象を指定して、Claude に実行するよう伝えます（例：「`data/seed.json` を上書きして」）
+* **パッケージレジストリなど、信頼できる宛先の場合**：[`autoMode.environment`](#define-trusted-infrastructure) に追加します
+* **今後許可したい日常的なアクションの場合**：[`autoMode.allow`](#override-the-block-and-allow-rules) のエントリにそのアクションを記述します
+
+エントリを追加した後、分類器が呼び出しを再度チェックするように、Claude に再試行を依頼してください。
 
 ### 繰り返される拒否を修正する
 
