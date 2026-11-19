@@ -150,13 +150,13 @@ Claude はメッセージの送信先を自分で見つけるため、送信を�
 
 コンテナ内のセッションとホスト上のセッションは、互いに到達できません。同じコンテナ内の 2 つのセッションは、[セルフホストランナー](https://code.claude.com/docs/ja/self-hosted-environments)上を含め、引き続き互いにメッセージを送れます。同じコンピューター上の WSL 2 内のセッションとネイティブ Windows のセッションも、互いに到達できません。
 
-このマシンの外にメッセージが送られる前に必ず自分の承認を求めるようにするには、[`isolatePeerMachines`](#require-approval-for-cross-machine-messages) を設定します。
+Claude のメッセージがこのマシンの外に送信される前にユーザーの承認を必須にするには、[`isolatePeerMachines`](#require-approval-for-cross-machine-messages) を設定します。
 
 #### 他のマシンやクラウドセッションからの返信
 
 [セルフホストランナー](https://code.claude.com/docs/ja/self-hosted-environments)上のものを含む[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、メッセージに[返信アドレス](#what-a-message-looks-like)が含まれていても、`SendMessage` を使って別のマシンからのメッセージに返信することはできません。メッセージ自体は届きます。クラウドセッションの応答は、[claude.ai/code](https://claude.ai/code) のトランスクリプトで確認してください。
 
-Claude がこのマシン以外のセッションに送信する際にこのセッションが Remote Control に接続していない場合、メッセージは送信されますが、[返信アドレス](#what-a-message-looks-like)は付きません。受信側の Claude はそのメッセージに返信できません。
+自分の別のマシン上のセッションから返信を受け取るには、Claude が送信する前に、このセッションを Remote Control に接続してください。接続していない場合、メッセージには[返信アドレス](#what-a-message-looks-like)が付かず、受信側の Claude はそのメッセージに返信できません。
 
 ## セッションが受信メッセージをどのように扱うか
 
@@ -269,11 +269,11 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 
 ## クロスセッションメッセージングを制限する
 
-メッセージごとのデフォルトを超えて、2 つの方法でメッセージングを狭めることができます。マシンを超えたメッセージが出発する前に承認を要求するか、セッションまたは組織のメッセージングをオフにします。
+メッセージごとのデフォルトを超えて、2 つの方法でメッセージングを狭めることができます。Claude のメッセージがマシンを離れる前に承認を要求するか、セッションまたは組織のメッセージングをオフにします。
 
 ### クロスマシンメッセージの承認を要求する
 
-[`isolatePeerMachines`](https://code.claude.com/docs/ja/settings-reference#isolatepeermachines)を `true` に設定して、`SendMessage` がこのマシンを超えたセッションに到達する前に明示的な承認を要求します。
+[`isolatePeerMachines`](https://code.claude.com/docs/ja/settings-reference#isolatepeermachines) を `true` に設定して、Claude の `SendMessage` がこのマシンを超えたセッションに到達する前に明示的な承認を要求します。
 
 ```json theme={null}
 {
@@ -325,6 +325,7 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
   * **他のマシンのセッションが見つからない**: 別のマシン上のセッションは、[Remote Control](https://code.claude.com/docs/ja/remote-control.md)で実行され、このセッションも接続されている場合にのみ表示されます。
   * **他のマシンのセッションが`offline`**: `offline`としてリストされているセッションへのメッセージは通過しますが、[そのセッションのマシンが再接続した後にのみ到着します](#message-sessions-on-other-machines)。
   * **クラウドまたは他のマシンのセッションが `can't receive cross-session messages`**: この状態でリストされているセッションへのメッセージは[このマシンから送信されず](#message-sessions-on-other-machines)、`SendMessage` の結果は `Not sent` で始まります。
+  * **セッション間の長いやり取り**: やり取りが[多数の返信の後に一時停止または停止した](#limitations)場合は、送信側のセッションでプロンプトを入力して再開してください。
   * **古いクラウドまたは他のマシンのセッションが見つからない**: Claude Code はこれらのセッションリストを最新順に読み込み、制限されたページ数の後に停止するため、Claude はそれらのページを超えて落ちたセッションを名前でメッセージすることはできません。
 
 メッセージング機能を持つセッションでは、`/status`はセッション自身のインボックスアドレスを含む`Peer address`行も表示するか、Claude Code が [インボックスをセットアップできなかった](#the-sessions-inbox-socket)場合は`unavailable`と理由を表示します。
@@ -336,7 +337,10 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 * **プレーンテキストのみ**: Claude はセッション間でプレーンテキストのみを送信します。構造化された[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)プロトコルメッセージはチーム内に留まります。
 * **同じマシンメッセージサイズは上限があります**: Claude Code は、シリアル化された形式が約 100 万文字を超えると、このマシン上のセッションへのメッセージを拒否します。拒否は[正確なサイズに名前を付けます](https://code.claude.com/docs/ja/errors.md#message-too-large-for-cross-session-delivery)。受信側のセッションには何も到達しません。
 * **このマシン上のセッションへの急速なバーストは送信者で拒否されます**: このマシン上のセッションへのメッセージの急速なバーストがそのセッションのインボックスが受け入れるものに達すると、Claude Code は送信側のセッションでさらなる送信を拒否します。[拒否はバーストに名前を付けます](https://code.claude.com/docs/ja/errors.md#too-many-messages-to-this-session-just-now)。Claude に残りを 1 つのメッセージにバッチするか、待機するよう伝えます。
-* **メッセージループはスロットルされます**: 受信側のセッションでは、Claude Code は送信者ごとに繰り返されたメッセージをレート制限し、短いウィンドウ内に到着する同一の繰り返しをドロップし、最大 50 個の受け入れられたメッセージを Claude が読むためにキューに入れます。したがって、2 つのセッション間のメッセージループは独自に停止します。
+* **メッセージループはスロットルされます**: 受信側のセッションでは、Claude Code は送信者ごとに繰り返されたメッセージをレート制限し、短いウィンドウ内に到着する同一の繰り返しをドロップし、最大 50 個の受け入れられたメッセージを Claude が読むためにキューに入れます。
+* **このマシン上のより遅いループは継続する可能性があります**: スロットルされないほどゆっくり互いに応答する 2 つのセッションは、ユーザーからのプロンプトなしに数千件のメッセージを交換でき、配信された各メッセージは[使用量にカウントされます](#message-delivery)。この交換を停止するには、いずれかのセッションを終了するか、[そのセッションのメッセージ受信を停止します](#turn-off-cross-session-messaging)。[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#attach-to-a-session)を終了するには、そのセッションにアタッチして `/stop` を実行します。
+* **長い交換の後は送信が一時停止する場合があります**: セッションの `SendMessage` の結果が `Not delivered: this session keeps answering other sessions` で始まる場合は、そのセッションでプロンプトを入力すると送信が再開されます。
+* **一部の長い返信チェーンは途中で打ち切られる場合があります**: 返信のチェーンが長くなると、配信が停止することがあります。たとえば、[このマシン外](#message-sessions-on-other-machines)のセッションを含むチェーンなどです。交換を続けるには、チェーン内のいずれかのセッションでプロンプトを入力します。
 
 ## 関連リソース
 

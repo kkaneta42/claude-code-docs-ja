@@ -39,7 +39,7 @@ Claude Code GitHub Action は 3 つのプロバイダーをサポートしてお
 
 **1. GitHub アイデンティティを選択する**
 
-Claude Code GitHub Action はコミットをプッシュし、GitHub アイデンティティを通じてコメントを投稿します。[クイックセットアップ](https://code.claude.com/docs/ja/github-actions.md#quick-setup) はこのために公式 Claude GitHub App をインストールします。クラウドプロバイダーを使用する場合、アイデンティティを自分で選択します。
+Claude Code GitHub Action はコミットをプッシュし、GitHub アイデンティティを通じてコメントを投稿します。クラウドプロバイダーを使用する場合、アイデンティティを自分で選択します。
 
 * **公式 [Claude GitHub App](https://github.com/apps/claude)**: リポジトリにインストールするか、既にインストールされている場合は次のステップにスキップします
 * **カスタム GitHub App**: Claude Code GitHub Action が使用する 3 つの権限のみが必要な場合に独自のアプリを作成します（[公式アプリの完全なセット](https://code.claude.com/docs/ja/github-actions.md#github-app-permissions) ではなく）

@@ -616,7 +616,9 @@ auto モードがセッションのアクションを承認できない場合、
 >
 > `Bash(npm test)` のような限定的なルールは引き続き有効です。Claude Code は auto モードを終了すると、除外したルールを復元します。v2.1.236 より前では、Claude Code は auto モードで `Monitor` の allow ルールを有効なままにしていたため、ツール全体に一致するルールが分類器のレビューなしで Monitor のコマンドを承認していました。
 >
-> また、Claude Code は `git reset --hard` や `rm -rf` など、コミットされていない作業を破棄する可能性のあるコマンドの前に自ら `git status` を実行し、ステージ済み、変更済み、または未追跡の作業があるかどうかを分類器に示します。リポジトリの git 設定で `status.showUntrackedFiles=no` が設定されている場合でも、Claude Code はこのチェックで未追跡のファイルを報告します。
+> また、Claude Code は `git reset --hard` や `rm -rf` など、コミットされていない作業を破棄する可能性のあるコマンドの前に自ら `git status` を実行し、ステージ済み、変更済み、または未追跡の作業があるかどうかを分類器に示すこともあります。リポジトリの git 設定で `status.showUntrackedFiles=no` が設定されている場合でも、Claude Code はこのチェックで未追跡のファイルを報告します。
+>
+> [サーバー側の分類器レビュー](#server-side-classifier-review)では、auto モードが最近アクションをブロックした場合を除き Claude Code が `git status` をスキップすることがあるため、クリーンな作業ツリーでも `git reset --hard` がブロックされることがあります。ブロックの後は、分類器がクリーンな状態を確認でき、Claude の再試行を許可できます。
 >
 > Claude Code 自体が送信する分類器リクエストでは、分類器はユーザーメッセージ、ファイルの読み取りや検索などの読み取り専用の参照以外のツール呼び出し、および CLAUDE.md の内容を確認します。ツールの結果はこれらのリクエストから除去されるため、ファイルやウェブページ内の悪意のあるコンテンツが分類器を直接操作することはできません。
 >
@@ -690,8 +692,6 @@ claude --permission-mode bypassPermissions
 
 `--dangerously-skip-permissions` フラグは同等です。
 
-Claude Code は [`--restricted`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で開始したセッションで `bypassPermissions` を拒否します。`--restricted` には Claude Code v2.1.248 以降が必要です。
-
 このモードを有効にして対話セッションを初めて開始すると、Claude Code は権限チェックなしで実行されたアクションの責任を受け入れるよう求める警告ダイアログを表示します。
 
 * **受け入れた場合**: Claude Code は `skipDangerousModePermissionPrompt` を `~/.claude/settings.json` の `true` に設定するため、後のセッションではダイアログをスキップします。ダイアログを再度表示するには、そのファイルからキーを削除するか、`false` に設定してください。[`skipDangerousModePermissionPrompt` リファレンス](https://code.claude.com/docs/ja/settings-reference#skipdangerousmodepermissionprompt)には、ユーザーまたは組織が設定できる他の設定ファイルが記載されています。
@@ -724,6 +724,10 @@ Linux と macOS では、Claude Code は root として、または `sudo` の�
 > [!WARNING]
 >
 > `bypassPermissions` はプロンプトインジェクションまたは意図しないアクションに対する保護を提供しません。権限プロンプトがはるかに少ないバックグラウンドセーフティチェックの場合は、代わりに[オートモード](#eliminate-prompts-with-auto-mode)を使用してください。管理者は [管理設定](https://code.claude.com/docs/ja/managed-settings.md)で `permissions.disableBypassPermissionsMode` を `"disable"` に設定することでこのモードをブロックできます。
+
+### restricted モードでは bypassPermissions が拒否される
+
+Claude Code は [`--restricted`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で開始したセッションで `bypassPermissions` を拒否します。`--restricted` には Claude Code v2.1.248 以降が必要です。`Error: bypassPermissions not supported in restricted mode` が表示された場合は、`--dangerously-skip-permissions` など、`bypassPermissions` を有効にするフラグまたは設定を削除してください。`bypassPermissions` を維持するには、代わりに `--restricted` または [`CLAUDE_CODE_RESTRICTED`](https://code.claude.com/docs/ja/env-vars#variables) なしで開始してください。
 
 ### バックグラウンドセッションで権限バイパスが無視される
 
@@ -856,6 +860,7 @@ Claude Code はこれらの構造内も確認します。
 * **インラインスクリプト**: `bash -c 'rm -rf ~'` のように、`-c` を付けて `sh`、`bash`、`zsh`、または同様の POSIX シェルに渡されるスクリプト。
   * スクリプトがダブルクォートで囲まれている場合、呼び出し元のシェルはスクリプトの変数を展開してから、内部シェルがスクリプトを受け取ります。`find . -name '*.tmp' -exec sh -c "rm -rf \"$1\"/*" _ {} \;` では、コマンドはマッチごとに 1 回ファイルシステムルートからの削除に展開され、Claude Code はこれを重要なパスの削除として扱います。
   * `sh -c 'rm -rf "$1"/*' _ {}` のように `$1` を実際の値にバインドするシングルクォートスクリプトは警告されません。
+  * `This shell -c script runs rm and could not be checked` と表示された場合は、承認する前にスクリプトを読んでください。このコマンドは[重要なパスの削除](#critical-path-removals-in-each-permission-mode)としてカウントされます。
 
 `~` など、`-c` スクリプト内に直接書かれた重要なパスに対するチェックをオフにするには、Claude Code を起動する環境で [`CLAUDE_CODE_DISABLE_INLINE_SHELL_RM_PROMPT=1`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。
 

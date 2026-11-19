@@ -52,7 +52,7 @@
 | `Request rejected (429)` | [使用制限](#request-rejected-429) |
 | `Credit balance is too low` | [使用制限](#credit-balance-is-too-low) |
 | `You've hit your monthly spend limit` / `You've hit your individual spend limit` / `You've hit your org's monthly spend limit` / `You've hit your channel's monthly spend limit` / `You've hit your team's shared budget` / `You've hit your individual usage limit` | [使用制限](#youve-hit-your-monthly-spend-limit) |
-| `Could not update your spend limit` | [使用制限](#could-not-update-your-spend-limit) |
+| `Could not update your spend limit` / `Could not remove your spend limit` | [使用制限](#could-not-update-your-spend-limit) |
 | `spend limit reached` / `spend limit unavailable` / `This request exceeds your group's budget` | [使用制限](#spend-limit-reached) |
 | `Not logged in · Please run /login` | [認証](#not-logged-in) |
 | `Couldn't save your login` | [認証](#couldnt-save-your-login) |
@@ -104,6 +104,7 @@
 | `Artifacts need a claude.ai login` | [認証](#artifacts-need-a-claude-ai-login) |
 | `Not signed in to the Cloud gateway — run /login.` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
 | `Administrator policy requires a Cloud gateway sign-in on this machine` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
+| `Managed settings on this machine configure a Cloud gateway sign-in; run interactive /login to authenticate.` | [`claude auth login`](https://code.claude.com/docs/ja/cli-reference#cli-commands) |
 | `Failed to authenticate: OAuth session expired and could not be refreshed` | [認証](#login-expired) |
 | `Login reached its time limit · Please run /login` / `Failed to authenticate: this login reached its time limit` | [認証](#login-expired) |
 | `Failed to authenticate: your claude.ai login expired` | [ログインの有効期限が切れた後](https://code.claude.com/docs/ja/authentication.md#after-the-login-expires) |
@@ -237,6 +238,8 @@
 | `--bg and --print conflict` | [コマンドラインエラー](#conflict-between-bg-and-print) |
 | `Couldn't tell whether --bg is a flag or text here, so nothing was started` | [コマンドラインエラー](#couldnt-tell-whether-bg-is-a-flag-or-text) |
 | `Error: Cannot use both --append-subagent-system-prompt and --append-subagent-system-prompt-file. Please use only one.` | [コマンドラインエラー](#conflict-between-a-system-prompt-flag-and-its-file-form) |
+| `Error: bypassPermissions not supported in restricted mode` | [restricted モード](https://code.claude.com/docs/ja/permission-modes.md#restricted-mode-refuses-bypasspermissions) |
+| `Session was started with bypass permissions, so plan mode won't ask before most edits or commands` | [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode) |
 | `Cloud sessions cannot be created from a --restricted session` | [コマンドラインエラー](#cloud-sessions-cannot-be-created-from-a-restricted-session) |
 | `Cloud sessions are disabled by your organization's policy` | [コマンドラインエラー](#cloud-sessions-are-disabled-by-your-organizations-policy) |
 | 認証情報を名指しするポリシー拒否メッセージの末尾にある `Cloud sessions use your claude.ai login` | [コマンドラインエラー](#cloud-sessions-use-your-claude-ai-login) |
@@ -271,6 +274,7 @@
 | `Cannot add MCP server to scope: managed` | [コマンドラインエラー](#cannot-add-mcp-server-to-the-managed-scope) |
 | `Cannot add MCP server: your organization's managed settings allow only MCP servers that plugins provide` | [コマンドラインエラー](#cannot-add-mcp-server-when-managed-settings-allow-only-plugin-servers) |
 | `is Anthropic-hosted and doesn't support local OAuth` | [コマンドラインエラー](#anthropic-hosted-and-doesnt-support-local-oauth) |
+| `Can't add to .mcp.json: it lists servers at the top level` | [プロジェクトスコープの形式](https://code.claude.com/docs/ja/mcp.md#project-scope) のように、サーバーを `mcpServers` キーの下に移動してください。 |
 | `Can't read .mcp.json: it isn't a regular file or is larger than 2097152 bytes` | [コマンドラインエラー](#cant-read-mcp-json) |
 | `MCP server "<name>" was not saved to` / `was not removed from` | [コマンドラインエラー](#mcp-server-was-not-saved-or-removed) |
 | `MCP server "<name>" may not have been saved` / `may not have been removed` | [コマンドラインエラー](#mcp-server-may-not-have-been-saved-or-removed) |
@@ -309,7 +313,7 @@
 | `Windows reported an error (EBADF) when Claude Code read this session's transcript file` | [コマンドラインエラー](#windows-reported-an-error-ebadf) |
 | `Cannot switch renderers in this session` | [コマンドラインエラー](#cannot-switch-renderers-in-this-session) |
 | `Cannot switch renderers while work is running in the background` | [コマンドラインエラー](#cannot-switch-renderers-in-this-session) |
-| `Can't restart while work is running in the background — wait for it to finish (or stop it via /tasks), then try again.` | [コマンドラインエラー](#cant-restart-while-work-is-running-or-remote-control-is-connected) |
+| `Can't restart while work is running in the background` | [コマンドラインエラー](#cant-restart-while-work-is-running-or-remote-control-is-connected) |
 | `Can't restart while Remote Control is connected. To use the installed version, exit and start Claude Code again, then run /resume.` | [コマンドラインエラー](#cant-restart-while-work-is-running-or-remote-control-is-connected) |
 | `Claude Code couldn't restart` | [コマンドラインエラー](#claude-code-couldnt-restart) |
 | `Couldn't open Claude Desktop` | [コマンドラインエラー](#couldnt-open-claude-desktop) |
@@ -343,7 +347,7 @@
 | `path escapes plugin directory` | [プラグインエラー](#path-escapes-plugin-directory) |
 | `path not read: <path> is absolute or has a ".." part` | [プラグインエラー](#server-file-path-not-read) |
 | `Plugin not loaded: its manifest <path> was not read` | [プラグインエラー](#plugin-not-loaded-its-manifest-was-not-read) |
-| `path could not be checked` | [プラグインエラー](#path-could-not-be-checked) |
+| `path couldn't be checked` / `path could not be checked` | [プラグインエラー](#path-could-not-be-checked) |
 | `its marketplace entry path does not stay inside the marketplace directory` | [プラグインエラー](#marketplace-entry-path-does-not-stay-inside-the-marketplace-directory) |
 | `Plugin source path refused` | [プラグインエラー](#marketplace-entry-path-does-not-stay-inside-the-marketplace-directory) |
 | `Failed to load marketplace configuration` | [プラグインエラー](#failed-to-load-marketplace-configuration) |
@@ -369,6 +373,7 @@
 | `cannot contain null bytes (\0)` | [ツールエラー](#path-cannot-contain-null-bytes) |
 | `Path contains null bytes` | [ツールエラー](#path-cannot-contain-null-bytes) |
 | `command contains the invisible character U+FEFF (byte order mark) or U+180E (Mongolian vowel separator), and was not run` | [ツールエラー](#command-contains-an-invisible-character) |
+| `This command's variables and substitutions expand to more text than the permission check reads, so it was not run` | 変数や置換の数を減らすか短くするよう Claude に依頼してください。 |
 | `This call was not run. Claude Code could not confirm that the shell is back in the directory`（v2.1.323 以降） | [ツールエラー](#command-approved-before-a-restart-was-not-run) |
 | `File is too large to read as an image (the limit is 128MB)` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
 | `Cannot read this as an image: <path> is a pipe or a device` | [ツールエラー](#file-is-too-large-to-read-as-an-image) |
@@ -378,11 +383,12 @@
 | `Sandbox is required but failed to initialize: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
 | `Sandbox is required (sandbox.failIfUnavailable) and stopped being available in this session: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
 | `pkill: refusing to run` | [ツールエラー](#pkill-pattern-matches-the-claude-code-process) |
+| `Sandbox settings can't be changed here` / `Sandbox settings are overridden by a higher-priority configuration` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#sandbox-settings-overridden) |
 | `Failed to write to <name>'s inbox — nothing was sent` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |
 | `Failed to write the plan approval request to the lead's inbox — plan not submitted` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |
 | `Its agent definition was not restored: the folder its definition file came from is not trusted` | [ツールエラー](#teammate-agent-definition-not-restored) |
 | `Only a teammate can approve a shutdown request` | [ツールエラー](#only-a-teammate-can-approve-a-shutdown-request) |
-| `A command-line deny rule cannot be handed to a teammate intact` | [ツールエラー](#command-line-deny-rule-cannot-be-handed-to-a-teammate) |
+| `cannot be handed to a teammate intact` | [ツールエラー](#command-line-deny-rule-cannot-be-handed-to-a-teammate) |
 | `Message too large for cross-session delivery` | [ツールエラー](#message-too-large-for-cross-session-delivery) |
 | `Too many messages to this session just now` | [ツールエラー](#too-many-messages-to-this-session-just-now) |
 | `Cross-session message was dropped at the recipient session's inbox` | [ツールエラー](#cross-session-message-dropped-at-the-inbox) |
@@ -453,6 +459,7 @@
 | `The Claude Code program for this computer, the <build> build, could not be found` | [ラッパーと IDE のエラー](#the-claude-code-program-for-this-computer-could-not-be-found) |
 | `Restored the code, but skipped N files` | [巻き戻しの警告とエラー](#restored-the-code-but-skipped-files) |
 | `No files were restored: N files failed (backup missing, or the file could not be updated)` | [巻き戻しの警告とエラー](#no-files-were-restored) |
+| `Couldn't restore N files: the backup is missing or the file can't be written` | 失敗したファイルを書き込み可能にしてから、バージョン管理から復元してください。 |
 | `The file backups are still being copied. Nothing was changed. Try again in a moment.` | [`/rewind`](https://code.claude.com/docs/ja/checkpointing) で同じポイントをもう一度選択してください。[`/branch`](https://code.claude.com/docs/ja/sessions#branch-a-session) の直後にコードを復元すると、Claude Code がまだファイルバックアップを新しいセッションにコピーしている場合があります。 |
 | `Transcript writes are failing (...)` | [セッション保存の警告](#transcript-writes-are-failing) |
 | `Transcript saving is off — CLAUDE_CODE_SKIP_PROMPT_HISTORY is set` | [セッション保存の警告](#transcript-saving-is-off-skip-prompt-history) |
@@ -467,6 +474,7 @@
 | `N skill or command names refused: run with --debug to see which ([names]), rename, then restart` | [設定の警告](#skill-or-command-name-refused) |
 | `Ignoring N permissions.allow entries from ... this workspace has not been trusted` | [設定の警告](#workspace-has-not-been-trusted) |
 | `Two Claude Code config files exist: this run uses <path>, not <path>` | [設定の警告](#two-claude-code-config-files-exist) |
+| `a settings change wasn't saved` | `~/.claude/settings.json` とプロジェクトの `.claude/settings.local.json` を書き込み可能にしてから、もう一度変更してください。別のツールがファイルを生成している場合は、[変更が新しいセッションで失われる](https://code.claude.com/docs/ja/settings.md#a-change-you-made-in-claude-code-is-lost-in-new-sessions)を参照してください。ファイルが有効でない場合は、[壊れた設定ファイルを修正する](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)を参照してください。 |
 | `Make this change again later: <path> could not be updated, so it applies to this session only` | [設定の警告](#make-this-change-again-later) |
 | `is a network path, which cannot be added as a working directory` | [設定の警告](#working-directory-is-a-network-path) |
 | `Remote managed settings failed to load (<cause>)` | [設定の警告](#remote-managed-settings-failed-to-load) |
@@ -1080,6 +1088,8 @@ Could not update your spend limit: <reason from the server>
 ```
 
 サーバーが拒否の理由を示した場合、メッセージの末尾にその理由が表示され、同じ値で再試行しても再び失敗します。接続の切断など、サーバーから理由が提供されない失敗の場合、メッセージは `Could not update your spend limit. Press Enter to retry.` となり、再試行すると成功する可能性があります。v2.1.216 より前では、Claude Code はすべての失敗に対して汎用の形式を表示していました。
+
+上限を削除した場合、v2.1.327 以降では汎用の形式は `Could not remove your spend limit` で始まります。
 
 **対処方法:**
 
@@ -3523,7 +3533,7 @@ Error: Workspace not trusted. /Users/you is your home directory, and for securit
 
 **対処方法:**
 
-* まずターミナルからディレクトリを信頼してください。そこで `claude rc` を実行して `y` と答えるか、そこで `claude` を実行して[ワークスペースの信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認してから、元のコマンドを再実行してください
+* まずターミナルからディレクトリを信頼します。そこで `claude` を実行して[ワークスペース信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認してから、元のコマンドを再実行します
 * ホームディレクトリにいる場合は、プロジェクトディレクトリに移動してそこで Remote Control を開始してください
 
 v2.1.284 より前は、ターミナル内であってもコマンドは確認を行いませんでした。
@@ -3542,6 +3552,8 @@ Error: Workspace not trusted. Please run `claude` in /Users/you/project first to
 
 * スクリプトや CI ジョブでは、`--trust-workspace` を末尾に付けて、その実行に限りフォルダーを信頼してください: `claude ultrareview --trust-workspace`。git と Claude Code がフォルダーの git 設定やプロジェクト設定に記載されたプログラムを実行できるようになるため、信頼できるコードに対してのみ付けてください。コードを信頼できないプルリクエストについては、[信頼できるブランチからレビューを実行](https://code.claude.com/docs/ja/ultrareview.md#trust-the-folder-before-the-review-runs)してください。
 * 自分のマシンでは、そのフォルダーで `claude` を実行して[ワークスペースの信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認してから、元のコマンドを再実行してください
+
+セッション内では、`/ultrareview` と `/code-review ultra` が `Ultrareview did not start: "<folder>" is not trusted, and this session started without asking whether you trust it` で停止することがあります。[`IS_DEMO`](https://code.claude.com/docs/ja/env-vars#variables) を設定せずにそのフォルダーで `claude` を起動し、ワークスペース信頼ダイアログを承認してから、新しいセッションでコマンドを実行してください。
 
 `claude ultrareview` からの次の各メッセージは、レビューが開始されず、終了コードが 1 であることを意味します:
 
@@ -4642,7 +4654,7 @@ Claude Code はプラグインパスが存在するかどうかをオペレー�
 このエラーは、まったく存在しないパスに対しては表示されません。`/plugin` では、エラーはプラグインの下に表示され、パスとオペレーティングシステムが返したコードに名前を付けます：
 
 ```text theme={null}
-skills path could not be checked: /home/user/my-plugin/skills (ELOOP)
+skills path couldn't be checked: /home/user/my-plugin/skills (ELOOP)
 ```
 
 `claude plugin list` では、同じエラーは `Path not found: /home/user/my-plugin/skills (skills, ELOOP)` と読みます。
@@ -5108,12 +5120,12 @@ Only a teammate can approve a shutdown request, and this session is not running 
 このメッセージは、Claude Code が [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md) の [分割ペイン](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode) チームメイトを起動しなかったことを意味します。Claude Code はチームリーダーのコマンドライン拒否ルールを、分割ペインのチームメイト自身のコマンドラインで渡しますが、チームメイトがそのいずれかを異なる意味で読み取ってしまう場合は停止します。
 
 ```text wrap theme={null}
-A command-line deny rule cannot be handed to a teammate intact, so the teammate would not enforce it — spawn aborted
+The deny rule "<rule>" cannot be handed to a teammate intact, so the teammate was not started. Remove that rule or move it to permissions.deny in settings, then try again.
 ```
 
 **What to do:**
 
-* チームリーダーのセッションで `/config` を実行して **Teammate mode** を `in-process` に設定し、Claude にチームメイトを再度起動するよう依頼します。ルールを探したり、チームリーダーを再起動したりする必要はありません。インプロセスのチームメイトは [チームリーダーの現在の拒否ルールの下で実行されます](https://code.claude.com/docs/ja/agent-teams.md#permissions)。
+* チームリーダーのセッションで `/config` を実行し、**Teammate mode** を `in-process` に設定します。その行に `overridden` と表示され、すでに `in-process` が表示されている場合は、値を順に切り替えて `in-process` に戻します。その後、Claude にチームメイトを再度起動するよう依頼します。インプロセスのチームメイトは [チームリーダーの現在の拒否ルールの下で実行されます](https://code.claude.com/docs/ja/agent-teams.md#permissions)。
 * `/config` はこの選択をユーザー設定に保存するため、ユーザー設定から [`teammateMode`](https://code.claude.com/docs/ja/settings-reference#teammatemode) を取得する以降のセッションでも、チームメイトはインプロセスで起動します。以降のセッションで分割ペインに戻すには、**Teammate mode** を以前使用していた `auto`、`tmux`、`iterm2` のいずれかに設定します。
 
 ### Message too large for cross-session delivery
@@ -5163,7 +5175,7 @@ Cross-session message was dropped at the recipient session's inbox (recipient: u
 * `its queue of undelivered peer messages was full`: 受信者は既に他のセッションから配信されていないメッセージを多く保持しており、そのキューが許可する限りです
 * `you sent faster than that session accepts`: 送信セッションのメッセージは受信者が 1 つの送信者から受け入れるより速く到着しました
 * `it repeated your previous message`: メッセージは送信セッションが最近この受信者に送信したものと同じでした
-* `a relay loop between sessions was cut`: メッセージはセッションが互いにメッセージを送信するチェーンを続け、チェーンは受信者を何度も通過したか、成長しすぎました
+* `a relay loop between sessions was cut`: メッセージが、このマシンの外のセッションを含むものなど、[途中で打ち切られる可能性がある返信の長いチェーン](https://code.claude.com/docs/ja/cross-session-messaging.md#limitations) の続きでした
 
 **What to do:**
 

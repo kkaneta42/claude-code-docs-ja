@@ -23,7 +23,7 @@ VS Code 拡張機能は、Claude Code 用のネイティブグラフィカルイ
 インストール前に、以下があることを確認してください。
 
 * VS Code 1.94.0 以上
-* Anthropic アカウント：任意の有料 Claude サブスクリプション（Pro、Max、Ultra、Team、または Enterprise）または Claude Console アカウントが機能し、API キーは不要です。拡張機能を初めて開くときに、このアカウントで[サインイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code)します。Amazon Bedrock や Google Cloud の Agent Platform などのサードパーティプロバイダーを通じて Claude にアクセスする場合は、セットアップ手順について[サードパーティプロバイダーを使用する](#use-third-party-providers)を参照してください。
+* Anthropic アカウント：任意の有料 Claude サブスクリプション（Pro、Max、Ultra、Team、または Enterprise）または Claude Console アカウントが機能し、API キーは不要です。拡張機能を初めて開くときに、このアカウントで[サインイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code)します。Amazon Bedrock や Google Cloud の Agent Platform などのプロバイダーについては、[サードパーティプロバイダーを使用する](#use-third-party-providers)を参照してください。Claude apps ゲートウェイについては、[Claude apps ゲートウェイにサインインする](#sign-in-to-a-claude-apps-gateway)を参照してください。
 
 > [!TIP]
 >
@@ -219,6 +219,8 @@ Claude が応答した後、パネルには次のプロンプトの提案が、�
 Explain the logic in @auth (fuzzy matches auth.js, AuthService.ts, etc.)
 What's in @src/components/ (include a trailing slash for folders)
 ```
+
+エクスプローラーからファイルやフォルダーを @メンションするには、それらを右クリックして **Claude Code: Add to Chat** を選択します。Claude Code v2.1.327 以降が必要です。
 
 ### PDF の特定のページを読む
 
@@ -808,6 +810,17 @@ Mac では `Cmd+,`、Windows/Linux では `Ctrl+,` を押して VS Code の設�
 
 以前の `/login` で残った claude.ai のサインインは使用されません。拡張機能はどのリクエストでもそれを送信しません。
 
+## Claude apps gateway にサインインする
+
+マシンの設定で[ゲートウェイが指定](https://code.claude.com/docs/ja/claude-apps-gateway#set-the-gateway-url)されていれば、Claude Code パネルから [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) にサインインできます。Claude Code v2.1.316 以降が必要です。
+
+1. パネルがチャットの画面で開いた場合は、プロンプトボックスに `/` と入力し、**Sign in to Cloud gateway** を選択します。これが表示されない場合は、**Switch account** を選択します。
+2. サインイン画面で **Cloud gateway** をクリックします。
+3. 表示されたゲートウェイ URL と証明書フィンガープリント（表示された場合）を、管理者が公開しているものと照合します。いずれかが異なる場合は、**Cancel sign-in** をクリックして管理者に連絡してください。一致している場合は、URL については **Sign in** を、フィンガープリントについては **Yes, trust this gateway** をクリックします。
+4. ブラウザで開いたページで、コードがパネルに表示されているものと一致することを確認します。一致している場合は、そのまま進んで職場のアカウントでサインインします。一致していない場合は、ページを閉じて管理者に連絡してください。
+
+画面に `Login is managed by your organization and must be completed in the terminal.` と表示された場合は、拡張機能を更新してください。更新せずにサインインするには、[CLI をインストール](https://code.claude.com/docs/ja/setup.md)し、**Run `claude` in terminal** をクリックして、そこで `/login` を実行します。
+
 ## スクリーンリーダーを使用する
 
 拡張機能のチャットパネルはスクリーンリーダーに対応しています。何かをオンにする必要はありません。拡張機能は、視覚的な変化を伴わずに、すべてのユーザーに対して会話のアクティビティを読み上げます。これは、ターミナルインターフェイスを調整する CLI のオプトイン方式の[スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)とは別のものです。
@@ -923,7 +936,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 * **認証トークン**: 拡張機能が有効化されるたびに新しいランダムな認証トークンが生成され、`~/.claude/ide/<port>.lock` のロックファイルに書き込まれます。CLI が接続するには、このトークンを `X-Claude-Code-Ide-Authorization` ヘッダーとして提示する必要があります。
 * **ロックファイルの権限**: ロックファイルは `0700` のディレクトリ内で `0600` の権限を持つため、VS Code を実行しているユーザーだけが読み取れます。`CLAUDE_CONFIG_DIR` が設定されている場合、ロックファイルは代わりに `$CLAUDE_CONFIG_DIR/ide/` に書き込まれます。
 
-**モデルに公開されるツール。** サーバーは十数個のツールをホストしていますが、モデルから見えるのは 2 つだけです。残りは、差分を開く、選択範囲を読み取る、ファイルを保存するなど、CLI が自身の UI のために使用する内部 RPC です。これらはツールリストが Claude に届く前に除外されます。
+**モデルに公開されるツール。** サーバーのツールのうち、モデルから見えるのは 2 つだけです。残りは、ツールリストが Claude に届く前に CLI によって除外されます。
 
 | ツール名（フックから見た名前） | 機能 | 読み取り専用 |
 | - | - | - |
@@ -969,6 +982,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 | - | - |
 | サインイン後に `API Error: 403 Request not allowed` が表示される | [403 Forbidden after login](https://code.claude.com/docs/ja/troubleshoot-install.md#403-forbidden-after-login) |
 | すでにサインインしたのに再度サインインを求められる | [Not logged in or token expired](https://code.claude.com/docs/ja/troubleshoot-install.md#not-logged-in-or-token-expired) |
+| `Login is managed by your organization and must be completed in the terminal.` | [Claude apps ゲートウェイにサインインする](#sign-in-to-a-claude-apps-gateway) |
 | クラウドプロバイダーの認証情報がターミナルでは機能するが拡張機能では機能しない | [Bedrock、Agent Platform、または Foundry の認証情報が読み込まれない](https://code.claude.com/docs/ja/troubleshoot-install.md#bedrock-agent-platform-or-foundry-credentials-not-loading) |
 | `SSL certificate verification failed` または `Self-signed certificate detected` | [SSL 証明書エラー](https://code.claude.com/docs/ja/errors.md#ssl-certificate-errors) |
 | `Dictation error: WebSocket error:` に続いて `unable to get local issuer certificate` などの証明書エラーが表示される、または Web タブに `Remote server is not connected` が表示される | [TLS インスペクションを行うプロキシの背後で音声入力または Web タブが失敗する](#dictation-or-the-web-tab-fails-behind-a-tls-inspecting-proxy) |

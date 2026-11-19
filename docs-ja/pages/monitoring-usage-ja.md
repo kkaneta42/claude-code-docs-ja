@@ -125,9 +125,10 @@ v2.1.217 より前では、すべての変数は独立してキーごとの設�
 | `OTEL_LOG_ASSISTANT_RESPONSES` | `assistant_response` イベントでのアシスタント応答テキストのログ記録を有効にします（デフォルト: 無効）。未設定の場合は `OTEL_LOG_USER_PROMPTS` の値にフォールバックします | 有効にするには `1`、編集済みのままにするには `0` |
 | `OTEL_LOG_TOOL_DETAILS` | ツールイベントとトレーススパン属性におけるツールパラメーターと入力引数のログ記録を有効にします。対象は Bash コマンド、MCP サーバー名とツール名、スキル名、ユーザーが作成したワークフロー名、ツール入力です。また、`user_prompt` イベントでのカスタムコマンド、プラグインコマンド、MCP コマンドの名前と、[コストおよびトークンのカウンター](#cost-counter)での実際のエージェント名、スキル名、プラグイン名、MCP サーバー名とツール名も有効にします（デフォルト: 無効）。Claude Desktop の組み込みサーバーについては、Claude Desktop が所有するセッションでは、このフラグがオフでも `tool_decision`/`tool_result` で `mcp_server_name`/`mcp_tool_name` が出力されます。この例外には Claude Code v2.1.214 以降が必要です | 有効にするには `1` |
 | `OTEL_LOG_TOOL_CONTENT` | [`tool.output` スパンイベント](#tool-output-span-event)でのツールコンテンツのログ記録を有効にします（デフォルト: 無効）。スパン属性は[独自のゲート](#new-context-gates)のもとでツールコンテンツを保持します。[トレース](#traces-beta)が必要です。コンテンツはコンテンツ上限（デフォルトで 60 KB）で切り詰められます | 有効にするには `1` |
-| `OTEL_LOG_MANAGED_SETTINGS` | 編集済みの管理設定と、編集前の設定の SHA-256 ダイジェストを[管理設定の解決](#managed-settings-resolved-event)イベントに追加します（デフォルト: 無効）。プロジェクト設定またはローカル設定の値ではオンになりません。Claude Code v2.1.274 以降が必要です | 有効にするには `1` |
+| `OTEL_LOG_MANAGED_SETTINGS` | 秘匿化された管理設定と、秘匿化前の設定の SHA-256 ダイジェストを[管理設定の解決](#managed-settings-resolved-event)イベントに追加します（デフォルト: 無効）。プロジェクト設定またはローカル設定の値ではオンになりません。Claude Code v2.1.274 以降が必要です | 有効にするには `1` |
 | `OTEL_LOG_RAW_API_BODIES` | Anthropic Messages API のリクエストとレスポンスの完全な JSON を `api_request_body` / `api_response_body` ログイベントとして出力します（デフォルト: 無効）。ボディには会話履歴全体が含まれます。これを有効にすることは、`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_DETAILS`、`OTEL_LOG_TOOL_CONTENT` によって公開されるすべての内容への同意を意味します | コンテンツ上限（デフォルトで 60 KB）で切り詰められたインラインのボディには `1`、切り詰められていないボディをディスクに保存し、イベントに `body_ref` ポインターを含めるには `file:<dir>` |
 | `CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH` | コンテンツ上限: モデルの応答、ツールコンテンツ、システムプロンプト、生の API ボディなど、コンテンツを保持する属性の最大長（切り詰めマーカーを含む、UTF-16 コード単位、デフォルト: 61440、つまり 60 KB）。デフォルト値は属性値を 64 KB に制限するバックエンドに合わせたサイズです。バックエンドがより大きな値を受け付ける場合にのみ引き上げるか、テレメトリ量を削減するために引き下げてください。OpenTelemetry SDK の属性上限である `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` またはその logrecord 版や span 版のいずれかがより小さく設定されている場合、Claude Code はその小さい値で切り詰め、`[TRUNCATED ...]` マーカーが SDK の上限内に収まるようにします | `262144` |
+| `OTEL_RESOURCE_INCLUDE_HOST` | メトリクス、イベント、トレースのリソース属性にマシンの名前と ID を追加します（デフォルト: 無効）。[セッションが実行されたマシンを特定する](#identify-the-machine-a-session-ran-on)を参照してください。Claude Code v2.1.326 以降が必要です | 有効にするには `1` |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | メトリクスのテンポラリティ設定（デフォルト: `delta`）。バックエンドが累積テンポラリティを想定している場合は `cumulative` に設定します | `delta`, `cumulative` |
 | `CLAUDE_CODE_OTEL_HEADERS_HELPER_DEBOUNCE_MS` | 動的ヘッダーの更新間隔（デフォルト: 1740000ms / 29 分） | `900000` |
 
@@ -158,6 +159,41 @@ OTLP エクスポーターのクライアント証明書の設定方法は、そ
 | `OTEL_METRICS_INCLUDE_REPOSITORY` | メトリクスとイベントに `vcs.*` [リポジトリ識別属性](#repository-attributes)を含めます。Claude Code v2.1.269 以降が必要です | `false` | `true` |
 
 一般に、カーディナリティが低いほどパフォーマンスが向上しストレージコストが下がりますが、分析用のデータの粒度は粗くなります。
+
+### セッションが実行されたマシンを特定する
+
+各セッションがどのマシンで実行されたかを確認するには、Claude Code v2.1.326 以降で `OTEL_RESOURCE_INCLUDE_HOST=1` を設定します。[管理設定](https://code.claude.com/docs/ja/managed-settings.md)またはユーザー設定の `env`、あるいは `claude` を起動するシェルで設定してください。[プロジェクト設定やローカル設定](https://code.claude.com/docs/ja/settings-reference.md#variables-claude-code-ignores-in-env)では設定しないでください。
+
+次の例では、設定ファイルでこれを設定しています。
+
+```json theme={null}
+{
+  "env": {
+    "OTEL_RESOURCE_INCLUDE_HOST": "1"
+  }
+}
+```
+
+これにより、`host.name` 属性と `host.id` 属性が、メトリクスのデータポイントではなく、メトリクス、イベント、トレースのリソースブロックに表示されます。
+
+* `host.name`: マシンのホスト名
+* `host.id`: オペレーティングシステムのマシン ID（ハッシュ化されません）。Linux では `/etc/machine-id` の内容、macOS では `IOPlatformUUID`、Windows では `MachineGuid` レジストリ値です。Claude Code がこれを読み取れない場合（イメージにマシン ID がないコンテナなど）は省略されます。
+
+どちらの属性も、Claude Code が実行されるマシンを示します。Desktop SSH セッションではリモートマシンがそれにあたるため、変数はリモートマシンで設定してください。[Desktop SSH セッションにテレメトリを関連付ける](#attribute-telemetry-to-desktop-ssh-sessions)を参照してください。コンテナでは、`host.name` はコンテナ自身のホスト名になるため、コンテナを実行するマシンの名前を示すには、[`OTEL_RESOURCE_ATTRIBUTES`](#multi-team-organization-support) で名前を自分で宣言してください。
+
+#### ホスト属性が見つからない場合のトラブルシューティング
+
+`host.name` と `host.id` が見つからない場合は、`OTEL_RESOURCE_INCLUDE_HOST` をどこでいつ設定したか、および何がセッションを開始したかを確認してください。次に、エクスポーター変数とエンドポイント変数、およびバックエンドがリソース属性をどのように表示するかを確認してください。
+
+* **セッションの Claude Code が v2.1.326 より古い**: 更新してください
+* **変数をプロジェクト設定またはローカル設定でのみ設定した**: 管理設定、ユーザー設定、またはシェルで設定してください。Claude Code が無視した変数を確認するには `/status` を実行します。
+* **管理設定ファイルまたはユーザー設定ファイルで変数が `0` になっている**: [シェルまたは優先順位の低いファイルで](https://code.claude.com/docs/ja/settings-reference.md#how-env-values-interact-with-your-shell) `1` を設定しても、`0` が適用されます。`0` を変更するか、管理設定にある場合は管理者に問い合わせてください。
+* **セッションの開始後に変数を設定した**: Claude Code は起動時に一度だけ変数を読み取るため、新しいセッションを開始してください
+* **デスクトップアプリがセッションを開始した**: ローカルセッションはシェルプロファイルから一部の変数を取得しますが、この変数は取得しないため、管理設定またはユーザー設定で設定してください。Desktop SSH セッションの場合は、リモートマシンで設定してください。[Desktop SSH セッションにテレメトリを関連付ける](#attribute-telemetry-to-desktop-ssh-sessions)を参照してください。
+* **セッションが Anthropic がホストする環境のクラウドセッションである**: そこでは属性は追加されません。クラウドセッションを区別するには、[クラウドセッションにテレメトリを関連付ける](#attribute-telemetry-to-cloud-sessions)を参照してください。
+* **いずれかのエクスポーター変数に `console` が含まれている**: `OTEL_METRICS_EXPORTER`、`OTEL_LOGS_EXPORTER`、`OTEL_TRACES_EXPORTER` から `console` を削除すると、他のエクスポーターに属性が届きます
+* **`OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` などのシグナルごとのエンドポイント変数が URL になっていない**: `10.0.0.1:4317` のような値は、`http://10.0.0.1:4317` のように URL として記述してください
+* **メトリクスバックエンドがリソース属性を表示しない**: `prometheus` エクスポーターでは、`target_info` メトリクスの `host_name` ラベルと `host_id` ラベルを探してください。それ以外の場合は、イベントとトレースのリソースブロックを確認するか、[`OTEL_RESOURCE_ATTRIBUTES`](#multi-team-organization-support) で名前を自分で宣言してください。こちらはデフォルトでメトリクスのデータポイントにも届きます。
 
 ### トレース（ベータ）
 
@@ -450,7 +486,11 @@ Claude Code は、これらの値を OTLP リソースブロックで送信す�
 
 ### Desktop SSH セッションにテレメトリを関連付ける
 
-[Desktop SSH セッション](https://code.claude.com/docs/ja/desktop.md#ssh-sessions)がどのリモートマシンで実行されたかを確認するには、カスタム属性で各マシンに名前を付けます。メトリクスとイベントには、セッションが実行されたマシンの名前は含まれません。
+[Desktop SSH セッション](https://code.claude.com/docs/ja/desktop.md#ssh-sessions)がどのリモートマシンで実行されたかを確認するには、[`OTEL_RESOURCE_INCLUDE_HOST=1`](#identify-the-machine-a-session-ran-on) を設定するか、[カスタム属性で各マシンに名前を付けます](#name-each-remote-machine-in-a-custom-attribute)。メトリクスのデータポイントに名前が必要な場合は、カスタム属性を選択してください。`OTEL_RESOURCE_INCLUDE_HOST=1` では、`host.name` はリソースブロックにのみ表示されます。
+
+`OTEL_RESOURCE_INCLUDE_HOST` は、リモートマシン上の、[セッションが読み取る管理設定ファイル](https://code.claude.com/docs/ja/desktop.md#managed-settings)内でテレメトリをオンにする `env` ブロックで設定します。[セッションが実行する Claude Code のコピー](https://code.claude.com/docs/ja/desktop.md#files-and-processes-on-the-remote-machine)は v2.1.326 以降である必要があります。`host.name` と `host.id` が届かない場合は、[ホスト属性が見つからない場合のトラブルシューティング](#troubleshoot-missing-host-attributes)を参照してください。
+
+#### カスタム属性で各リモートマシンに名前を付ける
 
 各リモートマシンで、[セッションが読み取る管理設定ファイル](https://code.claude.com/docs/ja/desktop.md#managed-settings)内の、テレメトリをオンにする `env` ブロックに [`OTEL_RESOURCE_ATTRIBUTES`](#multi-team-organization-support) を追加します。名前は各マシンのファイルに直接書き込んでください。Claude Code は値を展開しないため、`host.name=$(hostname)` はその文字列のまま届きます。
 
@@ -469,9 +509,9 @@ Claude Code は、これらの値を OTLP リソースブロックで送信す�
 }
 ```
 
-他にこの変数を設定するものがない場合、`host.name` は、Desktop SSH セッションでもそのマシン上の CLI でも、リソースブロックに含まれて届きます。カスタム属性が他にどこに表示されるかについては、[複数チームの組織のサポート](#multi-team-organization-support)を参照してください。
+`host.name` はリソースブロックに含まれて届き、デフォルトではメトリクスのデータポイントとイベントにも含まれます。Desktop SSH セッションとそのマシン上の CLI の両方がこれを送信します。データポイントに含めないようにするには、[複数チームの組織のサポート](#multi-team-organization-support)を参照してください。
 
-名前が届かない場合は、次のいずれかの原因を確認してください。
+`OTEL_RESOURCE_ATTRIBUTES` で設定した名前が届かない場合は、次のいずれかの原因を確認してください。
 
 * **Desktop を実行しているコンピューターで設定した**: Desktop は、そこで設定した値を SSH セッションに渡しません
 * **`/etc/profile` など、ログインシェルのみが読み取るファイルでエクスポートした**: ログインシェルから `claude` を実行した場合は名前が届きますが、Desktop SSH セッションでは届きません。Desktop はログインシェル経由で Claude Code を起動しません。代わりに、リモートマシン上の[管理設定ファイル](https://code.claude.com/docs/ja/desktop.md#managed-settings)の `env` で変数を設定してください。
@@ -1541,7 +1581,7 @@ Claude Code v2.1.274 以降が必要です。
 * `managed_settings.helper.applied`: ヘルパー自身の出力が管理設定として使用されている間は `"output"`、そうでない場合は `"none"`
 * `managed_settings.helper.entry`: Claude Code が [`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) を選択した場合は `"policyHelper"`。ヘルパーを選択しなかった場合は存在しません
 * `managed_settings.helper.path`: ヘルパーの設定された [`path`](https://code.claude.com/docs/ja/settings-reference#policyhelper-path)。`OTEL_LOG_MANAGED_SETTINGS` が設定されているかどうかにかかわらず、Claude Code がヘルパーを選択した場合は常に存在します
-* `managed_settings.resolved_sha256`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合）: 秘匿化前の解決済み管理設定の SHA-256 で、キーを再帰的にソートし、空白を含めない JSON としてシリアライズしたものです。同じダイジェストを持つマシンは同じポリシーで動作しています。短いポリシーは推測値をハッシュすることで復元できるため、Claude Code はオプトインした場合にのみダイジェストを送信します。管理設定が解決されなかった場合、および `refused` イベントでは存在しません
+* `managed_settings.resolved_sha256`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合）: 秘匿化前の解決済み管理設定の SHA-256。キーを再帰的にソートし、空白を含めない JSON としてシリアル化したものです。同じダイジェストを持つマシンは同じ管理設定を解決しています。短いポリシーは推測をハッシュすることで復元できてしまうため、イベントにダイジェストが含まれるのはオプトインした場合のみです。解決された管理設定がない場合、および `refused` イベントでは存在しません
 * `managed_settings.settings`（`OTEL_LOG_MANAGED_SETTINGS=1` の場合）: 解決済み管理設定の名前と構造を、値を秘匿化した JSON 文字列として表したもの。`refused` イベントでは存在しません。Claude Code は設定スキーマに基づいてこれを構築します:
 
   * スキーマが宣言している設定名はエクスポートされ、宣言されていないキーは除外されます
@@ -1794,6 +1834,7 @@ Claude Code は生のイベントストリームのみを出力します。異�
 * `os.type`: オペレーティングシステムタイプ (例: `linux`、`darwin`、`windows`)
 * `os.version`: オペレーティングシステムバージョン文字列
 * `host.arch`: ホストアーキテクチャ (例: `amd64`、`arm64`)
+* `host.name`、`host.id`: マシンの名前と ID。デフォルトではオフです。[セッションが実行されたマシンを特定する](#identify-the-machine-a-session-ran-on)を参照してください。
 * `wsl.version`: WSL バージョン番号 (Windows Subsystem for Linux で実行している場合のみ存在)
 * メーター名: `com.anthropic.claude_code`
 
@@ -1839,6 +1880,7 @@ Claude Code は生のイベントストリームのみを出力します。異�
   * `=file:<dir>` の場合、Claude Code は切り詰められていないボディをそのディレクトリ配下の `.request.json` ファイルと `.response.json` ファイルに書き込み、イベントはインラインのボディの代わりに `body_ref` パスを保持します。このディレクトリは、テレメトリストリーム経由ではなく、ログコレクターまたはサイドカーで送信してください。
 
     成功したレスポンスごとに、Claude Code はそのディレクトリ内の `index.jsonl` にも 1 行を追記し、レスポンスファイルを、それを生成したリクエストファイルおよびそれが変換されたトランスクリプトのメッセージと関連付けます。各行にメッセージの内容は含まれず、そのフィールドは [API レスポンスボディイベント](#api-response-body-event)のセクションに記載されています。インデックスファイルには Claude Code v2.1.274 以降が必要です
+* マシンの名前と ID はデフォルトでは含まれません。これらを `host.name` および `host.id` として含めるには、[`OTEL_RESOURCE_INCLUDE_HOST=1`](#identify-the-machine-a-session-ran-on) を設定します。ホスト名には個人の名前が含まれることが多く、`host.id` はマシンの永続的な識別子です。この変数を管理設定で設定する場合は、Claude Code が通知を表示しないため、それらのマシンを使用する人にその旨を伝えてください。
 
 ## Amazon Bedrock での Claude Code の監視
 

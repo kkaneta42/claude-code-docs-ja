@@ -265,8 +265,6 @@ Remote Control を完全にオフにするには、[`disableRemoteControl`](http
 
 > [!NOTE]
 >
-> 信頼できるデバイスは現在ベータ版です。エクスペリエンスが改善されるにつれて、機能と機能が進化する可能性があります。
->
 > 信頼できるデバイスは Pro、Max、Ultra、Team、および Enterprise プランで利用可能であり、デフォルトではオフになっています。Team および Enterprise プランでは、Owner が組織に対してこれをオンにします。Pro、Max、および Ultra プランでは、設定の Cowork またはアカウントページで、自分で **信頼できるデバイスを要求** をオンにします。
 
 信頼できるデバイスでは、claude.ai、Claude モバイルアプリ、または Claude Desktop から Remote Control セッションを表示または操作する前に、確認済みのデバイスが必要になります。この要件は組織の各メンバーに適用されます。Pro、Max、または Ultra プランの場合は、ユーザー自身にのみ適用されます。これにより、Remote Control へのアクセスは、サインイン済みのアカウントだけでなく、既知のデバイスと最近の認証に結び付けられます。
@@ -414,7 +412,7 @@ claude mcp login "claude.ai Slack" --no-browser
 /mcp reconnect claude.ai Slack
 ```
 
-ターミナルでは、Claude Code が `Successfully reconnected to claude.ai Slack` と出力します。モバイルアプリや Web からの場合、応答は `Reconnected "claude.ai Slack".` です。
+ターミナルでは、Claude Code が `claude.ai Slack` に再接続したことを表示します。モバイルアプリや Web からの場合、応答は `Reconnected "claude.ai Slack".` です。
 
 ## トラブルシューティング
 

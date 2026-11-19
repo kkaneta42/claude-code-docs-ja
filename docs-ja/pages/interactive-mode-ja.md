@@ -479,7 +479,7 @@ Print Mode では、Claude Code はデフォルトでは提案を生成しませ
 /plugin enable cc-plugin-you-should-know@builtin
 ```
 
-`/plugin` に mod が表示されない環境では、有効化コマンドは `Plugin "cc-plugin-you-should-know@builtin" is not installed in this project` と応答します。
+`/plugin` に mod が表示されない環境では、有効化コマンドは、このプロジェクトにプラグインがインストールされていないと応答します。
 
 ### チェックのコスト
 

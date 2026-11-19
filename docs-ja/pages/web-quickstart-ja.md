@@ -229,7 +229,7 @@ PR が作成された後もセッションはライブのままです。CI 失�
 
 `/web-setup` は Claude Code CLI 内で実行され、シェルではありません。まず `claude` を起動してから、プロンプトで `/web-setup` と入力してください。
 
-Claude Code 内に入力した場合、コマンドメニューが `No commands match "/web-setup"` を表示するか、送信すると `Unknown command: /web-setup` が返される場合、要件が満たされていないため、コマンドは非表示になっています。通常の原因は、claude.ai サブスクリプションではなく API キーまたはサードパーティプロバイダーで認証されていることです。`/login` を実行して claude.ai アカウントでサインインしてください。
+Claude Code のコマンドメニューに `No commands match "/web-setup"` と表示される場合、または `/web-setup` を送信すると `Unknown command: /web-setup` が返されるか、利用できないと表示される場合、要件が満たされていないため、コマンドは非表示になっています。通常の原因は、claude.ai サブスクリプションではなく API キーまたはサードパーティプロバイダーで認証されていることです。`/login` を実行して claude.ai アカウントでサインインしてください。
 
 Team および Enterprise プランでは、コマンドはデフォルトで非表示になっています。[Quick setup トグル](https://code.claude.com/docs/ja/claude-code-on-the-web.md#quick-setup-for-team-and-enterprise)は、所有者がオンにするまでオフになっています。オフの間は、代わりに[ブラウザから GitHub を接続](#connect-github)してください。
 

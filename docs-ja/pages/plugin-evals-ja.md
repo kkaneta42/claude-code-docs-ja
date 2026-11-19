@@ -358,7 +358,7 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 
 #### 管理対象マシンでシェルの付与が拒否される
 
-組織が管理するマシンでシェルを付与した実行が拒否される場合、そのマシンの[管理設定](https://code.claude.com/docs/ja/managed-settings.md)にある `sandbox` キーが原因である可能性があります。エラーは `A shell tool (Bash or PowerShell) was granted but this machine cannot confine it (no sandbox backend on this platform, or it is not installed)` で始まります。このエラーは、バックエンドがインストールされている場合でも、バックエンドが存在しないことを示します。
+組織が管理するマシンでシェルを付与した実行が拒否される場合、そのマシンの[管理設定](https://code.claude.com/docs/ja/managed-settings.md)にある `sandbox` キーが原因である可能性があります。エラーは `A shell tool (Bash or PowerShell) was granted but this machine cannot confine it (no sandbox backend on this platform, or it is not installed)` で始まります。
 
 管理キーが原因の場合、メッセージは `this machine's managed settings:` とそのキーで終わりますが、実行ごとの進捗行ではこの部分が切り詰められます。
 

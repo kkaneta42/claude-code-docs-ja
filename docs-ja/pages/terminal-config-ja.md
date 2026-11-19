@@ -86,7 +86,7 @@ Claude がタスクを完了するか権限プロンプトで一時停止し、�
 }
 ```
 
-tmux の外で実行しているターミナルから SSH 経由で接続している場合は、Claude Code を実行しているマシンで [`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) をローカルターミナルに対応する値（`"iterm2"`、`"kitty"`、または `"ghostty"`）に設定します。これにより、デスクトップ通知がローカルマシンに届きます。Ghostty と Kitty はさらなるセットアップなしで OS 通知センターに転送します。iTerm2 では転送を有効にする必要があります：
+tmux の外で SSH 経由で Ghostty、Kitty、または iTerm2 のデスクトップ通知を受け取るには、`preferredNotifChannel` をデフォルトの `"auto"` のままにしてください。v2.1.326 より前では、Claude Code を実行しているマシンでこれを `"iterm2"`、`"kitty"`、または `"ghostty"` に設定します。iTerm2 では転送を有効にする必要があります：
 
 **1. Open iTerm2 notification settings**
 
@@ -140,7 +140,7 @@ set -s extended-keys on
 set -as terminal-features 'xterm*:extkeys'
 ```
 
-Shift+Enter を使うには、最後の 2 行を残したまま、tmux からデタッチして再度アタッチし、Claude Code を再起動してください。表示中のペインから外側のターミナルに通知を送るには、`allow-passthrough` 行を残したまま、[`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) を `"iterm2"`、`"kitty"`、または `"ghostty"` に設定してください。このサンプルでは、表示していないウィンドウ内のペインからは通知が送られません。
+Shift+Enter を使うには、最後の 2 行を残したまま、tmux からデタッチして再度アタッチし、Claude Code を再起動してください。表示中のペインから Ghostty、Kitty、または iTerm2 に通知を送るには、`allow-passthrough` 行を残したまま、Claude Code を再起動してください。このサンプルでは、表示していないウィンドウ内のペインからは通知が送られません。v2.1.326 より前のバージョン、または `allow-passthrough` がない 3.3 より古い tmux 内では、[`preferredNotifChannel`](https://code.claude.com/docs/ja/settings-reference#preferrednotifchannel) を `"iterm2"`、`"kitty"`、または `"ghostty"` に設定してください。
 
 [mod の `Image`](https://code.claude.com/docs/ja/plugins/mods/reference#elements) には、`allow-passthrough` 行と `focus-events` 行に加えて、その他の [tmux 内で描画するための要件](https://code.claude.com/docs/ja/plugins/mods/gallery.md#draw-an-image-inside-tmux)が必要です。これらの行を追加した後は、tmux からデタッチして再度アタッチし、Claude Code を再起動してください。
 

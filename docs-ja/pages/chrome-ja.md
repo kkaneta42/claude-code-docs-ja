@@ -80,7 +80,7 @@ type "hooks", and tell me what results appear
 
 いつでも `/chrome` を実行して、接続ステータスの確認、権限の管理、拡張機能の再接続、または使用する接続済みブラウザの選択を行えます。ステータスパネルに「ステータス: 有効」と「拡張機能: インストール済み」が表示されていれば、統合は正常に動作しています。
 
-複数のブラウザが接続されている場合は、Claude が使用するブラウザを選択します。選択する前にブラウザアクションが開始されると、Claude はいずれかを選択するよう促します。後でブラウザを切り替えるには、`/chrome` を実行して **Select browser…** を選びます。別のブラウザが接続された場合でも、Claude は選択したブラウザを使い続けます。
+複数のブラウザが接続されている場合は、Claude が使用するブラウザを選択します。選択する前にブラウザアクションが開始されると、Claude はいずれかを選択するよう促します。後でブラウザを切り替えるには、`/chrome` を実行して別のブラウザを選択します。別のブラウザが接続された場合でも、Claude は選択したブラウザを使い続けます。
 
 VS Code については、[VS Code でのブラウザ自動化](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome) を参照してください。
 
@@ -101,7 +101,7 @@ VS Code については、[VS Code でのブラウザ自動化](https://code.cla
 
 ### Chrome をデフォルトで有効にする
 
-毎回 `--chrome` を渡さずに Chrome に接続するには、CLI セッションで `/chrome` を実行して **デフォルトで有効** を選択します。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome)では、プロンプトボックスに `/chrome` と入力して **デフォルトで有効** スイッチをオンにします。両者は 1 つの設定を共有しているため、どちらかでオンにすると CLI と VS Code の両方でオンになります。
+毎回 `--chrome` を渡さずに Chrome に接続するには、CLI セッションで `/chrome` を実行し、Chrome をデフォルトでオンにするオプションを選択します。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md#automate-browser-tasks-with-chrome)では、プロンプトボックスに `/chrome` と入力して **Enabled by default** スイッチをオンにします。CLI と VS Code は 1 つの設定を共有しているため、どちらかでオンにすると両方でオンになります。
 
 この設定がオンで Claude Code v2.1.287 以降を使用している場合、各 VS Code セッションは開始時にブラウザに接続するため、`@browser` と入力する前から Claude がブラウザを使用できます。それより前のバージョン、または設定がオフの場合、VS Code セッションは `@browser` と入力したときに接続します。
 
@@ -295,7 +295,7 @@ Claude Code がこの設定をスキップするのは、これらのファイ�
 そのまま作業を続けることができます。ブラウザツールを使用したい場合や警告を消したい場合は、次のいずれかを行います。
 
 * **今すぐブラウザツールを使用するには**：終了し、シェルで `claude --chrome` を使用して再度起動します。
-* **以降のセッションでブラウザツールを使用するには**：Claude Code のプロンプトで `/chrome` を実行し、[**Enabled by default**](#enable-chrome-by-default) を選択します。これはその後に開始するセッションに適用され、実行中のセッションには適用されません。
+* **以降のセッションでブラウザツールを使用するには**：Claude Code のプロンプトで `/chrome` を実行し、[Chrome をデフォルトでオンにします](#enable-chrome-by-default)。
 * **ブラウザツールなしで警告を止めるには**：プロジェクトの設定ファイルから `CLAUDE_CODE_ENABLE_CFC` の行を削除します。
 
 ### ブラウザが応答しない

@@ -143,7 +143,7 @@ Ripgrep はネイティブの Claude Code バイナリに同梱されていま�
 
 > [accordion] WSL2 に関する注意事項
 >
-> PowerShell から `wsl -l -v` を実行して WSL のバージョンを確認します。`Sandboxing requires WSL2` と表示される場合、ディストリビューションは WSL1 で実行されています。WSL2 にアップグレードするか、サンドボックス化せずに Claude Code を実行してください。
+> PowerShell から `wsl -l -v` を実行して WSL のバージョンを確認します。`Sandboxing needs WSL2` または `Sandboxing requires WSL2` と表示される場合、ディストリビューションは WSL1 で実行されています。WSL2 にアップグレードするか、サンドボックス化せずに Claude Code を実行してください。
 >
 > WSL2 では、`cmd.exe`、`powershell.exe`、または `/mnt/c/` 配下のものなど Windows バイナリの起動を、WSL が Unix ソケット経由で Windows ホストに引き渡します。そのため、サンドボックス化されたコマンドがそれらを起動できるかどうかは、サンドボックスの [Unix ソケット設定](https://code.claude.com/docs/ja/settings-reference.md#sandbox-network-allowunixsockets)に従います。そもそもソケットをブロックするには、オプションの seccomp フィルターがインストールされている必要があります。これらの起動を許可するには、`allowAllUnixSockets` を設定します。これにより、サンドボックス化されたコマンドにすべての Unix ソケットが開放されます。
 
@@ -1063,9 +1063,9 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 
 `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB` が設定された Linux セッションでは、すべてのコマンドがサンドボックス内で実行されるため、除外されたコマンドやユーザーが入力したコマンドも拒否されます。
 
-### `/sandbox` が `Sandbox settings are overridden by a higher-priority configuration` で失敗する
+### `/sandbox` が `Sandbox settings can't be changed here` で失敗する
 
-上位の[設定レベル](https://code.claude.com/docs/ja/settings.md#settings-precedence)が `sandbox.enabled`、`sandbox.autoAllowBashIfSandboxed`、または `sandbox.allowUnsandboxedCommands` を設定している場合、`/sandbox` はパネルを開く代わりに `Error: Sandbox settings are overridden by a higher-priority configuration and cannot be changed locally.` を出力します。パネルは選択内容を `.claude/settings.local.json` に保存しますが、そこに保存された値はそれらのレベルを上書きできません。
+`sandbox.enabled`、`sandbox.autoAllowBashIfSandboxed`、または `sandbox.allowUnsandboxedCommands` がローカルより上位の[設定レベル](https://code.claude.com/docs/ja/settings.md#settings-precedence)で設定されている場合、`/sandbox` は `Sandbox settings can't be changed here. Higher-priority settings override them.` を出力し、パネルは閉じたままになります。パネルは選択内容を `.claude/settings.local.json` に保存しますが、そこに保存された値は上位のレベルを上書きできません。
 
 管理設定と `--settings` はローカル設定より優先されます。このセッションでどれが読み込まれたかを確認するには、`/status` を実行して `Setting sources` 行を確認してください：
 
@@ -1077,7 +1077,7 @@ v2.1.284 より前では、プロキシは許可されたホスト名がどの�
 この行は、`/sandbox` がパネルで行った選択をプロジェクトの `.claude/settings.local.json` に保存できなかったことを意味します：
 
 ```text theme={null}
-✗ Sandbox settings not changed: /home/you/project/.claude/settings.local.json couldn't be updated (EACCES). Start Claude Code in a project folder you can write to.
+✗ Sandbox settings not changed: /home/you/project/.claude/settings.local.json couldn't be updated (EACCES). Start Claude Code in a project directory you can write to.
 ```
 
 括弧内の理由が `EACCES`、`EPERM`、または `EROFS` の場合は、書き込み可能なプロジェクトフォルダで Claude Code を起動し、そのセッションで `/sandbox` を再度実行してください。理由が `Invalid JSON syntax in settings file` で始まる場合は、プロジェクトの `.claude/settings.local.json` 内の JSON を修正してから、`/sandbox` を再度実行してください。

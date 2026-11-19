@@ -30,7 +30,7 @@ Claude Code [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)�
 
 ```
 /voice
-Voice mode enabled (hold). Hold space to record. Dictation language: en (/config to change).
+Turned on voice mode (hold). Hold space to record. Dictation language: en (/config to change).
 ```
 
 `/voice` はオプションのモード引数を受け入れます。

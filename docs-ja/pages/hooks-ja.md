@@ -2203,7 +2203,7 @@ PreToolUse フックは、権限が必要かどうかにかかわらず、すべ
 
 | フィールド | 説明 |
 | :- | :- |
-| `behavior` | `"allow"` は権限を付与し、`"deny"` は拒否します。[拒否ルールと確認ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)は引き続き評価されるため、`"allow"` を返すフックが一致する拒否ルールを上書きすることはありません |
+| `behavior` | `"allow"` は権限を付与し、`"deny"` は拒否します。mod がルールを上書きする場合を除き、フックは拒否ルールが拒否するものを承認できません。[ルール、フック、mod の優先順位](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください |
 | `updatedInput` | `"allow"` の場合のみ：実行前にツールの入力パラメータを変更します。入力オブジェクト全体を置き換えるため、変更したフィールドと一緒に変更していないフィールドも含めてください。変更された入力は拒否ルールと確認ルールに対して再評価されます。`AskUserQuestion` と `ExitPlanMode` には[このフィールドが必要です](#allow-with-updatedinput) |
 | `updatedPermissions` | `"allow"` の場合のみ：適用する[権限更新エントリ](#permission-update-entries)の配列です。許可ルールの追加やセッションの権限モードの変更などを指定します |
 | `message` | `"deny"` の場合のみ：権限が拒否された理由を Claude に伝えます |
@@ -3335,7 +3335,7 @@ Claude Code は、`.` や `..` のセグメントを含む絶対パスと、リ�
 
 サブエージェントやワークフローのエージェントが終了したとき、Claude Code は WorktreeCreate フックがそのエージェントのために作成した worktree を保持し、WorktreeRemove フックは実行しません。作業が完了したら、それらの worktree は自分で削除してください。
 
-`ExitWorktree` の呼び出しや `claude remote-control` のクリーンアップでは、Claude Code はフックの実行前に確認を求めません。`ExitWorktree` は、呼び出しで [`discard_changes: true`](https://code.claude.com/docs/ja/agent-sdk/typescript#exitworktree) が渡されない限り、フックで作成された worktree の削除を拒否します。そのため、この経路ではフックが最後のチェックになります。
+`claude remote-control` によるクリーンアップの場合、Claude Code は確認なしでフックを実行します。`ExitWorktree` は、呼び出しで [`discard_changes: true`](https://code.claude.com/docs/ja/agent-sdk/typescript#exitworktree) が渡されない限り、フックが作成した worktree の削除を拒否します。
 
 Claude Code は git を使って変更済みまたは未追跡のファイルを探すため、git のチェックアウトではない worktree やその中にない worktree では、ディレクトリにコミットされていない作業があっても何も見つけません。WorktreeRemove フックでは、何かを削除する前にそのような作業がないか確認してください。
 

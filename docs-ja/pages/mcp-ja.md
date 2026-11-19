@@ -389,10 +389,14 @@ Claude Code は、セッション途中で切断されたリモートサーバ�
 
 Claude Code はまず、切断されたリモートサーバーへの再接続を、指数バックオフを使って最大 5 回試みます。遅延は 1 秒から始まり、毎回 2 倍になります。
 
-* **対話型セッションの場合**: Claude Code が再接続している間、`/mcp` にはサーバーが保留中として表示されます。5 回の試行が失敗すると、Claude Code はサーバーを失敗としてマークするか、サーバーが再度認可を必要とする場合は認証が必要としてマークします。失敗としてマークすると、`MCP server "<name>" disconnected · open /mcp to reconnect` という通知が表示されます。`/mcp` から手動で再試行できます。
-* **[`claude -p`](https://code.claude.com/docs/ja/headless) の実行と [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) セッションの場合**: Claude Code は同じ 5 回の試行を行いますが、それを表示する `/mcp` パネルはありません。5 回すべて失敗した場合、実行はサーバーのツールなしで続行されます。
-  * **5xx レスポンスやタイムアウトなどの一時的なエラーの後**: Claude Code は HTTP または SSE サーバーの再試行をバックグラウンドで続けます。再試行は最大約 30 分間続き、接続に成功するとサーバーのツールが再び利用可能になります。それまでの間、Agent SDK セッションは[ステータス](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling) `failed` を報告し、コードから[サーバーを再接続](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling)できます。`claude -p` で再接続するには、実行をやり直してください。
-  * **サーバーが[再度サインインを必要とする](#authenticate-with-remote-mcp-servers)場合**: Claude Code は再試行を停止し、Agent SDK セッションはサーバーのステータスを `needs-auth` として報告します。シェルで [`claude mcp login <name>`](#authenticate-from-the-command-line) を使ってサインインしてください。その後、実行をやり直すか、Agent SDK セッションの場合は代わりに[サーバーを再接続](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling)してください。
+* **対話型セッションの場合**: Claude Code が再接続している間、`/mcp` はサーバーを保留中として表示します。5 回の試行に失敗すると、Claude Code はサーバーを失敗としてマークします。サーバーの再認可が必要な場合は、認証が必要としてマークします。サーバーを失敗としてマークするとき、Claude Code がまだ再試行中かどうかを通知で知らせます。
+  * `MCP server "<name>" disconnected · still retrying · open /mcp to reconnect now`: Claude Code は最大約 1 日間サーバーの再試行を続けることができます。`/mcp` では、失敗したサーバーは `retrying` と表示されます。待つか、`/mcp` から再接続できます。再試行を停止するには、`/mcp` から[そのプロジェクトでサーバーを無効にして](#disable-a-server-without-removing-it)ください。
+  * `MCP server "<name>" disconnected · open /mcp to reconnect`: Claude Code はバックグラウンドでサーバーを再試行していません。`/mcp` から再接続してください。
+* **[`claude -p`](https://code.claude.com/docs/ja/headless) の実行と [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) セッションの場合**: Claude Code は同じ 5 回の試行を行いますが、それを表示する `/mcp` パネルはありません。5 回すべてが失敗した場合、実行はサーバーのツールなしで続行されます。
+  * **5xx レスポンスやタイムアウトなどの一時的なエラーの後**: Claude Code は HTTP または SSE サーバーの再試行をバックグラウンドで続けます。再試行は最大約 30 分間、一部のサーバーでは約 1 日間続き、いずれかの試行で接続するとサーバーのツールが再び利用可能になります。
+
+    それまでの間、Agent SDK セッションは[ステータス](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling) `failed` を報告し、コードから[サーバーを再接続](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling)できます。`claude -p` で再接続するには、実行をやり直してください。
+  * **サーバーで[再度サインインが必要な場合](#authenticate-with-remote-mcp-servers)**: Claude Code は再試行を停止し、Agent SDK セッションはサーバーのステータスを `needs-auth` と報告します。シェルで [`claude mcp login <name>`](#authenticate-from-the-command-line) を使ってサインインしてください。その後、実行をやり直すか、Agent SDK セッションでは代わりに[サーバーを再接続](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling)してください。
 
 #### 最初の接続の失敗
 
@@ -471,7 +475,7 @@ MCP ツール呼び出しを実行できる時間を制限するには、次の�
 
 ### 長いツール呼び出しの自動バックグラウンド化
 
-[`/tasks`](https://code.claude.com/docs/ja/commands#all-commands) でバックグラウンド呼び出しの詳細ビューに `runs on the server; survives exiting this session` と表示されている場合は、[サーバー上で実行される MCP タスク](#mcp-tasks-that-run-on-the-server)を参照してください。
+[`/tasks`](https://code.claude.com/docs/ja/commands#all-commands) でバックグラウンド呼び出しの詳細ビューに、終了後も呼び出しが実行され続けると表示されている場合は、[サーバー上で実行される MCP タスク](#mcp-tasks-that-run-on-the-server)を参照してください。
 
 メイン会話で 2 分経過後もまだ実行中の MCP ツール呼び出しは、セッションをブロックする代わりにバックグラウンドタスクに移動します。Claude はすぐにタスク ID を受け取って作業を続け、呼び出しが完了すると結果がタスク通知として届きます。
 
@@ -524,7 +528,7 @@ Claude を[結果を待つ](#make-claude-wait-for-the-result-of-an-mcp-task)よ�
 
 #### MCP タスクの実行中に終了、クリア、または再開する
 
-リモートサーバー上のタスクは、終了後も実行を続けます。stdio サーバーのプロセスは Claude Code の終了時に停止しますが、そのタスクは `/tasks` に `runs on the server; survives exiting this session` と表示されます。そのサーバーのドキュメントに作業がプロセスより長く存続すると記載されていない限り、先にそれらのタスクを完了させるか、`/tasks` で停止してください。
+リモートサーバー上のタスクは終了後も実行され続けます。stdio サーバーのプロセスは Claude Code の終了時に停止します。これは `/tasks` にそのサーバーのタスクが実行され続けると表示されていても同じです。そのサーバーのドキュメントで作業がプロセスより長く続くと記載されている場合を除き、それらのタスクは先に完了させるか、`/tasks` で停止してください。
 
 | 状況 | タスクに起こること | できること |
 | - | - | - |
@@ -1301,6 +1305,7 @@ claude mcp get weather-api
 > ヒント：
 >
 > * JSON がシェルで適切にエスケープされていることを確認してください
+> * JSON をパイプで渡すには、JSON の代わりに `-` を指定します：`cat server.json | claude mcp add-json <name> -`。このコマンドは Claude Code セッションの外で実行してください。Claude Code v2.1.327 以降が必要です。
 > * JSON は MCP サーバー設定スキーマに準拠する必要があります
 > * `--scope user` を使用して、プロジェクト固有のサーバーの代わりにユーザー設定にサーバーを追加できます
 
@@ -1408,8 +1413,8 @@ claude.ai コネクタをどの設定が制御するかは、セッションの�
 
 組織は [claude.ai connectors](https://claude.com/docs/connectors) に tool ごとのコントロールを設定できます。Claude Code はこれらの設定をスタートアップ時に読み取り、ローカルで実行します。ただし、デスクトップアプリの [local and SSH sessions](#how-connectors-reach-claude-code) では除きます。そこでは、デスクトップアプリは connector を配信する前に `blocked` tool を保留し、`ask` 設定は Claude Code に到達しないため、セッションの通常の [permission rules](https://code.claude.com/docs/ja/permissions.md) をそれらの tool に適用し、すべての呼び出しでプロンプトを表示する代わりに。Claude Code が connector 自体を取得するセッションでは、`/mcp` を実行して、各 tool に適用される設定を connector で確認します。
 
-* **ツールが `ask` に設定されている場合**: Claude Code は呼び出しのたびに、`Your organization requires approval for this tool` という理由とともにプロンプトを表示します。このプロンプトは、`acceptEdits`、`auto`、`bypassPermissions` の[権限モード](https://code.claude.com/docs/ja/permissions.md#permission-modes)でも表示されます。ターミナルでは、このプロンプトに選択を記憶するオプションはありません。ツールに一致する[許可ルール](https://code.claude.com/docs/ja/permissions.md)があってもプロンプトはスキップされません。プロンプトを一切表示しない `dontAsk` モードでは、Claude Code は代わりに呼び出しを拒否します。
-* **Tool が `blocked` に設定されている場合**: Claude Code は Claude がそれを見る前に tool をフィルタリングするため、tool リストに表示されません。Claude Code が connector 自体を取得するセッションでは、`/mcp` tool リストは依然として tool を表示し、`disabled by your organization` としてマークされます。
+* **ツールが `ask` に設定されている場合**: Claude Code は Claude が行う呼び出しのたびに、`Your organization requires approval for this tool` という理由とともにプロンプトを表示します。このプロンプトは、`acceptEdits`、`auto`、`bypassPermissions` の[権限モード](https://code.claude.com/docs/ja/permissions.md#permission-modes)でも表示されます。ターミナルでは、選択を保存できません。一致する[許可ルール](https://code.claude.com/docs/ja/permissions.md)があってもプロンプトはスキップされません。`dontAsk` モード、またはプロンプトに応答する手段のない `-p` 実行では、Claude Code は代わりに呼び出しを拒否します。
+* **ツールが `blocked` に設定されている場合**: Claude Code は Claude に見える前にツールを除外するため、そのツールが Claude のツールリストに表示されることはありません。Claude Code がコネクタを自ら取得するセッションでは、`/mcp` のツールリストには引き続きそのツールが表示され、`turned off by your organization` とマークされます。
 
 デスクトップアプリと claude.ai チャットは同じ `blocked` 設定を適用するため、Claude はそこでも tool を使用できず、デスクトップアプリのセッションから tool を保留しながらチャットで利用可能に保つことはできません。デスクトップアプリは tool がすべてブロックされている connector をスキップします。
 
@@ -1611,15 +1616,15 @@ v2.1.300 より前では、拒否されたスキーマを含むすべてのタ�
 
 ## 特定のツールに対して承認を要求する
 
-MCP サーバーを構築している場合、ツールの `tools/list` レスポンスエントリで `_meta["anthropic/requiresUserInteraction"]` を `true` に設定することで、そのツールがすべての呼び出しで明示的な承認を必要とするようにマークできます。値は JSON ブール値 `true` である必要があります。その他の値は無視されます。
+MCP サーバーを構築している場合、ツールの `tools/list` レスポンスエントリで `_meta["anthropic/requiresUserInteraction"]` を `true` に設定することで、そのツールを明示的な承認が必要なものとしてマークできます。値は JSON ブール値 `true` である必要があります。その他の値は無視されます。
 
-Claude Code は、`acceptEdits`、`auto`、`bypassPermissions` [権限モード](https://code.claude.com/docs/ja/permissions.md#permission-modes)でも、そのツールの権限プロンプトをすべての呼び出しで表示し、それに対して「今後は表示しない」オプションを提供しません。ツールに一致する [許可ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax) もプロンプトをスキップしません。プロンプトを表示しない `dontAsk` モードでは、Claude Code は呼び出しを拒否します。
+Claude Code は、`acceptEdits`、`auto`、`bypassPermissions` [権限モード](https://code.claude.com/docs/ja/permissions.md#permission-modes)でも、Claude が行うすべての呼び出しでそのツールの権限プロンプトを表示し、それに対して「今後は表示しない」オプションを提供しません。ツールに一致する [許可ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax) もプロンプトをスキップしません。`dontAsk` モード、またはプロンプトに応答するものが何もない `-p` 実行では、Claude Code は代わりに呼び出しを拒否します。
 
 プロンプトは人間に到達する必要があります。[`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を使用した非対話モードでは、フラグが付いたツールのプロンプトツールからの `allow` 結果は、メッセージ `MCP tool requires user interaction; not supported via --permission-prompt-tool` とともに拒否に変換されます。Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/permissions) はこれらの呼び出しを受け取り、承認できます。これは、SDK アプリケーションがこれらをユーザーに表示することが期待されているためです。
 
 これを使用するのは、権限プロンプト自体がポイントであるツール、たとえば同意またはアクセス許可ステップなど、自動承認は人間が同意しないことを意味する場合です。同じサーバーからの他のツールは、通常の権限動作を保持します。
 
-次の `tools/list` エントリは、1 つのツールを常に承認が必要なものとしてマークします。
+次の `tools/list` エントリは、1 つのツールをマークします。
 
 ```json theme={null}
 {

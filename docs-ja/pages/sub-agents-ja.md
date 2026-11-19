@@ -302,7 +302,7 @@ Bash コマンドについては、Claude Code はコマンド自体も 2 つの
 | `model` | いいえ | 使用する[モデル](#choose-a-model): `sonnet`、`opus`、`haiku`、`fable`、`claude-opus-5-5` などの完全なモデル ID、または `inherit`。省略した場合、Claude Code は[サブエージェントのモデルの決定順序](#choose-a-model)に従ってモデルを選択します |
 | `permissionMode` | いいえ | [権限モード](#permission-modes): `default`、`acceptEdits`、`auto`、`dontAsk`、`bypassPermissions`、`plan`、または `default` のエイリアスとしての `manual`。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `maxTurns` | いいえ | サブエージェントが停止するまでのエージェントターンの最大数。サブエージェントが上限に達すると、Claude Code はその出力を部分的なものとしてマークして返し、Claude はサブエージェントを[再開](#resume-subagents)して続行できます。部分的なマークには Claude Code v2.1.246 以降が必要です |
-| `autoCompactWindow` | いいえ | このサブエージェントの[自動圧縮ウィンドウ](#subagent-auto-compact-window)を、`100000` から `1000000` までのトークン数に引き下げます。Claude Code v2.1.296 以降が必要です |
+| `autoCompactWindow` | いいえ | このサブエージェントの[自動圧縮ウィンドウ](#subagent-auto-compact-window)を、`100000` 以上のトークン数に引き下げます。Claude Code v2.1.296 以降が必要です |
 | `skills` | いいえ | 起動時にサブエージェントのコンテキストにプリロードする[スキル](https://code.claude.com/docs/ja/skills.md)。説明だけでなく、スキルの内容全体が注入されます。サブエージェントは、列挙されていないプロジェクト、ユーザー、プラグインのスキルも Skill ツールを通じて引き続き呼び出せます |
 | `mcpServers` | いいえ | このサブエージェントが利用できる [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)。各エントリは、設定済みのサーバーを参照するサーバー名（例: `"slack"`）、またはサーバー名をキーとし完全な [MCP サーバー設定](https://code.claude.com/docs/ja/mcp.md#installing-mcp-servers)を値とするインライン定義のいずれかです。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `hooks` | いいえ | このサブエージェントにスコープされた[ライフサイクルフック](#define-hooks-for-subagents)。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
@@ -328,7 +328,7 @@ experimental:
 
 #### Claude Code がスキップするサブエージェントファイル
 
-プロジェクト、ユーザー、または管理の `agents` ディレクトリ、あるいは `--add-dir` で追加したディレクトリ配下の `agents` ディレクトリにあるファイルについて、フロントマターに次のいずれかの問題がある場合、Claude Code はセッション内で報告せずにそのファイルをスキップします。
+プロジェクト、ユーザー、または管理の `agents` ディレクトリ、あるいは `--add-dir` で追加したディレクトリ配下の `agents` ディレクトリにあるファイルについて、フロントマターに次のいずれかの問題がある場合、Claude Code はそのファイルをスキップします。
 
 * **`name` がない**: Claude Code はそのファイルを、エージェントと並べて置かれたドキュメントとして扱います。
 * **開始の `---` がファイルの 1 行目にない**: Claude Code はそのファイルをフロントマターのないものとして読み取り、ドキュメントとして扱います。
@@ -1212,7 +1212,7 @@ ID で一度メッセージを送ると、より新しいエージェントが�
 
 ##### 1 つのサブエージェントに自動圧縮のウィンドウを設定する
 
-1 つのサブエージェントを通常よりも早く圧縮させるには、その[フロントマター](#supported-frontmatter-fields)で `autoCompactWindow` に `100000` から `1000000` までのトークン数を設定します。[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](https://code.claude.com/docs/ja/env-vars#variables) を設定している場合、Claude Code が[その変数の値を無視する](https://code.claude.com/docs/ja/model-config.md#claude_code_auto_compact_window-values)場合を除き、サブエージェントは代わりにその変数のウィンドウを使用し、このフィールドは効果を持ちません。Claude Code v2.1.296 以降が必要です。
+1 つのサブエージェントを通常よりも早く圧縮させるには、その[フロントマター](#supported-frontmatter-fields)で `autoCompactWindow` に `100000` 以上のトークン数を設定します。Claude Code v2.1.296 以降が必要です。
 
 次のフロントマターは、長いログファイルを読むサブエージェントに対して `autoCompactWindow` を 200,000 トークンに設定します。
 
@@ -1224,12 +1224,14 @@ autoCompactWindow: 200000
 ---
 ```
 
-値は `200000` のようなプレーンな整数で記述してください。フロントマターでは、Claude Code は `200k` を 200 として読み取り、これは許容範囲外になるためです。その場合でもサブエージェントは、このフィールドがないものとして読み込まれ、圧縮されます。Claude Code が値を無視したかどうかを確認するには、シェルで `claude --debug` を実行し、[デバッグログ](#supported-frontmatter-fields)で `invalid autoCompactWindow` を検索します。
+値は `200000` のようなプレーンな整数で記述してください。フロントマターでは、Claude Code は `200k` を 200 として読み取り、これは最小値を下回るためです。その場合でもサブエージェントは、このフィールドがないものとして読み込まれ、圧縮されます。Claude Code が値を無視したかどうかを確認するには、シェルで `claude --debug` を実行し、[デバッグログ](#supported-frontmatter-fields)で `invalid autoCompactWindow` を検索します。
 
-値が範囲内なのに変化が見られない場合は、次の原因を確認してください。
+値が `100000` 以上なのに変化が見られない場合は、次の原因を確認してください。
 
 * **値が、サブエージェントが本来継承する[自動圧縮のウィンドウ](https://code.claude.com/docs/ja/model-config.md#context-window-and-auto-compaction)より小さくない**: より早く圧縮させるには、そのウィンドウより小さい値を設定します。
 * **`--agent` または `agent` 設定で、セッション全体をこのサブエージェントとして実行している**: その場合、このフィールドは効果を持ちません。セッションのウィンドウを設定するには、[自動圧縮のウィンドウを設定する](https://code.claude.com/docs/ja/model-config.md#set-the-auto-compact-window)を参照してください。
+
+[`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](https://code.claude.com/docs/ja/env-vars#variables) も設定している場合、サブエージェントは `autoCompactWindow` の値、モデルのコンテキストウィンドウ、およびその変数が設定するウィンドウのうち、最も小さいものを使用します。v2.1.312 より前では、この変数がウィンドウを設定している間、このフィールドは効果を持ちませんでした。
 
 ## 現在の会話をフォークする
 

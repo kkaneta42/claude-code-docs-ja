@@ -150,6 +150,8 @@ claude.ai を通じてサインインしたローカル、SSH、または WSL Co
 
 通常、プロキシアドレスが間違っているか、証明書パスが不正かは、後のリクエストで [接続エラーまたは証明書エラー](https://code.claude.com/docs/ja/errors.md#network-and-connection-errors) が発生することで判明します。Claude Code はこれらの設定のほとんどを読み込む際に検証しないためです。起動時にチェックされる唯一の設定はプロキシ URL です。`http://` スキームが欠落しているなど、値を解析できない場合、Claude Code は修正する必要がある変数を名前に含むエラーで起動を停止します。
 
+Claude Code v2.1.327 以降では、標準入力と標準出力のどちらもターミナルではない場合、`http://` が欠落した `HTTPS_PROXY` の値でも起動が続行されることがあります。これは、Claude Desktop、SDK、または cron が Claude Code を起動する場合に該当します。一部のセッションで単純な `host:port` が機能する場合でも、プロキシの値は `http://proxy.example.com:8080` のような完全な URL として記述してください。
+
 リクエストを送信する前に設定が読み込まれたことを確認するには、デバッグログを有効にして Claude Code を起動します。
 
 ```bash theme={null}

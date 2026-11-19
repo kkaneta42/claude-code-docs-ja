@@ -310,7 +310,7 @@ Claude Code は、ほとんどの設定の更新を再起動なしで実行中�
 
 2 回目以降の起動では、Claude Code はサーバーから配信された値をキャッシュされた設定から読み取るため、新しいセッションの最初のフェッチより前にこの設定が有効になります。キャッシュされたコピーに頼らずにこの設定を有効な状態に保つには、エンドポイント管理のソースでもこのキーを設定してください。
 
-[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) が管理設定を提供する場合、Claude Code が起動後に読み取るキーについては、その出力が他のすべての管理ソースに置き換わります。Claude Code がこのキーを読み取るソースについては、[その設定項目](https://code.claude.com/docs/ja/settings-reference.md#forceremotesettingsrefresh)を参照してください。Claude Code がどのソースからヘルパーを読み取り、いつ実行するかについては、`policyHelper` の項目を参照してください。
+[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) が管理設定を提供する場合、Claude Code が起動後に読み取るキーについては、その出力が他のすべての管理ソースを置き換えます。Claude Code がこのキーを読み取るソースについては、[その設定項目](https://code.claude.com/docs/ja/settings-reference.md#forceremotesettingsrefresh)を参照してください。Claude Code がどのソースからヘルパーを読み取り、いつ実行するかについては、`policyHelper` の項目を参照してください。
 
 設定フェッチでは `Cache-Control: no-cache` ヘッダーも送信されるため、中間の HTTP プロキシが古いレスポンスを返すことはありません。
 

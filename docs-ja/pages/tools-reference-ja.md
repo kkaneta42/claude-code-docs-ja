@@ -148,7 +148,7 @@ Bash ツールは各コマンドを別々のプロセスで実行します。
   * `cd` がこれらのディレクトリの外に出た場合、Claude Code はプロジェクトディレクトリにリセットし、ツール結果に `Shell cwd was reset to <dir>` を追加します。
   * この引き継ぎを無効にして、すべての Bash コマンドがプロジェクトディレクトリで開始されるようにするには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1` を設定します。
 * 環境変数は保持されません。1 つのコマンドで `export` しても、次のコマンドでは利用できません。
-* シェルスタートアップファイルで定義されたエイリアスとシェル関数は利用可能です。セッション開始時に、Claude Code は `~/.zshrc`、`~/.bashrc`、または `~/.profile` をシェルに応じてソースし、結果のエイリアス、関数、シェルオプションをキャプチャして、すべての Bash コマンドに適用します。
+* Claude Code は非対話シェルを起動し、Zsh の場合は `~/.zshrc`、Bash の場合は `~/.bashrc` をソースして、キャプチャしたエイリアス、関数、シェルオプションを Bash コマンドに適用します。
 
 Claude Code を起動する前に virtualenv または conda 環境をアクティベートしてください。環境変数を Bash コマンド間で保持するには、Claude Code を起動する前に [`CLAUDE_ENV_FILE`](https://code.claude.com/docs/ja/env-vars) をシェルスクリプトに設定するか、[SessionStart フック](https://code.claude.com/docs/ja/hooks.md#persist-environment-variables)を使用して動的に設定してください。
 

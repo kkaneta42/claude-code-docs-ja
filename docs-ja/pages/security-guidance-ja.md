@@ -199,7 +199,7 @@ patterns:
 /plugin uninstall security-guidance@claude-plugins-official
 ```
 
-プラグインがプロジェクトの `.claude/settings.json` を通じて有効化された場合、`/plugin` から無効化すると、チェックインファイルを編集するのではなく、`.claude/settings.local.json` にオーバーライドを書き込むため、プラグインはあなたにとってオフのままで、チームメイトは影響を受けません。同じダイアログでは、共有 `.claude/settings.json` から削除することでプラグインをすべてのユーザーに対してアンインストールするオプションも提供されます。[管理設定](https://code.claude.com/docs/ja/admin-setup.md) を通じて有効化された場合、管理者のみがそれを無効化できます。
+プラグインがプロジェクトの `.claude/settings.json` を通じて有効化された場合、`/plugin` からアンインストールすると、チェックインされたファイルを編集するのではなく、`.claude/settings.local.json` に上書き設定が書き込まれます。プラグインは自分の環境でのみオフのままとなり、チームメイトは影響を受けません。同じダイアログでは、共有の `.claude/settings.json` から削除することで、すべてのユーザーに対してプラグインをアンインストールするオプションも提供されます。[管理設定](https://code.claude.com/docs/ja/admin-setup.md) を通じて有効化された場合、`/plugin` は **Disable plugin** と **Uninstall** を拒否します。
 
 ## プラグインが Claude Code とどのように統合されるか
 

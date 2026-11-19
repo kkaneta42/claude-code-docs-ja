@@ -398,7 +398,7 @@ Claude Code は、worktree を作成する際にリポジトリ独自のフィ�
 * **`the protected checkout <path> has a .git entry that could not be examined` または `has git metadata that could not be resolved` と表示される**: 問題は worktree ではなくメインチェックアウトの git メタデータにあります。worktree を削除しないでください。また、メッセージ末尾の worktree を再作成するようにというアドバイスは、これら 2 つの末尾には当てはまらないため無視してください。メインチェックアウトを修復し（たとえば `.git` に対する権限の問題や git の `dubious ownership` による拒否）、再試行してください。
 
   v2.1.302 より前は、git 2.56 以降を使用している場合、`the protected checkout` の後の `<path>` に孤立した `.git` ファイルがあるときにも、`could not be resolved` という末尾が表示されていました。ここでいう孤立とは、そのファイルの `gitdir:` 行にあるパスが有効な git リポジトリにつながらないことを意味します。回復するには、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して再試行してください。その `gitdir:` パスがもう存在しない場合は、`.git` ファイルを削除して再試行することもできます。
-* **`its recorded path has a network spelling` と表示される**: Claude Code はネットワークパスにある worktree へ再開することはありません。ローカルパスに worktree を再作成してください。
+* **`its recorded path` と表示される**: そのパスにあるフォルダーを開けない場合は、そのフォルダーへのアクセスを回復してください。それ以外の場合は、ローカルパスに worktree を再作成してください。Claude Code はネットワークパスにある worktree へ再開することはありません。
 * **その他の末尾**: メッセージには、`core.worktree` リダイレクトの削除や worktree の再作成など、問題とその修正方法が示されています。それに従ってください。git ID を検証できなかったというメッセージが表示されたディレクトリを削除する前に、worktree のパス内のシンボリックリンクや git 自体の実行失敗など、示された原因に先に対処してください。ディレクトリが正常である可能性があるためです。再作成する場合は、先に古いディレクトリから必要な変更を回収してください。古いディレクトリはディスク上に残ります。
 
 ### セッションが worktree の外で再開される

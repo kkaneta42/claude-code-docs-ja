@@ -20,7 +20,7 @@
 
 ## フルスクリーンレンダリングを有効にする
 
-Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](https://code.claude.com/docs/ja/settings-reference#tui)を保存し、会話をそのままにしてフルスクリーンで再起動するため、コンテキストを失わずにセッション中に切り替えることができます。`/tui default` を実行してクラシックレンダラーに戻すか、引数なしで `/tui` を実行してどのレンダラーがアクティブかを確認してください。
+Claude Code の会話内で `/tui fullscreen` を実行してください。CLI は [`tui` 設定](https://code.claude.com/docs/ja/settings-reference#tui)を保存し、フルスクリーンで再起動します。`/tui default` を実行してクラシックレンダラーに戻すか、引数なしで `/tui` を実行してどのレンダラーがアクティブかを確認してください。
 
 [スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、Claude Code は常にクラシックレンダラーを使用します。ただし、アタッチされた[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)は引き続きフルスクリーンでレンダリングされます。他のセッションで `/tui fullscreen` を実行した場合、Claude Code は切り替えの代わりに説明を出力し、保存された `tui` 設定を変更しません。
 

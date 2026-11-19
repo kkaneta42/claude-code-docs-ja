@@ -37,7 +37,7 @@ Claude Code は、パワーと安全性のバランスを取るために、段�
 フィールドが開いている状態で、コメントを入力してから、これらのキーのいずれかを押します。
 
 * `Enter`：コメントが添付された状態で回答を送信します。フィールドを空のままにすると、Claude Code はコメントなしで回答を送信します。
-* `Tab`：フィールドを閉じて回答しません。Claude Code は入力したテキストを保持し、そのオプションで回答する場合でも送信します。
+* `Tab`：回答せずにフィールドを閉じます。入力したテキストを送信するには、回答する前にもう一度 `Tab` を押してください。
 * `Shift+Tab`：ファイルプロンプト（Edit または Write プロンプトなど）では、フィールドを `Tab` と同じように閉じます。v2.1.235 より前では、フィールド内で `Shift+Tab` を押すと、セッションの残りの部分のアクションを許可するオプションが選択されたため、Claude Code はセッションの残りの部分のアクションを承認し、コメントを破棄しました。
 
 Claude Code は、回答方法に応じてコメントを異なる方法で配信します。
@@ -77,7 +77,7 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 | `acceptEdits` | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます |
 | `plan` | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)が利用可能な場合は、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています |
 | `auto` | ルーチンプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド[分類器](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)がそれらがリクエストと一致することを確認します |
-| `dontAsk` | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。ただし、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) がそれらの呼び出しの一部を承認することは引き続き可能です。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion`、MCP ツール（[`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool)とマークされたもの）、[ネットワークパスからの読み取り](#network-paths)、および[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール（その設定が Claude Code に届くセッションの場合）は、許可していてもすべて拒否されます |
+| `dontAsk` | その他の場合はプロンプトを表示するすべての呼び出しを自動的に拒否します。ただし、[一部の構成](#precedence-among-rules-hooks-and-mods)では、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) がそれらの呼び出しの一部を承認することは引き続き可能です。作業ディレクトリ内のファイル読み取りおよび承認が不要なその他のアクションは実行されます。`/permissions` または `permissions.allow` ルール経由で事前に承認されたツールも実行されます。`AskUserQuestion` と[その他の一部の呼び出し](https://code.claude.com/docs/ja/permission-modes.md#allow-only-pre-approved-tools-with-dontask-mode)は、許可していても拒否されます |
 | `bypassPermissions` | 権限プロンプトをスキップします。ただし、[どのモードも自動承認しないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)は除きます |
 
 > [!WARNING]
@@ -90,7 +90,7 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 
 ## 権限ルール構文
 
-権限ルールは、`Tool` または `Tool(specifier)` の形式に従います。スペシファイア内の括弧はリテラルであるため、括弧を含むコマンドまたはパスはエスケープが不要です。
+権限ルールは、`Tool` または `Tool(specifier)` の形式に従います。
 
 ### ツールのすべての使用をマッチさせる
 
@@ -589,7 +589,9 @@ MCP ツールの許可ルールは、[指定子](#use-specifiers-for-fine-graine
 
   一方、拒否ルールまたは確認ルールとしては、これら 2 つの名前はいずれも `reports__v2` サーバーのすべてのツールもカバーします。`reports` という名前のサーバーだけをカバーするには、`mcp__reports__<tool>` 形式でツールごとに 1 つのルールを書くか、いずれかのサーバーの名前を変更してください。
 
-組織が [claude.ai コネクタ](https://code.claude.com/docs/ja/mcp.md#organization-controls-on-connector-tools)のツールを `ask` に設定しており、その設定がセッション内の Claude Code に届いている場合、そのツールに対する許可ルールは効果を持ちません。Claude Code は `auto` モードや `bypassPermissions` モードであっても、すべての呼び出しで確認を求めます。確認を一切求めない `dontAsk` モードでは、Claude Code は代わりに呼び出しを拒否します。Claude Code 自体が取得するコネクタのツールは、`mcp__claude_ai_<server>__<tool>` として表示されます。
+組織が [claude.ai コネクタ](https://code.claude.com/docs/ja/mcp.md#organization-controls-on-connector-tools)のツールを `ask` に設定しており、その設定がセッション内の Claude Code に届いている場合、そのツールに対する許可ルールは効果を持ちません。Claude Code は `auto` モードや `bypassPermissions` モードであっても、Claude がそのツールを呼び出すたびに確認を求めます。`dontAsk` モード、または確認に応答するものがない `-p` 実行では、Claude Code は代わりに呼び出しを拒否します。
+
+Claude Code 自体が取得するコネクタのツールは、`mcp__claude_ai_<server>__<tool>` として表示されます。
 
 Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) セッションでは、Claude は組み込みの `Bash` ツールではなく Cowork の `mcp__workspace__bash` ツールを通じてシェルコマンドを実行し、同様に Cowork は Web 取得用に `mcp__workspace__web_fetch` を提供します。Claude Code は、`Bash` または `WebFetch` ツール全体を指定する拒否ルールをこれらの Cowork ツールにも適用するため、管理設定の `Bash` 拒否ルールは Claude が Cowork でシェルコマンドを実行するのを止めます。Claude Code がそのような呼び出しをブロックすると、メッセージには Cowork ツールの名前が表示されます: `Permission to use mcp__workspace__bash has been denied.` 許可ルールは引き継がれません。Claude Code が `Bash` 許可ルールを `mcp__workspace__bash` に適用することはありません。
 
@@ -635,7 +637,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 
 PreToolUse フック決定は権限ルールをバイパスしません。Claude Code は deny ルールと ask ルールを、フックが何を返すかに関係なく評価します。マッチする deny ルールはコールをブロックし、マッチする ask ルールはフックが `"allow"` または `"ask"` を返した場合でもプロンプトを表示します。これは、[権限を管理する](#manage-permissions)で説明されている deny 優先の優先順位を保持し、管理設定で設定された deny ルールを含みます。
 
-その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が [`tool.check`](https://code.claude.com/docs/ja/plugins/mods/events#approve-or-refuse-a-tool-call-before-the-user-is-asked) イベントを処理する場合、その mod は `PreToolUse` フックの実行後に応答します。[管理設定](https://code.claude.com/docs/ja/settings.md#check-what-your-organization-enforces)または [`managed-mcp.json` ファイル](https://code.claude.com/docs/ja/managed-mcp#deploy-managed-mcp-json)がある場合、あるいはセッションの認証情報が Team または Enterprise の [`/login`](https://code.claude.com/docs/ja/authentication#authentication-precedence) である場合、mod がコールを承認しても、デフォルトで次の結果は維持されます。
+その優先順位は、設定ファイル内のフックとプラグインの `hooks/hooks.json` 内のフックをカバーしています。インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) が [`tool.check`](https://code.claude.com/docs/ja/plugins/mods/events#approve-or-refuse-a-tool-call-before-the-user-is-asked) イベントを処理する場合、その mod は `PreToolUse` フックの実行後に応答します。[管理設定](https://code.claude.com/docs/ja/settings.md#check-what-your-organization-enforces)または [`managed-mcp.json` ファイル](https://code.claude.com/docs/ja/managed-mcp#deploy-managed-mcp-json)がある場合、あるいはセッションの認証情報が Team または Enterprise の [`/login`](https://code.claude.com/docs/ja/authentication#authentication-precedence) である場合、[組み込みガード](https://code.claude.com/docs/ja/plugins/mods/admin.md#know-what-happens-by-default)がデフォルトで読み込まれます。その場合、[組織](https://code.claude.com/docs/ja/plugins/mods/admin.md#install-your-organizations-mods)の mod ではない mod が Claude のコールを承認しても、デフォルトで次の結果は維持されます。
 
 * 拒否ルールが拒否するコールは拒否されたままです。
 * 確認ルールがプロンプトを表示するコールでは、引き続きプロンプトが表示されます。
@@ -643,11 +645,11 @@ PreToolUse フック決定は権限ルールをバイパスしません。Claude
 * `PreToolUse` フックがブロックしたコールは、フックがどの設定ファイルに由来するかにかかわらず、ブロックされたままです。
 * [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) または Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input#handle-tool-approval-requests)に確認が求められるコールは、引き続きそのツールまたはコールバックに渡されます。
 
-構成によっては、管理設定、`managed-mcp.json` ファイル、セッションの認証情報としての Team または Enterprise の `/login` がいずれもない場合があります。この構成では、mod は拒否ルールが拒否するコールや `PreToolUse` フックがブロックしたコールを承認できます。代わりに API キーまたは長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されていても、そのログインを使用していません。
+構成によっては、管理設定、`managed-mcp.json` ファイル、セッションの認証情報としての Team または Enterprise の `/login` がいずれもない場合があります。この構成では、mod は `PreToolUse` フックがブロックしたコールや、拒否ルールが拒否する一部のコールを承認できます。代わりに API キーまたは長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されていても、そのログインを使用していません。
 
-この構成では、確認ルール、`PreToolUse` フック、または `permissions.blockReadsOutsideWorkingDirectories` がプロンプトを表示するコールを mod が承認した場合、プロンプトは表示されません。また、mod が承認したコールについて、`--permission-prompt-tool` や `canUseTool` コールバックに確認が求められることもありません。auto モード、plan モード、`dontAsk` モードは、どの構成でもそれぞれ独自の結果を追加します。
+この構成では、確認ルール、`PreToolUse` フック、または `permissions.blockReadsOutsideWorkingDirectories` がプロンプトを表示するコールを mod が承認した場合、プロンプトは表示されません。また、mod が承認したコールについて、`--permission-prompt-tool` や `canUseTool` コールバックに確認が求められることもありません。この構成では、auto モード、plan モード、`dontAsk` モードがそれぞれ独自の結果を追加します。
 
-* **[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)**: mod が承認したコールは分類器チェックなしで実行されます。ただし、mod が権限プロンプトツールや Agent SDK の権限コールバックをバイパスできない場合は除きます。その場合は、分類器が先にコールをチェックします。
+* **[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)**: mod が承認したコールは分類器チェックなしで実行できます。
 * **[plan モード](#hook-approvals-in-plan-mode)**: mod は、ファイル編集や書き込みを行うシェルコマンドなど、読み取り専用でないコールを承認できません。
 * **[`dontAsk` モード](https://code.claude.com/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)**: mod は、モード以外に拒否するものがないコールを承認できます。
 
@@ -721,7 +723,7 @@ Agent SDK の TypeScript の [`additionalDirectories`](https://code.claude.com/d
 | `.claude/settings.json` および `.claude/settings.local.json` の[設定](https://code.claude.com/docs/ja/settings.md) | `enabledPlugins` および[`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces)キーのみ |
 | [CLAUDE.md](https://code.claude.com/docs/ja/memory.md)ファイル、`.claude/rules/`、および `CLAUDE.local.md` | `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` が設定されている場合のみ。`CLAUDE.local.md` はさらに `local` 設定ソースが必要です。これはデフォルトで有効になっています |
 
-[主要な作業ディレクトリ](#working-directories)のサブディレクトリからスキル、コマンド、およびサブエージェントをセッション中に読み込むには、そのサブディレクトリのパスで `/add-dir` を実行します。Claude Code はサブディレクトリが既に読み取り可能であるため、プロンプトを表示したり作業ディレクトリを追加したりせずに、セッションの残りの間それらを読み込みます。これには Claude Code v2.1.257 以降が必要です。
+[主要な作業ディレクトリ](#working-directories)のサブディレクトリからスキル、コマンド、およびサブエージェントをセッション中に読み込むには、そのサブディレクトリのパスで `/add-dir` を実行します。Claude Code は作業ディレクトリを追加せずに、セッションの残りの間それらを読み込みます。これには Claude Code v2.1.257 以降が必要です。
 
 #### 出力スタイル、フック、ローカル設定の読み込み元
 

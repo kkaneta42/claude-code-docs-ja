@@ -286,7 +286,7 @@ Claude Code がプロジェクトスコープのサーバーを初めて見る�
 
 サーバーが接続しない場合は、セッション内の `/mcp` またはシェルから `claude mcp list` でそのステータスを確認し、以下の症状と照合してください。`/mcp` パネルでは、セッションを離れずに再接続または認証することもできます。
 
-> [accordion] /mcp は「No MCP servers configured」を表示します
+> [accordion] /mcp は「No MCP servers」を表示します
 >
 > Claude Code は現在のディレクトリのサーバーを見つけませんでした。最も一般的な原因：
 >
