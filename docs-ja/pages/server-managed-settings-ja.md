@@ -174,7 +174,7 @@ Enterprise プランでは、組織全体で 1 つの設定を使う代わりに
 
 ### 設定の優先順位
 
-サーバー管理設定と[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は、どちらも Claude Code の[設定の階層](https://code.claude.com/docs/ja/settings.md#settings-precedence)の最上位に位置します。ここで設定したキーは、[管理設定の優先順位の例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を除き、ユーザー自身の設定ファイルや `--settings` の値にある同じキーよりも優先されます。
+サーバー管理設定と[エンドポイント管理設定](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)は、どちらも Claude Code の[設定の階層](https://code.claude.com/docs/ja/settings.md#settings-precedence)の最上位に位置します。ここで設定したキーは、[管理設定の優先順位の例外](https://code.claude.com/docs/ja/settings.md#exceptions-to-managed-settings-precedence)を除き、ユーザー自身の設定ファイルや `--settings` の値にある同じキーよりも優先されます。ユーザーの許可ルールは、[ここで設定した許可ルールとマージされます](https://code.claude.com/docs/ja/settings.md#lists-merge-instead-of-overriding)。リストをロックするには、[開発者が変更できる内容](https://code.claude.com/docs/ja/managed-settings.md#what-a-developer-can-change)を参照してください。
 
 管理層の中では、Claude Code はデフォルトで、少なくとも 1 つのポリシーキーを配信する最初のソースを使用します。確認する順序はサーバー管理設定が先で、次にエンドポイント管理設定です。ただし、[次に説明する例外キー](#per-key-exceptions-across-managed-sources)は除きます。完全な順位付け、制御キーに対する除外規定、すべてのソースを適用するオプトインについては、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#precedence-within-the-managed-tier)を参照してください。
 

@@ -82,15 +82,13 @@ sure nothing crashes. Screenshot any error states you find.
 
 | 警告 | 適用対象 |
 | :- | :- |
-| シェルアクセスと同等 | Terminal、iTerm、VS Code、Warp、およびその他のターミナルと IDE |
-| 任意のファイルを読み取りまたは書き込みできます | Finder |
+| コンピューター上でコマンドを実行できます | Terminal、iTerm、VS Code、Warp、およびその他のターミナルと IDE |
+| 任意のファイルを開く、変更する、または削除することができ、アプリやスクリプトを実行できます | Finder |
 | システム設定を変更できます | System Settings |
 
-これらのアプリはブロックされていません。警告により、タスクがそのレベルのアクセスを必要とするかどうかを決定できます。
+これらのアプリはブロックされていません。警告により、タスクがそのレベルのアクセスを必要とするかどうかを判断できます。Finder を承認すると、Claude がデスクトップ、Dock、または Finder ウィンドウをクリックできるようになります。
 
-Finder を承認して、Claude がデスクトップ、Dock、または Finder ウィンドウをクリックできるようにします。
-
-Claude の制御レベルはアプリカテゴリによっても異なります。ブラウザと取引プラットフォームはビューのみ、ターミナルと IDE はクリックのみ、その他すべてはフルコントロールを取得します。完全なティア分類については、[Desktop でのアプリのアクセス許可](https://code.claude.com/docs/ja/desktop.md#app-permissions)を参照してください。
+Claude の制御レベルはアプリカテゴリによっても異なります。ブラウザと取引プラットフォームはビューのみ、ターミナルと IDE はクリックのみ、その他のほとんどのアプリはフルアクセスです。各レベルで Claude が何を行えるかについては、[Desktop でのアプリの権限](https://code.claude.com/docs/ja/desktop.md#app-permissions)を参照してください。
 
 ## Claude がスクリーンでどのように機能するか
 

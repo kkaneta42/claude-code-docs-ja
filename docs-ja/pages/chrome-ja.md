@@ -122,7 +122,7 @@ Chrome が実行されていない場合でも、Claude Code は通常どおり�
 
 ### サイト権限を管理する
 
-サイトレベルの権限は Chrome 拡張機能から継承されます。Chrome 拡張機能の設定で権限を管理して、Claude がブラウズ、クリック、入力できるサイトを制御します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、auto モードの分類器自体があるサイトへのブラウザ呼び出しを承認した場合、権限ルールで Claude in Chrome に対していずれかのサイトを拒否していない限り、拡張機能はその呼び出しについて独自のサイトごとのチェックを省略します。
+Claude にサイト上での操作を許可するには、Claude Code から確認されたときに承認します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器自体があるサイトへのブラウザ呼び出しを承認した場合、権限ルールで Claude in Chrome に対していずれかのサイトを拒否している場合を除き、拡張機能はその呼び出しについて独自のサイトごとのチェックを省略できます。
 
 ### VS Code セッションでの権限プロンプト
 

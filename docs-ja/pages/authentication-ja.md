@@ -229,9 +229,21 @@ Claude Code は認証情報を安全に管理します。
 
 `apiKeyHelper`、`ANTHROPIC_API_KEY`、および `ANTHROPIC_AUTH_TOKEN` は CLI およびそれをラップするサーフェス（VS Code 拡張機能、Agent SDK、GitHub Actions を含む）に適用されます。Claude Desktop とクラウドセッションは `apiKeyHelper` を呼び出したり、これらの環境変数を読み込んだりしません。OAuth を使用します。ただし、[サードパーティ推論設定](https://code.claude.com/docs/ja/llm-gateway-connect.md#desktop-app)を実行しているデスクトップセッションは、その設定の認証情報で認証します。
 
+### 保存されたログインの終了日を確認する
+
+使用している claude.ai ログインがいつ終了するかを確認するには、シェルで `claude auth status --text` を実行します。Claude Code v2.1.318 以降では、`Sign-in` で始まる行を確認してください。
+
+```text theme={null}
+Sign-in ends: between 2026-11-20 and 2026-11-23 (2026-11-23T17:04:11.000Z)
+```
+
+早い方の日付より前に、`/login` または `claude auth login` を使用してブラウザで再度サインインしてください。Claude Code を使用してもログインは延長されません。行に `any day now` または `may have ended` と表示されている場合は、今すぐサインインしてください。他の認証情報の場合や日付が不明な場合、この行は表示されません。
+
+遅い方の日付まで 10 日を切ると、テキスト出力で実行した `claude -p` は stderr に `Warning: this sign-in` を出力します。そのため、早い方の日付より前に再度サインインしてください。
+
 ### 期限切れ間近のログインを更新する
 
-`/login` で作成したログインが期限切れまで 3 日以内になると、Claude Code はスタートアップ時に警告を表示します。`Your login expires in 3 days · run /login to renew`。
+ログインの[2 つの終了日](#check-when-a-stored-login-ends)のうち早い方の日付から、Claude Code はスタートアップ時に警告を表示します。`Your login expires in 3 days · run /login to renew`。
 
 `/login` を実行して更新します。警告は claude.ai ログインがアクティブな認証情報である場合にのみ表示されます。
 

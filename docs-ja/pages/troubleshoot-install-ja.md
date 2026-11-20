@@ -56,7 +56,7 @@
 | Windows で、インストールコマンドがスクリプトのテキストを表示するだけで何もインストールされない | [完全なインストールコマンドを実行する](#wrong-install-command-on-windows) |
 | `App unavailable in region` | Claude Code はお住まいの国では利用できません。[サポート対象の国](https://www.anthropic.com/supported-countries)を参照してください。 |
 | `unable to get local issuer certificate` | [企業の CA 証明書を設定する](#tls-or-ssl-connection-errors) |
-| `OAuth error` または `403 Forbidden` | [認証を修正する](#login-and-authentication) |
+| `OAuth error`、`That doesn't look like the full code`、または `403 Forbidden` | [認証を修正する](#login-and-authentication) |
 | `Claude Code access has not been granted for this account` | [Claude Code を含むロールを取得する](#claude-code-access-has-not-been-granted-for-this-account) |
 | セットアップ中に `Unable to connect to Anthropic services` | エラーリファレンスの [Unable to connect to Anthropic services](https://code.claude.com/docs/ja/errors.md#unable-to-connect-to-anthropic-services) を参照してください |
 | `Could not load the default credentials` または `Could not load credentials from any providers` | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry の認証情報](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
@@ -815,7 +815,7 @@ Docker コンテナーに Claude Code をインストールする場合、root �
 
 **解決策：**
 
-1. **インストーラーを実行する前に作業ディレクトリを設定する**。`/` から実行すると、インストーラーはファイルシステム全体をスキャンし、過度なメモリ使用を引き起こします。`WORKDIR` を設定すると、スキャンが小さなディレクトリに制限されます。
+1. **インストーラーを実行する前に作業ディレクトリを設定する**：
    ```dockerfile theme={null}
    WORKDIR /tmp
    RUN curl -fsSL https://claude.ai/install.sh | bash
@@ -1146,7 +1146,9 @@ npm install -g @anthropic-ai/claude-code@latest
 
 ログイン中にブラウザが自動的に開かない場合は、`c` を押して OAuth URL をクリップボードにコピーしてから、手動でブラウザに貼り付けてください。これは、URL が狭いまたは SSH ターミナルで行をまたいでラップされ、直接クリックできない場合にも機能します。
 
-### OAuth エラー：無効なコード
+### That doesn't look like the full code
+
+`That doesn't look like the full code` が表示される場合は、中央にある `#` も含めてログインコード全体をブラウザからコピーし、もう一度貼り付けてください。
 
 `OAuth error: Invalid code. Please make sure the full code was copied` が表示される場合、ログインコードが期限切れになったか、コピー貼り付け中に切り詰められました。
 

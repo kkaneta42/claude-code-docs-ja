@@ -52,7 +52,7 @@ Claude Code がトランスクリプトから会話を読み込むと、再開�
 * エージェント：[`--agent`](https://code.claude.com/docs/ja/sub-agents#invoke-subagents-explicitly)または `agent` 設定で開始されたセッションはそのエージェントとして続行され、ツール制限とモデルを保持します。別のエージェントを選択するには、再開時に `--agent` を渡します。どちらの場合のシステムプロンプトについては、[再開された会話のシステムプロンプトフラグ](https://code.claude.com/docs/ja/cli-reference.md#system-prompt-flags-in-resumed-conversations)を参照してください。Claude Code は 2 つの場所でエージェントを検索します。セッションの元のディレクトリ（[そのワークスペースを信頼している](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)場合）と、次に再開元のディレクトリです。そのため、プロジェクトスコープのエージェントは別のディレクトリから再開する場合でも読み込まれます。Claude Code がどちらの場所でもエージェントを見つけられない場合、セッションはデフォルトのツールで再開され、[エージェント名を示す警告](https://code.claude.com/docs/ja/errors.md#session-agent-no-longer-available)が表示されます。
 * 権限モード：`claude --continue`、`claude --resume <session-id>`、または `claude --resume <name>`（名前が 1 つのセッションと一致する場合）で `-p` なしでターミナルから再開する場合、Claude Code はセッションが使用していた権限モードを復元します。ただし、[再開時の権限モード](#permission-mode-on-resume)に記載されている場合は除きます。このセクションでは、セッションピッカー、`/resume`、および `claude -p` で再開する場合も扱います。復元されたモードを上書きするには、`--permission-mode` または `--dangerously-skip-permissions` を渡します。
 * アクティブなゴール：セッションが終了したときにまだアクティブだった [ゴール](https://code.claude.com/docs/ja/goal.md#resume-with-an-active-goal)は引き継がれます。ターン数、タイマー、およびトークン支出ベースラインはリセットされます。
-* セッションスコープのスケジュールタスク：[有効期限が切れていない](https://code.claude.com/docs/ja/scheduled-tasks.md#limitations)タスクが復元されます。バックグラウンド Bash およびモニタータスクは復元されません。
+* セッションスコープのスケジュールタスク：復元されます（[例外](https://code.claude.com/docs/ja/scheduled-tasks.md#limitations)あり）。バックグラウンド Bash およびモニタータスクは復元されません。
 * バックグラウンド作業：前のプロセスとともに終了した [バックグラウンドサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)、バックグラウンド Bash コマンド、または [ワークフロー](https://code.claude.com/docs/ja/workflows.md)は、再開されたトランスクリプトに完了しなかったというメモとして表示されます。Claude Code はそれらのメモからターンを開始しません。Claude は次のプロンプトとともにそれらを読みます。
 
 #### 再開時に再度渡すフラグ
@@ -68,6 +68,7 @@ Claude Code がトランスクリプトから会話を読み込むと、再開�
 * **ディレクトリ**：`--add-dir`（例：`claude --continue --add-dir ../shared`）。`/add-dir` で追加したディレクトリにも `--add-dir` を使用します。
 * **追加の設定**：`--settings`
 * **フォールバックモデル**：`--fallback-model`
+* **ツールアクセス**：`--tools`、`--allowedTools`、`--disallowedTools`
 
 `--system-prompt` および `--append-system-prompt` については、[再開された会話のシステムプロンプトフラグ](https://code.claude.com/docs/ja/cli-reference.md#system-prompt-flags-in-resumed-conversations)を参照してください。
 
@@ -186,22 +187,18 @@ CLI ルートまたは claude.ai からセッションに名前を付けたら�
 | ショートカット | アクション |
 | :- | :- |
 | `↑` / `↓` または `k` / `j` | セッション間をナビゲートします |
-| `→` / `←` | グループ化されたセッションを展開または折りたたみます |
 | `Enter` | ハイライトされたセッションを再開します |
-| `1` から `9` | リスト内のその位置にあるセッションを再開します |
 | `Space` | セッションコンテンツをプレビューします。ターミナルが貼り付けとしてキャプチャしない場合は `Ctrl+V` も機能します |
 | `Ctrl+R` | ハイライトされたセッションの名前を変更します |
-| `/` または `Space`、`j`、`k`、数字以外の任意の印字可能文字 | 検索モードに入り、セッションをフィルタリングします。GitHub、GitHub Enterprise、GitLab、または Bitbucket のプルまたはマージリクエスト URL を貼り付けて、それを作成したセッションを見つけます |
+| `/` または `Space`、`j`、`k` 以外の任意の印字可能文字 | 検索モードに入り、セッションをフィルタリングします。GitHub、GitHub Enterprise、GitLab、または Bitbucket のプルまたはマージリクエスト URL を貼り付けて、それを作成したセッションを見つけます |
 | `Ctrl+A` | このマシン上のすべてのプロジェクトからセッションを表示します。もう一度押すと現在のリポジトリに戻ります |
 | `Ctrl+W` | 現在のリポジトリのすべての worktree からセッションを表示します。もう一度押すと現在の worktree に戻ります。マルチ worktree リポジトリでのみ表示されます |
 | `Ctrl+B` | 現在の git ブランチからのセッションにフィルタリングします。もう一度押すとすべてのブランチを表示します |
 | `Esc` | セッションピッカーまたは検索モードを終了します |
 
-各行は、セッション名が設定されている場合はそれを表示し、そうでない場合は AI が生成したセッションタイトル、会話の概要、または最初のプロンプト、最後のアクティビティからの経過時間、git ブランチ、およびファイルサイズを表示します。
+各セッションの行には、設定したセッション名、AI が生成したセッションタイトル、会話の概要、またはプロンプトのいずれかのうち、存在する最初のものがラベルとして表示されます。
 
-`/branch` または `--fork-session` で作成されたセッションは独自のセッション ID を取得し、別の行として表示されます。ピッカーが同じセッションの複数のエントリを見つけた場合、それらは単一の行の下にグループ化されます。グループを展開するには `→` を押します。
-
-Claude Code が `claude --resume` ピッカーから選択したセッションを読み込めない場合、[`Failed to resume the conversation`](https://code.claude.com/docs/ja/errors#failed-to-resume-the-conversation) を出力し、再試行するコマンドを表示してから、終了コード 1 で終了します。セッション内の `/resume` ピッカーから、Claude Code は失敗を報告し、現在の会話は実行を続けます。
+`/branch` または `--fork-session` で作成されたセッションは独自のセッション ID を取得し、別の行として表示されます。
 
 ## セッションを分岐させる
 

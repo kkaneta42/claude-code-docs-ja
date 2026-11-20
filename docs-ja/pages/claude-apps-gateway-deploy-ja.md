@@ -229,7 +229,7 @@ CPU に基づいてオートスケールしている場合、上限に達した�
 
 ### 最初のバイトの期限で応答のないリクエストをより早く再試行する
 
-Claude Code が応答のないストリーミングリクエストをより早く再試行するようにするには、開発者のマシンで [`CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) を設定して、最初のバイトの期限を与えます。この期限は、最初の試行がレスポンスヘッダーを待つ時間を制限します。期限がない場合、その試行は 5〜6 分待つことがあります。開発者のマシンで Claude Code v2.1.307 以降が必要です。
+Claude Code が応答のないストリーミングリクエストをより早く再試行するようにするには、開発者のマシンで [`CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) を設定して、最初のバイトの期限を与えます。この期限は、最初の試行がレスポンスヘッダーを待つ時間を制限します。期限がない場合、その試行はデフォルトで 5〜6 分待つことがあります。開発者のマシンで Claude Code v2.1.307 以降が必要です。
 
 この変数には、ミリ秒単位の正の整数を、[ゲートウェイポリシーの `env` ブロック](#deliver-the-value-in-a-policy)または開発者のシェルで設定します。値はゲートウェイの最長の[最初のバイトまでの時間](#keep-api_timeout_ms-above-the-gateways-time-to-first-byte)より大きく保ってください。そうしないと、ヘッダーの返却に時間がかかる正常なリクエストを Claude Code が中止して再送信する可能性があります。次の例では、開発者のシェルで 60 秒を設定します。
 
@@ -237,7 +237,7 @@ Claude Code が応答のないストリーミングリクエストをより早�
 export CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS=60000
 ```
 
-応答のない再送信は、[ボディのアイドルタイムアウト](https://code.claude.com/docs/ja/network-config.md#streaming-idle-watchdogs)によって終了し、Claude Code が[再試行の予算](https://code.claude.com/docs/ja/errors.md#tune-retry-behavior)内で再試行するまで、5〜6 分待つことがあります。より早く再試行するためだけに `API_TIMEOUT_MS` を下げていた場合は、その値を削除してください。そうしないと、応答のない再送信 1 回でターンが [No response from API](https://code.claude.com/docs/ja/errors.md#no-response-from-api) で終了する可能性があります。
+デフォルトでは、応答のない再送信は、[ボディのアイドルタイムアウト](https://code.claude.com/docs/ja/network-config.md#streaming-idle-watchdogs)によって終了し、Claude Code が[再試行の予算](https://code.claude.com/docs/ja/errors.md#tune-retry-behavior)内で再試行するまで待つことがあります。`API_TIMEOUT_MS` はボディのアイドルタイムアウトより十分に大きく保ってください。そうしないと、応答のない再送信 1 回でターンが [No response from API](https://code.claude.com/docs/ja/errors.md#no-response-from-api) で終了する可能性があります。
 
 期限が発動したことを確認するには、開発者に[デバッグログ](https://code.claude.com/docs/ja/network-config.md#verify-your-configuration)を有効にして Claude Code を起動してもらい、ログで `[first-byte] no response headers` を検索します。
 
@@ -511,7 +511,7 @@ Error streaming, falling back to non-streaming mode: Stream idle timeout - no ch
 | `900000` | 約 22.5 分 |
 | `1800000` | 約 37.5 分 |
 
-ゲートウェイが ping を送り続けている間にアップストリームがハングした場合、開発者も Claude Code がストリームを諦めるまでそれだけの時間待つことになります。完全に無音になった接続は、[ボディのアイドルタイムアウト](https://code.claude.com/docs/ja/network-config.md#streaming-idle-watchdogs)がこの変数に従わないため、引き続き 5〜6 分後に終了します。
+ゲートウェイが ping を送り続けている間にアップストリームがハングした場合、開発者も Claude Code がストリームを諦めるまでそれだけの時間待つことになります。
 
 #### ポリシーで値を配信する
 

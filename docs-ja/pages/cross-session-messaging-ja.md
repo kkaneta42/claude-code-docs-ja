@@ -141,7 +141,7 @@ Claude はメッセージの送信先を自分で見つけるため、送信を�
 | 自分の別のマシン上 | Anthropic のサーバーを経由し、そのマシンの [Remote Control](https://code.claude.com/docs/ja/remote-control.md) 接続を通じて届きます |
 | [クラウド](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | Anthropic のサーバーを経由し、クラウドセッションに直接届きます |
 
-自分の別のマシン上のセッションとの会話を開始するには、Claude Code v2.1.225 以降と、[一覧に表示される](#see-which-sessions-claude-can-reach)送信先が必要です。
+自分の別のマシン上のセッションとの会話を開始するには、Claude Code v2.1.225 以降が必要です。
 
 [一覧](#see-which-sessions-claude-can-reach)のセッションの行には、Claude がそのセッションにメッセージを送ったときの動作を変える状態が表示される場合があります。
 
@@ -309,7 +309,7 @@ Claude Code はソケットに到着するメッセージを、1 つの例外と
 
 * **オペレーティングシステム**: macOS、Windows、Linux（WSL 2 内の Linux を含む）で利用可能です。
 
-* **このマシン上のセッション**: Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで利用可能です。また、[フィーチャーフラグ取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフで実行されるセッションでも利用可能です。これらのプロバイダーでフラグ取得がオフの場合、同一マシン上のメッセージングには Claude Code v2.1.248 以降が必要です。Claude Code はこれらのメッセージを [セッションごとのソケット](#the-sessions-inbox-socket)を通じてマシン上で配信し、Anthropic サーバーを経由することはありません。
+* **このマシン上のセッション**: Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry を含むすべてのプロバイダーで利用可能です。また、[フィーチャーフラグ取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフで実行されるセッションでも利用可能です。これらのプロバイダーを使用する場合、およびフラグ取得がオフの場合、同一マシン上のメッセージングには Claude Code v2.1.248 以降が必要です。Claude Code はこれらのメッセージを [セッションごとのソケット](#the-sessions-inbox-socket)を通じてマシン上で配信し、Anthropic サーバーを経由することはありません。
 
   セッションがメッセージを受け取らないようにするには、[`crossSessionInbound`](#turn-off-cross-session-messaging)を`refuse`に設定してください。
 

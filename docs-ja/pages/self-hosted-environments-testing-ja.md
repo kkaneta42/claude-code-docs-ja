@@ -200,7 +200,7 @@ exit 0
 
 スクリプトを実行するマシン上で、自動化用の専用ユーザーアカウントを使用して、`claude auth login` を 1 回対話的に実行します。Claude Code はトークンを macOS では OS キーチェーンに、Linux と Windows では `~/.claude/.credentials.json` に保存します。キーチェーンに書き込みできない macOS ホスト（SSH セッションでログインキーチェーンがロックされたままの場合など）では、Claude Code はトークンを `~/.claude/.credentials.json` にも保存します。[認証情報管理](https://code.claude.com/docs/ja/authentication.md#credential-management)を参照してください。
 
-CLI は各呼び出しで短期アクセストークンを自動的に更新しますが、基盤となるリフレッシュトークングラントは初期ログインから 30 日間に制限されているため、そのホストで 30 日ごとに `claude auth login` を対話的に再実行してください。
+CLI は短期アクセストークンを自動的に更新しますが、基盤となるリフレッシュトークングラントは初期ログインから 30 日間に制限されています。ログインの[最も早い終了日](https://code.claude.com/docs/ja/authentication.md#check-when-a-stored-login-ends)より前に、そのホストで `claude auth login` を対話的に再実行してください。
 
 ### エフェメラル CI 実行イメージ
 

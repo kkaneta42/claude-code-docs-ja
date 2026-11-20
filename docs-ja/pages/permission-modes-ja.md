@@ -16,14 +16,14 @@ Claude Code v2.1.283 以降では、auto モードはインタラクティブタ
 
 | モード | 確認なしで実行される操作 | 最適な用途 |
 | :- | :- | :- |
-| `default` | 読み取りのみ | すべての操作を自分で確認したい場合、機密性の高い作業 |
+| `default` | 作業ディレクトリ内のファイル読み取りと、サブエージェントの起動など、その他の[承認が不要な操作](https://code.claude.com/docs/ja/tools-reference.md) | 機密性の高い作業、慣れていないコード |
 | [`acceptEdits`](#auto-approve-file-edits-with-acceptedits-mode) | 読み取り、ファイル編集、一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など） | レビュー中のコードの反復的な修正 |
 | [`plan`](#analyze-before-you-edit-with-plan-mode) | 読み取り、および [auto モード](#eliminate-prompts-with-auto-mode)が利用可能な場合は分類器が承認したコマンド | 変更前のコードベースの調査 |
 | [`auto`](#eliminate-prompts-with-auto-mode) | すべて（バックグラウンドの安全性チェック付き） | 長時間のタスク、プロンプト疲れの軽減 |
 | [`dontAsk`](#allow-only-pre-approved-tools-with-dontask-mode) | 作業ディレクトリ内のファイル読み取りと事前承認済みのツール。プロンプトが表示されるはずの操作はすべて拒否されますが、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) がそれらの呼び出しの一部を承認することはできます | 厳重に制限された CI やスクリプト |
 | [`bypassPermissions`](#skip-all-checks-with-bypasspermissions-mode) | すべて | 隔離されたコンテナや VM のみ |
 
-すべての操作を確認するモードは、CLI、`claude --help`、VS Code および JetBrains 拡張機能、デスクトップアプリでは **Manual** という名前で表示されます。その設定値は `default` で、フックや SDK 連携ではこの値が使われます。CLI では値を入力する箇所であればどこでも `manual` をエイリアスとして受け付けます（例: `claude --permission-mode manual` や `"defaultMode": "manual"`）。
+CLI では値を入力する箇所であればどこでも `manual` を `default` のエイリアスとして受け付けます（例: `claude --permission-mode manual` や `"defaultMode": "manual"`）。
 
 [保護されたパス](#protected-paths)への書き込みには、モードごとに独自のルールがあります。
 
@@ -51,7 +51,7 @@ Claude Code は、`could not fully check your permission rules` としてフラ�
 
 | 実現したいこと | 開始する | 必要な隔離 | 注記 |
 | :- | :- | :- | :- |
-| すべてのアクションを自分でレビュー | Manual モード：`claude --permission-mode default` | なし | 機密作業、不慣れなコード |
+| 権限プロンプトに自分で応答する | Manual モード：`claude --permission-mode default` | なし | 機密作業、不慣れなコード |
 | ローカルで反復、分類器なしでプロンプトを減らす | Manual モード + [auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)の Bash サンドボックス：`claude --permission-mode default`、その後 `/sandbox` を実行して auto-allow を選択 | 組み込み Bash サンドボックス、macOS、Linux、WSL2 上 | 拒否ルールは依然として適用され、`Bash(git push *)` のようなコマンドに名前を付ける ask ルールは依然としてプロンプトを表示します。プロンプトを表示する可能性があるその他のコマンドについては、[auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#auto-allow-mode)で説明しています。代わりに設定ファイルからサンドボックスをオンにするには、[`sandbox.enabled`](https://code.claude.com/docs/ja/settings-reference#sandbox-enabled) と [`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) を `true` に設定します |
 | 何かを変更する前に探索 | `claude --permission-mode plan` | なし | Claude Code は[計画を承認](#review-and-approve-a-plan)するまで編集をブロックします |
 | auto モードでハンズオフで作業 | `claude --permission-mode auto`、v2.1.283 以降の[組み込み開始権限モード](#which-mode-a-session-starts-in) | なし。サンドボックスまたはコンテナは防御の深さを追加 | [サポートされているモデル](#eliminate-prompts-with-auto-mode)が必要で、組織は [auto モードをオフ](#eliminate-prompts-with-auto-mode)にできます |
@@ -532,7 +532,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 
 [`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories) がオフの間、auto モードでは、[ネットワークパスからの読み取り](https://code.claude.com/docs/ja/permissions.md#network-paths)以外のファイルの読み取りは、[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外の読み取りを含め、プロンプトなしで実行されます。Claude が作業ディレクトリ外のパスに対して Read、Grep、または Glob ツールを初めて使用するとき、Claude Code はその読み取りを許可するかどうかを尋ねます。
 
-このプロンプトは、非インタラクティブな `-p` 実行やバックグラウンドセッションでは表示されず、そこでの読み取りは従来どおり実行されます。
+このプロンプトは、`-p` 実行、Agent SDK セッション、バックグラウンドセッション、VS Code のチャットパネル、デスクトップアプリでは表示されません。これらでは読み取りが実行されます。
 
 どのように回答しても、Claude は作業を続けます。
 
@@ -543,7 +543,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 
 ### 会話で伝えた境界
 
-分類器は、会話で伝えた境界をブロックのシグナルとして扱います。Claude に「プッシュしないで」や「デプロイする前に私のレビューを待って」と伝えると、デフォルトのルールでは許可されるアクションであっても、分類器は該当するアクションをブロックします。境界は、後のメッセージで解除するまで有効です。条件が満たされたという Claude 自身の判断では解除されません。
+分類器は、会話で伝えた境界をブロックのシグナルとして扱います。Claude に「プッシュしないで」や「デプロイする前に私のレビューを待って」と伝えると、デフォルトのルールでは許可されるアクションであっても、分類器は[分類器がレビューする](#how-the-classifier-evaluates-actions)アクションのうち該当するものをブロックします。境界は、後のメッセージで解除するまで有効です。条件が満たされたという Claude 自身の判断では解除されません。
 
 境界はルールとして保存されません。分類器はチェックのたびにトランスクリプトから境界を読み直すため、[コンテキスト圧縮](https://code.claude.com/docs/ja/costs.md#reduce-token-usage)によって境界を伝えたメッセージが削除されると、境界が失われる可能性があります。確実な保証が必要な場合は、代わりに [deny ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)を追加してください。
 
@@ -589,7 +589,7 @@ auto モードがセッションのアクションを承認できない場合、
 >    * `Bash(git push *)` のようにコマンドの内容に一致する確認ルールは、権限プロンプトにフォールバックします
 >    * [シンボリックリンクのチェック](https://code.claude.com/docs/ja/permissions.md#symlinks)によって保護されたパスに解決される書き込みは、Claude が要求したパス自体が保護されていない場合にプロンプトを表示します
 >    * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取りは、許可ルールに一致する場合でもプロンプトを表示します
-> 2. 読み取り専用のアクションと作業ディレクトリ内のファイル編集は自動承認されます。ただし、[保護されたパス](#protected-paths)への書き込みと、プロンプトが表示される[作業ディレクトリ外での最初の読み取り](#first-read-outside-the-working-directories)は除きます
+> 2. 読み取り専用のアクションと作業ディレクトリ内のファイル編集は自動承認されます。ただし、[保護されたパス](#protected-paths)への書き込みと、[最初の読み取りのプロンプト](#first-read-outside-the-working-directories)が表示される読み取りは除きます。
 >    * [サーバー側の分類器レビュー](#server-side-classifier-review)があるセッションでは、ファイル編集、読み取り専用のシェルコマンド、および[サンドボックス化された](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)シェルコマンドはそのレビューを待ち、レビューで警告された場合はブロックされます
 >    * 作業ディレクトリ内への書き込みのうち、[シンボリックリンクのチェック](https://code.claude.com/docs/ja/permissions.md#symlinks)によって作業ディレクトリ外の場所に解決されるものはプロンプトを表示します
 >    * Claude が[他のユーザーが作成したアーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取る場合は、そのセクションに記載されている承認のケースが適用されます
@@ -618,7 +618,7 @@ auto モードがセッションのアクションを承認できない場合、
 >
 > また、Claude Code は `git reset --hard` や `rm -rf` など、コミットされていない作業を破棄する可能性のあるコマンドの前に自ら `git status` を実行し、ステージ済み、変更済み、または未追跡の作業があるかどうかを分類器に示すこともあります。リポジトリの git 設定で `status.showUntrackedFiles=no` が設定されている場合でも、Claude Code はこのチェックで未追跡のファイルを報告します。
 >
-> [サーバー側の分類器レビュー](#server-side-classifier-review)では、auto モードが最近アクションをブロックした場合を除き Claude Code が `git status` をスキップすることがあるため、クリーンな作業ツリーでも `git reset --hard` がブロックされることがあります。ブロックの後は、分類器がクリーンな状態を確認でき、Claude の再試行を許可できます。
+> [サーバー側の分類器レビュー](#server-side-classifier-review)では、クリーンな作業ツリーでも `git reset --hard` がブロックされることがあります。ブロックの後は、分類器がクリーンな状態を確認でき、Claude の再試行を許可できます。
 >
 > Claude Code 自体が送信する分類器リクエストでは、分類器はユーザーメッセージ、ファイルの読み取りや検索などの読み取り専用の参照以外のツール呼び出し、および CLAUDE.md の内容を確認します。ツールの結果はこれらのリクエストから除去されるため、ファイルやウェブページ内の悪意のあるコンテンツが分類器を直接操作することはできません。
 >
@@ -646,18 +646,23 @@ auto モードがセッションのアクションを承認できない場合、
 
 ## dontAsk モードで事前承認済みツールのみを許可する
 
-`dontAsk` モードを設定すると、Claude Code は本来プロンプトを表示するすべてのツール呼び出しを自動的に拒否します。ただし、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は、それらの呼び出しの一部を引き続き承認できます。mod が承認できる呼び出しを確認するには、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。
+`dontAsk` モードを設定すると、Claude Code は本来プロンプトを表示するすべてのツール呼び出しを自動的に拒否します。ただし、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は、それらの呼び出しの一部を引き続き承認できます。mod が承認できる呼び出しを確認するには、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。[mod 自身が行うツール呼び出し](https://code.claude.com/docs/ja/plugins/mods/reference.md#mods-api-methods)を止めるために `dontAsk` に頼らないでください。
 
-Claude は、Manual モードで承認が不要なアクション（作業ディレクトリ内のファイル読み取りや[読み取り専用 Bash コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)など）を引き続き実行します。`permissions.allow` ルールに一致するアクションや、[PreToolUse フック](https://code.claude.com/docs/ja/permissions.md#extend-permissions-with-hooks)によって承認された呼び出しも実行されます。このモードは、Claude が実行できる内容を事前に定義しておく CI パイプラインや制限された環境で使用します。セッションが入力を待つことはありません。このモードでは、ステータスバーに `⏵⏵ don't ask on` が表示されます。
+Claude は、Manual モードで承認が不要なアクション（作業ディレクトリ内のファイル読み取りや[読み取り専用 Bash コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)など）を引き続き実行します。`permissions.allow` ルールに一致するアクションや、[PreToolUse フック](https://code.claude.com/docs/ja/permissions.md#extend-permissions-with-hooks)によって承認された呼び出しも実行されます。このモードは、Claude が実行できる内容を事前に定義しておく CI パイプラインや制限された環境で使用します。このモードでは、ステータスバーに `⏵⏵ don't ask on` が表示されます。
 
-Claude Code は、プロンプトを表示する代わりに、明示的な[`ask` ルール](https://code.claude.com/docs/ja/permissions#manage-permissions)に一致するコールを拒否します。また、allow ルールが一致する場合でも組み込みの `AskUserQuestion` ツールを拒否し、その設定が Claude Code に到達するセッションで[組織が `ask` に設定したコネクタツール](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)についても同じことを行います。[`_meta["anthropic/requiresUserInteraction"]`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールも同じ方法で拒否します。これは、承認カードがこのモードが収集しない回答を必要とするためです。
+本来プロンプトが表示される場面で、次の呼び出しは拒否されます：
+
+* **`ask` ルール**：Claude Code は、明示的な[`ask` ルール](https://code.claude.com/docs/ja/permissions#manage-permissions)に一致する呼び出しを拒否します。
+* **`AskUserQuestion`**：Claude Code は、許可ルールが一致する場合でも、この組み込みツールを拒否します。
+* **[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツール**：その設定が Claude Code に到達するセッションでは拒否されます。
+* **[`_meta["anthropic/requiresUserInteraction"]`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) でマークされた MCP ツール**：承認カードがこのモードでは収集できない回答を必要とするため、拒否されます。
 
 次のものは、許可ルールや `PreToolUse` フックでは承認できません：
 
 * 認識された `rm` および `rmdir` による[重要なパス](#critical-paths)の削除（`rm -rf /` や `rm -rf ~` など）
 * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取り
 
-[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は `defaultMode: "dontAsk"` を無視します。詳細は[bypassPermissions](#skip-all-checks-with-bypasspermissions-mode)を参照してください。
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は `defaultMode: "dontAsk"` を無視します。詳細については、[bypassPermissions](#skip-all-checks-with-bypasspermissions-mode) を参照してください。
 
 スタートアップ時にフラグで設定します：
 

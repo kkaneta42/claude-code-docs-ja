@@ -263,7 +263,7 @@ Anthropic ホスト環境では、すべての GitHub 操作は、環境の [acc
 
 ### セキュリティプロキシ
 
-Anthropic ホスト環境のクラウドセッションは、セキュリティと不正使用防止のための HTTP/HTTPS ネットワークプロキシの背後で実行されます。[self-hosted environment](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて離脱します。Anthropic ホストセッションからのすべての送信インターネットトラフィックはこのプロキシを通じて渡され、以下を提供します。
+Anthropic ホスト環境のクラウドセッションは、セキュリティと不正使用防止のための HTTP/HTTPS ネットワークプロキシの背後で実行されます。[self-hosted environment](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて離脱します。Anthropic ホストセッションの VM からの送信インターネットトラフィックはこのプロキシを通じて渡され、このプロキシは以下を提供します。
 
 * 悪意のあるリクエストに対する保護
 * レート制限と不正使用防止
@@ -546,7 +546,7 @@ SessionStart フックはクラウドでローカルと同じように動作し�
 * **プロジェクトのクラウドスレッドでは実行されない**：[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) 内のクラウドスレッドは、リポジトリの数にかかわらず、リポジトリの `.claude/settings.json` からフックを実行しません。Anthropic ホスト環境では、スレッドの依存関係は [セットアップスクリプト](#setup-scripts) でインストールしてください。セルフホスト環境では、代わりに [ランナーホストの設定](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories) にあるフックを使用してください。
 * **クラウドのみのスコープなし**：フックはローカルとクラウドセッションの両方で実行されます。ローカル実行をスキップするには、[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように `CLAUDE_CODE_REMOTE` 環境変数が `true` でない限り早期に終了します。
 * **ネットワークアクセスが必要**：インストールコマンドはパッケージレジストリに到達する必要があります。環境が **None** ネットワークアクセスを使用する場合、これらのフックは失敗します。**Allow package managers** にチェックが入ったデフォルトの **Limited** レベルでは、[デフォルト許可リスト](#default-allowed-domains) が npm、PyPI、RubyGems、crates.io をカバーします。
-* **プロキシ互換性**：Anthropic ホスト環境では、すべての送信トラフィックは [セキュリティプロキシ](#security-proxy) を通じて渡されます。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。
+* **プロキシ互換性**：Anthropic ホスト環境では、セッションの VM からの送信トラフィックは [セキュリティプロキシ](#security-proxy) を経由します。一部のパッケージマネージャーはこのプロキシで正しく機能しません。Bun は既知の例です。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#default-deny-egress) では、送信トラフィックは代わりに独自のネットワーク境界を通じて行きます。
 * **スタートアップレイテンシを追加**：フックはセッションが開始または再開されるたびに実行されます。[環境キャッシング](#environment-caching) の恩恵を受けるセットアップスクリプトとは異なります。[依存関係インストールスクリプト](#install-dependencies-with-a-sessionstart-hook) のように、既に完了している作業をスキップすることで、インストールスクリプトを高速に保ちます。
 
 ベースイメージをカスタマイズするには、セットアップスクリプトを使用して [提供されたイメージ](#installed-tools) の上にインストールするか、`docker compose` で Claude と一緒にコンテナとして独自のイメージを実行します。ベースイメージ全体を置き換えることはまだサポートされていません。

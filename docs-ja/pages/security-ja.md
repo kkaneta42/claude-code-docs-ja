@@ -43,7 +43,7 @@ agentic システムのリスクを軽減するために：
 ### コア保護機能
 
 * **権限モード**: Manual モードでは、機密操作には明示的な承認が必要です
-* **ネットワークコマンド承認**: `curl` や `wget` などのウェブからコンテンツを取得するコマンドはデフォルトでは自動承認されません。Manual モードでは他の読み取り専用以外の Bash コマンドと同様にプロンプトが表示されるため、一度承認するか、`Bash(curl *)` のような明示的な許可ルールを追加できます。Claude がこれらを実行しないようにするには、[`permissions.deny`](https://code.claude.com/docs/ja/permissions#tool-specific-permission-rules) に追加してください。deny ルールは[書かれたとおりの](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)コマンドにマッチします。コマンドテキストに依存しないネットワーク強制については、[sandbox ネットワーク分離](https://code.claude.com/docs/ja/sandboxing.md#network-isolation) を参照してください
+* **ネットワークコマンド承認**: Manual モードでは、`curl` や `wget` などのコマンドはデフォルトでプロンプトが表示されるため、一度承認するか、`Bash(curl *)` のような許可ルールを追加できます。Claude がこれらを実行しないようにするには、[`permissions.deny`](https://code.claude.com/docs/ja/permissions#tool-specific-permission-rules) に追加してください。deny ルールは[書かれたとおりの](https://code.claude.com/docs/ja/permissions.md#bash-rule-limits)コマンドにマッチします。コマンドテキストに依存しないネットワーク強制については、[サンドボックスネットワーク分離](https://code.claude.com/docs/ja/sandboxing.md#network-isolation) を参照してください
 
 ### プライバシーセーフガード
 
@@ -58,7 +58,7 @@ agentic システムのリスクを軽減するために：
 ### 追加のセーフガード
 
 * **ネットワークリクエスト承認**: Manual モードでは、ネットワークリクエストを行うほとんどのツールはデフォルトでユーザー承認が必要です
-* **Web ページの要約**: ほとんどのフェッチでは、WebFetch がページに対して別のモデル呼び出しを実行し、Claude は生のページではなくその呼び出しの回答を受け取ります。[WebFetch ツールの動作](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior) を参照してください
+* **Web ページの要約**: ほとんどの WebFetch のフェッチでは、別のモデル呼び出しがページを読み取り、Claude は生のページではなくその呼び出しの回答を受け取ります。[WebFetch ツールの動作](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior) を参照してください
 * **信頼検証**: 対話型セッションでは、まだ信頼していないフォルダで Claude Code を起動すると、ワークスペースの信頼ダイアログが表示されます。プロジェクトの `.mcp.json` 内のサーバーには独自の承認プロンプトがあり、[プロジェクトスコープ](https://code.claude.com/docs/ja/mcp.md#project-scope) にはそのプロンプトをスキップするセッションが記載されています
   * 注：`-p` セッションではどちらのプロンプトも表示されません。そこでリポジトリのファイルが実行できるものについては、[フォルダを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder) に記載されています
   * 注：Claude Code をホームディレクトリで直接起動する場合、信頼受け入れは現在のセッションのみ保持され、ディスクに書き込まれないため、起動するたびにプロンプトが再度表示されます。これを永続化するための設定はありません。代わりに、プロジェクトサブディレクトリから Claude Code を起動してください。そこでは信頼受け入れはディレクトリごとに保存されます
@@ -94,9 +94,8 @@ IDE で Claude Code を実行する場合の詳細については、[組み込�
 
 ## クラウド実行セキュリティ
 
-[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を使用する場合、追加のセキュリティ制御が実施されます。組織が [self-hosted environment](https://code.claude.com/docs/ja/self-hosted-environments) にルーティングするセッションは独自のインフラストラクチャで実行され、分離、ネットワーク出力、および Git 認証情報は展開の責任です。Anthropic ホスト環境では：
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を使用する場合、追加のセキュリティ制御が実施されます。デフォルトでは、セッションはシェルコマンドとファイル編集を、分離された Anthropic 管理 VM で実行します。組織が [self-hosted environment](https://code.claude.com/docs/ja/self-hosted-environments) にルーティングするセッションは独自のインフラストラクチャで実行され、分離、ネットワーク出力、および Git 認証情報はデプロイ側の責任です。Anthropic ホスト環境では：
 
-* **分離された仮想マシン**: 各クラウドセッションは分離された Anthropic 管理 VM で実行されます
 * **ネットワークアクセス制御**: ネットワークアクセスはデフォルトで制限され、無効にするか特定のドメインのみを許可するように設定できます
 * **認証情報保護**: GitHub 認証情報は Anthropic のサーバーに暗号化されて保存され、セッション VM に入ることはありません。VM はそのセッションにスコープされた短命の認証情報を保持し、GitHub トラフィックは GitHub 認証情報をサーバー側で付与する [Anthropic プロキシ](https://code.claude.com/docs/ja/cloud-environments.md#github-proxy) を通じて流れます。アクセスを付与する方法については、[GitHub 認証オプション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#github-authentication-options) を参照してください
 * **プッシュ制限**: [GitHub プロキシ](https://code.claude.com/docs/ja/cloud-environments.md#github-proxy) は、ブランチの削除と、タグなどブランチ以外のもののプッシュを拒否します。セッションがどのブランチを更新できるかは、接続した GitHub アクセスに対してリポジトリのブランチ保護ルールとルールセットを適用することで GitHub が決定します。そのアクセスがバイパスできるルールでは、セッションのプッシュはブロックされません

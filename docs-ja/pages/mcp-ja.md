@@ -1574,7 +1574,7 @@ MCP 画像結果をファイルに保存するには、Claude Code v2.1.283 以�
 
 サーバーは Claude が選択した引数を受け取るため、サーバー側で組み合わせの検証を続けてください。
 
-Claude Code が API が受け入れるスキーマを生成できない場合、またはスキーマの書き換えを有効にするリモート設定を受け取らないデプロイメントの場合、そのツール 1 つをスキップし、理由をサーバーのログに記録し、サーバーの他のツールは利用可能なままにします。
+Claude Code が API が受け入れるスキーマを生成できない場合、または[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)が有効になっているものの[フラグがまだ届いていない](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)場合、そのツールはスキップされます。理由はサーバーのログに記録され、サーバーの他のツールは利用可能なままです。v2.1.328 より前は、取得が無効な場合にもツールがスキップされていました。
 
 ## 無効な入力スキーマを持つツール
 
@@ -1589,14 +1589,12 @@ MCP サーバーのツールのいずれかが、API が適用する 2 つのル
 
 Claude Code がツールを除外する場合、その理由をサーバーのログに記録し、除外したツールとその理由を Claude に伝えるため、ツールが見つからない理由を Claude に尋ねることができます。サーバーのスキーマを修正すると、Claude Code が次にサーバーのツールを読み込むときにツールが復帰します。
 
-[フィーチャーフラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフになっている場合、またはエアギャップマシンのようにフラグが一度も到着していない場合、ルールに違反するツールは除外されません。
+[フィーチャーフラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオンになっているものの、[フラグがまだ到着していない](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)場合、ルールに違反するツールは除外されません。
 
 * Claude はツールを変更されないまま受け取り、サーバーのログにはそのツールについて `input schema would be rejected by the Anthropic API` が記録されます
 * その後 API がスキーマを拒否した場合は、[API が入力スキーマを拒否するツール](#tools-whose-input-schema-the-api-refuses)を参照してください
 
-v2.1.216 より前では、どのデプロイでもこれらのチェックは実行されていませんでした。
-
-[ルートレベルのコンビネータ処理](#tool-input-schemas-with-a-root-level-combinator) は独立しており、フラグ取得がオフの場合またはフラグが到着したことのない場合、独自の動作を保持します。
+v2.1.328 より前では、取得がオフの場合もツールは除外されていませんでした。v2.1.216 より前では、どのデプロイでもこれらのチェックは実行されていませんでした。
 
 ### API が入力スキーマを拒否するツール
 

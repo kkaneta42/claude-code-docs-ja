@@ -397,7 +397,7 @@ Claude に長時間実行されるタスクを自動的に定期的に処理さ�
 | [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) | クラウド（デフォルトでは Anthropic 管理） | コンピューターがオフの場合でも実行する必要があるタスク。スケジュールに加えて API 呼び出しまたは GitHub イベントでトリガーすることもできます。[claude.ai/code/routines](https://claude.ai/code/routines) で設定します。 |
 | [デスクトップスケジュール済みタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md) | デスクトップアプリ経由のマシン | ローカルファイル、ツール、またはコミットされていない変更への直接アクセスが必要なタスク。 |
 | [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) | CI パイプライン | オープン PR などのリポジトリイベント、またはワークフロー設定と一緒に存在する必要がある cron スケジュールに関連するタスク。 |
-| [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) | 現在の CLI セッション | セッションが開いている間のクイックポーリング。`--resume` と `--continue` は期限切れでない固定間隔のループを復元します。 |
+| [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) | 現在の CLI セッション | セッションが開いている間のクイックポーリング。 |
 
 > [!TIP]
 >

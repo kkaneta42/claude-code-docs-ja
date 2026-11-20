@@ -329,8 +329,8 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 * Desktop アプリから開始したものを含む[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、デフォルトで Anthropic が管理する VM 上で実行されます。デバイスにデプロイされた設定はこれらに届かないため、許可リストはサーバー管理設定を通じて配信してください。組織が[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)にルーティングするセッションは独自のコンピューティング上で実行され、ランナーイメージ内の管理設定ファイルも読み取ります。そのファイルがいつ適用されるかについては、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を参照してください。クラウドセッションでのセッション途中のモデル切り替えは、要求されたモデルが許可リストによって除外されている場合は拒否されます。サーバー管理設定の `availableModels` リストが空でない場合、サーバーは、リストが除外するモデルで claude.ai/code または Desktop アプリからクラウドセッションを開始するリクエストを拒否します。
 * [Claude Tag](https://claude.com/docs/claude-tag/overview) セッションはクラウド環境で実行されますが、サーバー管理設定を受け取りません。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)では、引き続きランナーイメージ内の管理設定ファイルを読み取ります。これらのセッションのモデルを設定するには、Claude Tag 管理者ガイドの[スコープのモデルを選択する](https://claude.com/docs/claude-tag/admins/customize#choose-the-model-for-a-scope)を参照してください。
 * Claude Desktop アプリのエージェント型作業タブである Cowork は、セッションを Claude Code 上で実行しますが、設計上、claude.ai 管理コンソールからサーバー管理設定を受け取りません。サーバー管理設定の `availableModels` リストが空でなく、ユーザーがリスト外のモデルを選択した場合、サーバーはリモート Cowork セッションでそのモデルを拒否します。管理設定ファイルは、セッションが実行される場所に存在する場合に Cowork セッションに適用されます。リモート Cowork セッションは Anthropic が管理する VM 上で実行され、そこにはデバイスにデプロイされたファイルは存在しません。
-* Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) などの[サードパーティプロバイダー](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)上のセッションはサーバー管理設定を受け取らないため、それらの環境では MDM または管理設定ファイルを通じて許可リストを配信してください。
-* 管理コンソールからの配信では、セッションが組織への[対象となるログイン](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)、または組織向けに発行された OAuth トークンを使用して取得を行う必要もあります。API キーで認証するフリートでは、キーが直接設定されたものか [`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) スクリプトによって生成されたものかにかかわらず、MDM または管理設定ファイルを通じて許可リストを配信してください。
+* Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Platform on AWS](https://code.claude.com/docs/ja/claude-platform-on-aws.md) などの[サードパーティプロバイダー](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)上のセッションでは、MDM または管理設定ファイルを通じて許可リストを配信してください。
+* 管理コンソールからの配信では、セッションが組織への[対象となるログイン](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)、または組織向けに発行された OAuth トークンを使用して取得を行う必要があります。API キーで認証するフリートでは、キーが直接設定されたものか [`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) スクリプトによって生成されたものかにかかわらず、MDM または管理設定ファイルを通じて許可リストを配信してください。
 * Desktop の Code タブは [SSH セッション](https://code.claude.com/docs/ja/desktop.md#ssh-sessions)もホストしており、これらは実行先のリモートホストから管理設定ファイルを読み取ります。[Desktop の管理設定](https://code.claude.com/docs/ja/desktop.md#managed-settings)を参照してください。
 * claude.ai および Desktop アプリのモデルピッカーは、組織の許可リストによって除外されたモデルを非表示にするかグレーアウトします。ピッカーの状態はユーザーの利便性のためのものであり、許可リストを適用するものではありません。
 
@@ -443,7 +443,7 @@ Claude Console にはモデル制限の制御機能はありません。Anthropi
 * Haiku モデルは常に利用可能で無効にできないため、すべてのメンバーは少なくとも 1 つの使用可能なモデルを保持します。
 * アクセスの変更は、約 1 分以内に新しいリクエストに反映されます。`/model` ピッカーには、次回のセッション開始時に反映されます。
 
-両方の制限は同時に適用されます。モデルが選択可能になるのは、`availableModels` で許可されていて、かつ組織によって制限されていない場合のみです。組織の制限が適用されるのは、Anthropic API および [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)のデプロイ上のセッションのみです。その他のプロバイダーでは、代わりに `availableModels` を使用してください。
+両方の制限は同時に適用されます。モデルが選択可能になるのは、`availableModels` で許可されていて、かつ組織によって制限されていない場合のみです。組織の制限が適用されるのは、Anthropic API および [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)のデプロイ上のセッションのみです。[ゲートウェイの認証情報](https://code.claude.com/docs/ja/llm-gateway#subscriptions-and-gateways)を使用する場合やその他のプロバイダーでは、代わりに `availableModels` を使用してください。
 
 ## 組織のデフォルトモデル
 
@@ -485,6 +485,8 @@ Claude Enterprise プランの組織管理者は、ロールレベルの[組織�
 * 上限を超えるレベルは `/effort` ピッカーに表示されず、`--effort` または `/effort` でより高いレベルを指定した場合は、代わりに上限のレベルで実行されます。上限を超える `--effort` を指定してプレーンテキストの `--print` 実行を開始すると、要求されたレベルと適用されたレベルを示す警告が stderr に出力されます。対話型セッション、`json` または `stream-json` 出力の場合、およびバックグラウンドエージェントでは、この警告は代わりに[デバッグログ](https://code.claude.com/docs/ja/errors.md#configuration-warnings)に記録されます。
 * 上限はモデルごとに設定されるため、モデルを切り替えると利用可能なレベルが変わることがあります。
 * ユーザーの複数のロールが同じモデルを許可している場合は、最も制限の緩い上限が適用されます。
+* `Your organization limits effort for <model>` と表示され、より高いレベルが必要な場合は、組織の管理者に上限の引き上げを依頼してから、Claude Code を再起動してください。
+* リクエストが `API Error: 400 Invalid effort level` で失敗する場合は、v2.1.314 以降に更新して再起動してください。それでも失敗する場合は、[`CLAUDE_CODE_EXTRA_BODY`](https://code.claude.com/docs/ja/env-vars#variables) から `output_config.effort` キーを削除してください。
 
 effort 上限は[組織のモデル制限](#organization-model-restrictions)と一緒に配信され、同じセッションに適用されます。
 
@@ -517,7 +519,7 @@ v2.1.280 より前は、`default` は Pro と Team Standard では Sonnet 5 に�
 
 これにより、計画には Opus の推論能力を、実行には Sonnet の効率性を組み合わせられます。
 
-plan モードの Opus フェーズは `opus` モデル設定と同じコンテキストウィンドウを使用し、実行フェーズは `sonnet` と同じウィンドウを使用します。`opus` と `sonnet` が、Anthropic API 上の現行モデルのようにデフォルトで [1M コンテキストウィンドウ](#extended-context)で動作するモデルに解決される場合は、両方のフェーズがそのウィンドウで動作します。そうでない場合に両方のフェーズで 1M コンテキストを要求するには、たとえば `/model opusplan[1m]` のように、[モデルを](#setting-your-model) `opusplan[1m]` に設定します。`/model` での設定には Claude Code v2.1.265 以降が必要です。それより前のバージョンでは、代わりに `--model` フラグまたは `model` 設定を使用してください。
+`opus` と `sonnet` がデフォルトで [1M コンテキストウィンドウ](#extended-context)を持たない場合にそれを要求するには、たとえば `/model opusplan[1m]` のように、[モデルを](#setting-your-model) `opusplan[1m]` に設定します。`/model` での設定には Claude Code v2.1.265 以降が必要です。それより前のバージョンでは、代わりに `--model` フラグまたは `model` 設定を使用してください。
 
 [`availableModels`](#restrict-model-selection) が最新の Opus を除外しつつ古いバージョンを許可している場合（たとえば `["sonnet", "claude-opus-4-6"]`）、`opusplan` は許可されている最新の Opus を計画に使用し、すべての Opus が除外されている場合にのみ Sonnet のままになります。同様に、通常は plan モードで Sonnet にアップグレードされる Haiku セッションは、許可されている最新の Sonnet を使用し、すべての Sonnet が除外されている場合にのみ Haiku のままになります。v2.1.205 より前は、アップグレード先ファミリーの最新バージョンが除外されていると、許可リストが古いバージョンを許可していても、plan モードはセッションのモデルのままでした。
 
@@ -763,7 +765,7 @@ effort は次のいずれかの方法で変更できます。
 
 #### サブエージェントとチームメイトの effort レベル
 
-メインの会話と同じモデルでは、独自の `effort` を持たない[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-an-effort-level)または[チームメイト](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)は、セッション内で選んだレベル、または `--effort` で設定したレベルで実行されます。別のモデルでは、そのレベルは適用されません。サブエージェントのレベルを選ぶには、その定義で `effort` を設定します。
+メインの会話と同じモデルでは、[ほかにレベルが設定されていない](https://code.claude.com/docs/ja/sub-agents.md#when-a-subagent-has-no-effort-field-or-parameter)[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-an-effort-level)または[チームメイト](https://code.claude.com/docs/ja/agent-teams.md#specify-teammates-and-models)は、セッション内で選んだレベル、または `--effort` で設定したレベルで実行されます。別のモデルでは、そのレベルは適用されません。サブエージェントのレベルを選ぶには、その定義で `effort` を設定します。
 
 #### 設定した effort レベルを確認する
 
@@ -1049,7 +1051,7 @@ Opus 4.6 や Sonnet 4.6 など、`[1m]` バリアントを通じて 1M に対応
 export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-6[1m]'
 ```
 
-`[1m]` サフィックスを付けると、1M コンテキストウィンドウは固定したエイリアスのすべての使用に適用されます。これには [`opusplan`](#opusplan-model-setting) の plan モードにおける Opus フェーズや、`model` フロントマターでそのエイリアスを指定している[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)も含まれます。
+`[1m]` サフィックスを付けると、固定したエイリアスは 1M コンテキストウィンドウで実行されます。
 
 * Claude Code はモデル ID をプロバイダーに送信する前にサフィックスを取り除きます。
 * `[1m]` は、基盤となるモデルが [1M コンテキストをサポートしている](https://platform.claude.com/docs/en/build-with-claude/context-windows#context-window-sizes-by-model)場合にのみ付加してください。
@@ -1059,9 +1061,7 @@ export ANTHROPIC_DEFAULT_OPUS_MODEL='claude-opus-4-6[1m]'
 
 > [!NOTE]
 >
-> [MDM または管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を通じて配布される `availableModels` 許可リストは、サードパーティプロバイダーを使用する場合でも適用されます。[サーバー管理設定はそこには配布されません](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)。
->
-> フィルタリングは、`opus` などのモデルエイリアス、`claude-opus-4-8` などのバージョンプレフィックス、またはプロバイダー形式の完全なモデル ID に対して照合されます。`us.anthropic.` などのプロバイダー固有のプレフィックスは取り除かれないため、特定のモデルを許可するには、[`modelOverrides`](#override-model-ids-per-version) を通じてマッピングするか、プロバイダー形式の完全な ID を記載してください。
+> [`availableModels`](#restrict-model-selection) のフィルタリングは、`opus` などのモデルエイリアス、`claude-opus-4-8` などのバージョンプレフィックス、またはプロバイダー形式の完全なモデル ID に対して照合されます。`us.anthropic.` などのプロバイダー固有のプレフィックスは取り除かれないため、特定のモデルを許可するには、[`modelOverrides`](#override-model-ids-per-version) を通じてマッピングするか、プロバイダー形式の完全な ID を記載してください。
 >
 > * **Google Cloud's Agent Platform**: Claude Code が要求する ID に `claude-sonnet-4-5@20250929` のような `@` 付きの日付が含まれる場合は、許可リストのエントリにその日付を含めてください。`claude-sonnet-4-5` だけでは、[`availableModelsMatch`](https://code.claude.com/docs/ja/settings-reference#availablemodelsmatch) がどちらの設定であってもその ID に一致しません。
 > * **固定したモデル**: そのモデルの `ANTHROPIC_DEFAULT_*_MODEL` 変数に設定した値を記載します

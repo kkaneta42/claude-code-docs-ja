@@ -189,13 +189,13 @@ Claude for Teams および Enterprise プランでは、各メンバーの Claud
 
 ### Claude Console
 
-API 組織は [ワークスペース](https://platform.claude.com/docs/en/build-with-claude/workspaces) を通じて Claude Code 支出を管理します。[ワークスペース支出制限を設定](https://platform.claude.com/docs/en/build-with-claude/workspaces#workspace-limits) して Claude Code 支出の合計をキャップし、Console で [コストと使用状況レポートを表示](https://platform.claude.com/docs/en/build-with-claude/workspaces#usage-and-cost-tracking) できます。
+API 組織は [ワークスペース](https://platform.claude.com/docs/en/build-with-claude/workspaces) を通じて Claude Code 支出を管理します。Console で [ワークスペース支出制限を設定](https://platform.claude.com/docs/en/build-with-claude/workspaces#workspace-limits) したり、[コストと使用状況レポートを表示](https://platform.claude.com/docs/en/build-with-claude/workspaces#usage-and-cost-tracking) したりできます。
 
 > [!NOTE]
 >
-> Claude Code を Claude Console アカウントで初めて認証すると、「Claude Code」というワークスペースが自動的に作成されます。このワークスペースは、組織内のすべての Claude Code 使用量の一元化されたコスト追跡と管理を提供します。このワークスペースの API キーを作成することはできません。これは Claude Code 認証と使用量専用です。
+> メンバーが初めてサインインし、Claude Code がそのメンバー用に [API キーを作成](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key) すると、Console 組織に「Claude Code」というワークスペースが自動的に作成されます。このワークスペースの API キーを自分で作成することはできません。このワークスペースは Claude Code の認証と使用専用です。
 >
-> カスタムレート制限を持つ組織の場合、このワークスペースの Claude Code トラフィックは組織全体の API レート制限にカウントされます。Claude Console の Limits ページでこのワークスペースに [ワークスペースレート制限](https://platform.claude.com/docs/en/api/rate-limits#setting-lower-limits-for-workspaces) を設定して、Claude Code の共有をキャップし、他の本番ワークロードを保護できます。
+> カスタムレート制限を持つ組織の場合、このワークスペースの Claude Code トラフィックは組織全体の API レート制限にカウントされます。Claude Console の [Rate limits ページ](https://platform.claude.com/usage/limits) で [このワークスペースのレート制限](https://platform.claude.com/docs/en/api/rate-limits#setting-lower-limits-for-workspaces) を設定すると、このワークスペースの割り当て分に上限を設け、他の本番ワークロードを保護できます。
 
 ユーザーごとのレポートについては、[Console ダッシュボード](https://platform.claude.com/claude-code) はメンバーごとの支出と受け入れられた行を表示し、[Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) は [Admin API キー](https://platform.claude.com/settings/admin-keys) を使用してプログラムで日次のユーザーごとのメトリクスを返します。[API 顧客向けの analytics](https://code.claude.com/docs/ja/analytics.md#access-analytics-for-api-customers) を参照してください。
 

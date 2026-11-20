@@ -86,7 +86,7 @@
 | [`disabledMcpjsonServers`](#disabledmcpjsonservers) | プロジェクトの [`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-scope) から特定のサーバーを拒否します | MCP | Any file |
 | [`disableMobileSimulatorTools`](#disablemobilesimulatortools) | [デスクトップ](https://code.claude.com/docs/ja/desktop.md)の iOS Simulator ペインで Claude のツールをブロックします | ツール | Managed |
 | [`disableRemoteControl`](#disableremotecontrol) | [Remote Control](https://code.claude.com/docs/ja/remote-control.md) を、起動可能なすべての場所でオフにします | リモート、デスクトップ、通知 | Any file |
-| [`disableRemotePreviewScripts`](#disableremotepreviewscripts) | SSH および WSL セッションで、[デスクトップ](https://code.claude.com/docs/ja/desktop.md#preview-html-files-in-ssh-and-wsl-sessions)アプリの HTML プレビュー内のスクリプトをオフにします | リモート、デスクトップ、通知 | Managed |
+| [`disableRemotePreviewScripts`](#disableremotepreviewscripts) | [デスクトップ](https://code.claude.com/docs/ja/desktop.md#preview-html-files-in-ssh-and-wsl-sessions)アプリの SSH および WSL セッションで、Browser ペインの HTML プレビュー内のスクリプトをオフにします | リモート、デスクトップ、通知 | Managed |
 | [`disableSideloadFlags`](#disablesideloadflags) | [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)をサイドロードする CLI フラグを拒否します | エンタープライズと管理設定 | Managed |
 | [`disableSkillShellExecution`](#disableskillshellexecution) | [スキル](https://code.claude.com/docs/ja/skills.md)とカスタムコマンドがインラインシェルを実行しないようにします | プラグインとスキル | Any file |
 | [`disableWorkflows`](#disableworkflows) | 全員に対して[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)をオフにします。自分だけに適用するには `enableWorkflows` を使用します | フックと自動化 | Any file |
@@ -1146,7 +1146,7 @@ Claude Code 自身の一部のファイルは書き込み可能なままです�
 
 * **スコープ**: [`Any file`](#scopes)。`auto` および `bypassPermissions` はプロジェクトまたはローカル設定からは有効にならないため、代わりに `~/.claude/settings.json` で設定してください。v2.1.257 より前では、`bypassPermissions` は任意のファイルから有効になりました。VS Code 拡張機能が開始する会話の場合、Claude Code はユーザー、管理、および `--settings` の値のみを読み取ります。
 * **タイプ**: 文字列。次のいずれか：
-  * `"default"`: Claude Code は確認なしで読み取りのみを実行します
+  * `"default"`: Claude Code は作業ディレクトリ内のファイル読み取りと[その他の一部のアクション](https://code.claude.com/docs/ja/permission-modes.md#available-modes)を確認なしで実行します
   * `"acceptEdits"`: Claude Code は確認なしでファイル編集と `mkdir` や `mv` などの一般的なファイルシステムコマンドも実行します
   * `"plan"`: Claude Code は読み取りと計画を行いますが、計画を承認するまで編集をブロックします
   * `"auto"`: Claude Code は日常的なプロンプトなしで実行します。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンドの分類器がそれらがユーザーのリクエストに沿っているかを確認します
@@ -1883,7 +1883,7 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
 
 | フィールド | 型 | 何をするか |
 | :- | :- | :- |
-| `extract` | 文字列。少なくとも 1 つのキャプチャグループを持つ正規表現 | 各一致のグループ 1 でキャプチャされたテキストのみをマスクするため、ファイルの残りは解析可能なままです。`decode` も設定されている場合、Claude Code は各キャプチャを置き換える前に、可能な JWT として確認します。v2.1.221 以降が必要です |
+| `extract` | 文字列。少なくとも 1 つのキャプチャグループを持つ正規表現 | 各一致のグループ 1 でキャプチャされたテキストのみをマスクするため、ファイルの残りの部分は解析可能なままです。`decode` も設定されている場合、Claude Code は各キャプチャをそのまま置き換えるのではなく、JWT の可能性があるものとしてチェックします。v2.1.221 以降が必要です |
 | `onExtractNoMatch` | `"warn"`、`"deny"`、または `"error"`。デフォルト `"warn"` | `extract` または `decode` がマスクするものを見つけられない場合に何が起こるか。`warn` はファイルをサンドボックス内で読み取り可能なままにし、`deny` は読み取り不可にし、`error` は設定を修正するまでサンドボックスセットアップを停止します。Claude Code は、読み取りブロックが強制されない場合、`deny` を `error` として扱います。[ファイルシステム分離を無効にする](https://code.claude.com/docs/ja/sandboxing.md#disable-filesystem-isolation)か、[`sandbox.filesystem.allowRead`](#sandbox-filesystem-allowread)エントリがパスを再度開く場合です。v2.1.221 以降が必要です。`decode` ケースには v2.1.224 以降が必要です |
 | `decode` | 文字列 `"jwt"` | ファイル内の JSON Web Token（JWT）を見つけます。組み込みパターンまたは設定されている場合は `extract` を使用して、各候補を検証し、構造的に有効な偽のトークンで置き換えます。サンドボックス内のコードがトークンをデコードし続けるようにします。候補が検証されない場合、`onExtractNoMatch` が結果を管理します。v2.1.224 以降が必要です |
 | `maskClaims` | 文字列の配列。少なくとも 1 つのクレーム名。`decode` が必要 | 各検証済み JWT 内の名前付きトップレベルペイロードクレームのみをマスクし、変更されたペイロードの周りにトークンを再構築します。他のクレームは読み取り可能なままです。名前付きクレームが一致しない場合、`onExtractNoMatch` が結果を管理します。v2.1.224 以降が必要です |
@@ -1913,7 +1913,7 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
 
 ### `sandbox.credentials.envVars`
 
-環境変数をサンドボックス化されたコマンドから保護します。`"mode": "deny"` の場合、Claude Code はサンドボックス化されたコマンドの環境から変数を削除します。`"mode": "mask"` の場合、サンドボックス化されたコマンドはセッションごとのセンチネル値を見て、サンドボックスプロキシはそのエントリの `injectHosts` への送信リクエストで実際の値を置き換えます。`gh` や `npm` などのツールは実際の認証情報を保持することなく認証を続けます。
+環境変数をサンドボックス化されたコマンドから保護します。`"mode": "deny"` の場合、Claude Code はサンドボックス化されたコマンドの環境から変数を削除します。`"mode": "mask"` の場合、サンドボックス化されたコマンドはセッションごとのセンチネル値を見て、サンドボックスプロキシはそのエントリの `injectHosts` への送信リクエストでセンチネルを実際の値に置き換えます。`gh` や `npm` などのツールは実際の認証情報を保持することなく認証を続けます。
 
 * **Scope**: [`Any file`](#scopes)。Claude Code はプロジェクト `.claude/settings.json` とローカル `.claude/settings.local.json` から `mask` エントリを削除します。
 * **Type**: オブジェクトの配列。各オブジェクトは `name` と `"deny"` または `"mask"` の `mode`、および optional [環境変数のマスクフィールド](#mask-fields-for-environment-variables)を含みます
@@ -1946,9 +1946,9 @@ v2.1.191 以降に適用されます。v2.1.221 より前では、すべての�
 | :- | :- | :- |
 | `extract` | 文字列。少なくとも 1 つのキャプチャグループを持つ正規表現 | 各一致のグループ 1 でキャプチャされたテキストのみをマスクします。例えば、`DATABASE_URL` 接続文字列内のパスワード。値の残りは解析可能なままです。v2.1.224 以降が必要です |
 | `onExtractNoMatch` | `"warn"`、`"deny"`、または `"error"`。デフォルト `"warn"`。`decode` を持つエントリでは、`"warn"` のみが受け入れられます | `extract` が何も一致しない場合に何が起こるか。`warn` は変数をマスクなしで渡し、`deny` はサンドボックス内でそれをアンセットし、`error` は設定を修正するまでサンドボックスセットアップを停止します。v2.1.224 以降が必要です |
-| `decode` | 文字列 `"jwt"` | 全体の値が JWT であることを検証し、構造的に有効な偽のトークンで置き換えます。サンドボックス内のコードがトークンをデコードし続けるようにします。プロキシは出力時に全体の実際のトークンを置き換えます。検証されない値は警告とともにマスクなしで渡されます。v2.1.224 以降が必要です |
+| `decode` | 文字列 `"jwt"` | 全体の値が JWT であることを検証し、構造的に有効な偽のトークンで置き換えます。サンドボックス内のコードがトークンをデコードし続けるようにします。プロキシは送信時に偽のトークンを実際のトークン全体に置き換えます。検証されない値は警告とともにマスクなしで渡されます。v2.1.224 以降が必要です |
 | `maskClaims` | 文字列の配列。少なくとも 1 つのクレーム名。`decode` が必要 | デコードされた JWT 内の名前付きトップレベルペイロードクレームのみをマスクし、変更されたペイロードの周りにトークンを再構築します。他のクレームは読み取り可能なままです。名前付きクレームが一致しない場合、変数は警告とともにマスクなしで渡されます。v2.1.224 以降が必要です |
-| `injectHosts` | 文字列の配列。各ホストは [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains) でも許可されている必要があります | サンドボックスプロキシがセンチネルを実際の値に置き換えるホストを絞ります。未設定の場合、プロキシは `sandbox.network.allowedDomains` のすべてのホストへのリクエストで実際の値に置き換えます。IPv6 宛先は、角括弧付きの形式ではなく、`"::1"` のような角括弧なしの圧縮アドレスで記述します。[`injectHosts` の IPv6 宛先](https://code.claude.com/docs/ja/sandboxing#ipv6-destinations-in-injecthosts)を参照してください |
+| `injectHosts` | 文字列の配列。各文字列は [`sandbox.network.allowedDomains`](#sandbox-network-alloweddomains) でも許可されているホスト | サンドボックスプロキシが実際の値に置き換えるホストを列挙します。`injectHosts` のないほとんどの変数では、プロキシは `sandbox.network.allowedDomains` のすべてのホストへのリクエストで実際の値に置き換えます。IPv6 の宛先は、角括弧付きの形式ではなく、`"::1"` のように圧縮形式のアドレスをそのまま書いてください。[`injectHosts` の IPv6 宛先](https://code.claude.com/docs/ja/sandboxing#ipv6-destinations-in-injecthosts)を参照してください |
 
 これにより、`DATABASE_URL` 内のパスワードのみがマスクされ、パターンが何も一致しない場合は変数がアンセットされ、`SERVICE_JWT` の JWT がマスクされます。`api_key` を除くすべてのクレームは読み取り可能なままです：
 
@@ -2023,7 +2023,7 @@ TLS 終了 HTTPS だけでなく、プレーン HTTP リクエストでも `mask
 
 各名前付き変数は [`sandbox.credentials.envVars`](#sandbox-credentials-envvars) の全体値 `mask` エントリである必要があり、`extract` または `decode` なしで、すべてのペアで 1 つのスロットのみを埋めることができます。以下のルールも適用されます：
 
-* プロキシは、アクセスキー ID エントリの `injectHosts` にリストされたホストでリクエストを再署名します
+* プロキシは、アクセスキー ID エントリの `injectHosts` に列挙されたホストでリクエストを再署名できます
 * `sessionTokenVar` が設定されている場合、プロキシは再署名されたリクエストで実際のトークンを `x-amz-security-token` として送信します
 * ペアで従来の変数のいずれかを指定すると、自動ペアリングが置き換えられます
 
@@ -3466,7 +3466,7 @@ Claude Code が git コミットとプルリクエストに追加するアトリ
 
 `commit` または `pr` を設定すると、Claude Code は非推奨の `includeCoAuthoredBy` 設定を無視し、設定しなかった方のデフォルトテキストを使用します。
 
-Claude Code は、CLAUDE.md または [memory](https://code.claude.com/docs/ja/memory.md) ルールなど、アトリビューションに関するカスタマー独自の命令が、[managed settings](https://code.claude.com/docs/ja/managed-settings.md) で設定されている場合を除き、これらのコミットおよび PR 行より優先されることを Claude に伝えます。
+Claude Code は、CLAUDE.md や[メモリ](https://code.claude.com/docs/ja/memory.md)のルールなど、帰属表示に関するユーザー自身の指示がこれらのコミット行や PR 行よりも優先されることを Claude に伝えます。ただし、そのコミット行または PR 行が[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で設定されている場合はこの限りではありません。
 
 ### `includeCoAuthoredBy`
 
@@ -3568,11 +3568,11 @@ Claude Code がプルリクエストの説明に追加するアトリビュー�
 
 ### `attribution.sessionUrl`
 
-Claude Code が [クラウド](https://code.claude.com/docs/ja/claude-code-on-the-web.md) または [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションからコミットするか、プルリクエストを開くときに claude.ai セッションリンクを追加するかどうかを選択します。Claude Code はコミット上に `Claude-Session` トレーラーとしてリンクを追加し、プルリクエストの説明にリンクとして追加します。リンクを省略するには `false` に設定します。
+[クラウド](https://code.claude.com/docs/ja/claude-code-on-the-web.md) または [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションからのコミットとプルリクエストに claude.ai セッションリンクを追加するよう、Claude Code が Claude に指示するかどうかを選択します。この設定は、コミット上の `Claude-Session` トレーラーと、プルリクエストの説明内の URL を対象とします。リンクを省略するには `false` に設定します。
 
 * **スコープ**: [`Any file`](#scopes)
 * **タイプ**: ブール値
-  * `true`: Claude Code はクラウドまたは Remote Control セッションからコミットするか、プルリクエストを開くときに claude.ai セッションリンクを追加します
+  * `true`: Claude Code はリンクを追加するよう Claude に指示します
   * `false`: Claude Code はリンクを省略します
 * **デフォルト**: `true`
 
@@ -3924,7 +3924,7 @@ Claude Code に同梱されている[スキル](https://code.claude.com/docs/ja/
 }
 ```
 
-空の配列はすべてのチャネルプラグインをブロックします。
+空の配列は、ユーザーが [`--dangerously-load-development-channels`](https://code.claude.com/docs/ja/channels#restrict-which-channel-plugins-can-run) で読み込んだ場合を除き、すべてのチャネルプラグインをブロックします。
 
 このキーは、アカウントでチャネルが [`channelsEnabled`](#channelsenabled) のゲートを通過した時点で有効になります。Team プランと Enterprise プラン、および管理設定のある Console アカウントでは、`channelsEnabled: true` がそれに該当します。[実行できるチャネルプラグインを制限する](https://code.claude.com/docs/ja/channels.md#restrict-which-channel-plugins-can-run)を参照してください。
 
@@ -4484,9 +4484,9 @@ Claude in Chrome、実行中の[VS Code](https://code.claude.com/docs/ja/vs-code
 
 組織が配信するサーバーも許可リストから除外され、拒否リストは引き続きこれらに適用されます。この除外は、すべての[`managedMcpServers`](#managedmcpservers)エントリと、値が[`env` 以外で `${VAR}` 展開を使用しない](https://code.claude.com/docs/ja/managed-mcp#how-allowlists-and-denylists-apply-to-the-managed-set)[`managed-mcp.json`](https://code.claude.com/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)エントリをカバーします。完全なチェック順序については、[サーバーの評価方法](https://code.claude.com/docs/ja/managed-mcp.md#how-a-server-is-evaluated)を参照してください。v2.1.259 より前では、`managed-mcp.json` からのサーバーも一致する必要がありました。
 
-* **スコープ**: [`Any file`](#scopes)。[`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly)が設定されていない限り、すべてのファイルからのエントリが 1 つのホワイトリストにマージされます。管理設定にデプロイして、これを強制します。
+* **スコープ**: [`Any file`](#scopes)。ユーザーが追加するサーバーについては、[`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly) が設定されている場合を除き、すべてのファイルからのエントリが 1 つの許可リストにマージされます。ユーザーがエントリを追加できないようにするには、両方のキーを管理設定にデプロイします。
 * **型**: オブジェクトの配列で、各オブジェクトはキーを 1 つだけ持ちます。英字、数字、ハイフン、アンダースコアのみで構成される文字列の `serverName`、コマンドとその引数を完全一致で照合する配列の `serverCommand`、または `*` ワイルドカードを使用する URL パターンの `serverUrl` のいずれかを使用します
-* **デフォルト**: 未設定。すべてのサーバーが許可されます。空の配列は、ユーザーが追加するすべてのサーバーをブロックします
+* **デフォルト**: 未設定。すべてのサーバーが許可されます。マージ後のリストが空の場合は、ユーザーが追加するすべてのサーバーがブロックされます
 
 この例は、リストされた `npx` コマンドが開始する stdio サーバーのみを許可します。
 
@@ -4583,8 +4583,8 @@ Claude Code は、承認ダイアログでサーバーを拒否すると、こ�
 * **スコープ**: [`Any file`](#scopes)。信頼ダイアログを受け入れていないフォルダでは、Claude Code はユーザー設定、管理設定、`--settings` からこれを尊重し、共有プロジェクトファイルではセッション内と `claude mcp list` および `claude mcp get` で無視します。[プロジェクトサーバーの承認とワークスペースの信頼](https://code.claude.com/docs/ja/mcp.md#project-server-approvals-and-workspace-trust)は、追跡されていない `.claude/settings.local.json` がいつカウントされるかを説明しています。
 * **タイプ**: ブール値
   * `true`: Claude Code はプロジェクト `.mcp.json` ファイルで定義されたすべての MCP サーバーをプロンプトなしで承認します
-  * `false`: Claude Code は各サーバーの承認を求めます。信頼されたフォルダでは、優先度の高いファイルの `false` は優先度の低いファイルの `true` をオーバーライドします。信頼していないフォルダでは、尊重されるファイルの `true` で十分です
-* **デフォルト**: 未設定。Claude Code は各サーバーの承認を求めます
+  * `false`: インタラクティブなターミナルセッションでは、[保留中](https://code.claude.com/docs/ja/mcp.md#server-status)の各サーバーの承認を求めます。確認なしで接続する一部のセッションと、それを除外する方法については、[プロジェクトスコープ](https://code.claude.com/docs/ja/mcp.md#project-scope)を参照してください。信頼されたフォルダでは、優先順位の高いファイルの `false` は優先順位の低いファイルの `true` を上書きします。信頼していないフォルダでは、尊重されるいずれかのファイルの `true` で十分です
+* **デフォルト**: 未設定。インタラクティブなターミナルセッションでは同様に承認を求めます
 
 ```json settings.json theme={null}
 {
@@ -4879,7 +4879,7 @@ Claude が送信する価値があると判断した場合（たとえば、長�
 * **Type**: Boolean
   * `true`: Claude は価値があると判断した場合に電話にプッシュ通知を送信できます
   * `false`: Claude はそれらの通知を送信しません
-* **Default**: `false`
+* **Default**: 未設定なので、Claude Code はアカウントに保存された値を使用し、保存された値がない場合は `false` を使用します
 
 ```json settings.json theme={null}
 {
@@ -4976,7 +4976,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 
 ### `disableRemoteControl`
 
-[Remote Control](https://code.claude.com/docs/ja/remote-control.md) をオフにします。Claude Code は `claude remote-control`、`--remote-control` フラグ、自動開始、およびセッション内トグルを拒否し、組織のポリシーがそれを無効にしたことを報告します。[マネージド設定](https://code.claude.com/docs/ja/managed-settings.md) に配置して、デバイスごとの MDM 強制を行います。
+[Remote Control](https://code.claude.com/docs/ja/remote-control.md) をオフにします。これにより Claude Code は `claude remote-control`、`--remote-control` フラグ、自動開始、およびセッション内トグルを拒否します。[管理設定](https://code.claude.com/docs/ja/managed-settings.md) に配置して、デバイスごとの MDM 強制を行います。
 
 * **Scope**: [`Any file`](#scopes)
 * **Type**: Boolean
@@ -4992,13 +4992,13 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 
 ### `disableRemotePreviewScripts`
 
-デスクトップアプリで SSH または WSL セッションから [HTML ファイルをプレビュー](https://code.claude.com/docs/ja/desktop.md#preview-html-files-in-ssh-and-wsl-sessions) するときに、スクリプトが実行されないようにします。Browser ペインでの外部ブラウジングには影響しません。
+SSH または WSL セッションからデスクトップアプリの Browser ペインで [HTML ファイルをプレビュー](https://code.claude.com/docs/ja/desktop.md#preview-html-files-in-ssh-and-wsl-sessions) するときに、スクリプトが実行されないようにします。そのペインでの外部ブラウジングには影響しません。
 
 デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。Claude Desktop v5.1231.0 以降が必要です。それより前のバージョンはこのキーを無視します。それらのバージョンでスクリプトを停止するには、[`disableBrowserExternalNavigation`](#disablebrowserexternalnavigation) も設定してください。これにより外部ブラウジングもオフになります。
 
 * **Scope**: [`Managed`](#scopes)。デスクトップアプリは、リモートマシンや WSL ディストリビューションからはこのキーを読み取りません。
 * **Type**: Boolean。JSON Boolean `true` のみが有効です
-  * `true`: SSH および WSL セッションの HTML プレビューではスクリプトが実行されません
+  * `true`: SSH および WSL セッションでは、Browser ペインの HTML プレビューでスクリプトが実行されません
   * `false`: このキーはスクリプトをオフにしません
 * **Default**: 未設定なので、このキーは効果がありません
 
@@ -5038,7 +5038,7 @@ Claude Desktop は、デスクトップ設定から派生したポリシー（�
 
 * **Scope**: [`Any file`](#scopes)。Claude Code は古いバージョンによって `~/.claude.json` に残された値も読み取ります。
 * **Type**: Boolean
-* **Default**: `false`
+* **Default**: 未設定なので、Claude Code はアカウントに保存された値を使用します
 
 ```json settings.json theme={null}
 {
@@ -5498,7 +5498,7 @@ Claude Code は `/config` の **Auto-update channel** で選択すると、ユ�
 
 ### `disableBrowserExternalNavigation`
 
-デスクトップアプリの[ブラウザペイン](https://code.claude.com/docs/ja/desktop.md#browse-external-sites)で、ユーザーと Claude の両方に対して外部ブラウジングをオフにします。Localhost 開発サーバープレビューは引き続き機能します。SSH および WSL セッションの HTML プレビューは引き続き開きますが、[スクリプトは実行されません](https://code.claude.com/docs/ja/desktop.md#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。
+デスクトップアプリの[ブラウザペイン](https://code.claude.com/docs/ja/desktop.md#browse-external-sites)で、ユーザーと Claude の両方に対して外部ブラウジングをオフにします。Localhost 開発サーバープレビューは引き続き機能します。SSH および WSL セッションでのブラウザペインの HTML プレビューは引き続き開きますが、[スクリプトは実行されません](https://code.claude.com/docs/ja/desktop.md#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。デスクトップアプリはこのキーを読み取ります。ターミナル CLI は無視します。
 
 * **スコープ**: [`Managed`](#scopes)
 * **タイプ**: ブール値。JSON ブール値`true`のみが有効です
@@ -5728,12 +5728,12 @@ Claude Code が[サーバー管理設定](https://code.claude.com/docs/ja/server
 
 ### `parentSettingsBehavior`
 
-管理者がデプロイした管理ティアも存在する場合に、Agent SDK や IDE 拡張機能などの埋め込みホストプロセスが提供する管理設定を Claude Code が適用するかどうかを選択します。`"first-wins"` では、Claude Code はホストが提供する設定を破棄します。`"merge"` では、制限方向のみのフィルターを通して、管理ティアの下位にそれらを適用します。ホストが起動するセッションに独自の制限を渡す必要がある場合、たとえば Claude Desktop がゲートウェイの送信許可リストを配信する場合に `"merge"` を設定してください。
+管理者がデプロイした管理ティアも存在する場合に、Agent SDK や IDE 拡張機能などの埋め込みホストプロセスが提供する管理設定を Claude Code が適用するかどうかを選択します。ホストが起動するセッションに独自の制限を渡す必要がある場合、たとえば Claude Desktop がゲートウェイの送信許可リストを配信する場合に `"merge"` を設定してください。
 
 * **スコープ**: [`Managed`](#scopes)。Claude Code は、管理者が制御する最も優先度の高い管理ソースからこれを読み取ります。
 * **型**: 文字列。次のいずれか:
   * `"first-wins"`: 管理者がデプロイした管理ティアが存在する場合、Claude Code はホストが提供する設定を破棄します
-  * `"merge"`: Claude Code は、制限方向のみのフィルターを通して、ホストが提供する設定を管理ティアの下位に適用します
+  * `"merge"`: Claude Code は、制限方向のキーを保持するフィルターを通して、ホストが提供する設定を管理ティアの下位に適用します。[`allowManaged*Only` ロックを設定](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)しない限り、権限の許可ルールとサンドボックスの許可リストも通過します
 * **デフォルト**: `"first-wins"`
 
 ```json managed-settings.json theme={null}
@@ -5742,7 +5742,7 @@ Claude Code が[サーバー管理設定](https://code.claude.com/docs/ja/server
 }
 ```
 
-管理者がデプロイした管理ティアが存在しない場合、このキーは効果がありません。その場合、ホストの設定が唯一の管理ティアとして適用され、引き続き制限方向の値にフィルタリングされます。フィルターの制限と管理ソース間の相互作用については、[埋め込みホストからの親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts)と[親設定を制限する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)を参照してください。
+管理者がデプロイした管理ティアが存在しない場合、このキーは効果がありません。その場合、ホストの設定が唯一の管理ティアとして適用され、引き続きフィルタリングされます。フィルターの制限と管理ソース間の相互作用については、[埋め込みホストからの親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts)と[親設定を制限する](https://code.claude.com/docs/ja/claude-apps-gateway#restrict-parent-settings)を参照してください。
 
 ### `policyHelper`
 

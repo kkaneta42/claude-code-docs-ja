@@ -321,7 +321,7 @@ Claude Code が同期スキルの本文をどう扱うかは、セッション�
 
 Claude Code は、[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)の場合を除き、スキルディレクトリのファイル変更を監視します。`~/.claude/skills/`、プロジェクトの `.claude/skills/`、または `--add-dir` ディレクトリ内の `.claude/skills/` でスキルを追加、編集、削除すると、Claude Code は再起動なしで、現在のセッション内で変更を反映します。
 
-セッション開始時に存在しなかったトップレベルのスキルディレクトリを作成した場合は、[`/reload-skills`](https://code.claude.com/docs/ja/commands#all-commands) を実行して、そこに置いたスキルを読み込みます。Claude Code はまだそのディレクトリを監視していないため、その後そこで変更するたびに `/reload-skills` を再度実行してください。
+新しいスキルが表示されない場合は、[`/reload-skills`](https://code.claude.com/docs/ja/commands#all-commands) を実行してください。
 
 > [!NOTE]
 >
@@ -415,7 +415,7 @@ Claude Code がフロントマターを読み取るのは、開始の `---` が�
 | `agent` | いいえ | `context: fork` が設定されている場合に使用するサブエージェントの種類。 |
 | `background` | いいえ | `context: fork` の場合にのみ適用されます。`false` に設定すると、[バックグラウンドで実行する](#run-skills-in-a-subagent)代わりに、スキルを呼び出したターンでフォークされたサブエージェントの結果を待ちます。デフォルト：`true`。 |
 | `hooks` | いいえ | スキルが呼び出されたときに Claude Code が登録し、セッションの残りの間実行し続けるフック。設定形式、`once` オプション、および[スキルフックの制限](https://code.claude.com/docs/ja/hooks.md#limits-on-skill-hooks)については、[スキルとエージェントのフック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents)を参照してください。 |
-| `paths` | いいえ | このスキルがアクティブになるタイミングを制限する glob パターン。カンマ区切りの文字列または YAML リストを受け付けます。設定すると、Claude はパターンに一致するファイルを扱っている場合にのみスキルを自動的に読み込みます。パターンは Claude の現在の作業ディレクトリからの相対パスであり、そのディレクトリ外のファイルは一致しません。[パス固有のルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules)と同じ glob 形式を使用します。 |
+| `paths` | いいえ | このスキルをアクティブにするファイルの glob パターン。カンマ区切りの文字列または YAML リストを受け付けます。パターンは Claude の現在の作業ディレクトリからの相対パスです。メインの会話では、同じ Git worktree 内で[プライマリ作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)のサブディレクトリのいずれかに `cd` した後も、パターンはプライマリ作業ディレクトリからの相対パスのままです。パターンは、基準となるディレクトリ内のファイルにのみ一致します。[パス固有のルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules)と同じ glob 形式を使用します。 |
 | `shell` | いいえ | このスキル内の `` !`command` `` および ` ```! ` ブロックに使用するシェル。`bash`（デフォルト）または `powershell` を受け付けます。`powershell` を設定すると、[PowerShell ツール](https://code.claude.com/docs/ja/tools-reference.md#powershell-tool)が有効な場合にインラインのシェルコマンドが PowerShell 経由で実行されます。このツールは、Git Bash のない Windows ではデフォルトでオン、Git Bash のある環境では claude.ai および Console アカウントでデフォルトでオンであり、Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry のセッション、および macOS、Linux、WSL では `CLAUDE_CODE_USE_POWERSHELL_TOOL=1` が必要です。ツールをオフにするには `0` に設定します。 |
 | `metadata` | いいえ | エンタイトルメントやカタログのフィールドなど、独自のツールが `SKILL.md` から読み取る独自のキーと値のデータのための自由形式の YAML マップ。Claude Code はその内容に基づいて動作せず、マップではない値は破棄します。`paths` などのフロントマターのフィールド名をキーとして再利用しないでください。 |
 | `license` | いいえ | スキルに適用されるライセンス。[Agent Skills](https://agentskills.io) 仕様の一部です。[Claude Code 以外でスキルのフロントマターを使用する](#using-skill-frontmatter-outside-claude-code)を参照してください。Claude Code はこのフィールドを受け付けますが、それに基づいて動作はしません。 |
@@ -1206,7 +1206,7 @@ Claude がスキルを期待通りに使用しない場合：
 3. 説明により密接に一致するようにリクエストを言い換えてみてください
 4. スキルがユーザー呼び出し可能な場合は、`/skill-name` で直接呼び出してください
 5. `/skill-name` も認識されない場合は、Claude Code が[スキルの名前を拒否した](#characters-a-skill-name-cant-hold)かどうかを確認してください
-6. スキルが `paths` を設定している場合は、Claude が読み取り、編集、または書き込むファイルが Claude の現在の作業ディレクトリ内にあることを確認してください。スキルはその外にあるファイル（兄弟関係にある git worktree 内のファイルなど。`/add-dir` で追加したものであっても同様です）に対してはアクティブになりません。それらのファイルでスキルをアクティブにするには、その worktree で Claude Code を起動するか、[`/cd` でセッションをそこに移動](https://code.claude.com/docs/ja/permissions#move-the-session-to-another-directory)してください。
+6. スキルが `paths` を設定している場合は、Claude が読み取り、編集、または書き込むファイルが[パターンの基準となるディレクトリ](#frontmatter-reference)内にあることを確認してください。スキルはその外にあるファイル（兄弟関係にある git worktree 内のファイルなど。`/add-dir` で追加したものであっても同様です）に対してはアクティブになりません。それらのファイルでスキルをアクティブにするには、その worktree で Claude Code を起動するか、[`/cd` でセッションをそこに移動](https://code.claude.com/docs/ja/permissions#move-the-session-to-another-directory)してください。
 
 frontmatter YAML が不正な形式の場合、Claude Code はスキル本体を空のメタデータで読み込むため、`/skill-name` は機能しますが Claude は `description` と照合できません。`--debug` で実行してパースエラーを確認してください。
 

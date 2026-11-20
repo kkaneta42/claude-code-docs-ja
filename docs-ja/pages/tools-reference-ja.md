@@ -24,35 +24,42 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `Artifact` | HTML または Markdown ファイルを claude.ai に[アーティファクト](https://code.claude.com/docs/ja/artifacts.md)として公開します。これはプライベートでインタラクティブなページです。公開リンクで共有することも、Team および Enterprise プランの組織内で共有することもできます。Team および Enterprise プランでの公開共有には Owner による[有効化](https://code.claude.com/docs/ja/artifacts.md#control-public-sharing)が必要です。Pro、Max、Ultra、Team、または Enterprise プランと `/login` 認証が必要です。[利用可能性](https://code.claude.com/docs/ja/artifacts.md#availability)を参照してください | はい |
 | `AskUserQuestion` | 要件を収集したり曖昧さを明確にしたりするために、複数選択肢の質問をします。デフォルトでは、質問に答えるまで質問は開いたままになります。[AskUserQuestion ツールの動作](#askuserquestion-tool-behavior)を参照してください | いいえ |
 | `Bash` | 環境でシェルコマンドを実行します。[Bash ツールの動作](#bash-tool-behavior)を参照してください | はい |
-| `CronCreate` | 現在のセッション内で定期的または 1 回限りのプロンプトをスケジュールします。タスクはセッションスコープであり、`--resume` または `--continue` で復元されます（有効期限が切れていない場合）。[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)を参照してください | いいえ |
+| `CronCreate` | 現在のセッション内で定期的または 1 回限りのプロンプトをスケジュールします。[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)を参照してください | いいえ |
 | `CronDelete` | セッションスコープのスケジュールタスクを ID でキャンセルします | いいえ |
 | `CronList` | セッションスコープのすべてのスケジュールタスクをリストします | いいえ |
 | `Edit` | 特定のファイルに対して対象を絞った編集を行います。[Edit ツールの動作](#edit-tool-behavior)を参照してください | はい |
 | `EndConversation` | セッションを終了します。持続的な不正使用入力の稀なケース、またはユーザーが Claude にセッションの終了を求めたうえで確認した場合に使用します。[EndConversation ツールの動作](#endconversation-tool-behavior)を参照してください | いいえ |
 | `EnterPlanMode` | plan モードに切り替えて、コーディング前にアプローチを設計します | いいえ |
-| `EnterWorktree` | 分離された[git worktree](https://code.claude.com/docs/ja/worktrees.md)を作成してそれに切り替えるか、既存の worktree に切り替えます。[EnterWorktree ツールの動作](#enterworktree-tool-behavior)を参照してください | はい |
+| `EnterWorktree` | 分離された[git worktree](https://code.claude.com/docs/ja/worktrees.md)を作成してそれに切り替えるか、既存の worktree に切り替えます。[EnterWorktree ツールの動作](#enterworktree-tool-behavior)を参照してください | 一部の worktree |
 | `ExitPlanMode` | 承認のためのプランを提示し、plan モードを終了します | はい |
-| `ExitWorktree` | worktree セッションを終了し、元のディレクトリに戻ります。[`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) などのように既に独自の作業ディレクトリで実行されているサブエージェントは利用できません。[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効になると、削除されるか拒否されます | いいえ |
+| `ExitWorktree` | worktree セッションを終了し、元のディレクトリに戻ります。このツールは、[`isolation: worktree`](https://code.claude.com/docs/ja/sub-agents#supported-frontmatter-fields) を使用する場合など、すでに独自の作業ディレクトリで実行されているサブエージェントには提供されません。[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories) が有効になると、このツールは削除されるか、拒否されます | No |
 | `Glob` | パターンマッチングに基づいてファイルを検索します。macOS、Linux、WSL ではデフォルトで存在しません。[Glob ツールの動作](#glob-tool-behavior)を参照してください | いいえ |
 | `Grep` | ファイルコンテンツ内のパターンを検索します。macOS、Linux、WSL ではデフォルトで存在しません。[Grep ツールの動作](#grep-tool-behavior)を参照してください | いいえ |
 | `ListAgents` | Claude が `SendMessage` でメッセージを送信できるエージェントをリストします。セッション内のサブエージェント、[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、その他のローカル Claude Code セッション、およびこのセッションが [Remote Control](https://code.claude.com/docs/ja/remote-control.md) に接続されている間、[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)と他のマシン上の Remote Control セッション。`/list-agents` コマンドをサポートします。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)を参照してください。Claude Code v2.1.224 以降が必要で、[クロスセッションメッセージングが有効](https://code.claude.com/docs/ja/cross-session-messaging.md#availability)なセッションにのみ表示されます。チームメイト行とこのセッション独自の名前を示す最初の行には v2.1.239 以降が必要です | いいえ |
 | `ListMcpResourcesTool` | 接続された[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)によって公開されたリソースをリストします。[MCP Apps UI リソース](https://code.claude.com/docs/ja/mcp.md#reference-mcp-resources)は除外されます。これらはホストアプリケーションがレンダリングするためのページです | いいえ |
+| `ListPlugins` | [claude.ai アカウントで有効になっているプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)をリストします。[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)または[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)が必要です。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)では利用できません | いいえ |
+| `ListSkills` | [claude.ai アカウントで有効になっているスキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)をリストします。`ListPlugins` と同じセッションで利用できます | いいえ |
 | `LSP` | 言語サーバー経由のコードインテリジェンス。定義にジャンプ、参照を検索、型エラーと警告をレポートします。[LSP ツールの動作](#lsp-tool-behavior)を参照してください | いいえ |
 | `Monitor` | コマンドをバックグラウンドで実行し、各出力行を Claude にフィードバックして、ログエントリ、ファイル変更、またはポーリングされたステータスに対応できるようにします。WebSocket を開いて、各受信メッセージをイベントとして扱うこともできます。[Monitor ツール](#monitor-tool)を参照してください | はい |
 | `NotebookEdit` | Jupyter ノートブックセルを変更します。[NotebookEdit ツールの動作](#notebookedit-tool-behavior)を参照してください | はい |
 | `PowerShell` | PowerShell コマンドをネイティブに実行します。[PowerShell ツール](#powershell-tool)の利用可能性を参照してください | はい |
+| `propose_skills` | 提案されたスキルのカードを表示し、ユーザーがレビューして claude.ai アカウントに保存できるようにします。クラウドの [Cowork](https://claude.com/docs/cowork/overview) セッションなど、一部のクラウドセッションで利用できます | いいえ |
 | `PushNotification` | ローカルセッションからデスクトップ通知を送信し、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) の使用時または[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では電話へのプッシュ通知を送信します。プッシュ配信は Anthropic ホスト型インフラストラクチャを通じて実行されます。これは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
 | `Read` | ファイルの内容を読み取ります。[Read ツールの動作](#read-tool-behavior)を参照してください | いいえ |
 | `ReadMcpResourceTool` | URI で特定の MCP リソースを読み取ります | いいえ |
 | `RemoteTrigger` | claude.ai で[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（旧ルーティン）を作成、更新、実行、リストします。`/schedule` コマンドをサポートします。[`RemoteTrigger` 入力リファレンス](https://code.claude.com/docs/ja/agent-sdk/typescript#remotetrigger)は、すべてのアクションと、ツールを削除する組織ポリシーを文書化しています。クラウドスケジュールタスクは claude.ai に存在し、Pro、Max、Ultra、Team、または Enterprise プランが必要です。そのため、このツールは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
 | `ReportFindings` | コードレビューの検出結果を構造化リストとしてレポートします。検出結果ごとにファイル、概要、失敗シナリオがあり、Claude Code はテキストとして出力する代わりにレンダリングできます。Claude はアクティブなコードレビュー指示がこれを呼び出すように指示する場合に呼び出します。検出結果には、`correctness` や `test-coverage` などのオプションの `category` スラッグを含めることもでき、レンダリングされたリストのファイルの場所の横に表示されます | いいえ |
 | `ScheduleWakeup` | [自分のペースで進む `/loop`](https://code.claude.com/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の次の反復をスケジュールし直します。Claude は各反復の終了時にこれを呼び出して、次の反復をいつ実行するかを 1 分後から 1 時間後の間で選択します。ユーザーが直接呼び出すことはありません。代わりにループを終了するには、Claude はこれを `stop: true` で呼び出します。これは保留中のウェイクアップをキャンセルします。保留中のウェイクアップは[Stop フックの入力](https://code.claude.com/docs/ja/hooks.md#stop-input)の `session_crons` に表示されます | いいえ |
+| `SearchPlugins` | claude.ai のプラグインカタログを検索します。`ListPlugins` と同じセッションで利用できます | いいえ |
+| `SearchSkills` | claude.ai のスキルを検索します。`ListPlugins` と同じセッションで利用できます | いいえ |
 | `SendFeedback` | Claude Code に関するフィードバックレポートを作成します。製品の問題またはセッション内での Claude 自身の動作をカバーします。ユーザーがレビューできるよう、お使いのマシン上のキューに入れます。Claude Code は、ドラフトを送信することを選択するまで何も送信しません。[SendFeedback ツールの動作](#sendfeedback-tool-behavior)を参照してください。Claude Code v2.1.238 以降が必要です | いいえ |
 | `SendMessage` | 別のエージェントにメッセージを送信します。[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、[エージェント ID または名前で再開するサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)、またはこのマシン上またはその外にある他の Claude Code セッションのいずれか。他のセッションへのメッセージングには Claude Code v2.1.224 以降が必要です。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)は、Claude が到達できるセッション、[メッセージが到着したときの外観](https://code.claude.com/docs/ja/cross-session-messaging.md#what-a-message-looks-like)、および[別のセッションがアイドル状態になったときに Claude が通知を受け取る方法](https://code.claude.com/docs/ja/cross-session-messaging.md#get-a-notice-when-another-session-goes-idle)をカバーしています。Claude はオプションの `summary` 入力を含めることができます。通常は 5～10 語で、Claude Code は 1 行のプレビューとして表示します。Claude が[プレーンテキストメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md#limitations)で省略した場合、Claude Code はメッセージの最初の行を概要として使用します。Claude Code は 200 文字を超える概要を省略記号で切り詰めます | いいえ |
 | `SendUserFile` | セッションからファイルをオプションのキャプション付きでユーザーに送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトで言及されるだけでなく、デバイスに届くようにします。オプションの `display` 入力は表示方法を制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) クライアントが接続されている場合、または[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
 | `ShareOnboardingGuide` | `ONBOARDING.md` をアップロードし、チームメイトが Claude Code で開くことができる共有リンクを返します。ガイドが作成された後、`/team-onboarding` から呼び出されます。Team および Enterprise プランの claude.ai サブスクライバーが利用できます | はい |
 | `Skill` | メイン会話内で[スキル](https://code.claude.com/docs/ja/skills.md#control-who-invokes-a-skill)を実行します。`allowed-tools`、`disallowed-tools`、または `hooks` を設定するスキルではプロンプトを表示する場合があります | 一部のスキル |
 | `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
+| `SuggestPluginInstall` | 追加できる[推奨プラグインのカード](https://code.claude.com/docs/ja/claude-code-on-the-web.md#plugin-suggestions-in-the-conversation)を表示します。`ListPlugins` と同じセッションで利用できます | いいえ |
+| `SuggestSkills` | 追加できる claude.ai スキルのカードを表示します。`ListPlugins` と同じセッションで利用できます | いいえ |
 | `TaskCreate` | タスクリストに新しいタスクを作成します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskGet` | 特定のタスクの完全な詳細を取得します。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
 | `TaskList` | すべてのタスクを現在のステータスでリストします。[タスクツール利用可能性](#task-tool-availability)の下にリストされているモデルでのみデフォルトで提供され、他のモデルではオプトインした場合に提供されます | いいえ |
@@ -108,7 +115,7 @@ Agent ツールは、別のコンテキストウィンドウでサブエージ�
 非フォーク subagent が使用できるツールは、[subagent definition](https://code.claude.com/docs/ja/sub-agents.md) の `tools` フィールドと `disallowedTools` フィールドに依存します。
 
 * **どちらのフィールドも設定されていない場合**: subagent は [subagent で利用可能なすべてのツール](https://code.claude.com/docs/ja/sub-agents.md#available-tools) を継承します。
-* **`tools` のみ**: subagent はリストされたツールのみを取得します。
+* **`tools` のみ**: サブエージェントはリストされたツールを取得します。[`memory`](https://code.claude.com/docs/ja/sub-agents#enable-persistent-memory) が有効な場合は、Read、Write、Edit も取得します。
 * **`disallowedTools` のみ**: subagent はリストされたツール以外のすべての親ツールを取得します。
 * **両方設定されている場合**: `disallowedTools` が優先されます。両方にリストされているツールは削除されます。
 

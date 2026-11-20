@@ -170,7 +170,7 @@ Claude Code がコードベースを理解できるように、ドキュメン�
 
 ### セキュリティポリシーを構成する
 
-セキュリティチームは、Claude Code が実行できることと実行できないことに対する管理権限を構成できます。これはローカル構成によって上書きされません。[詳細をご覧ください](https://code.claude.com/docs/ja/security.md)。
+セキュリティチームは、Claude Code が実行できることと実行できないことに対する管理権限を設定できます。[詳細をご覧ください](https://code.claude.com/docs/ja/security.md)。
 
 これらのデプロイメントオプションのうち、管理対象マシンが使用できるものを制限するには、管理設定で [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) を設定します。たとえば、`["bedrock"]` は Amazon Bedrock のみを許可します。Mantle エンドポイントも有効にする Bedrock フリートは `"mantle"` も一覧に含めます。このエントリは、管理対象の `env` ピン留めも必要なエンドポイント変数を示します。Claude Code v2.1.285 以降が必要です。
 

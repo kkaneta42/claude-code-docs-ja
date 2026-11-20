@@ -334,6 +334,7 @@ claude self-hosted-runner orchestrator \
 | `CLAUDE_RUNNER_PRIMARY_REPO_REVISION` | セッションの最初の git ソースのリビジョン。ブランチ、SHA、タグ、または完全な参照名です。指定されていない場合は空です。 |
 | `CLAUDE_RUNNER_REPO_SOURCES` | セッションのすべての git ソースの `{url, revision}` の JSON 配列。セカンダリリポジトリでルーティングするフック用です。ソースがない場合は空です。 |
 | `CLAUDE_RUNNER_CORRELATION_ID` | セッション作成時に提供された相関 ID。フックがこのワークオーダーをセッションを作成した要求にマップできるようにエコーバックされます。セッションに相関 ID がない場合は空です。 |
+| `CLAUDE_RUNNER_META_<LABEL>` | [`--hook-label`](https://code.claude.com/docs/ja/self-hosted-environments-reference#orchestrator-cli-flags) で指定したラベルに対するセッションの値。未設定の場合があります。ラベル `size` は `"${CLAUDE_RUNNER_META_SIZE:-}"` として読み取ってください。 |
 | `CLAUDE_RUNNER_CLIENT_PLATFORM` | セッションを作成したクライアント表面。`web_claude_ai`、`desktop_app`、`ios`、`scheduled_trigger` など。採用分析用です。セッションに記録または認識された表面がない場合は未設定で、事前ウォーミング要求の場合も未設定です。`[ -n "${CLAUDE_RUNNER_CLIENT_PLATFORM:-}" ]` で確認してください。これは `set -u` の下で安全なままです。 |
 | `CLAUDE_RUNNER_SPAWN_REASON` | [Anthropic がこのスポーン要求を送信した理由](#find-out-why-a-spawn-request-was-sent)。`runner_lost` や `resumed` など。要求に正しい形式の理由が含まれていない場合は未設定のため、`"${CLAUDE_RUNNER_SPAWN_REASON:-}"` として読み取ってください。オーケストレーターに Claude Code v2.1.318 以降が必要です |
 
@@ -878,7 +879,7 @@ Anthropic のコントロールプレーンがセッションに [Claude Code �
 
 * **どこに着地するか**：ランナーは提供された各フックスクリプトをセッションの設定ディレクトリの予約済み `hooks/.ccr-launcher/` サブディレクトリに書き込み、スクリプトを `--settings` で渡す別の設定ファイルに登録し、シードされた `settings.json` と `hooks/<name>` の独自のスクリプトを変更しないままにします。ランナーは各セッションの予約済みサブディレクトリを再作成し、`~/.claude/hooks/.ccr-launcher/` のホストコンテンツをセッションにシードしません。
 * **誰がそれらを作成するか**：コントロールプレーンはセッションごとまたはサードパーティ入力からではなく、独自のデプロイメント内の固定定数からスクリプトを入力します。
-* **何がそれらを管理するか**：`--settings` を通じて配信されるフックは通常のマージされたフック設定に入り、管理層ではないため、管理設定はまだ適用されます。`disableAllHooks` はそれらを無効にします。また、それらは [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) が読み込んだままにするカテゴリーには含まれません。
+* **何がそれらを管理するか**：[Claude Code が適用する管理設定](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) です。そこで [`disableAllHooks`](https://code.claude.com/docs/ja/settings-reference#disableallhooks) を設定すると、提供されたフックは実行されません。また、それらは [`allowManagedHooksOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedhooksonly) が読み込んだままにするカテゴリーには含まれません。
 
 ユーザーが自分でセッションを開始すると、Claude Code は [その claude.ai アカウントで有効になっているスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions) をそのセッションの設定ディレクトリにダウンロードします。[クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md) の実行ではオーナーのスキルは取得されず、[Bedrock または Agent Platform にモデルリクエストを送信する](#send-model-requests-to-bedrock-or-agent-platform) セッションはスキルを一切ダウンロードしません。これらのセッションで必要なスキルは、ランナーイメージに追加するか、[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories) のスレッド以外ではリポジトリの `.claude/skills/` にコミットしてください。
 
@@ -916,7 +917,7 @@ claude.ai の管理コンソールでもキーを設定している場合でも�
 * **デフォルトである `--capacity 1` と組み込みのチェックアウトを使用する場合**: セッションは、リポジトリのリストにある最初のリポジトリで開始されます。そのリポジトリの `.claude/settings.json` がプロジェクト設定として有効になり、その [`.mcp.json`](#mcp-servers) が読み込まれますが、他のリポジトリのものは有効にならず、読み込まれません。
 * **1 より大きい `--capacity`、または [`checkout` フック](#checkout) を使用する場合**：セッションはチェックアウトを含むセッションごとのディレクトリで開始します。どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` も読み込まれず、フックコマンド内の [`$CLAUDE_PROJECT_DIR`](https://code.claude.com/docs/ja/hooks#reference-scripts-by-path) はチェックアウトではなくそのディレクトリになります。
 
-各リポジトリの `CLAUDE.md` は、セッションがどこで開始しても読み込まれます。プロジェクトのスレッド以外では、そのスキルも読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。
+各リポジトリの `CLAUDE.md` は、セッションがどこで開始しても読み込まれます。プロジェクトのスレッド以外では、そのスキルも読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、プロジェクトのスレッド以外では、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。[`--trust-workspace false`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動した場合、Claude Code は両方のキーをスキップします。`enabledPlugins` のスキップには Claude Code v2.1.323 以降が必要です。
 
 すべてのセッションでフックを実行したり権限ルールを適用したりするには、ランナーホストの `~/.claude/settings.json` に記述します。ランナーは、セッションがどこで開始しても、[ホストのファイルをすべてのセッションにシードします](#how-each-session’s-config-is-assembled)。`Read` ルールまたは `Edit` ルールのパスは、`//` による絶対パスまたは `~/` によるホーム相対の [パターン](https://code.claude.com/docs/ja/permissions.md#read-and-edit) として記述してください。それ以外のパターンは設定ソースまたは現在のディレクトリを基準とするためです。
 

@@ -22,7 +22,7 @@
 | アプローチ | 次のターンが開始される時期 | 停止する時期 |
 | :- | :- | :- |
 | `/goal` | 前のターンが終了するか、インタラクティブセッションで[アイドルチェックイン](#background-work-defers-evaluation)または[自動再試行](#other-errors-retry-or-pause-the-goal)が発生する | モデルが条件が満たされたことを確認するか、それが不可能であると判断するか、[修正が必要なエラー](#errors-you-have-to-fix-clear-the-goal)でターンが失敗するか、[`/goal clear`](#clear-a-goal)を実行する |
-| [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop) | 時間間隔が経過する | あなたが停止するか、Claude が作業が完了したと判断する |
+| [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks#run-a-prompt-repeatedly-with-%2Floop) | 時間間隔が経過する | ユーザーが停止するか、[ループが自動的に終了する](https://code.claude.com/docs/ja/scheduled-tasks.md#stop-a-loop) |
 | [Stop hook](https://code.claude.com/docs/ja/hooks-guide.md#prompt-based-hooks) | 前のターンが終了する | あなた自身のスクリプトまたはプロンプトが判断する |
 
 `/goal` と Stop hook は両方とも、すべてのターンの後に実行されます。`/goal` はセッションスコープのショートカットです。条件を入力すると、現在のセッションでのみアクティブになります。Stop hook はあなたの設定ファイルに存在し、そのスコープ内のすべてのセッションに適用され、決定論的なチェックのためにスクリプトを実行するか、モデルで評価されたチェックのためにプロンプトを実行できます。

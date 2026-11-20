@@ -213,7 +213,7 @@ v2.1.280 より前は、デフォルトで `y` も `confirm:yes` に、`n` も `
 | `historySearch:execute` | Enter | 選択したコマンドを実行します |
 | `historySearch:cycleScope` | Ctrl+S | スコープを順に切り替えます：セッション、プロジェクト、すべて |
 
-`historySearch:next`、`historySearch:accept`、`historySearch:cancel`、`historySearch:execute` のデフォルトは、クラシックレンダラーのインライン履歴検索に適用されます。この検索は常にすべてのプロジェクトのプロンプトを対象とします。`historySearch:cycleScope` は[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)でのみ有効です。フルスクリーンレンダリングでは、`Ctrl+R` で代わりに検索ダイアログが開き、`Ctrl+S` でそのスコープを順に切り替えます。ダイアログのその他のキーは固定されており、再バインドできません：`Enter` または `Tab` でハイライトされた一致をプロンプト入力に配置し、`Esc` でキャンセルします。
+`historySearch:accept`、`historySearch:cancel`、`historySearch:execute` は、クラシックレンダラーのインライン検索でのみ有効です。この検索はすべてのプロジェクトのプロンプトを対象とします。`historySearch:cycleScope` は[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md)でのみ有効です。フルスクリーンレンダリングでは、`Ctrl+R` で代わりに検索ダイアログが開き、`Ctrl+S` でそのスコープを順に切り替えます。ダイアログでは、`Enter` または `Tab` でハイライトされた一致をプロンプト入力に配置し、`Esc` でキャンセルします。
 
 ### タスクアクション
 

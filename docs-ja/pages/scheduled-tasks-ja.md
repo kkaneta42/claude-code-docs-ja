@@ -129,7 +129,9 @@ quiet, say so in one line.
 * **[自分のペースで実行するループ](#let-claude-choose-the-interval)**: ループが次の反復を待機している間に、空のプロンプトで `Esc` を押すと停止します。Claude がアイドル状態のときは `Ctrl+C` で停止することもできます。ただし、[アタッチしたバックグラウンドセッション](#detach-without-stopping-a-loop)では除きます。`Pending wakeup cancelled` という通知により、ループが再度実行されないことを確認できます。
 * **[固定間隔のループ](#run-on-a-fixed-interval)**: `/loop 5m` などのループを停止するには、Claude にキャンセルを依頼します（例: `cancel the deploy check loop`）。`Esc` と `Ctrl+C` では、このループも、[Claude に直接依頼してスケジュールした](#manage-scheduled-tasks)タスクも停止しません。キャンセルしないループは [7 日が経過](#seven-day-expiry)すると終了します。
 
-[自分のペースモード](#let-claude-choose-the-interval)では、Claude はタスクが完了したら自分でループを終了することもできます。Claude は [`ScheduleWakeup` ツール](https://code.claude.com/docs/ja/tools-reference)を `stop: true` で呼び出し、保留中のウェイクアップを直ちにキャンセルします。反復がスケジュール変更またはスケジュール停止のいずれも行わずに終了した場合、Claude Code は約 20 分後にフォールバックウェイクアップをスケジュールし、その反復がスケジュール変更も行わない場合にループを終了します。
+[自分のペースモード](#let-claude-choose-the-interval)では、Claude はタスクが完了したら自分でループを終了することもできます。Claude は [`ScheduleWakeup` ツール](https://code.claude.com/docs/ja/tools-reference)を `stop: true` で呼び出し、保留中のウェイクアップを直ちにキャンセルします。
+
+自分のペースで実行するループは、Claude が次の反復をスケジュールせずに反復が終了した場合にも停止することがあります。約 20 分後に追加の反復を 1 回実行するには、[`CLAUDE_CODE_LOOP_KEEPALIVE`](https://code.claude.com/docs/ja/env-vars#variables) を参照してください。
 
 #### ループを停止せずにデタッチする
 
@@ -238,7 +240,7 @@ cancel the deploy check job
 * タスクは Claude Code が実行中でアイドル状態の場合にのみ実行されます。ターミナルを閉じるか、セッションを終了すると、タスクは実行を停止します。[セッションをバックグラウンドで実行する](https://code.claude.com/docs/ja/agent-view.md#from-inside-a-session)と、`/loop` タスクがバックグラウンドセッションに引き継がれ、ターミナルなしで実行を続けます。
 * 見落とされた実行のキャッチアップはありません。タスクのスケジュール済み時間が Claude が長時間実行されるリクエストでビジーの間に経過した場合、Claude がアイドル状態になったときに 1 回実行され、見落とされた間隔ごとに 1 回ではありません。
 * [バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#from-inside-a-session)では、クラッシュ後など、セッションのプロセスが実行されていない間に次のウェイクアップの時刻が来ると、[自分のペースで実行するループ](#let-claude-choose-the-interval)は停止します。プロセスが再び起動すると、トランスクリプトに[ウェイクアップが実行されないという通知](https://code.claude.com/docs/ja/errors.md#restarted-after-its-next-loop-wakeup-was-due)が表示されます。ループを続けるには、[セッションに返信](https://code.claude.com/docs/ja/agent-view.md#peek-and-reply)して、ループの実行を続けるよう Claude に依頼してください。
-* `claude --resume` または `claude --continue` でセッションを再開すると、Claude Code は `CronCreate` でスケジュールされたタスクを復元します。ただし、[有効期限切れ](#seven-day-expiry)になっている定期的なタスク、およびスケジュール済み時間がすでに経過している 1 回限りのタスクは除きます。[自分のペースで実行する `/loop`](#let-claude-choose-the-interval)は復元されないため、再度 `/loop` を実行して再開してください。
+* `claude --resume` または `claude --continue` でセッションを再開すると、Claude Code は `CronCreate` でスケジュールされたタスクを復元します。ただし、[有効期限切れ](#seven-day-expiry)になっている定期的なタスク、およびスケジュール済み時間がすでに経過している 1 回限りのタスクは除きます。また、ターンの間に `Exit and stop tasks` を選択して終了した場合も、セッションスコープのタスクは失われます。[自分のペースで実行する `/loop`](#let-claude-choose-the-interval) も復元されません。復元されなかったループを再開するには、再度 `/loop` を実行してください。
 * 復元された定期的なタスクは、セッションが実行されていなかった間に見逃した実行分については実行されません。次の実行は再開後に最初に予定されている実行で、その実行には[ジッター](#jitter)が適用されます。
 * `claude --resume` または `claude --continue` で再開しても、Claude Code はセッション終了時に実行中だったバックグラウンドの Bash コマンドとモニターを再起動しません。引き続き必要な場合は、再度開始するよう Claude に依頼してください。
 * [フィーチャーフラグ取得がオフ](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)の場合、Claude Code はセッション間で保持するよう要求したタスクをプロジェクトの `.claude/scheduled_tasks.json` ファイルに保存します。`.claude` ディレクトリまたはそのファイルがシンボリックリンクの場合、Claude Code はタスクをスケジュールする代わりにエラーを返します。保存されたタスクは、それを作成したプロジェクトフォルダでのみ実行されます。ファイルを新しいワークツリーなど別のフォルダにコピーした場合、そこのセッションはコピーされたタスクをリストしますが実行しないため、そのフォルダで再度タスクを作成してください。

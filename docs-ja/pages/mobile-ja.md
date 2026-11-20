@@ -36,7 +36,7 @@ Claude Code に使用するのと同じ claude.ai アカウントと組織でサ
 
 | 機能 | 接続先 | 使用時期 |
 | :- | :- | :- |
-| [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | Anthropic が管理するクラウドインフラストラクチャ上のセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [クラウドクイックスタート](https://code.claude.com/docs/ja/web-quickstart.md)を参照してください。 |
+| [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | クラウドインフラストラクチャ（デフォルトでは Anthropic が管理）上のセッション | リポジトリが GitHub 上にあり、スマートフォンを置いた後もタスクが実行され続ける必要がある場合。セットアップについては [クラウドクイックスタート](https://code.claude.com/docs/ja/web-quickstart.md)を参照してください。 |
 | [プロジェクト](https://code.claude.com/docs/ja/claude-projects.md) | Claude が並列スレッドの作業を調整し、報告する会話 | 1 つのタスクではなく関連する作業のストリームがあり、どのスレッドが完了したか、または自分の対応が必要かを確認したい場合。 |
 | [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) | コンピュータで実行されている Claude Code セッション | 作業にローカルファイルシステム、ツール、または MCP サーバーが必要な場合。 |
 | [Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) | コンピューターの Desktop アプリ | タスクをメッセージで送信し、Dispatch に実行方法を決定させたい場合。Pro、Max、または Ultra プランが必要です。 |
@@ -49,7 +49,7 @@ Claude Code に使用するのと同じ claude.ai アカウントと組織でサ
 
 ### クラウドセッションを開始および監視する
 
-クラウドセッションはクラウドインフラストラクチャでタスクを実行し、Anthropic が管理するため、スマートフォンを置いた後もセッションが続行されます。Code タブからリポジトリとブランチを選択し、タスクを説明して送信します。セッションはデバイス間で永続化されます。ラップトップで開始したタスクはスマートフォンから確認できる状態で待機し、スマートフォンから開始したタスクはデスクに戻ったときに待機しています。
+クラウドセッションはクラウドインフラストラクチャ（デフォルトでは Anthropic が管理）でタスクを実行するため、スマートフォンを置いた後もセッションが続行されます。Code タブからリポジトリとブランチを選択し、タスクを説明して送信します。セッションはデバイス間で永続化されます。ラップトップで開始したタスクはスマートフォンから確認できる状態で待機し、スマートフォンから開始したタスクはデスクに戻ったときに待機しています。
 
 アプリでセッションを開いて進捗を確認したり、Claude の質問に答えたり、新しい方向に操作したりできます。Claude に [プルリクエストを監視](https://code.claude.com/docs/ja/claude-code-on-the-web.md#auto-fix-pull-requests)させて、CI の失敗やレビューコメントが到着したときに修正することもできます。GitHub を接続して環境をセットアップするには、[クラウドクイックスタート](https://code.claude.com/docs/ja/web-quickstart.md)に従い、クラウドセッションで実行できるすべてのことについては [クラウドで Claude Code を使用する](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を参照してください。
 

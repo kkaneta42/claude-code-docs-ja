@@ -182,11 +182,9 @@ claude -p "Reply with one word: connected"
 }
 ```
 
-テーブルから条件付き変数を同じ `env` ブロックに追加します。マネージドされた `ANTHROPIC_BASE_URL` は強制され、Claude Code がプロセス環境と低優先度セッティングの上に適用するため、開発者のシェルエクスポートでオーバーライドできません。
+テーブルから条件付き変数を同じ `env` ブロックに追加します。
 
 マネージドセッティングにゲートウェイ認証情報と一緒に `forceLoginMethod`、`forceLoginOrgUUID`、または `forceLoginGatewayUrl` を含めないでください。`forceLoginMethod` または `forceLoginOrgUUID`（どちらのキーでも、任意の値で）は起動時に `ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、および `apiKeyHelper` をブロックし、開発者は進行できません。`This machine's managed settings require a first-party login` または `forceLoginMethod` を `"gateway"` に設定するか `forceLoginGatewayUrl` を設定する場合は [`Administrator policy requires a Cloud gateway sign-in`](https://code.claude.com/docs/ja/errors#administrator-policy-requires-a-cloud-gateway-sign-in) が表示されます。
-
-[サーバーマネージドセッティング](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)配布には `api.anthropic.com` への直接接続が必要なため、ゲートウェイルーティングセッションに到達しません。ゲートウェイデプロイメントはこのファイルベースのマネージドセッティングパスを使用し、同じキーを強制します。
 
 認証情報については、上記のように示されているマネージドセッティングファイルで 1 つの [`apiKeyHelper`](https://code.claude.com/docs/ja/llm-gateway-connect#rotate-credentials-with-apikeyhelper)コマンドを配布します。コマンドはローカル開発者としてシークレットストアに認証するため、各マシンは独自のキーを受け取ります。または、既存のシークレットプロセスを通じて各開発者にキーを配布し、自分で `ANTHROPIC_AUTH_TOKEN` を設定させます。
 

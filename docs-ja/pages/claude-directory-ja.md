@@ -341,7 +341,7 @@ Claude Code は、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings
 Claude Code は、以下の場合に年齢ベースのスイープをスキップします：
 
 * **ベアモード**：[`--bare`](https://code.claude.com/docs/ja/headless#start-faster-with-bare-mode)で `claude -p` を実行する場合、Claude Code はそのセッションでスイープを実行しません。
-* **一時停止されたスイープ**：Claude Code が保持期間を安全に判定できない場合、スイープを一時停止します。[`retention_sweep` イベント](https://code.claude.com/docs/ja/monitoring-usage#retention-sweep-event)には、スイープを一時停止させる各設定が記載されます。原因が読み込みまたは解析できない設定ファイルである場合、または `cleanupPeriodDays` や `desktopSessionCleanupPeriodDays` が設定された状態で設定エラーがある場合は、原因を修正するまで `/status` に警告が表示されます。
+* **一時停止されたスイープ**：Claude Code が保持期間を安全に判定できない場合、スイープを一時停止します。その理由は [`retention_sweep` イベント](https://code.claude.com/docs/ja/monitoring-usage#retention-sweep-event)で報告されます。原因が読み込みまたは解析できない設定ファイルである場合、または `cleanupPeriodDays` や `desktopSessionCleanupPeriodDays` が設定された状態で設定エラーがある場合は、原因を修正するまで `/status` に警告が表示されます。
 
 [管理設定](https://code.claude.com/docs/ja/managed-settings.md)が `cleanupPeriodDays` を提供している場合、優先度の低い設定ファイルにエラーがあっても、Claude Code は管理値でスイープを実行します。
 

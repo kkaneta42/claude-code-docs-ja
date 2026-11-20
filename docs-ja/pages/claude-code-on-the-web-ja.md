@@ -10,7 +10,9 @@
 >
 > クラウドセッションは Pro、Max、Ultra、Team プランで利用でき、Premium シートまたは Chat + Claude Code シートを持つ Enterprise ユーザーも対象です。[カスタムロール](https://support.claude.com/en/articles/13930452)でアクセスが管理されている場合、ブラウザ、アプリ、またはターミナルから Anthropic のインフラストラクチャでセッションを開始するには、クラウドセッションの権限を含むロールも必要です。Owner に依頼して、[**Organization settings > Roles**](https://claude.ai/admin-settings/roles) でいずれかのロールにこの権限を追加してもらってください。
 
-クラウドセッションは、マシン上ではなくクラウドインフラストラクチャで実行される Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャで実行されるか、ルーティングされた場合は組織の[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)で実行されます。セッションはラップトップを閉じた後も実行を続け、任意のデバイスから確認または操作できます。クラウドセッションは、Claude および Claude Code のその他の使用量と合わせてプランの使用制限にカウントされ、クラウド VM に対する別途料金はかかりません。
+クラウドセッションは、クラウドインフラストラクチャで実行される Claude Code セッションです。デフォルトでは Anthropic が管理するインフラストラクチャで実行されるか、ルーティングされた場合は組織の[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)で実行されます。
+
+セッションはラップトップを閉じた後も実行を続け、任意のデバイスから確認または操作できます。クラウドセッションは、Claude および Claude Code のその他の使用量と合わせてプランの使用制限にカウントされ、クラウド VM に対する別途料金はかかりません。
 
 クラウドセッションが GitHub からコードをクローンしてブランチをプッシュできるようにするには、いずれかの [GitHub 接続方法](#github-authentication-options)で GitHub を接続します。リポジトリが GitLab、Bitbucket、またはその他のホスト上にある場合は、[プラットフォームの制限](#limitations)で利用可能な機能を確認してください。
 
@@ -253,8 +255,8 @@ Teleport には claude.ai のサブスクリプション認証が必要です。
 
 Claude がブランチに変更をプッシュすると、チャットの横のパネルにある **Changes** カードに、`+42 -18` のように追加および削除された行数が表示されます。**Changes** カードの行数をクリックすると差分ビューが開きます。
 
-* セッションのタイトルバー、またはバーの **⋮** メニューにある **Changes** をクリックすることもできます。
-* パネルが非表示のときに表示するには、セッションのタイトルバー、またはバーの **⋮** メニューにある **Show session rail** アイコンをクリックします。
+* パネルが非表示のときに表示するには、セッションのタイトルバーにある **Activity panel** または **Show session rail** をクリックするか、バーの **⋮** メニューにある **Show session rail** をクリックします。
+* [**Changes** をペインとして開く](https://code.claude.com/docs/ja/desktop.md#arrange-your-workspace)こともできます。
 
 差分ビューでは、行にコメントしたり、別のブランチと比較したりできます：
 
@@ -406,13 +408,11 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 
 ## セキュリティと分離
 
-各クラウドセッションはいくつかのレイヤーを通じてマシンおよび他のセッションから分離されます：
+デフォルトでは、クラウドセッションはシェルコマンドとファイル編集を、分離された Anthropic 管理 VM で実行します。組織が[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)にルーティングするセッションは、代わりに独自のインフラストラクチャで実行され、分離はユーザー側のデプロイの責任となります。
 
-* **分離された仮想マシン**：各セッションは分離された Anthropic 管理 VM で実行されます。セッションが組織によってルーティングされる[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)は、代わりに独自のインフラストラクチャで実行され、分離はデプロイメントの責任です
 * **ネットワークアクセス制御**：Anthropic ホスト型環境では、ネットワークアクセスはデフォルトで制限され、無効にできます。[ネットワークアクセス](https://code.claude.com/docs/ja/cloud-environments.md#network-access)でアクセスレベル、[デフォルト許可ドメイン](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)、および許可リストを通過しないトラフィックを参照してください。セルフホスト型環境では、独自のネットワーク境界でセッション出力を制限します。ネットワークアクセスを無効にして実行する場合、Claude Code は Anthropic API と通信できます。これにより VM からデータが出ることを許可する可能性があります。
 * **認証情報保護**：Anthropic ホスト型環境では、git 認証情報と署名キーはサンドボックスの外に留まり、プロキシはスコープ付き認証情報で認証します。セルフホスト型環境では、デプロイメントが git 認証情報を提供します；[git を設定](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#configure-git)を参照してください
 * **ネットワークシークレット**：Anthropic ホスト型環境では、[クラウド環境に追加](https://code.claude.com/docs/ja/cloud-environments.md#add-network-secrets)したキーも同様にサンドボックスの外に留まり、セッションを離れた後に一致するリクエストに添付されます。セルフホスト型環境にはネットワークシークレットはありません
-* **セキュアな分析**：コードは PR を作成する前に分離されたセッション環境内で分析および変更されます
 
 ## トラブルシューティング
 
@@ -444,11 +444,9 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 * `Unable to get organization UUID`
 * ``Cloud sessions need a claude.ai sign-in. Run `claude auth login` (or /login in a local session), then try again.``
 * ``Cloud sessions aren't available with this Console sign-in. They need a claude.ai sign-in. Run `claude auth login` (or /login in a local session), then try again.``
-* セッション ID なしで `claude --teleport` を実行した場合、セッションピッカーでの `Error loading Claude Code sessions`
+* セッション ID なしで `claude --teleport` を実行した場合、セッションピッカーでの `Couldn't load cloud sessions`。v2.1.328 より前では、`Couldn't load Claude Code sessions` または `Error loading Claude Code sessions` と表示されていました
 
 シェルで [`claude auth login`](https://code.claude.com/docs/ja/cli-reference#cli-commands) を実行して claude.ai アカウントでサインインし、コマンドを再試行してください。実行中のセッション内では、`/login` でも同じことができます。エラーにプロバイダー名が示されている場合は、[エラーテーブル](#errors-when-sending-to-a-cloud-session)を参照してください。クラウドセッションはサードパーティプロバイダーを通じては利用できません。
-
-v2.1.274 から v2.1.289 までは、サインインメッセージは `Claude Code cloud sessions require authentication with a Claude.ai account. API key authentication is not sufficient. Please run /login to authenticate, or check your authentication status with /status.` でした。
 
 ### ブランチが GitHub 上にない
 

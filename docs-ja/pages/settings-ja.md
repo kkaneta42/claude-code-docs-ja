@@ -56,7 +56,7 @@ Claude Code をインストールしても、設定ファイルは作成され�
 
 * **管理**：組織がデプロイします。自分で作成または編集することはありません。
 * **共有プロジェクト**：Claude Code を既に使用しているプロジェクトには、コミットされたものがあるかもしれません。ない場合は、プロジェクトフォルダに `.claude/settings.json` として作成してください。
-* **ユーザー**および**プロジェクトローカル**：自分で作成するか、Claude Code に作成させます。テーマなど、ユーザー設定に保存される `/config` メニューのオプションを初めて変更するときに `~/.claude/settings.json` を書き込み、Bash コマンドに対する「はい、今後は聞かないでください」など、権限プロンプトで恒久的な承認を初めて与えるときに `.claude/settings.local.json` を書き込みます。**ヒントを表示**を含むいくつかの `/config` オプションは、ユーザーファイルではなく `.claude/settings.local.json` に保存されます。
+* **ユーザー**および**プロジェクトローカル**：自分で作成するか、Claude Code に作成させます。Claude Code は、テーマなどのユーザー設定を保存するときに `~/.claude/settings.json` を書き込みます。Bash コマンドに対する「Yes, and don't ask again」など、権限プロンプトで恒久的な承認を与えるときに `.claude/settings.local.json` を書き込みます。
 
 > [!NOTE]
 >
@@ -118,7 +118,7 @@ Claude Code のシステムプロンプトは公開されていません。Claud
 Claude Code 内で `/config` を実行し、**Config** タブを開きます。テーマ、エディターモード、詳細出力などの短いセットの個人的なオプションをリストします。すべての設定キーではありません。オプションを選択して変更します。Claude Code はあなたのために保存します：
 
 * **ほとんどのオプション**：`~/.claude/settings.json`
-* **ヒントを表示などのいくつかのオプション**：`.claude/settings.local.json`
+* **出力スタイル**：`.claude/settings.local.json`
 * **[グローバル構成オプション](https://code.claude.com/docs/ja/settings-reference.md#global-config-settings)**：`~/.claude.json`
 
 1 つのオプションをメニューなしで設定するには、`/config verbose=true` などの `key=value` を渡してください。
@@ -323,7 +323,7 @@ Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](htt
 
 ## クラウドセッションの設定
 
-[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)で実行され、マシン上ではなくリポジトリの新しいクローンで実行されます。これにより、どの設定がそこに到達するかが変わります：
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)内でリポジトリの新しいクローン上で実行されます。これにより、どの設定がそこに到達するかが変わります：
 
 * **プロジェクト内のクラウドスレッド**：[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、プロジェクトに含まれるリポジトリの数にかかわらず、リポジトリの `.claude/settings.json` の権限ルール、フック、`env` はいずれも適用されません。代わりに使用するものについては、[スレッドがリポジトリから取り込むもの](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)に記載されています。
 * **共有プロジェクト設定**（`.claude/settings.json`）：プロジェクトのスレッド外の 1 つのリポジトリを持つセッションで読み込まれます。ファイルはクローンの一部であり、セッションはその内部で開始されるためです。その設定をコミットして、それらのセッションに適用してください。

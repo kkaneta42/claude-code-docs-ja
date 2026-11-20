@@ -353,7 +353,7 @@ Each route file has a corresponding `.test.ts` file.
 
 別のサブディレクトリは同じ方法で異なるスキルを保持します。`packages/web/.claude/skills/component-patterns/` はテストの代わりにフロントエンドのコンポーネント規約を説明します。Claude が `packages/api/` のファイルで作業するとき、api-testing スキルを読み込みます。`packages/web/` で作業するとき、component-patterns を読み込みます。
 
-配置の代わりにファイルパターンでスキルをスコープすることもできます。[`paths` フロントマターフィールド](https://code.claude.com/docs/ja/skills#frontmatter-reference)はグロブパターンを受け取り、Claude は一致するファイルで作業するときのみ自動的にスキルを読み込みます。これをリポジトリルートの `.claude/skills/` に存在するスキルに使用して、データベースマイグレーションスキルなど `**/migrations/**` にスコープされた特定のファイルにのみ適用します。
+配置の代わりにファイルパターンでスキルをスコープすることもできます。[`paths` フロントマターフィールド](https://code.claude.com/docs/ja/skills#frontmatter-reference)はグロブパターンを受け取り、Claude は一致するファイルで作業するときに自動的にスキルを読み込みます。これは、リポジトリルートの `.claude/skills/` に存在するものの特定のファイルにのみ適用されるスキル、たとえば `**/migrations/**` にスコープされたデータベースマイグレーションスキルなどに使用します。
 
 スキルの作成と整理の詳細については、[スキル](https://code.claude.com/docs/ja/skills.md)を参照してください。
 

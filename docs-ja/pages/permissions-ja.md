@@ -16,7 +16,7 @@ Claude Code は、パワーと安全性のバランスを取るために、段�
 | :- | :- | :- | :- |
 | 読み取り専用 | ファイル読み取り、Grep | いいえ、[作業ディレクトリと追加ディレクトリ](#working-directories)内 | N/A |
 | Bash コマンド | シェル実行 | はい、[読み取り専用コマンド](#read-only-commands)の組み込みセットを除く | リポジトリとコマンドごとに永続的 |
-| ファイル変更 | Edit/Write ファイル | はい | セッション終了まで |
+| ファイル変更 | Edit/Write ファイル | はい、Claude Code 自身のプランファイルや[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)ファイルなどのファイルを除く | セッション終了まで |
 | Web フェッチ | WebFetch | はい、[事前承認されたドキュメンテーションドメイン](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior)の組み込みセットを除く | リポジトリとドメインごとに永続的 |
 | Web 検索 | WebSearch | はい | リポジトリごとに永続的 |
 
@@ -63,7 +63,7 @@ Deny ルールは、ツール名を指定するか、ツール内のパターン
 
 > [!NOTE]
 >
-> 権限ルールは Claude Code によって実装されており、モデルによってではありません。プロンプトまたは `CLAUDE.md` の指示は、Claude が何をしようとするかを形作りますが、Claude Code が許可する内容は変わりません。アクセスを付与または取り消すには、`/permissions`、ここで説明されているルール、[permission mode](https://code.claude.com/docs/ja/permission-modes.md)、または [PreToolUse hook](#extend-permissions-with-hooks) を使用してください。
+> 権限ルールはモデルではなく Claude Code によって適用されます。プロンプトまたは `CLAUDE.md` の指示は、Claude が何をしようとするかを形作りますが、これらのルールを変更するものではありません。アクセスを付与または取り消すには、`/permissions`、ここで説明されているルール、[権限モード](https://code.claude.com/docs/ja/permission-modes.md)、または [PreToolUse フック](#extend-permissions-with-hooks)を使用してください。
 
 [auto mode](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) がセッションで利用可能な場合、ダイアログには [auto mode classifier rules](https://code.claude.com/docs/ja/auto-mode-config.md#edit-rules-from-permissions) も含まれます。**Auto mode** タブを選択して、それらを表示します。
 
@@ -73,7 +73,7 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 
 | モード | 説明 |
 | :- | :- |
-| `default` | 各ツールの最初の使用時に権限を促します。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます |
+| `default` | ほとんどの編集、シェルコマンド、ネットワークリクエストの前に確認を求めます。CLI、VS Code と JetBrains 拡張機能、およびデスクトップアプリでは Manual とラベル付けされており、Claude Code は `manual` をエイリアスとして受け入れます |
 | `acceptEdits` | ファイル編集と一般的なファイルシステムコマンド（`mkdir`、`touch`、`mv`、`cp` など）を、作業ディレクトリまたは `additionalDirectories` 内のパスに対して自動的に受け入れます |
 | `plan` | Claude はファイルを読み取り、読み取り専用シェルコマンドを実行して探索しますが、ソースファイルを編集しません。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)が利用可能な場合は、分類器が承認したコマンドも実行されます。CLI および VS Code 拡張機能では Plan とラベル付けされています |
 | `auto` | ルーチンプロンプトなしで実行されます。シェルコマンドやネットワークリクエストなどのアクションが実行される前に、バックグラウンド[分類器](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)がそれらがリクエストと一致することを確認します |
@@ -138,10 +138,19 @@ MCP ツール上のパラメータをマッチさせるには、[`--disallowedTo
 * モデルが省略するパラメータは決してマッチしないため、`Agent(model:*)` は `model` が設定されていない呼び出しにはマッチしません
 * 値は Claude が送信するリテラル入力と比較され、正規化の前です。`Agent(model:opus)` は別名 `opus` にマッチしますが、完全なモデル ID にはマッチしません
 * `Skill(skill:<name>)` 拒否ルールは代わりに [スキルをそのいずれかの名前でマッチさせます](https://code.claude.com/docs/ja/skills.md#restrict-claude%E2%80%99s-skill-access)。別名や表示名など
-* [`--verbose`](https://code.claude.com/docs/ja/cli-reference) で実行して、各ツール呼び出しの正確なパラメータ名と値を確認してください
 * コロンの周りのホワイトスペースは無視されます
 
 ツールのプライマリコンテンツフィールドはこの方法ではマッチ可能ではありません。Bash と PowerShell の `command`、Read、Edit、Write の `file_path`、Grep と Glob の `path`、NotebookEdit の `notebook_path`、WebFetch の `url` です。`Bash(command:rm *)` のようなルールはコンパウンドコマンドでバイパス可能であるため、Claude Code はそれを無視し、スタートアップ警告を発行します。代わりに `Bash(rm *)`、`Read(./path)`、または `WebFetch(domain:host)` を使用してください。
+
+#### Claude が送信するパラメータを確認する
+
+Claude がツールに送信するパラメータ名と値を確認するには、[`stream-json` 出力](https://code.claude.com/docs/ja/headless#stream-responses)と、そのツールを必要とするプロンプトを指定して、シェルで `claude -p` を実行します。この例では Opus 上のサブエージェントを求めており、Claude はこれを Agent ツールで開始します。
+
+```bash theme={null}
+claude -p "Use a subagent on Opus to list the test files" --output-format stream-json --verbose
+```
+
+出力で、`name` が確認対象のツール（この例では `Agent`）である `tool_use` ブロックを探します。その `input` に名前と値が含まれています。
 
 ### ワイルドカードパターン
 
@@ -352,7 +361,9 @@ Claude Code は v2.1.290 以降で、貼り付けられた画像パスとディ�
 
 > [!WARNING]
 >
-> Read と Edit の拒否ルールは、Claude の組み込みファイルツール、`cat`、`head`、`tail`、`sed`、`tee` など Claude Code が Bash 内で認識するファイルコマンド、および `> file` や `< file` のような Bash [リダイレクト](#redirections)の対象に適用されます。ファイルを含むディレクトリから実行される `grep -r pattern .` のようにファイル名を指定せずにファイルを読み取るコマンドや、ファイル自体を開く Python や Node のスクリプトのように間接的にファイルを読み書きする任意のサブプロセスには適用されません。すべてのプロセスによるパスへのアクセスをブロックする OS レベルの強制には、[サンドボックスを有効にしてください](https://code.claude.com/docs/ja/sandboxing.md)。
+> Read と Edit の拒否ルールは、Claude の組み込みファイルツールに適用されます。Claude Code が[解析できる](#read-only-commands) Bash コマンドでは、[リダイレクト](#redirections)の対象や、`cat`、`head`、`tail`、`sed`、`tee` など Claude Code が認識するファイルコマンドにも適用されます。
+>
+> ファイルを含むディレクトリから実行される `grep -r pattern .` のように、ファイル名を指定せずにファイルを読み取るコマンドには適用されません。また、ファイル自体を開く Python や Node のスクリプトのように、間接的にファイルを読み書きする任意のサブプロセスにも適用されません。サンドボックス化されたシェルコマンドに対する OS レベルの強制には、[サンドボックスを有効にし](https://code.claude.com/docs/ja/sandboxing.md)、[サンドボックス外での再試行をオフにしてください](https://code.claude.com/docs/ja/sandboxing.md#turn-off-the-retry-with-strict-sandbox-mode)。
 
 #### `Write(path)`、`Glob(path)`、`Grep(path)` ルールはマッチしない
 
@@ -647,13 +658,15 @@ PreToolUse フック決定は権限ルールをバイパスしません。Claude
 
 構成によっては、管理設定、`managed-mcp.json` ファイル、セッションの認証情報としての Team または Enterprise の `/login` がいずれもない場合があります。この構成では、mod は `PreToolUse` フックがブロックしたコールや、拒否ルールが拒否する一部のコールを承認できます。代わりに API キーまたは長期間有効な [`CLAUDE_CODE_OAUTH_TOKEN`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で実行されるセッションは、そのログインが保存されていても、そのログインを使用していません。
 
-この構成では、確認ルール、`PreToolUse` フック、または `permissions.blockReadsOutsideWorkingDirectories` がプロンプトを表示するコールを mod が承認した場合、プロンプトは表示されません。また、mod が承認したコールについて、`--permission-prompt-tool` や `canUseTool` コールバックに確認が求められることもありません。この構成では、auto モード、plan モード、`dontAsk` モードがそれぞれ独自の結果を追加します。
+この構成では、mod が承認したコールは、確認ルール、`PreToolUse` フック、または `permissions.blockReadsOutsideWorkingDirectories` によるプロンプトをスキップできます。また、`--permission-prompt-tool` や `canUseTool` コールバックもスキップできます。この構成では、auto モード、plan モード、`dontAsk` モードがそれぞれ独自の結果を追加します。
 
 * **[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)**: mod が承認したコールは分類器チェックなしで実行できます。
 * **[plan モード](#hook-approvals-in-plan-mode)**: mod は、ファイル編集や書き込みを行うシェルコマンドなど、読み取り専用でないコールを承認できません。
 * **[`dontAsk` モード](https://code.claude.com/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)**: mod は、モード以外に拒否するものがないコールを承認できます。
 
 [mod を信頼するかどうかを決定する](https://code.claude.com/docs/ja/plugins/mods/overview.md#decide-whether-to-trust-a-mod)を参照するか、管理設定をデプロイする場合は[組織の mod を管理する](https://code.claude.com/docs/ja/plugins/mods/admin.md#know-what-happens-by-default)を参照してください。
+
+[mod 自体が行うツール呼び出し](https://code.claude.com/docs/ja/plugins/mods/reference.md#mods-api-methods)を止めるために権限ルールに頼らないでください。
 
 `AskUserQuestion` や `requiresUserInteraction` でマークされた MCP ツールなど、[ユーザーの操作が必要なツール](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)では、mod の `tool.check` による承認があってもプロンプトはスキップされません。Claude Code v2.1.292 以降が必要です。[`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool)でマークされた MCP ツールは、フックが `"allow"` を返した場合でも引き続きプロンプトを表示します。[ネットワークパス](#network-paths)からの読み取りや、その設定が Claude Code に到達するセッションにおける[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールも同様です。
 
@@ -677,13 +690,17 @@ plan モードでは、`tool.check` を処理する mod もファイル編集や
 
 ほとんどの[ネットワークパス](https://code.claude.com/docs/ja/errors.md#working-directory-is-a-network-path)（`\\server\share` などの UNC 共有など）は、作業ディレクトリとして追加できません。これは、ルックアップがそれが指す名前のホストに接続する可能性があるためです。Windows では、代わりに共有をドライブ文字にマップし、起動時に `--add-dir` でドライブを渡します。
 
+> [!NOTE]
+>
+> インタラクティブなターミナルセッションで `claude --add-dir` または `/add-dir` を使用して、[ワークスペースの信頼](#project-allow-rules-and-workspace-trust)の対象外のフォルダを追加すると、Claude Code はまずそのフォルダを信頼するよう求めます。Claude Code v2.1.326 以降が必要です。
+
 macOS のバックグラウンドセッションでは、セッションホストは `~/Desktop`、`~/Documents`、`~/Downloads` などの保護されたフォルダへのアクセスをターミナルとは別に要求します。Claude がそこでファイルを読み取りまたは書き込む必要がある場合、`Operation not permitted` で読み取りが失敗する場合は、[バックグラウンドセッションにフォルダアクセスを許可する方法](https://code.claude.com/docs/ja/agent-view.md#background-sessions-can%E2%80%99t-read-desktop-documents-or-downloads-on-macos)を参照してください。
 
 ### 作業ディレクトリ外でのファイルツールの読み取りと書き込みをブロックする
 
 `bypassPermissions` を含むすべての権限モードで、Claude のファイルツールが作業ディレクトリ外のパスを拒否するようにするには、次のキーの一方または両方を `true` に設定します。
 
-* **[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)**：ファイルツールは、Claude Code 自体が必要とするファイルを除き、作業ディレクトリ外での読み取りを拒否します。auto モードでは、Claude が[作業ディレクトリの外側を読み取る](https://code.claude.com/docs/ja/permission-modes.md#first-read-outside-the-working-directories)最初の時点で、Claude Code がこれをオンにするよう提案します。
+* **[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)**: Claude Code 自体が必要とするファイルを除き、ファイルツールはそこでの読み取りを拒否します。auto モードでは、Claude が初めて[作業ディレクトリの外部を読み取る](https://code.claude.com/docs/ja/permission-modes.md#first-read-outside-the-working-directories)ときに、Claude Code がこの設定をオンにするよう提案することがあります。
 * **[`permissions.blockWritesOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockwritesoutsideworkingdirectories)**：`Write`、`Edit`、`NotebookEdit` ツールは、プランファイルなど Claude Code 自身の一部のファイルを除き、作業ディレクトリ外への書き込みを拒否します。このキーはシェルコマンド、MCP ツール、フックが実行するプログラムを制限しないため、シェルコマンドが書き込む場所を制限するには[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)を使用してください。Claude Code v2.1.314 以降が必要です。
 
 いずれかのキーが `true` の間も外部のディレクトリの 1 つにアクセスできるようにするには、[そのディレクトリを作業ディレクトリとして追加](https://code.claude.com/docs/ja/settings-reference.md#let-one-directory-through-the-read-or-write-block)します。
@@ -720,7 +737,7 @@ Agent SDK の TypeScript の [`additionalDirectories`](https://code.claude.com/d
 | `.claude/skills/` の[スキル](https://code.claude.com/docs/ja/skills.md) | はい、ライブリロード付き |
 | `.claude/commands/` の[コマンドファイル](https://code.claude.com/docs/ja/skills.md#where-skills-live) | はい、ライブリロードなし。追加されたディレクトリとプロジェクトの両方が同じ名前のコマンドを定義する場合、Claude Code はプロジェクトのコマンドを実行します |
 | `.claude/agents/` の[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) | はい、ライブリロードなし |
-| `.claude/settings.json` および `.claude/settings.local.json` の[設定](https://code.claude.com/docs/ja/settings.md) | `enabledPlugins` および[`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces)キーのみ |
+| `.claude/settings.json` および `.claude/settings.local.json` の[設定](https://code.claude.com/docs/ja/settings.md) | `enabledPlugins` および[`extraKnownMarketplaces`](https://code.claude.com/docs/ja/settings-reference#extraknownmarketplaces)キーのみ。Claude Code がこれらをスキップする場合については、[`--add-dir` ディレクトリで有効化されているが読み込まれない](https://code.claude.com/docs/ja/plugins/loading#enabled-in-an-add-dir-directory-but-not-loaded)を参照してください |
 | [CLAUDE.md](https://code.claude.com/docs/ja/memory.md)ファイル、`.claude/rules/`、および `CLAUDE.local.md` | `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` が設定されている場合のみ。`CLAUDE.local.md` はさらに `local` 設定ソースが必要です。これはデフォルトで有効になっています |
 
 [主要な作業ディレクトリ](#working-directories)のサブディレクトリからスキル、コマンド、およびサブエージェントをセッション中に読み込むには、そのサブディレクトリのパスで `/add-dir` を実行します。Claude Code は作業ディレクトリを追加せずに、セッションの残りの間それらを読み込みます。これには Claude Code v2.1.257 以降が必要です。
@@ -744,9 +761,9 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 * **権限**は、Claude Code が使用できるツールと、アクセスできるファイルやドメインを制御します。権限は Bash、Read、Edit、WebFetch、MCP をはじめとするすべてのツールに適用されます。ただし、他のツールが 1 つでも残っている間は、拒否ルールや確認ルールで [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) をブロックすることはできません。
 * **サンドボックス化**は、シェルコマンドのファイルシステムおよびネットワークへのアクセスを制限する OS レベルの強制を提供します。これは Bash、PowerShell、[Monitor](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) ツールのコマンドとその子プロセスに適用されます。
 
-多層防御のために両方を使用してください。プロンプトインジェクションによって Claude の意思決定が回避された場合でも、サンドボックスの制限は引き続き適用されるためです。サンドボックス設定と権限ルールの両方に含まれるパスとドメインは、[最終的なサンドボックス設定にマージされます](https://code.claude.com/docs/ja/sandboxing.md#permission-rules)。
+多層防御のために両方を使用してください。プロンプトインジェクションによって Claude の意思決定が回避された場合でも、サンドボックスの制限は引き続き適用されるためです。サンドボックス設定のパスとドメインも、権限ルールのパスとドメインも、[最終的なサンドボックス設定にマージされます](https://code.claude.com/docs/ja/sandboxing.md#permission-rules)。
 
-サンドボックス化を有効にし、[`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) を `true` に設定すると、サンドボックス化された Bash コマンドは確認なしで実行されます。これは、単独の `Bash` 確認ルールや[同等の `Bash(*)` 形式](#match-all-uses-of-a-tool)がある場合でも同様です。サンドボックスの境界が、このツール全体に対する確認の代わりになるためです。
+サンドボックス化を有効にし、[`sandbox.autoAllowBashIfSandboxed`](https://code.claude.com/docs/ja/settings-reference#sandbox-autoallowbashifsandboxed) を `true` に設定すると、サンドボックス化された Bash コマンドは確認なしで実行されます。これは、単独の `Bash` ask ルールや[同等の `Bash(*)` 形式](#match-all-uses-of-a-tool)がある場合にも適用されます。サンドボックスの境界が、そのツール全体に対する確認の代わりとなるためです。
 
 [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、Claude Code はこの代替を行いません。確認ルールがない場合、[組み込みの読み取り専用コマンド](#read-only-commands)は引き続き確認なしで実行され、それ以外のシェルコマンドは、計画中である間は通常の権限フローを経由します。plan モードで Claude Code がコマンドをどのように制御するかについては、[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を参照してください。単独の `Bash` 確認ルールがある場合は、サンドボックス化されていない場合と同様に、サンドボックス化された読み取り専用コマンドを含むすべての Bash コマンドで確認が求められます。
 

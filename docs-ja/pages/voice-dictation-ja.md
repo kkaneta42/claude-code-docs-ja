@@ -65,8 +65,6 @@ Turned on voice mode (hold). Hold space to record. Dictation language: en (/conf
 
 最初の数個のキー リピート文字はウォームアップ中に入力に入力され、録音がアクティブになると自動的に削除されます。単一の `Space` タップはスペースを入力します。長押し検出は高速リピートでのみトリガーされるためです。
 
-`Space` を長押しまたはタップして音声入力を開始するのは、キープレスがプロンプトに入力される場所のみです。[トランスクリプト ビューアー](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)では、`Space` は会話をページングし、[vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)の INSERT 外では コマンドです。[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)（`meta+k` など）は テキストを入力しないため、これらの場所からも音声入力を開始します。
-
 > [!TIP]
 >
 > ウォームアップをスキップするには、`/voice tap` で[タップモード](#tap-to-record-and-send)に切り替えるか、`meta+k` などの[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)してください。修飾子の組み合わせは最初のキープレスで録音を開始します。
@@ -80,6 +78,8 @@ Turned on voice mode (hold). Hold space to record. Dictation language: en (/conf
 ```
 
 デフォルトでは、キーを離すと文字起こしが挿入され、`Enter` を押すのを待ちます。`voice` 設定オブジェクトで `"autoSubmit": true` を設定して、文字起こしが少なくとも 3 語以上の場合、キーを離すときにプロンプトを自動的に送信します。
+
+`Space` を長押しまたはタップして音声入力が開始されるのは、そのキープレスが本来プロンプトに入力される場所のみです。[トランスクリプト ビューアー](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)では `Space` は会話をページ送りし、[vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)の INSERT 外ではコマンドになります。どちらの場所からでも音声入力するには、`meta+k` などの[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)してください。
 
 ## タップして録音して送信
 
@@ -168,12 +168,12 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 
 音声ディクテーションが起動または記録されない場合の一般的な問題：
 
-* **`Unknown command: /voice`**：`/voice` は、claude.ai アカウントがアクティブなサインインである場合にのみ利用できます。claude.ai アカウントでサインインしていない場合は、`/login` を実行してください。`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、`apiKeyHelper` 設定、または [サードパーティプロバイダー](#requirements) が使用されている場合、それらは claude.ai のサインインより優先されるため、削除してから Claude Code を再起動してください。
-* **`Voice mode requires a Claude.ai account`**：`/voice` を実行したとき、または記録を開始したときに、Claude Code が使用可能な claude.ai のサインインを見つけられませんでした。`/login` を実行して再度サインインしてください。
+* **`/voice needs a Claude subscription` または `/voice isn't available with <provider>`**：`/voice` は、claude.ai アカウントがアクティブなサインインである場合にのみ利用できます。claude.ai アカウントでサインインしていない場合は、`/login` を実行してください。`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、`apiKeyHelper` 設定、または [サードパーティプロバイダー](#requirements) が使用されている場合、それらは claude.ai のサインインより優先されるため、削除してから Claude Code を再起動してください。
+* **`Voice mode needs a Claude.ai account`**：`/voice` を実行したとき、または記録を開始したときに、Claude Code が使用可能な claude.ai のサインインを見つけられませんでした。`/login` を実行して再度サインインしてください。
 * **`Voice mode is disabled by your organization's policy`**：組織の管理者ポリシーが音声ディクテーションをオフにしています。組織の管理者に連絡して、組織で音声ディクテーションが利用可能かどうかを確認してください。
 * **`Microphone access is denied`**：システム設定でターミナルにマイク権限を付与してください。macOS では、システム設定 → プライバシーとセキュリティ → マイク に移動してターミナルアプリを有効にしてから、`/voice` を再度実行してください。Windows では、設定 → プライバシーとセキュリティ → マイク に移動してデスクトップアプリのマイクアクセスをオンにしてから、`/voice` を再度実行してください。ターミナルが macOS 設定に表示されていない場合は、[Terminal not listed in macOS Microphone settings](#terminal-not-listed-in-macos-microphone-settings) を参照してください。
-* **`Voice mode requires SoX for audio recording` on Linux**：ネイティブオーディオモジュールを読み込めず、フォールバックがインストールされていません。エラーメッセージに表示されているコマンドで SoX をインストールしてください。例えば `sudo apt-get install sox` です。
-* **`Voice mode requires a microphone, but SoX could not open an audio capture device`**：SoX はインストールされていますが、ホストにオーディオキャプチャデバイスがありません。例えば、ヘッドレスサーバーまたはコンテナです。マイクを備えたマシンで Claude Code を実行してください。v2.1.195 以降、Linux 上の Claude Code はこの状況でこのメッセージを報告します。以前のバージョンは、SoX がすでにインストールされている場合でも SoX をインストールするよう求めていました。
+* **Linux で `Voice mode needs SoX to record`**：エラーメッセージに表示されているコマンドで SoX をインストールしてください。例えば `sudo apt-get install sox` です。
+* **`Voice mode needs a microphone, and SoX couldn't open one`**：SoX はインストールされていますが、ホストにオーディオキャプチャデバイスがありません。例えば、ヘッドレスサーバーまたはコンテナです。マイクを備えたマシンで Claude Code を実行してください。
 * **`Voice mode could not find a working audio recorder in WSL`**：WSLg は ALSA デバイスではなく PulseAudio を通じてオーディオをルーティングするため、SoX は PulseAudio バックエンドを明示的にインストールする必要があります。`sudo apt install sox libsox-fmt-pulse` を実行してください。`sox` だけをインストールすると ALSA バックエンドが引き込まれますが、WSL では `/dev/snd` デバイスがないため記録できません。
 * **`Voice input is failing repeatedly and has been paused`**：音声ディクテーションが 10 秒以内に 3 回の失敗に達しました。Claude Code は最初の失敗から 10 秒が経過するまでディクテーションを一時停止します。これは通常、このホストのマイクまたはオーディオスタックがオーディオをキャプチャできないことを意味します。例えば、ヘッドレスサーバー、オーディオパススルーのないリモートシェル、またはマイク権限が拒否されている場合です。動作する入力デバイスを確認し、上記のエントリから根本原因を修正してから、音声を再度トリガーしてください。v2.1.202 より前は、起動時の失敗のみが一時停止にカウントされていました。
 * **ホールドモードで `Space` を押し続けても何も起こらない**：押し続けている間、プロンプト入力を監視してください。スペースが蓄積し続ける場合、音声ディクテーションがオフになっている可能性があります。`/voice hold` を実行して有効にしてください。1 つまたは 2 つのスペースだけが表示されてから何も起こらない場合、音声ディクテーションはオンですがホールド検出がトリガーされていません。ホールド検出はターミナルがキーリピートイベントを送信する必要があるため、OS レベルでキーリピートが無効になっている場合、押し続けているキーを検出できません。キーリピート要件を回避するために `/voice tap` でタップモードに切り替えてください。

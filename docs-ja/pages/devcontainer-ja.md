@@ -112,7 +112,7 @@ codespace 間で認証を実行するには、[Codespaces シークレット](ht
 
 開発コンテナは、同じイメージと設定がすべてのエンジニアのマシンで実行されるため、組織ポリシーを適用するのに便利な場所です。
 
-Claude Code は Linux で `/etc/claude-code/managed-settings.json` を読み取り、[設定階層](https://code.claude.com/docs/ja/settings.md#settings-precedence)で最高の優先度で適用するため、そこの値はエンジニアが `~/.claude` またはプロジェクトの `.claude/` ディレクトリで設定したものをオーバーライドします。Dockerfile からファイルをコピーして配置します：
+Claude Code は Linux で `/etc/claude-code/managed-settings.json` を読み取り、[設定階層](https://code.claude.com/docs/ja/settings.md#settings-precedence)で最高の優先順位で適用します。Dockerfile からファイルをコピーして配置します：
 
 ```dockerfile Dockerfile theme={null}
 RUN mkdir -p /etc/claude-code

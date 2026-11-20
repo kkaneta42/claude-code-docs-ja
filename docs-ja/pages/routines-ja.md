@@ -491,11 +491,13 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 ### `/schedule` returns "Unknown command"
 
-CLI は `/schedule` の要件の 1 つが満たされていない場合、このコマンドを非表示にします。入力中、コマンドメニューには `No commands match "/schedule"` と表示されます。送信すると `Unknown command: /schedule` が返されます。ただし、以下のケースのうち異なる応答を示すものは除きます。
+要件の 1 つが満たされていない状態で `/schedule` を送信すると、`Unknown command: /schedule` が表示されるか、コマンドを使用できない理由を示すメッセージが表示されます。
 
 原因は通常、以下のいずれかです。
 
-* Console API キー、[Anthropic プロフィールまたはフェデレーション認証情報](https://code.claude.com/docs/ja/authentication.md#anthropic-profiles-and-federation-credentials)、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されている。`/schedule` には claude.ai サブスクリプションでのログインが必要です。Console API キーまたはプロフィールを使用していて、フィーチャーフラグの取得が有効な場合、`/schedule` を送信すると代わりに `/schedule is available with Claude for Enterprise — ask your admin about migrating from API-key access` と表示されます。クラウドプロバイダーでログインしている場合は、引き続き `Unknown command: /schedule` が表示されます。シェルで `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` が設定されている場合、または `settings.json` で `apiKeyHelper` が設定されている場合は、これらが claude.ai ログインより優先されるため、まず削除してください。プロフィールまたはフェデレーション認証情報も優先されるため、それもオフにしてください
+* Console API キー、[Anthropic プロフィールまたはフェデレーション認証情報](https://code.claude.com/docs/ja/authentication.md#anthropic-profiles-and-federation-credentials)、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのクラウドプロバイダーで認証されている。`/schedule` には claude.ai サブスクリプションでのログインが必要です。Console API キーまたはプロフィールを使用していて、フィーチャーフラグの取得が有効な場合、`/schedule` を送信すると `/schedule is available with Claude for Enterprise — ask your admin about migrating from API-key access` と表示されます。
+
+  シェルで `ANTHROPIC_API_KEY` または `ANTHROPIC_AUTH_TOKEN` が設定されている場合、または `settings.json` で `apiKeyHelper` が設定されている場合は、これらが claude.ai ログインより優先されるため、削除してください。プロフィールまたはフェデレーション認証情報を使用している場合は、それもオフにしてください
 * 完全にサインアウトしており、API キーやその他の認証情報がない。フィーチャーフラグの取得が有効な場合、`/schedule` を送信すると `/schedule requires a claude.ai subscription. Run /login to sign in with your claude.ai account.` と表示されます。v2.1.268 より前は、サインアウトしたセッションでは Console API キーの場合と同じ Claude for Enterprise のメッセージが表示されていました
 * クラウドセッション内にいる。この場合、`/schedule` を送信すると、その環境ではコマンドを使用できないという応答が返されます。代わりに [Web UI](https://claude.ai/code/routines) からスケジュールタスクを管理してください
 * 組織のポリシーが、スケジュールタスクに必要な[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を無効にしている。この場合、`/schedule` を送信すると代わりに [`Cloud sessions are disabled by your organization's policy`](https://code.claude.com/docs/ja/errors#cloud-sessions-are-disabled-by-your-organizations-policy) と応答されます。v2.1.268 より前は、`Unknown command: /schedule` が返されていました

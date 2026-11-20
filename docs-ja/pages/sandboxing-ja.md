@@ -234,6 +234,8 @@ auto-allow モードでも、次の点は引き続き適用されます。
 * **パラメーターに対する確認ルール**：Bash の再試行時にプロンプトを表示させるには、`Bash(dangerouslyDisableSandbox:true)` に対する[確認ルール](https://code.claude.com/docs/ja/permissions.md#match-by-input-parameter)を追加します。auto モードと `bypassPermissions` モードでもプロンプトが表示され、このルールは一致する許可ルールより優先されます
 * **[`permissions.blockReadsOutsideWorkingDirectories`](https://code.claude.com/docs/ja/settings-reference#permissions-blockreadsoutsideworkingdirectories)**：これがオンの間にプロンプトが表示される再試行については、[どのモードでも自動承認されないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)で説明しています
 
+Code Mode を使用する場合、auto モードでの再試行の動作は異なります。[サンドボックスでシェルコマンドを制限する](https://code.claude.com/docs/ja/code-mode.md#limit-shell-commands-with-the-sandbox)を参照してください。
+
 コマンドが [`Sandbox is required` メッセージ](#commands-refused-with-sandbox-is-required)で拒否されている間は、Claude Code は `dangerouslyDisableSandbox` パラメーターを無視し、再試行も拒否します。
 
 #### strict sandbox モードで再試行をオフにする
@@ -445,8 +447,8 @@ Claude Code は、セッションが読み込むすべての[設定スコープ]
 
 マスキングには以下が必要です。
 
-* **TLS 終端**: プロキシはリクエストの内容の中で実際の値を置換するため、その内容を参照できる必要があります。プロキシ自体が TLS を終端するように、[`network.tlsTerminate`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-tlsterminate) を設定してください。これを設定しない場合、マスキングは何も漏らさずに失敗します。コマンドにはセンチネルしか見えませんが、センチネルはそのままサーバーに届き、認証が失敗します。この設定ミスを確認するには、ターミナルで `claude doctor` を実行し、`TLS termination is unavailable` という警告がないか確認してください。
-* **許可された送信先**: 各 `mask` エントリには `injectHosts`（実際の値の送信先として許可されるホスト）を記載できます。プロキシは[ドメイン許可リスト](#network-isolation)が許可する接続でのみ注入を行うため、各 `injectHosts` のホストは `network.allowedDomains` を通じても到達可能である必要があります。`injectHosts` のない `mask` エントリの場合、プロキシは `network.allowedDomains` 内のすべてのホストへのリクエストで実際の値に置換します。
+* **TLS 終端**: プロキシはリクエストの内容の中で実際の値に置換するため、その内容を参照できる必要があります。プロキシ自体が TLS を終端するように、[`network.tlsTerminate`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-tlsterminate) を設定してください。これを設定しない場合、マスキングは何も漏らさずに失敗します。コマンドにはセンチネルしか見えませんが、センチネルはそのままサーバーに届き、認証が失敗します。この設定ミスを確認するには、ターミナルで `claude doctor` を実行し、`TLS termination is unavailable` という警告がないか確認してください。
+* **許可された送信先**: 各 `mask` エントリには `injectHosts`（実際の値の送信先として許可されるホスト）を記載できます。プロキシは[ドメイン許可リスト](#network-isolation)が許可する接続でのみ注入を行うため、各 `injectHosts` のホストは `network.allowedDomains` を通じても到達可能である必要があります。`injectHosts` のない `mask` エントリのほとんどでは、プロキシは `network.allowedDomains` 内のすべてのホストへのリクエストで実際の値に置換します。
 * **信頼できる設定スコープ**: マスキングはプロキシが実際の認証情報をどこかに送信することを認可するため、Claude Code は `mask` エントリ、`network.tlsTerminate`、[`credentials.allowPlaintextInject`](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-allowplaintextinject)、`awsPairs`、`sigv4` を、ユーザー設定、管理設定、および `--settings` フラグからのみ尊重します。リポジトリの `.claude/settings.json` や `.claude/settings.local.json` 内のこれらは無視されます。管理者がサーバー管理設定を通じて `mask` エントリ、`network.tlsTerminate`、または `credentials.allowPlaintextInject` を配布する場合、それらは[承認が必要な設定](https://code.claude.com/docs/ja/server-managed-settings.md#security-approval-dialogs)として扱われます。
 
 #### 環境変数をマスクする
@@ -484,7 +486,7 @@ IPv6 の送信先は、2 つのリストで異なる書き方をしてくださ�
 
 #### AWS リクエストを再署名する
 
-AWS リクエストはリクエストの内容に対する SigV4 署名を持つため、`AWS_ACCESS_KEY_ID` と `AWS_SECRET_ACCESS_KEY` は一緒にマスクしてください。プロキシはアクセスキーの[センチネル](#mask-credentials)によって SigV4 リクエストを検出し、実際の値でリクエストを再署名します。これには Claude Code v2.1.221 以降が必要です。シークレットのみをマスクすると、リクエストはプロキシが検出できないプレースホルダーで署名されるため、AWS で失敗します。
+AWS リクエストはリクエストの内容に対する SigV4 署名を持つため、`AWS_ACCESS_KEY_ID` と `AWS_SECRET_ACCESS_KEY` は一緒にマスクしてください。プロキシはアクセスキーの[センチネル](#mask-credentials)によって SigV4 リクエストを検出します。実際の値でリクエストを再署名するには Claude Code v2.1.221 以降が必要です。シークレットのみをマスクすると、リクエストはプロキシが検出できないプレースホルダーで署名されるため、AWS で失敗します。
 
 Claude Code は、慣例的な変数である `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、`AWS_SESSION_TOKEN` の値全体をマスクすると、それらを自動的に 1 つの認証情報として関連付けます。AWS の認証情報が別の名前の変数にある場合は、[`credentials.awsPairs`](https://code.claude.com/docs/ja/settings-reference#sandbox-credentials-awspairs) でグループ化してください。これには Claude Code v2.1.224 以降が必要です。
 

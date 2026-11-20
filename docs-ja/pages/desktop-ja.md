@@ -148,7 +148,7 @@ Browser の保存データをクリアするには、Browser ペインの **⋮*
 
 #### 組織の SSH および WSL プレビューでスクリプトをオフにする
 
-[SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableRemotePreviewScripts` 管理設定](#managed-settings)を `true` に設定します。ユーザーは引き続き外部サイトを閲覧できます。Claude Desktop v5.1231.0 以降が必要です。
+Browser ペインの [SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableRemotePreviewScripts` 管理設定](#managed-settings)を `true` に設定します。ユーザーは引き続き外部サイトを閲覧できます。Claude Desktop v5.1231.0 以降が必要です。
 
 > [!NOTE]
 >
@@ -164,7 +164,7 @@ Browser の保存データをクリアするには、Browser ペインの **⋮*
 
 その後、設定が確実に適用されるようにユーザーに Desktop を再起動してもらい、次の動作について伝えます：
 
-* **ユーザーが開くファイル**：プレビューでスクリプトが実行されないため、スクリプトで描画されるグラフや表は空のままになります。通知は `This preview doesn't run scripts` で始まります。
+* **ユーザーが Browser ペインで開く SSH および WSL ファイル**：プレビューでスクリプトが実行されないため、スクリプトで描画されるグラフや表は空のままになります
 * **スクリプトを実行中のプレビュー**：再起動前に Desktop が設定を取得した場合、プレビューは閉じます。ユーザーには `This preview closed because scripts are turned off for previews. Open the file again to view it without scripts.` と表示されます
 * **ユーザーがエクスポートするファイル**：ユーザーが[ファイルをエクスポート](#preview-html-files-in-ssh-and-wsl-sessions)してブラウザで開いた場合、この設定の有無にかかわらず、そのファイルのスクリプトはブラウザで実行されます
 
@@ -174,18 +174,18 @@ Browser の保存データをクリアするには、Browser ペインの **⋮*
 
 ### 外部サイトを閲覧する
 
-Browser ペインはタブ付きブラウザなので、ドキュメント、issue トラッカー、または実行中のアプリの横に他のサイトを開くことができます。Browser を開くには、macOS で**Cmd+Shift+B**、Windows で**Ctrl+Shift+B**を押すか、セッションのタイトルバーにある **Browser** をクリックします。Google OAuth などのポップアップサインインフローを含め、ペイン内でサイトにサインインできます。
+Browser ペインはタブ付きブラウザなので、ドキュメント、issue トラッカー、または実行中のアプリの横に他のサイトを開くことができます。Browser を開くには、macOS で**Cmd+Shift+B**、Windows で**Ctrl+Shift+B**を押すか、[**Browser** を選択](#arrange-your-workspace)します。Google OAuth などのポップアップサインインフローを含め、ペイン内でサイトにサインインできます。
 
 チャットで外部リンクを初めてクリックすると、リンクを Browser ペインで開くかデフォルトのブラウザで開くかを尋ねるダイアログが表示されます。後で選択を変更するには、Browser ペインの **⋮** メニューにある **Open links in built-in browser** を使用します。macOS で **Cmd** キーを押しながらクリックするか、Windows で **Ctrl** キーを押しながらクリックすると、デフォルトのブラウザでリンクが直接開きます。
 
 Claude は[アプリを検証](#preview-your-app)するために使用するのと同じツールを使用して外部ページを読み取り、対話できます。2 つの追加の安全チェックがあります：
 
-* 安全分類器は、すべての権限モードで、クリックやタイピングなど、外部ページでの Claude の書き込みアクションを確認します。これらは[auto モード](#choose-a-permission-mode)が使用するのと同じ分類器であり、分類器がアクションを警告した場合、モードに関係なく権限プロンプトが表示されます。
+* セッションで [auto モードが利用可能](#auto-mode-availability)な場合、その安全分類器が、すべての権限モードで、タイピングなど外部ページでの Claude の書き込みアクションを確認します。警告されたアクションはブロックされるか、[ブロックが繰り返された](https://code.claude.com/docs/ja/permission-modes.md#when-auto-mode-falls-back)後に確認を求められます。
 * Auto および Bypass permissions 以外の権限モードでは、Claude が新しいサイトに移動する前にドメイン許可リストチェックも適用されます。
 
 #### サイトで Claude のアクションを承認する
 
-Claude が外部サイトで初めてアクションを実行すると、権限カードが表示され、Claude は選択を待ちます：**Allow once**、**Always allow**、または**Deny**。**Allow once**は何も保存せずにアクションを承認します。**Always allow**はそのサイトの承認をデバイスに保存し、Settings で取り消すことができます。サブドメインを含む各サイトは独自の承認が必要です。ローカル dev サーバーとプロジェクトファイルは承認が不要なため、[auto-verify](#auto-verify-changes)はプロンプトなしで機能し続けます。
+Auto および Bypass permissions モード以外では、まだ承認していない外部サイトを Claude が使用する前に、権限カードが表示されます。**Allow once**、**Always allow**、または **Deny** を選択します。**Allow once**は何も保存せずにアクションを承認します。**Always allow**はそのサイトの承認をデバイスに保存し、Settings で取り消すことができます。各サイトには個別の承認が必要です。ローカル dev サーバーとプロジェクトファイルには承認は不要です。
 
 承認されたサイトでも、Claude はユーザーの入力なしに商品を購入したり、アカウントを作成したり、CAPTCHA をバイパスしたりしません。Browser ペインでの閲覧は、[Claude in Chrome 拡張機能](https://code.claude.com/docs/ja/chrome.md)と同じ安全モデルを使用します。Claude が機密サイトとリスクのあるアクションをどのように処理するかについては、[Claude in Chrome を安全に使用する](https://support.claude.com/en/articles/12902428-using-claude-in-chrome-safely)を参照してください。
 
@@ -201,7 +201,7 @@ Browser は、Claude in Chrome 拡張機能と同じ[サイト許可リストと
 
 ### 差分ビューで変更を確認する
 
-Claude がコードに変更を加えた後、差分ビューを使用して、プルリクエストを作成する前にファイルごとに変更を確認できます。差分ビューを開くには、[セッション詳細パネル](#see-session-details)の **Changes** カードにある `+12 -1` などの行数をクリックします。セッションのタイトルバーにある **Changes** をクリックすることもできます。クラウドセッションのベースブランチに対する差分には、[まだプッシュされていない変更が含まれない場合があります](https://code.claude.com/docs/ja/claude-code-on-the-web.md#troubleshoot-a-missing-file-in-the-diff-view)。
+Claude がコードに変更を加えた後、差分ビューを使用して、プルリクエストを作成する前にファイルごとに変更を確認できます。差分ビューを開くには、[セッション詳細パネル](#see-session-details)の **Changes** カードにある `+12 -1` などの行数をクリックするか、[**Changes** を選択](#arrange-your-workspace)します。クラウドセッションのベースブランチに対する差分には、[まだプッシュされていない変更が含まれない場合があります](https://code.claude.com/docs/ja/claude-code-on-the-web.md#troubleshoot-a-missing-file-in-the-diff-view)。
 
 特定の行にコメントするには、行にカーソルを合わせ、行番号の横に表示される **+** をクリックしてコメントボックスを開きます。フィードバックを入力して**Enter**キーを押してコメントを追加します。複数の行にコメントを追加した後、すべてのコメントを一度に送信します：
 
@@ -241,12 +241,14 @@ PR がマージまたはクローズされた後にセッションを自動的�
 
 ## ワークスペースを配置する
 
-Code タブはペインを任意のレイアウトで配置できるように構築されています：チャット、diff、ブラウザ、ターミナル、ファイル、プラン、タスク、およびサブエージェント。macOS では [iOS Simulator](https://code.claude.com/docs/ja/desktop-ios-simulator.md) も含まれます。ペインをヘッダーでドラッグして位置を変更するか、ペインエッジをドラッグしてサイズを変更します。macOS では\*\*Cmd+\\**を、Windows では**Ctrl+\\\*\*を押してフォーカスされたペインを閉じます。
+Code タブはペインを任意のレイアウトで配置できるように構築されています：チャット、diff、ブラウザ、ターミナル、ファイル、プラン、タスク、およびサブエージェント。macOS では [iOS Simulator](https://code.claude.com/docs/ja/desktop-ios-simulator.md) も含まれます。ペインのタブまたは上部のハンドルをドラッグして位置を変更するか、ペインエッジをドラッグしてサイズを変更します。macOS では\*\*Cmd+\\**を、Windows では**Ctrl+\\\*\*を押してフォーカスされたペインを閉じます。
 
-別のペインを開くには、セッションのタイトルバーにあるそのペインのアイコンボタンをクリックします。ホバーすると、**Terminal**、diff ビューの**Changes**、**Browser**、**Files**など、各ボタンの名前が表示されます。開きたいペインのボタンがタイトルバーにない場合は、ボタンの横にある\*\*⋮\*\*メニューから選択します：
+別のペインを開くには、セッション上部のアイコンにホバーして、**Terminal**や**Show side panel**など、各ボタンの名前を確認します。次に、表示されているボタンに応じて以下の手順に従います：
 
-* **ウィンドウの幅が狭い場合**：収まらないボタンはメニューに移動します
-* **ボタンのないペインの場合**：**Background tasks**や**Plan**などのペインは、それらのペインに表示する内容がセッションに生じると一覧に表示されます
+* **Show side panel**または**Hide side panel**：パネルが非表示の場合は表示し、パネルの一覧または\*\*+\*\*メニューからペインを選択します。
+* **Terminal**、diff ビューの**Changes**、**Browser**、**Files**：ペインのボタンをクリックします。ペインにボタンがない場合は、ボタンの横にある\*\*⋮\*\*メニューから選択します。
+
+**Background tasks**または**Plan**を開くには、それらに表示する内容がセッションに生じた後、サイドパネルまたは\*\*⋮\*\*メニューから選択します。
 
 複数の画面で作業するには、diff やターミナルなどのペインをポップアウトして独立したウィンドウにし、完了したらドックバックします。Claude はメインウィンドウで作業を続けます。
 
@@ -260,7 +262,7 @@ Code タブはペインを任意のレイアウトで配置できるように構
 
 #### セッション詳細パネルを表示または非表示にする
 
-パネルを表示または非表示にするには、セッションのタイトルバー、またはバーの\*\*⋮**メニューで、**Hide session rail**または**Show session rail\*\*をクリックします。それでもパネルが表示されない場合は、[使用している Code タブのレイアウトを確認してください](#check-which-layout-you-have)。
+パネルを表示または非表示にするには、セッションのタイトルバー、またはバーの\*\*⋮**メニューで、**Hide session rail**または**Show session rail**をクリックします。どちらの名前も表示されない場合は、タイトルバーの**Activity panel\*\*をクリックします。それでもパネルが表示されない場合は、[使用している Code タブのレイアウトを確認してください](#check-which-layout-you-have)。
 
 ### ペインを最小化する
 
@@ -275,7 +277,9 @@ Terminal、Browser、[iOS Simulator](https://code.claude.com/docs/ja/desktop-ios
 
 ### ターミナルでコマンドを実行する
 
-統合ターミナルを使用すると、別のアプリに切り替えることなく、セッションと並行してコマンドを実行できます。セッションのタイトルバーにある**Terminal**をクリックするか、macOS または Windows で**Ctrl+\`**を押します。ターミナルはセッションの作業ディレクトリで開き、Claude と同じ環境を共有するため、`npm test`や`git status`などのコマンドは Claude が編集しているのと同じファイルを見ます。2 番目のターミナルタブを開くには、ターミナルペインヘッダーの**+**をクリックするか、チャットのフォルダを右クリックして**Open in terminal**を選択します。
+統合ターミナルを使用すると、別のアプリに切り替えることなく、セッションと並行してコマンドを実行できます。ターミナルを開くには、[**Terminal**を選択する](#arrange-your-workspace)か、macOS または Windows で\*\*Ctrl+\`\*\*を押します。ターミナルはセッションの作業ディレクトリで開き、Claude と同じ環境を共有するため、`npm test`や`git status`などのコマンドは Claude が編集しているのと同じファイルを見ます。
+
+2 番目のターミナルタブを開くには、ターミナルの上にある\*\*+**をクリックし、メニューが開いた場合は**Terminal\*\*を選択します。
 
 WSL セッションでターミナルがない場合は、[ターミナルまたはコネクタが利用できない場合](https://code.claude.com/docs/ja/desktop-wsl.md#check-for-the-terminal-and-connectors)を参照してください。ターミナルはローカルおよび [SSH](#ssh-sessions) セッションで利用可能ですが、[Windows リモートマシン](#windows-remote-machines)では制限があります。
 
@@ -392,7 +396,7 @@ Claude がアプリやサービスとやり取りする方法はいくつかあ�
 
 ### コンピューター操作を有効にする
 
-コンピューター操作はデフォルトでオフになっています。オフの状態でコンピューター操作が必要な作業を依頼すると、設定でコンピューター操作を有効にすればそのタスクを実行できることを Claude が伝えます。
+コンピューター操作はデフォルトでオフになっています。
 
 **1. デスクトップアプリを更新する**
 
@@ -419,7 +423,7 @@ macOS では、トグルが有効になる前に 2 つのシステム権限を�
 * **アクセシビリティ**: Claude がクリック、入力、スクロールできるようにします
 * **画面収録**: Claude が画面の内容を見られるようにします
 
-設定ページには各権限の現在の状態が表示されます。いずれかが拒否されている場合は、バッジをクリックすると該当するシステム設定のペインが開きます。
+設定ページには各権限の現在の状態が表示されます。いずれかが拒否されている場合は、その横にある **Open System Settings** をクリックします。
 
 ### アプリの権限
 
@@ -431,7 +435,7 @@ Claude が初めてアプリを使う必要があるとき、セッション内�
 | :- | :- | :- |
 | 表示のみ | スクリーンショットでアプリを見る | ブラウザ、取引プラットフォーム |
 | クリックのみ | クリックとスクロールはできるが、入力やキーボードショートカットは使えない | ターミナル、IDE |
-| フルコントロール | クリック、入力、ドラッグ、キーボードショートカットの使用 | その他すべて |
+| フルアクセス | クリック、入力、ドラッグ、キーボードショートカットの使用 | その他のほとんどのアプリ |
 
 ターミナル、Finder や File Explorer、System Settings や Settings など、影響範囲の広いアプリでは、承認すると何が許可されるかがわかるよう、プロンプトに追加の警告が表示されます。
 
@@ -524,7 +528,7 @@ macOS で\*\*Cmd+;**を、Windows で**Ctrl+;\*\*を押してサイドチャッ�
 
 ### バックグラウンドタスクを監視する
 
-タスクペインは、現在のセッション内で実行されているバックグラウンド作業を表示します：サブエージェント、バックグラウンドシェルコマンド、および[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)。セッションにバックグラウンド作業がある場合は、タイトルバーの **⋮** メニューにある **Background tasks** からペインを開きます。
+タスクペインは、現在のセッション内で実行されているバックグラウンド作業を表示します：サブエージェント、バックグラウンドシェルコマンド、および[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)。セッションにバックグラウンド作業がある場合は、[**Background tasks** ペインを開きます](#arrange-your-workspace)。
 
 任意のエントリをクリックして、サブエージェントペインで出力を確認するか、停止します。他のセッションが何をしているかを確認するには、[サイドバー](#work-in-parallel-with-sessions)を使用するか、Claude に[それらをチェックしてもらう](#work-across-sessions)ことができます。
 
@@ -759,7 +763,7 @@ Claude は開発サーバーのセットアップを自動的に検出し、セ�
 
 localhost アドレスは、デフォルトのポートアドレスとまったく同じように直接開きます。これには `localhost`、任意の `*.localhost` サブドメイン、`127.0.0.1`、`::1` が含まれます。セキュリティ上の理由から、localhost の `url` はサーバーのオリジンのみで、パスやクエリを含めることはできません。そのポートはエントリのポートと一致している必要があります。特定のページを表示するには、プレビューが開いた後に Claude にそのページへ移動するよう依頼します。パス、クエリ、または一致しないポートを含む localhost の `url` は設定エラーとして報告され、その url と修正方法が表示されます。
 
-それ以外のアドレスについては、プレビューがそのアドレスを初めて開くときに、プレビューで新しいサイトを閲覧する場合と同様に、Desktop が権限を求めます。外部アドレスにはパスを含めることができます。**Always allow** を選択すると、以降そのサイトについてのプロンプトがスキップされます。プレビューで外部サイトを制限する組織のポリシーは引き続き適用されます。
+それ以外のアドレスは、Claude がプレビューで開く新しいサイトと同じ[サイトの承認](#browse-external-sites)を経由します。外部アドレスにはパスを含めることができます。**Always allow** を選択すると、以降そのサイトについてのプロンプトがスキップされます。プレビューで外部サイトを制限する組織のポリシーは引き続き適用されます。
 
 自分ですでに実行しているサーバーをプレビューするには、コマンドを指定せずに `url` を設定します。Claude はサーバーを起動する代わりに、実行中のサーバーにプレビューを接続します。
 
@@ -1032,13 +1036,18 @@ SSH セッションを使用すると、デスクトップアプリをインタ�
 
 **2. 接続を追加する**
 
-**New environment** ダイアログの **SSH** タブで **Host** リストを開き、**Add SSH connection…** を選択して、接続の詳細を入力します。
+**New environment** ダイアログで **SSH** タブを選択し、**Host** から新しい接続のフォームを開きます。
 
-* **Name**: この接続のわかりやすいラベル。
-* **SSH host**: `user@hostname`、または `~/.ssh/config` で定義されたホスト。
-* **SSH port**: 空欄の場合はデフォルトで 22 になるか、SSH 設定のポートが使用されます。
-* **SSH key (optional)**: `~/.ssh/id_ed25519` などの秘密鍵へのパス。SSH 設定または SSH エージェントを使用する場合は空欄のままにします。
-* **Worktree folder**: 新しいセッションが worktree を作成する、`~/worktrees` などのリモートマシン上のフォルダー。[リモートマシンのデフォルト](#choose-where-ssh-session-worktrees-go)を使用する場合は空欄のままにします。
+* **Host にボタンが表示されている場合**: **Add SSH connection…** を選択します
+* **Host にリストが表示されている場合**: リストを開き、一番下にある **Add SSH connection…** を選択します
+
+接続の詳細を入力します。
+
+* **Name (optional)**: この接続のわかりやすいラベルです。空のままにすると、**SSH host** の値が名前として使用されます。
+* **SSH host**: `user@hostname`、または `~/.ssh/config` で定義されたホストです。
+* **SSH port**: 空のままにするとデフォルトで 22 が使用されるか、SSH 設定のポートが使用されます。
+* **SSH key (optional)**: `~/.ssh/id_ed25519` などの秘密鍵へのパスです。空のままにすると、SSH 設定または SSH エージェントが使用されます。
+* **Worktree folder**: 新しいセッションが worktree を作成する、リモートマシン上のフォルダーです（`~/worktrees` など）。空のままにすると、[リモートマシンのデフォルト](#choose-where-ssh-session-worktrees-go)が使用されます。
 
 その後、**Add SSH connection** を選択します。
 
@@ -2053,8 +2062,8 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `autoMode` | 組織全体で auto モード分類器が信頼およびブロックするものをカスタマイズします。[auto モードを設定する](https://code.claude.com/docs/ja/auto-mode-config.md)を参照してください。 |
 | `browserExternalPageTools` | Claude が[Browser ペイン](#browse-external-sites)の外部ページを読み取るまたは操作するためのツールを使用するのを防ぐには`"disabled"`に設定します。ユーザーは引き続き外部サイトに自分でナビゲートできます。ローカル開発サーバープレビューは影響を受けません。 |
 | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](https://code.claude.com/docs/ja/desktop-ios-simulator.md#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
-| `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。SSH および WSL セッションの HTML プレビューでは[スクリプトは実行されません](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
-| `disableRemotePreviewScripts` | SSH および WSL セッションの HTML プレビューで[スクリプトのみをオフにする](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)には`true`に設定します。Desktop はこれをリモートマシンや WSL ディストリビューションからは読み取りません。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。Claude Desktop v5.1231.0 以降が必要です。 |
+| `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。SSH および WSL セッションでの Browser ペインの HTML プレビューでは[スクリプトは実行されません](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
+| `disableRemotePreviewScripts` | 外部ブラウジングをオフにせずに、SSH および WSL セッションで[Browser ペインの HTML プレビューのスクリプトをオフにする](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)には`true`に設定します。Desktop はこれをリモートマシンや WSL ディストリビューションからは読み取りません。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。Claude Desktop v5.1231.0 以降が必要です。 |
 | `sshConfigs` | 環境セレクタに表示される[SSH 接続](#pre-configure-ssh-connections-for-your-team)を事前設定します。ユーザーは管理接続を削除できず、自分の **Worktree folder** 以外は編集できません。 |
 | `sshHostCommands` | ユーザー自身の接続に加えて、[ホストがコマンドから取得される SSH 接続](#distribute-commands-to-your-team)をユーザーに提供します。Desktop はこれをコンピューター上の管理設定ファイルまたは MDM ポリシーから読み取り、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)では無視します。macOS または Linux では Claude Desktop v3.6556.0 以降、Windows では v4.16336.0 以降が必要で、Claude アカウントでサインインしている必要があります。Windows では、Desktop が[OpenSSH クライアントを通じて接続する](#use-your-ssh-configuration)必要もあります。 |
 | `sshHostAllowlist` | [SSH セッション](#restrict-which-ssh-hosts-users-can-connect-to)を、解決されたホスト名がこれらのパターンのいずれかと一致するホストに制限します。管理設定からのみ読み取られます。 |

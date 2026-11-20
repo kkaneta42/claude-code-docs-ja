@@ -34,9 +34,9 @@ Claude Code は成功時にコード 0 で終了し、実行が失敗した場�
 
 ### bare モードで高速に開始する
 
-`--bare` を追加して、フック、スキル、カスタムコマンド、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、インストール済みプラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出をスキップすることで、起動時間を短縮します。これがない場合、`claude -p` は対話的セッションと同様にそれらを検出して読み込みます。これには、作業ディレクトリまたは `~/.claude` で設定されたすべてが含まれます。
+`--bare` を追加すると、フック、スキル、カスタムコマンド、[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)、インストール済みのプラグイン、MCP サーバー、自動メモリ、CLAUDE.md の自動検出がスキップされ、起動時間を短縮できます。これを指定しない場合、`claude -p` はインタラクティブセッションと同様にこれらを検出して読み込みます。これには作業ディレクトリまたは `~/.claude` で設定されたものもすべて含まれます。
 
-bare モードは、すべてのマシンで同じ結果が必要な CI とスクリプトに役立ちます。チームメイトの `~/.claude` のフック、またはプロジェクトの `.mcp.json` の MCP サーバーは実行されません。bare モードはそれらを読み込まないためです。`--add-dir` で指定するディレクトリは部分的な例外です。bare モードはその `.claude/skills/` フォルダからスキルを読み込みますが、その `.claude/commands/` と `.claude/agents/` フォルダはスキップします。[追加ディレクトリからのスキル](https://code.claude.com/docs/ja/skills.md#skills-from-additional-directories) は、何が読み込まれ、何が読み込まれないかについて説明しています。
+bare モードでも、Claude Code は設定ファイルとその [権限ルール](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder) を読み込みますが、`~/.claude/settings.json` のフックやプロジェクトの `.mcp.json` の MCP サーバーは実行されません。`--add-dir` で指定するディレクトリは特殊なケースです。bare モードはその `.claude/skills/` フォルダからスキルを読み込みますが、その `.claude/commands/` と `.claude/agents/` フォルダは引き続きスキップします。[追加ディレクトリからのスキル](https://code.claude.com/docs/ja/skills.md#skills-from-additional-directories) は、何が読み込まれ、何が読み込まれないかについて説明しています。
 
 `--bare` がない場合、`-p` セッションはプロジェクトの `.claude/settings.json` のフックを実行し、その `.mcp.json` のサーバーに接続します。これは、信頼したことのないフォルダでも同様です。`-p` セッションはワークスペース信頼ダイアログもサーバーごとの承認プロンプトも表示しません。[フォルダを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder) は、`-p` の下での各種リポジトリコンテンツと、それを除外する方法について説明しています。
 

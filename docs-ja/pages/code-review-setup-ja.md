@@ -47,7 +47,7 @@ Claude 組織の Owner は、claude.ai の [**Admin settings > Claude Code**](ht
 
 **4. リポジトリを選択する**
 
-レビュー対象にするリポジトリを選択し、**Continue** をクリックします。リポジトリを追加するには、接続した GitHub アカウントでそのリポジトリへの書き込みアクセス権が必要です。[リポジトリは後から追加](#add-more-repositories)することもできます。
+レビュー対象にするリポジトリを選択し、それらを追加するボタンをクリックします。このボタンは、2 つ選択した場合は **Add 2 repositories** と表示されます。リポジトリを追加するには、接続した GitHub アカウントでそのリポジトリへの書き込みアクセス権が必要です。[リポジトリは後から追加](#add-more-repositories)することもできます。
 
 **5. Finish をクリックする**
 
@@ -124,7 +124,7 @@ Manual は、特定のプルリクエストだけをレビュー対象にした�
 
 ### リポジトリをさらに追加する
 
-設定後にリポジトリを追加するには、**Code review** セクションの **Repositories** テーブルの上にある **Add** をクリックします。**Add a repository** ダイアログが開きます。リポジトリを選択し、**Continue** をクリックします。
+設定後にリポジトリを追加するには、**Code review** セクションの **Repositories** テーブルの上にある **Add** をクリックします。**Add a repository** ダイアログが開きます。リポジトリを選択し、追加用のボタンをクリックします。このボタンは、2 つ選択した場合は **Add 2 repositories** と表示されます。
 
 * **リポジトリが一覧に表示されない**：[A repository isn't listed in Add a repository](https://code.claude.com/docs/ja/code-review-troubleshooting.md#a-repository-isn’t-listed-in-add-a-repository) を参照してください。
 * **GitHub 組織内のすべてのリポジトリを対象にしたい**：リポジトリを 1 つずつ選択する代わりに、[組織全体を対象にします](#cover-a-whole-github-organization)

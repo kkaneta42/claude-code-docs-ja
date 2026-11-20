@@ -26,8 +26,8 @@ Remote Control は [claude.ai/code](https://claude.ai/code) または Claude ア
 Remote Control を使用する前に、環境が以下の条件を満たしていることを確認してください。
 
 * **サブスクリプション**: Pro、Max、Ultra、Team、および Enterprise プランで利用可能です。API キーはサポートされていません。Team および Enterprise では、Owner が [Claude Code 管理設定](https://claude.ai/admin-settings/claude-code) で Remote Control トグルを最初に有効にする必要があります。
-* **カスタムロール**: Enterprise 組織が [カスタムロール](https://support.claude.com/en/articles/13930452) でアクセスを管理している場合、ロールにはクラウドセッション権限と **Claude Code remote control** 権限の両方が含まれている必要があります。どちらかが欠けていると、Remote Control を開始したときに [`Remote Control is disabled by your organization's policy`](#remote-control-is-disabled-by-your-organizations-policy) と表示されます。Owner にロールを確認してもらい、[**Organization settings > Roles**](https://claude.ai/admin-settings/roles) で不足しているものを追加するよう依頼してください。
-* **認証**: `claude` を実行し、まだサインインしていない場合は `/login` を使用して claude.ai 経由でサインインします。適格なログインがない場合、`claude remote-control` はエラーで終了しますが、`claude --remote-control` は対話型セッションを開始し、起動直後に Remote Control 失敗通知を表示します。
+* **カスタムロール**: Enterprise 組織が [カスタムロール](https://support.claude.com/en/articles/13930452) でアクセスを管理している場合、ロールにはクラウドセッション権限と **Claude Code remote control** 権限の両方が含まれている必要があります。どちらかが欠けていると、`/remote-control` に [`Remote Control is disabled by your organization's policy`](#remote-control-is-disabled-by-your-organizations-policy) と表示されます。Owner にロールを確認してもらい、[**Organization settings > Roles**](https://claude.ai/admin-settings/roles) で不足しているものを追加するよう依頼してください。
+* **認証**: `claude` を実行し、まだサインインしていない場合は `/login` を使用して claude.ai 経由でサインインします。適格なログインがない場合、`claude remote-control` はエラーで終了しますが、`claude --remote-control` は Remote Control がオフの状態で対話型セッションを開始します。
 * **API エンドポイント**: 以下のいずれかの構成では利用できません。
   * Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用している。
   * [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/env-vars) が `api.anthropic.com` 以外のホスト（[LLM gateway](https://code.claude.com/docs/ja/llm-gateway) やプロキシなど）を指している。Remote Control を使用するには、この変数を設定解除してください。
@@ -202,8 +202,8 @@ Claude Code は次のような場合にフォークを拒否します。
 
 自動接続がオンになっていない限り、Remote Control は `claude remote-control`、`claude --remote-control`、または `/remote-control` を明示的に実行したときにのみ有効になります。すべてのインタラクティブセッションで自動接続をオンにするには、Claude Code 内で `/config` を実行し、**Enable Remote Control for all sessions** を設定します。このトグルは 3 つの値を取ります。
 
-* **`true`**：インタラクティブセッションの開始時に自動的に接続します。
-* **`false`**：自動接続をオフにします。ただし、Claude Code はこの選択をユーザー設定に保存するため、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)の `true` がこれより優先されます。プロジェクト設定またはローカル設定（`.claude/settings.json`、`.claude/settings.local.json`）の `false` は、管理設定の `true` よりも優先して自動接続をオフにします。
+* **`on`**：インタラクティブセッションの開始時に自動的に接続します。
+* **`off`**：自動接続をオフにします。ただし、Claude Code はこの選択をユーザー設定に保存するため、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)の `true` がこれより優先されます。プロジェクト設定またはローカル設定（`.claude/settings.json`、`.claude/settings.local.json`）の `false` は、管理設定の `true` よりも優先して自動接続をオフにします。
 * **`default`**：選択をクリアし、組織の管理者によるデフォルトが設定されていればそれに従い、設定されていなければ Claude Code の現在のデフォルトに従います。`DISABLE_TELEMETRY` または `DO_NOT_TRACK` を設定している場合は、[`DISABLE_TELEMETRY` または `DO_NOT_TRACK` を設定した状態での自動接続](#auto-connect-with-disable-telemetry-or-do-not-track)を参照してください。
 
 VS Code 拡張機能と Desktop アプリにも自動接続のトグルがあります。
@@ -223,8 +223,8 @@ VS Code 拡張機能と Desktop アプリにも自動接続のトグルがあり
 
 `DISABLE_TELEMETRY` または `DO_NOT_TRACK` のみを設定した状態で自動接続をオンにする前に、Claude Code のバージョンが[これらの変数の要件](#requirements)を満たしていることを確認してください。次に、組織が [Trusted Devices](#trusted-devices) を必須としているかどうかを確認します。
 
-* **必須でない場合**：`/config` で **Enable Remote Control for all sessions** を `true` に設定します。
-* **必須の場合**：`DISABLE_TELEMETRY` または `DO_NOT_TRACK` が設定されている間は Remote Control を利用できません。2 つの変数のうち設定した方を解除してください。それでもセッションが自動接続されない場合は、`/config` で **Enable Remote Control for all sessions** を `true` に設定します。
+* **必須でない場合**：`/config` で **Enable Remote Control for all sessions** をオンにします。
+* **必須の場合**：`DISABLE_TELEMETRY` または `DO_NOT_TRACK` が設定されている間は Remote Control を利用できません。2 つの変数のうち設定した方を解除してください。それでもセッションが自動接続されない場合は、`/config` で **Enable Remote Control for all sessions** をオンにします。
 
 ### サーバー停止後にセッションを再開する
 
@@ -428,7 +428,7 @@ claude mcp login "claude.ai Slack" --no-browser
 
 claude.ai アカウントでサインインしていないか、別の認証情報がログインより優先されています。メッセージは以下のいずれかの形式です。
 
-* サインアウト状態で `/remote-control` または `--remote-control` から：`Remote Control requires a claude.ai subscription.` または `/remote-control requires a claude.ai subscription.`
+* サインアウト状態で `/remote-control` から：`Remote Control requires a claude.ai subscription.` または `/remote-control requires a claude.ai subscription.`
 * サインアウト状態で `claude remote-control` から：`You must be logged in to use Remote Control. Remote Control is only available with claude.ai subscriptions.`
 * サインイン状態だが API キーまたはトークンが使用中：`Remote Control requires claude.ai subscription auth.` の後に、使用中の認証情報（例：`ANTHROPIC_API_KEY is set, so this session is using API-key auth`）が続きます。`apiKeyHelper` 設定と `ANTHROPIC_AUTH_TOKEN` も同じ方法で名前が示されます。
 
@@ -471,7 +471,7 @@ Claude Code は、Remote Control がアカウントに対して有効になっ�
 
 ポリシーが Remote Control をブロックしています。以下の原因を順番に確認してください。
 
-* **エラーが `disableRemoteControl` に言及している**：IT 管理者が [管理設定](https://code.claude.com/docs/ja/managed-settings.md) を通じてこのデバイスで Remote Control を無効にしており、組織全体のトグルおよびサインイン方法とは無関係です。
+* **エラーが `disableRemoteControl` に言及している**：設定ファイルからこのキーを削除してください。[管理設定](https://code.claude.com/docs/ja/managed-settings.md)にある場合は、管理者に問い合わせてください。サインイン方法や組織のトグルを変更しても解決しません。
 * **claude.ai プランが Pro、Max、または Ultra である**：Claude Code は以前のログインから Team または Enterprise 組織の下でまだサインインしているため、その組織の Remote Control ポリシーをチェックします。`/status` を実行して、サインインが使用するプランと組織を確認してください。`claude auth logout` を実行してから `claude auth login` を実行して、現在のプランの下で再度サインインしてください。
 * **メッセージが組織管理者に連絡するよう指示していない**：組織に [HIPAA 設定](https://code.claude.com/docs/ja/hipaa-setup.md) が適用されており、これにより Remote Control がオフになっています。確認するには、`/status` を実行し、`Organization configuration` 行に `HIPAA` があるかを確認してください。Owner には [管理設定](https://claude.ai/admin-settings/claude-code) の **Remote Control** トグルがグレーアウトして表示され、オンにすることはできません。この設定について質問がある場合は、Owner に問い合わせてください。Owner は組織の Anthropic アカウントチームに連絡できます。v2.1.267 より前では、このケースは「Remote Control isn't available for your organization due to its compliance policy」と表示されていました。
 * **組織内の他のユーザーは Remote Control を使用できるが、自分は使用できない**：Enterprise 組織が [カスタムロール](https://support.claude.com/en/articles/13930452) でアクセスを管理している場合、ロールが原因である可能性があります。Remote Control には、クラウドセッションの権限と **Claude Code remote control** 権限の両方が必要です。Owner に、ロールに両方が含まれているかを確認し、不足しているものを [**Organization settings > Roles**](https://claude.ai/admin-settings/roles) で追加するよう依頼してください。
@@ -497,10 +497,10 @@ Claude Code は組織のポリシーを取得できず、代わりに使用す�
 
 メッセージは以下のいずれかの形式です。
 
-* `/remote-control`、`claude remote-control`、または `claude --remote-control` から：`Couldn't verify your organization's policy for remote control. Check your network connection and try again.`
+* `/remote-control` または `claude remote-control` から：`Couldn't verify your organization's policy for remote control.` の後に次に行うべきことが続きます
 * [自動接続](#enable-remote-control-for-all-sessions) からセッション開始時：`couldn't verify your organization's policy — check your network connection and try again`。通知では `Remote Control failed` が前に付き、会話では `Remote Control disconnected` が前に付きます。その後、セッションは Remote Control をオフのままにします。
 
-ネットワーク接続を復元してから、`/remote-control` を実行するか、コマンドを再度実行してください。各試行はポリシーを再度チェックするため、Claude Code を再起動する必要はありません。メッセージが表示され続ける場合は、`claude doctor` を実行し、その `Organization policy` 行を読んでください。ポリシーが読み込まれなかった理由が表示されます。
+まずネットワーク接続を復元してください。メッセージが再起動を指示している場合は Claude Code を再起動し、その後 `/remote-control` を実行するか、コマンドを再度実行してください。メッセージが表示され続ける場合は、`claude doctor` を実行し、その `Organization policy` 行を読んでください。ポリシーが読み込まれなかった理由が表示されます。
 
 v2.1.281 より前では、この状態は `Remote Control is disabled by your organization's policy` と表示されていました。
 
@@ -530,13 +530,21 @@ v2.1.318 より前では、このように失敗したセッションには `Ses
 
 [`claude remote-control`](#start-a-remote-control-session) を実行しているターミナルに表示されるこの警告は、サーバーの起動元となったプログラムファイルが見つからず、新しいセッションはそれを置き換えた新しいバージョンで実行されることを意味します。サーバーもそのバージョンに移行するには、サーバーを停止して `claude remote-control` を再度実行してください。Claude Code がネットワークストレージにインストールされている場合は、今すぐサーバーを再起動し、[ネットワークストレージへのインストール](https://code.claude.com/docs/ja/setup.md#install-on-network-storage)の手順に従ってください。それ以外の場合、新しいセッションは再起動なしで開始されます。
 
-プログラムファイルが見つからず、Claude Code が実行できる新しいバージョンも見つからない場合、新しいセッションは失敗します。ターミナルには、`Session failed: spawn error:` の後に `ENOENT` メッセージが続くようなエラーが表示されます。サーバーを停止し、シェルで `claude` が実行できない場合は [Claude Code を再度インストール](https://code.claude.com/docs/ja/setup.md#install-claude-code)してから、`claude remote-control` を再度実行してください。v2.1.318 より前では、新しいバージョンがインストールされていても、新しいセッションはこのように失敗していました。
+プログラムファイルが見つからず、Claude Code が実行できる新しいバージョンも見つからない場合、新しいセッションは失敗します。ターミナルには、`Session failed: program not found:` や、`ENOENT` を伴う `Session failed: spawn error:` などのエラーが表示されます。サーバーを停止し、シェルで `claude` が実行できない場合は [Claude Code を再度インストール](https://code.claude.com/docs/ja/setup.md#install-claude-code)してから、`claude remote-control` を再度実行してください。v2.1.318 より前では、新しいバージョンがインストールされていても、新しいセッションはこのように失敗していました。
 
 ### "Couldn't reconnect to your Remote Control session"
 
 `claude --resume` または `claude --continue` で会話を再開すると、Claude Code はその会話に記録された Remote Control セッションに再接続します。このメッセージは、ネットワーク中断やサーバーエラーなど、一時的である可能性がある理由で再接続が失敗したことを意味するため、Claude Code はリモートセッションがまだ存在するかどうかを確認できません。
 
+完全なメッセージは次のとおりです。
+
+```text theme={null}
+Couldn't reconnect to your Remote Control session. Retry, or start a fresh session without --resume.
+```
+
 `/remote-control` を実行して接続を再試行するか、`claude --remote-control` で新しいセッションを開始して新しい Remote Control セッションを作成してください。その間、ローカルセッションは Remote Control なしで実行し続けます。
+
+以前のセッションがもう存在しないとサーバーが報告した場合、このメッセージは表示されません。Claude Code はその代わりに新しいセッションを開始するか、[`Previous session is unavailable — run /remote-control to start a new one`](#previous-session-is-unavailable) を表示します。
 
 ### "Previous session is unavailable — run /remote-control to start a new one"
 

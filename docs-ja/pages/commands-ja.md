@@ -153,7 +153,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/tasks` | 完了したサブエージェントを含む、現在のセッションのバックグラウンド作業を表示および管理します。`/bashes` としても利用可能です |
 | `/team-onboarding` | Claude Code の使用履歴からチームオンボーディングガイドを生成します。Claude は過去 30 日間のセッション、コマンド、MCP サーバーの使用状況を分析し、チームメイトが最初のメッセージとして貼り付けて素早くセットアップできる markdown ガイドを生成します。Team および Enterprise プランの claude.ai サブスクライバーには、チームメイトが Claude Code で直接開くことができる共有リンクも返します |
 | `/teleport` | [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#from-cloud-to-terminal)をこのターミナルに取り込みます。ピッカーを開き、ブランチと会話をフェッチします。`/tp` としても利用可能です。claude.ai サブスクリプションが必要です |
-| `/terminal-setup` | VS Code、Cursor、Devin Desktop、Alacritty、または Zed で[改行用の Shift+Enter キーボードショートカットをインストール](https://code.claude.com/docs/ja/terminal-config.md#enter-multiline-prompts)します。Apple Terminal では、代わりに[改行用に Option+Enter を有効にして、可聴ベルをオフ](https://code.claude.com/docs/ja/terminal-config.md#enable-option-key-shortcuts-on-macos)にします。iTerm2 では、[`/copy` が機能するようにクリップボードアクセスをオン](https://code.claude.com/docs/ja/terminal-config#enable-option-key-shortcuts-on-macos)にします |
+| `/terminal-setup` | VS Code、Cursor、Devin Desktop、Alacritty、または Zed で[改行用の Shift+Enter キーボードショートカットをインストール](https://code.claude.com/docs/ja/terminal-config.md#enter-multiline-prompts)します。Apple Terminal では、代わりに[可聴ベルをオフ](https://code.claude.com/docs/ja/terminal-config.md#enable-option-key-shortcuts-on-macos)にします。iTerm2 では、[`/copy` が機能するようにクリップボードアクセスをオン](https://code.claude.com/docs/ja/terminal-config#enable-option-key-shortcuts-on-macos)にします |
 | `/theme` | カラーテーマを変更します。ターミナルの明るいまたは暗い背景に一致する `auto` オプション、明るいおよび暗い変種、色覚異常対応（daltonized）テーマ、ターミナルのカラーパレットを使用する ANSI テーマ、および `~/.claude/themes/` またはプラグインからの[カスタムテーマ](https://code.claude.com/docs/ja/terminal-config.md#create-a-custom-theme)を含みます。**New custom theme…** を選択して 1 つを作成します |
 | `/tui [classic\|fullscreen]` | ターミナル UI レンダラーを設定し、そのレンダラーで再起動します。`fullscreen` は[ちらつきのない alt-screen レンダラー](https://code.claude.com/docs/ja/fullscreen.md)を有効にします。`default`、または `classic`（v2.1.327 以降）を指定すると、クラシックレンダラーが選択されます。引数がない場合、アクティブなレンダラーを出力します |
 | `/ultraplan <prompt>` | 削除されました。代わりに [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)を使用してください。以前は計画タスクを[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)に送信してブラウザで確認しました |
@@ -175,8 +175,8 @@ Claude Code は、入力時に `/` メニューをフィルタリングします
 
 * **ハイライト表示**: Claude Code は、`/` の後の文字がコマンド名またはエイリアスの名前の開始位置から、または名前内の単語から一致する場合にのみ、トップの提案をハイライト表示します。`:` 、`_` 、および `-` セパレータは無視されます。`/adddir` と入力するとハイライト表示は `/add-dir` になり、`/new` と入力するとそのエイリアスを通じて `/clear` がハイライト表示されます。`Enter` キーを押してハイライト表示された提案を実行します。これらのハイライト表示ルールには Claude Code v2.1.236 以降が必要です。
 * **タイプミスの後**: Claude Code はハイライト表示されません。近い一致はリストに残り、`Tab` または矢印キーで選択できますが、`Enter` キーを押すと入力したテキストがそのまま送信され、[不明なコマンド](https://code.claude.com/docs/ja/errors.md#unknown-command)が報告されます。
-* **利用できないコマンド**: Claude Code はメニューからそれらを除外します。何も一致しない場合、Claude Code は `No commands match "/name"` と表示します。ほとんどの利用できないコマンドは、送信時に[不明なコマンド](https://code.claude.com/docs/ja/errors.md#unknown-command)を返します。ただし、[Console API キーの `/schedule`](https://code.claude.com/docs/ja/routines#schedule-returns-unknown-command)など、独自の利用可能性メッセージで応答するものもあります。組織のポリシーがコマンドを無効にしている場合、一部のコマンドは独自のメッセージで応答します。
-* **非表示コマンド**: Claude Code は、`/heapdump` などの利用可能なコマンドをいくつか、設計上の理由からメニューから除外しています。部分的な名前は非表示コマンドをメニューに表示させることはありません。部分的な一致が表示されるものと一致しない場合、Claude Code は同じ一致なしメッセージを表示します。完全な名前を入力すると、Claude Code はコマンドを一度だけリストに表示し、完全な名前を送信するとそれを実行します。
+* **利用できないコマンド**: Claude Code はそれらのほとんどをメニューから除外します。何も一致しない場合、Claude Code は `No commands match "/name"` と表示します。利用できないコマンドを送信すると、[不明なコマンド](https://code.claude.com/docs/ja/errors.md#unknown-command)、またはそのコマンドが利用できない理由を示すメッセージが表示されます。
+* **非表示のコマンド**：Claude Code は、`/heapdump` などの一部の利用可能なコマンドを、意図的にメニューに表示しません。名前の一部を入力しても、非表示のコマンドがメニューに表示されることはありません。入力した名前の一部に一致する表示対象のコマンドが 1 つもない場合、Claude Code は同じ「一致なし」のメッセージを表示します。Claude Code がそのコマンドを一覧に表示するのは、完全な名前を入力した時点以降に限られ、完全な名前を送信するとそのコマンドが実行されます。
 
 ## MCP プロンプト
 

@@ -65,7 +65,7 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定�
 
 ### Bare mode
 
-`--bare` を使用すると、Claude Code は hooks、skills、カスタムコマンド、subagents、インストール済み plugins、MCP servers、auto memory、CLAUDE.md を読み込まずに起動します。ただし、`--add-dir` で渡したディレクトリ内の skills は除きます。CI とスクリプト呼び出しで、すべてのマシンで同じ結果が必要な場合に推奨されます。
+`--bare` を使用すると、Claude Code はフック、スキル、カスタムコマンド、サブエージェント、インストール済みプラグイン、MCP サーバー、自動メモリ、CLAUDE.md を読み込まずに起動します。ただし、`--add-dir` で渡したディレクトリ内のスキルは除きます。CI とスクリプト呼び出しに推奨されます。
 
 詳細情報: [Start faster with bare mode](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)
 

@@ -10,7 +10,7 @@
 >
 > クラウドセッションは、Pro、Max、Ultra、Team プランおよび premium seats または Chat + Claude Code seats を持つ Enterprise ユーザーを対象としています。
 
-クラウドセッションは、あなたのマシンではなく Anthropic が管理するクラウドインフラストラクチャで Claude Code を実行します。このクイックスタートでは、ブラウザから [claude.ai/code](https://claude.ai/code) で開始します。Claude モバイルアプリ、Desktop アプリ、またはターミナルから `claude --cloud` で開始することもできます。
+クラウドセッションは、クラウドインフラストラクチャ（デフォルトでは Anthropic が管理）で Claude Code を実行します。このクイックスタートでは、ブラウザから [claude.ai/code](https://claude.ai/code) で開始します。Claude モバイルアプリ、Desktop アプリ、またはターミナルから `claude --cloud` で開始することもできます。
 
 Claude は、選択した [GitHub リポジトリ](#connect-github)を分離された仮想マシンにクローンし、変更を加え、レビュー用のブランチをプッシュします。セッションはデバイス間で永続化されるため、ラップトップで開始したタスクは後でスマートフォンからレビューする準備ができています。各セッションは、Claude および Claude Code のその他の使用量とあわせてプランの使用制限にカウントされます。クラウド VM に対する別途の料金は発生しません。
 
@@ -134,7 +134,7 @@ GitHub を接続して環境を作成したら、タスクを送信する準備�
 
 [claude.ai/code](https://claude.ai/code) または Claude モバイルアプリの Code タブで、入力ボックスの下にあるリポジトリセレクターをクリックし、Claude が作業するリポジトリを選択します。複数のリポジトリを追加して、1 つのセッションでそれらにまたがって作業することもできます。
 
-claude.ai/code で、デフォルトではなくフィーチャーブランチから Claude を開始するには、リポジトリセレクターの後にあるコントロールでブランチを変更します。
+claude.ai/code で、デフォルトではなくフィーチャーブランチから Claude を開始するには、リポジトリセレクターの後にあるコントロールでブランチを変更します。claude.ai/code でリポジトリなしで開始するには、リポジトリセレクターで **No repository** を選択します。
 
 **2. 権限モードを選択する**
 
@@ -181,8 +181,8 @@ Claude が完了したら、変更をレビューし、特定の行にフィー�
 
 Claude が変更をブランチにプッシュすると、チャットの横にあるパネルの **Changes** カードに、セッション全体で追加および削除された行が表示されます（例：`+42 -18`）。これらの数値をクリックすると差分ビューが開きます。
 
-* セッションのタイトルバー、またはバーの **⋮** メニューにある **Changes** をクリックすることもできます。
-* パネルが非表示になっているときに表示するには、セッションのタイトルバー、またはバーの **⋮** メニューにある **Show session rail** アイコンをクリックします。
+* パネルが非表示になっているときに表示するには、セッションのタイトルバーにある **Activity panel** または **Show session rail** をクリックするか、バーの **⋮** メニューにある **Show session rail** をクリックします。
+* [**Changes** をペインとして開く](https://code.claude.com/docs/ja/desktop.md#arrange-your-workspace)こともできます。
 
 差分はデフォルトではセッションの変更をベースブランチと比較します。別のブランチと比較するには、**Compare against** を選択して 1 つを選びます。ベースブランチと比較する場合、差分には[まだプッシュされていない変更が含まれないことがあります](https://code.claude.com/docs/ja/claude-code-on-the-web.md#troubleshoot-a-missing-file-in-the-diff-view)。
 

@@ -134,7 +134,13 @@ Claude Code は最初に `managed-settings.json` をマージし、次にディ�
 
 Claude Code は、優先度の高い順に次の順序でソースを確認します。
 
-1. リモート設定。claude.ai から[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)として、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)によって配信されます。Claude Code がこのソースを取得するのは、セッションが[対象となる認証情報](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)で Anthropic の API に直接認証する場合、`/login` でゲートウェイにサインインする場合、または[そのセッションに設定を提供する](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#apply-code-settings-in-the-code-tab)ゲートウェイの背後で Claude Desktop の Code タブで実行される場合のみです。他のプロバイダーの場合、または `ANTHROPIC_BASE_URL` が Anthropic の API 以外を指している場合は、次のソースから開始します
+1. リモート設定。claude.ai から[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)として、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)によって配信されます。Claude Code がこのソースを取得するのは、セッションが次のいずれかの条件を満たす場合のみです。
+
+   * [対象となる認証情報](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)を持っている
+   * `/login` でゲートウェイにサインインする
+   * [そのセッションに設定を提供する](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#apply-code-settings-in-the-code-tab)ゲートウェイの背後で Claude Desktop の Code タブで実行される
+
+   プロバイダーまたは `ANTHROPIC_BASE_URL` を設定している場合は、[マシン上で取得結果を確認](https://code.claude.com/docs/ja/server-managed-settings.md#verify-settings-delivery)して、Claude Code がこのソースをスキップするかどうかを確かめてください
 2. MDM または OS レベルのポリシー：macOS の plist または HKLM レジストリキー
 3. 管理設定ファイル。`managed-settings.d/*.json` と `managed-settings.json` がマージされたもの
 4. HKCU レジストリ。Windows の場合、および WSL では HKLM レジストリまたは Windows の管理設定ファイルが [`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings) をオンにし、かつ HKCU の値でもそれが設定されている場合です。Claude Code がこれを読み取るのは、[それより上位に管理ドキュメントが存在せず](#present-admin-documents)、かつ[ホストが提供する親設定](#let-an-embedding-host-add-policy)が制限的なキーを提供していない場合のみです
@@ -276,6 +282,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 * **ローカルの管理者権限**：マシンの管理者である開発者は管理ソース自体を編集できます。MDM ツールがプロファイルやファイルを定期的に再デプロイできるのも、HKLM レジストリや macOS の管理対象設定ドメインが存在するのもこのためです。
 * **サーバー管理設定のキャッシュ**：サーバー管理設定は Anthropic のサーバーから取得されるため、ローカルキャッシュへの編集は[次回の取得が成功するまでしか持続しません](https://code.claude.com/docs/ja/server-managed-settings.md#security-considerations)。
 * **その他のツール**：管理設定が適用されるのは Claude Code のみです。別のツールから API を呼び出す開発者は管理設定の対象外です。
+* **許可ルールと許可リスト**：開発者は `permissions.allow` や `allowedMcpServers` などのリストに[エントリを追加](https://code.claude.com/docs/ja/settings.md#lists-merge-instead-of-overriding)できるため、リストに [`allowManaged*Only` キー](#managed-only-settings)がある場合はそれをデプロイしてください。[`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を使用する場合は、依存している拒否ルールと確認ルールも管理設定に移動してください。
 
 ## ポリシーが有効であることを確認する
 

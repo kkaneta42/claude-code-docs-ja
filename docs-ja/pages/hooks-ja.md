@@ -547,6 +547,7 @@ Claude Code はフックの [JSON 入力](#hook-input-and-output)を `Content-Ty
 | `server` | はい | 設定された MCP サーバーの名前。[プラグイン バンドル サーバー](https://code.claude.com/docs/ja/mcp.md#plugin-provided-mcp-servers)の場合、これはスコープ付き名前 `plugin:<plugin-name>:<server-name>`（例：`plugin:my-plugin:db`）であり、ベア サーバー キーではありません |
 | `tool` | はい | そのサーバー上で呼び出すツールの名前 |
 | `input` | いいえ | ツールに渡される引数。文字列値は、フックの [JSON 入力](#hook-input-and-output)から `${path}` 置換をサポートします（例：`"${tool_input.file_path}"`） |
+| `onFailure` | いいえ | `"continue"` または `"block"`。[フックが失敗したときにアクションをブロックする](#block-the-action-when-a-hook-fails)を参照してください |
 
 この例は、各 `Write` または `Edit` の後、`my_server` MCP サーバー上の `security_scan` ツールを呼び出し、編集されたファイルのパスを渡します。
 
@@ -572,7 +573,7 @@ Claude Code はフックの [JSON 入力](#hook-input-and-output)を `Content-Ty
 
 ##### ツールの結果の読み取り方
 
-Claude Code は、[終了コード 0 の解析ルール](#exit-code-0)に従い、コマンドフックの stdout と同じ方法でツールのテキストコンテンツを読み取ります。ツールが `isError: true` を返した場合、フックは非ブロッキングエラーを生成し、実行は続行されます。
+Claude Code は、[終了コード 0 の解析ルール](#exit-code-0)に従い、コマンドフックの stdout と同じ方法でツールのテキストコンテンツを読み取ります。ツールが `isError: true` を返した場合、フックは非ブロッキングエラーを生成し、実行は続行されます。代わりにアクションをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定します。
 
 フックのエラーに次のいずれかのメッセージが含まれている場合、Claude Code はツールの応答を読み取れなかったため、フックは判定を返していません。
 
@@ -581,7 +582,7 @@ MCP tool "security_scan" on server "my_server" gave no answer that could be read
 MCP tool "security_scan" on server "my_server" answered without its text, which happens when a result is too large, so this hook gave no verdict. If this keeps happening, the tool must send a smaller answer.
 ```
 
-`PreToolUse` では、Claude Code はフックがチェックしていたツール呼び出しを拒否します。`UserPromptSubmit`、`PostToolUse`、`Stop` などの他のイベントでは、このエラーは非ブロッキングです。
+`PreToolUse` では、Claude Code はフックがチェックしていたツール呼び出しを拒否します。`UserPromptSubmit`、`PostToolUse`、`Stop` などの他のイベントでは、このエラーは[非ブロッキング](#exit-code-output)です。
 
 このエラーが繰り返し表示される場合は、ツールから返すデータを減らすか、応答が小さくなるようにフックの [`tool` または `input`](#mcp-tool-hook-fields) を変更してください。
 
@@ -589,7 +590,7 @@ MCP tool "security_scan" on server "my_server" answered without its text, which 
 
 `PreToolUse` や `Stop` など、フックが結果をブロックまたは変更できるイベントでは、Claude Code は接続中のサーバーを待ってからツールを呼び出します。待機時間は最大で [`MCP_TIMEOUT`](https://code.claude.com/docs/ja/env-vars) までで、フック自体の [`timeout`](#common-fields) の範囲内です。`Notification` や `SessionEnd` などの観察用イベントでは待機しません。
 
-[`cached` ステータス](https://code.claude.com/docs/ja/mcp#server-status-detail)を表示しているサーバーは、フックがそのツールを呼び出したときに接続します。その時点でサーバーが接続されていない場合、フックは非ブロッキングエラーを生成し、実行は続行されます。フックが OAuth フローを開始することはないため、先に [`/mcp` からサーバーを認証](https://code.claude.com/docs/ja/mcp#authenticate-with-remote-mcp-servers)してください。
+[`cached` ステータス](https://code.claude.com/docs/ja/mcp#server-status-detail)を表示しているサーバーは、フックがそのツールを呼び出したときに接続します。その時点でサーバーが接続されていない場合、フックは[失敗](#block-the-action-when-a-hook-fails)します。フックが OAuth フローを開始することはないため、先に [`/mcp` からサーバーを認証](https://code.claude.com/docs/ja/mcp#authenticate-with-remote-mcp-servers)してください。
 
 ##### MCP サーバーが利用可能になる前に発火するイベント
 
@@ -811,7 +812,7 @@ macOS と Linux では、コマンド フックは制御ターミナルのない
 | :- | :- | :- | :- |
 | [スキーマ検証](#json-output)に合格する JSON オブジェクト | 成功。フィールドが適用されます | ブロッキング エラー。Claude Code はフィールドを引き続き読み取りますが、`"allow"` や `continue: false` を返しても `PreToolUse` の呼び出しはブロックされたままです。その他のイベントについては、[終了コード 2](#exit-code-2) を参照してください | 成功。Claude Code は終了コードを無視し、フィールドのみが結果を決定します。[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)の場合は、代わりに失敗としてカウントされます |
 | [解析できない](#exit-code-0)、またはスキーマ検証に失敗する JSON | 非ブロッキング エラー。通知には解析または検証のメッセージが含まれます | ブロッキング エラー。stderr が理由になります | 非ブロッキング エラー。通知には解析または検証のメッセージが含まれます |
-| [プレーン テキスト](#exit-code-0)、または何もなし | 成功 | ブロッキング エラー。stderr が理由になります | 非ブロッキング エラー。通知には stderr の最初の行が含まれます |
+| [プレーン テキスト](#exit-code-0)、または何もなし | 成功 | ブロッキング エラー。stderr が理由になります | 非ブロッキング エラー |
 
 一部のイベントには独自のルールがあります。
 
@@ -902,7 +903,7 @@ Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or
 
 [`async: true`](#run-hooks-in-the-background) で実行するコマンド フックを除き、Claude Code は [`timeout`](#common-fields) に達した `command`、`http`、または `mcp_tool` フックをキャンセルし、フックの出力を破棄します。そのため、ほとんどのイベントでは、タイムアウトしたフックは決定を下しません。[`PreModelSwitch`](#premodelswitch) では、タイムアウトでキャンセルされたフックはモデルの切り替えをブロックします。
 
-`PreToolUse` では、タイムアウトした `command`、`http`、または `mcp_tool` フックはツール呼び出しをブロックしません。ただし、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)は例外です。呼び出しは通常の[権限フロー](https://code.claude.com/docs/ja/permissions.md)を通じて続行されるため、停止したフックがゲートとして機能することを当てにしないでください。`command` または `http` フックがタイムアウトしたときに呼び出しをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。タイムアウトを超えた [Agent SDK コールバック フック](https://code.claude.com/docs/ja/agent-sdk/hooks.md)は[ツール呼び出しをブロックします](#pretooluse)。
+`PreToolUse` では、タイムアウトした `command`、`http`、または `mcp_tool` フックはツール呼び出しをブロックしません。ただし、[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)は例外です。呼び出しは通常の[権限フロー](https://code.claude.com/docs/ja/permissions.md)を通じて続行されるため、停止したフックがゲートとして機能することを当てにしないでください。フックがタイムアウトしたときに呼び出しをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。タイムアウトを超えた [Agent SDK コールバック フック](https://code.claude.com/docs/ja/agent-sdk/hooks.md)は[ツール呼び出しをブロックします](#pretooluse)。
 
 > [!NOTE]
 >
@@ -936,7 +937,9 @@ Failed with non-blocking status code: /bin/sh: /path/to/hook.sh: No such file or
 
 #### フックが失敗したときにアクションをブロックする
 
-ほとんどのイベントでは、フックが失敗またはタイムアウトしても Claude Code はアクションを実行するため、パスが間違っていたりスクリプトがクラッシュしたりするポリシー フックはすべてを通過させてしまいます。代わりにアクションをブロックするには、`command` または `http` フックに `"onFailure": "block"` を設定します。Claude Code v2.1.295 以降が必要です。Agent SDK のコールバック フックについては、[コールバックが失敗したときにアクションをブロックする](https://code.claude.com/docs/ja/agent-sdk/hooks.md#block-the-action-when-a-callback-fails)を参照してください。
+ほとんどのイベントでは、フックが失敗またはタイムアウトしても Claude Code はアクションを実行するため、パスが間違っていたりスクリプトがクラッシュしたりするポリシー フックはすべてを通過させてしまいます。代わりにアクションをブロックするには、`command`、`http`、または `mcp_tool` フックに `"onFailure": "block"` を設定します。Claude Code v2.1.295 以降が必要です。`mcp_tool` フックでは、`onFailure` に v2.1.328 以降が必要です。
+
+Agent SDK のコールバック フックについては、[コールバックが失敗したときにアクションをブロックする](https://code.claude.com/docs/ja/agent-sdk/hooks.md#block-the-action-when-a-callback-fails)を参照してください。
 
 > [!NOTE]
 >
@@ -978,6 +981,7 @@ Error: Cannot find module '/path/to/project/.claude/hooks/check-command.js'
 * **起動できない**: コマンド フックが起動に失敗する（例えば、スクリプトや実行可能ファイルが存在しないため）
 * **0 または 2 以外の終了コード**: `permissionDecision: "allow"` のようにアクションを許可する JSON を出力した場合でも、コマンド フックでは失敗としてカウントされます。JSON の決定を返すには、0 で終了してください
 * **HTTP エラー**: HTTP フックの接続が失敗するか、レスポンスのステータスが 2xx ではない
+* **MCP の失敗**: `mcp_tool` フックのサーバーが接続されていないか、そのツールがエラーを返す。`PreToolUse` や `UserPromptSubmit` などのイベントで `"block"` を設定している場合、空でない応答も失敗としてカウントされます。ただし、`{}` または `reason` 以外の[フック出力フィールド](#json-output)を設定する JSON は除きます
 * **タイムアウト**: フックが [`timeout`](#common-fields) に達する
 * **無効な出力**: JSON 出力が[解析できない](#exit-code-0)か、[スキーマ検証](#json-output)に失敗する。HTTP フックの場合、空でも JSON オブジェクトでもない 2xx 本体も該当します。コマンド フックからのプレーン テキストの stdout は失敗ではありません
 
@@ -1031,7 +1035,7 @@ v2.1.309 より前は、メッセージは `blocking because Git Bash wasn't fou
 | :- | :- | :- |
 | `PreToolUse` | はい | ツール呼び出しをブロック |
 | `PermissionRequest` | いいえ | このイベントでは終了コード 2 は尊重されず、権限フローは変更されずに進行します。代わりに [`decision` オブジェクト](#permissionrequest-decision-control)を通じて拒否してください |
-| `UserPromptSubmit` | はい | プロンプトをブロックし、Claude に届かないようにします。[ブロックされたプロンプトが残すもの](#what-a-blocked-prompt-leaves-behind)を参照してください |
+| `UserPromptSubmit` | はい | プロンプトをブロック。[ブロックされたプロンプトが残すもの](#what-a-blocked-prompt-leaves-behind)を参照してください |
 | `UserPromptExpansion` | はい | 拡張をブロック |
 | `Stop` | はい | Claude が停止するのを防ぎ、会話を続行 |
 | `SubagentStop` | はい | サブエージェントが停止するのを防止 |
@@ -1525,11 +1529,11 @@ InstructionsLoaded フックには決定制御がありません。指示の読�
 * `/loop` の反復を含む、[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)が発火したとき
 * [バックグラウンドのサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)が、それを開始したセッションに報告を返すとき
 * [別のセッションが送信したメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md)がメインの会話に届くとき
-* コードをバックグラウンドで実行できる場合に、[Code Mode](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook) セッションで Claude が実行するコードの出力（`command`、`http`、`mcp_tool` フックが対象）
+* v2.1.328 より前では、コードがバックグラウンドで実行できる場合、[Code Mode](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook) セッションで Claude が実行するコードの出力（`command`、`http`、`mcp_tool` フックの場合）
 
 `UserPromptSubmit` フックのデフォルトのタイムアウトは、`command`、`http`、`mcp_tool` タイプで 30 秒です。これは、他のほとんどのイベントにおけるこれらのタイプのデフォルトである 600 秒より短い値です。このフックはすべてのプロンプトの前に実行され、完了するまでモデルの処理をブロックするため、フックが停止するとセッションも停止します。フックにより多くの時間が必要な場合は、フックエントリで `timeout` フィールドを設定してください。
 
-[`async: true`](#run-hooks-in-the-background) で実行するコマンドフックを除き、タイムアウトに達した `UserPromptSubmit` のコマンド、HTTP、MCP ツールのフックはキャンセルされ、その出力（`additionalContext` を含む）は破棄されます。プロンプトはそのコンテキストなしで Claude に届きます。代わりにプロンプトをブロックするには、コマンドフックまたは HTTP フックで [`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。トランスクリプトには、フック名、発生したタイムアウト、出力が破棄されたことを示す通知が表示されます。
+[`async: true`](#run-hooks-in-the-background) で実行する command フックを除き、タイムアウトに達した `UserPromptSubmit` の command、HTTP、または MCP ツールフックはキャンセルされ、`additionalContext` を含むその出力は破棄されます。プロンプトはそのコンテキストなしで引き続き Claude に届きます。代わりにプロンプトをブロックするには、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定してください。トランスクリプトには、フック名、発生したタイムアウト、および出力が破棄されたことを示す通知が表示されます。
 
 `UserPromptSubmit` の [Agent SDK コールバックフック](https://code.claude.com/docs/ja/agent-sdk/hooks.md)がタイムアウトに達すると、フック名とタイムアウトを示すメッセージとともにプロンプトがブロックされます。そこでのコールバックは、フェイルオープンしてはならないポリシーゲートとして機能している可能性があるためです。セッションは継続します。
 
@@ -1573,8 +1577,8 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
 
 | フィールド | 説明 |
 | :- | :- |
-| `decision` | `"block"` はプロンプトが Claude に届く前に停止します。プロンプトの処理を続行させるには省略します |
-| `reason` | `decision` が `"block"` の場合にユーザーに表示されます。コンテキストには追加されません。ただし、フックが [Code Mode の出力](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook)をブロックする場合は除きます |
+| `decision` | `"block"` はプロンプトを拒否します。プロンプトの処理を続行させるには省略します |
+| `reason` | `decision` が `"block"` の場合にユーザーに表示されます。v2.1.328 より前にフックが [Code Mode の出力](https://code.claude.com/docs/ja/code-mode.md#code-output-withheld-by-a-hook)をブロックする場合を除き、コンテキストには追加されません |
 | `additionalContext` | 送信されたプロンプトとともに Claude のコンテキストに追加される文字列。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
 | `sessionTitle` | セッションタイトルを設定します。プロンプトの内容に基づいてセッションに自動的に名前を付けるために使用します |
 | `suppressOriginalPrompt` | フックがプロンプトをブロックする際に `true` の場合、ブロックメッセージからプロンプトのテキストを除外します。[ブロックされたプロンプトが残すもの](#what-a-blocked-prompt-leaves-behind)を参照してください |
@@ -1596,9 +1600,9 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
 
 #### ブロックされたプロンプトが残すもの
 
-ブロックされたプロンプトが Claude に届くことはありませんが、そのテキストがあらゆる場所から削除されるわけではありません。デフォルトでは、ユーザーに表示されるブロックメッセージの末尾に `Original prompt:` と送信されたテキストが続き、Claude Code はそのメッセージをディスク上のセッションのトランスクリプトファイルに書き込みます。メッセージからテキストを除外するには、`hookSpecificOutput` 内に `"suppressOriginalPrompt": true` を含む JSON を出力します。これは、フックが `decision: "block"` でブロックする場合でも、終了コード 2 でブロックする場合でも機能します。
+デフォルトでは、ユーザーに表示されるブロックメッセージの末尾には `Original prompt:` と送信されたプロンプトが表示されます。メッセージからプロンプトを除外するには、フックが `decision: "block"` でブロックする場合も終了コード 2 でブロックする場合も、`hookSpecificOutput` 内に `"suppressOriginalPrompt": true` を含む JSON を出力してください。
 
-`suppressOriginalPrompt` が変更するのはブロックメッセージのみです。送信されたテキストは、セッションのトランスクリプトやプロンプト履歴などのローカルファイルに引き続き残る可能性があるため、ブロックするフックは機密情報をディスクに残さない手段にはなりません。これらのファイルを制限または削除するには、[プレーンテキストでの保存](https://code.claude.com/docs/ja/claude-directory.md#plaintext-storage)と[ローカルデータの消去](https://code.claude.com/docs/ja/claude-directory.md#clear-local-data)を参照してください。
+いずれの場合も、プロンプトはセッションのトランスクリプトやプロンプト履歴などのローカルファイルに引き続き現れる可能性があります。ブロックするフックは、機密情報をディスクに残さないための手段ではありません。これらのファイルを制限または削除するには、[プレーンテキストでの保存](https://code.claude.com/docs/ja/claude-directory.md#plaintext-storage)と[ローカルデータの消去](https://code.claude.com/docs/ja/claude-directory.md#clear-local-data)を参照してください。
 
 ### UserPromptExpansion
 
@@ -1972,7 +1976,7 @@ Web を検索します。
 | `modelsUsed` | array | `["claude-sonnet-4-5", "claude-haiku-4-5"]` | 使用されたモデルを順に並べたもので、連続する重複はまとめられます。実行中にモデルが切り替えられた場合にのみ設定されます |
 | `totalTokens` | number | `12450` | サブエージェントの最終 API リクエストのトークン数（入力、出力、キャッシュのトークンの合計）。実行全体の合計ではありません |
 | `totalDurationMs` | number | `48211` | サブエージェントの実行の実時間 |
-| `totalToolUseCount` | number | `7` | サブエージェントが行ったツール呼び出しの数 |
+| `totalToolUseCount` | number | `7` | サブエージェントが行ったツール呼び出しの数（`SubagentHandback` を除く） |
 | `usage` | object | `{"input_tokens": 8320, ...}` | 最終 API リクエストのトークンの種類別内訳：`input_tokens`、`output_tokens`、`cache_creation_input_tokens`、`cache_read_input_tokens` |
 
 Claude Code v2.1.271 以降では、Claude Code が [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で提供する [`SubagentHandback`](https://code.claude.com/docs/ja/tools-reference) ツールを使って実行されるサブエージェントは、レポートをテキストとして返すのではなく、そのツールを通じて配信します。その場合、`completed` の結果の `content` フィールドには、レポート自体ではなく、その引き渡しに関する短い注記が入ります。レポートを読み取るには、`SubagentHandback` に `PreToolUse` または `PostToolUse` フックをマッチさせ、`tool_input.message` を読み取ってください。
@@ -2864,7 +2868,7 @@ Claude Code は連続 8 回の継続上限を適用します。Stop フックが
 | `type` | `shell`、`subagent`、`monitor`、`workflow`、`teammate`、`cloud session`、`MCP task` などの、わかりやすいタスクタイプのラベル。各ラベルは、どの Claude Code 機能がタスクを作成したかを示します。認識されないタイプの場合は、生の識別値にフォールバックします |
 | `status` | 現在のタスクのステータス |
 | `description` | 自由形式の説明。1000 文字に制限され、切り詰められた場合は文字列内に `… [+N chars]` マーカーが付きます |
-| `command` | シェルのコマンドライン。1000 文字に制限されます。`shell` タスクにのみ存在します |
+| `command` | シェルのコマンドライン。1000 文字に制限されます。`shell` タスクと、コマンドを実行する `monitor` タスクにのみ存在します |
 | `agent_type` | サブエージェントのタイプ名。`subagent` タスクにのみ存在します |
 | `server` | MCP サーバー名。`monitor` および `MCP task` タスクにのみ存在します |
 | `tool` | MCP ツール名。`monitor` および `MCP task` タスクにのみ存在します |
@@ -3335,7 +3339,7 @@ Claude Code は、`.` や `..` のセグメントを含む絶対パスと、リ�
 
 サブエージェントやワークフローのエージェントが終了したとき、Claude Code は WorktreeCreate フックがそのエージェントのために作成した worktree を保持し、WorktreeRemove フックは実行しません。作業が完了したら、それらの worktree は自分で削除してください。
 
-`claude remote-control` によるクリーンアップの場合、Claude Code は確認なしでフックを実行します。`ExitWorktree` は、呼び出しで [`discard_changes: true`](https://code.claude.com/docs/ja/agent-sdk/typescript#exitworktree) が渡されない限り、フックが作成した worktree の削除を拒否します。
+`claude remote-control` が worktree をクリーンアップする場合、フックはプロンプトなしで実行されるものと考えてください。フックで作成された worktree の削除を Claude に依頼した場合、Claude が [`discard_changes: true`](https://code.claude.com/docs/ja/agent-sdk/typescript#exitworktree) を渡さない限り、`ExitWorktree` は拒否するものと考えてください。
 
 Claude Code は git を使って変更済みまたは未追跡のファイルを探すため、git のチェックアウトではない worktree やその中にない worktree では、ディレクトリにコミットされていない作業があっても何も見つけません。WorktreeRemove フックでは、何かを削除する前にそのような作業がないか確認してください。
 
@@ -3937,7 +3941,7 @@ ElicitationResult フックは、ユーザーの応答をそのまま通した�
 | 応答をそのまま通す | 出力なし、終了コード 0 | 変更されていないユーザーの応答 |
 | 送信された値を変更する | `"action": "accept"` と、`content` 内の新しい値 | ユーザーの値の代わりに指定した `content` を伴う `accept` |
 | 応答をブロックする | `"action": "decline"` | ユーザーの値を含まない `decline` |
-| リクエストをキャンセルする | `"action": "cancel"` | ユーザーが送信した値を伴う `cancel`。値を渡さないようにするには `"decline"` を返してください |
+| リクエストをキャンセルする | `"action": "cancel"` | `cancel`。ユーザーが送信した値を渡さないようにするには、`"decline"` を返してください |
 
 次の出力は [ElicitationResult の入力](#elicitationresult-input)で示した応答を変更し、ユーザーが `alice` と送信したところをサーバーが `alice@example.com` として受け取るようにします。
 

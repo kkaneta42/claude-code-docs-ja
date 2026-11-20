@@ -246,7 +246,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [!NOTE]
 >
-> [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由で認証する場合、機能の利用可能性はゲートウェイの転送先である基盤プロバイダーと同じになります。ただし、Claude Code 自体がオフにする機能は除きます。`ANTHROPIC_BASE_URL` が `api.anthropic.com` 以外のホストを指している場合、ゲートウェイが何を転送するかにかかわらず、Claude Code は [Remote Control](https://code.claude.com/docs/ja/remote-control.md#requirements) や[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)などの機能をオフにします。[Advisor](https://code.claude.com/docs/ja/advisor.md#requirements) などの一部の機能は、ゲートウェイがリクエストをそのままの形で転送する場合にのみ動作します。
+> [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由で認証する場合、機能の利用可能性はゲートウェイの転送先である基盤プロバイダーと同じになります。ただし、Claude Code 自体がオフにする機能は除きます。`ANTHROPIC_BASE_URL` が `api.anthropic.com` 以外のホストを指している場合、ゲートウェイが何を転送するかにかかわらず、Claude Code は [Remote Control](https://code.claude.com/docs/ja/remote-control.md#requirements) などの機能をオフにします。[Advisor](https://code.claude.com/docs/ja/advisor.md#requirements) などの一部の機能は、ゲートウェイがリクエストをそのままの形で転送する場合にのみ動作します。
 >
 > Amazon Bedrock 形式または Agent Platform 形式のゲートウェイ、`ANTHROPIC_BASE_URL` ゲートウェイ、Claude apps ゲートウェイでのサインインの間で、Claude Code が送信するリクエストがどのように異なるかについては、[接続方法別のクライアントの動作](https://code.claude.com/docs/ja/llm-gateway-protocol.md#how-the-connection-method-changes-client-behavior)を参照してください。
 

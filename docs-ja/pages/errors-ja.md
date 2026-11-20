@@ -46,6 +46,7 @@
 | `Agent terminated early due to an API error` | [サーバーエラー](#agent-terminated-early-due-to-an-api-error) |
 | `You've hit your session limit` / `You've hit your weekly limit` / `You've hit your Opus limit` / `You've hit your Sonnet limit` | [使用制限](#youve-hit-your-session-limit) |
 | `Usage credits required for 1M context` | [使用制限](#usage-credits-required-for-1m-context) |
+| `Usage credits ran out before the response was finished.` | [使用クレジットを追加する](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription) |
 | `the prompt to confirm went unanswered · nothing was sent`（v2.1.324 以降） | [使用制限](#the-prompt-to-confirm-went-unanswered) |
 | `Claude stopped here · send a message to be asked again` | [使用制限](#the-prompt-to-confirm-went-unanswered) |
 | `Server is temporarily limiting requests` | [使用制限](#server-is-temporarily-limiting-requests) |
@@ -90,6 +91,7 @@
 | `Remote Control was turned off by your organization's policy` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#remote-control-was-turned-off-by-your-organizations-policy) |
 | `Session failed: working folder not found:` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#working-folder-not-found) |
 | `The program file this Remote Control started from is gone` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#program-file-is-gone) |
+| `Session failed: program not found:` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#program-file-is-gone) |
 | `Session failed: spawn error:` の後に `ENOENT` メッセージが続くもの | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#program-file-is-gone) |
 | `Remote Control disconnected:` の後に `share link` に言及する理由が続くもの | [Remote Control](https://code.claude.com/docs/ja/remote-control.md#what-connected-devices-see) |
 | `OAuth token revoked` / `OAuth token has expired` | [認証](#oauth-token-revoked-or-expired) |
@@ -97,6 +99,7 @@
 | `Your account does not have access to Claude. Please login again or contact your administrator.` | [認証](#oauth-token-revoked-or-expired) |
 | `API Error: 401 Invalid authentication credentials` | [認証](#api-error-401-invalid-authentication-credentials) |
 | `Login expired · Please run /login` | [認証](#login-expired) |
+| `Warning: this sign-in` | [保存されたログインの終了日時を確認する](https://code.claude.com/docs/ja/authentication.md#check-when-a-stored-login-ends) |
 | `The browser can't return the sign-in to Claude Code automatically` | [認証](#couldnt-start-the-local-sign-in-listener) |
 | `Couldn't start the local listener that receives the browser sign-in. Try again.` | [認証](#couldnt-start-the-local-sign-in-listener) |
 | `Failed to start OAuth callback server` | [認証](#failed-to-start-oauth-callback-server) |
@@ -109,6 +112,7 @@
 | `Login reached its time limit · Please run /login` / `Failed to authenticate: this login reached its time limit` | [認証](#login-expired) |
 | `Failed to authenticate: your claude.ai login expired` | [ログインの有効期限が切れた後](https://code.claude.com/docs/ja/authentication.md#after-the-login-expires) |
 | `claude.ai login ended · usage now billed to` / `Warning: the claude.ai login on this machine has ended` | [ログインの有効期限が切れた後](https://code.claude.com/docs/ja/authentication.md#after-the-login-expires) |
+| `The refresh token in CLAUDE_CODE_OAUTH_REFRESH_TOKEN was used for this attempt` | その上に表示された拒否の原因を修正してから、[`CLAUDE_CODE_OAUTH_REFRESH_TOKEN`](https://code.claude.com/docs/ja/env-vars#variables) に新しいトークンを設定します。 |
 | `Could not refresh your login because another Claude Code process is refreshing it` | [認証](#could-not-refresh-your-login) |
 | `Failed to refresh OAuth token: another Claude Code process is refreshing it or exited mid-refresh` | [認証](#could-not-refresh-your-login) |
 | `Could not refresh your login: the disk that holds the Claude Code config directory (~/.claude by default), or your disk quota on it, is full` | [認証](#could-not-refresh-your-login-disk-full) |
@@ -161,10 +165,11 @@
 | クラウドセッションまたはクラウドのスケジュールタスクでの `x-deny-reason: host_not_allowed` 付きの `403` | [ネットワーク](#host-not-allowed-in-a-cloud-session) |
 | `proxy refused the connection` | [ネットワーク](#the-proxy-refused-the-connection) |
 | クラウドセッションでの `GitHub GraphQL is not available from Claude Code sessions` 付きの `403` | [GitHub プロキシ](https://code.claude.com/docs/ja/cloud-environments.md#github-proxy) |
+| `In this cloud session a host fails to resolve like this` を伴う `ENOTFOUND` | [ネットワーク](#host-not-allowed-in-a-cloud-session) |
 | `The cloud environments service returned an empty response` / `The cloud environments service returned a response in an unexpected format` | [ネットワーク](#the-cloud-environments-service-returned-an-empty-or-unexpected-response) |
 | `Failed to fetch session from Sessions API: Failed to fetch session logs` | [ネットワーク](#failed-to-fetch-session-from-sessions-api) |
 | `Couldn't load the history of cloud session` | [ネットワーク](#couldnt-load-the-history-of-cloud-session) |
-| `Couldn't reconnect to your Remote Control session` | [ネットワーク](#couldnt-reconnect-to-your-remote-control-session) |
+| `Couldn't reconnect to your Remote Control session` | [Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#couldnt-reconnect-to-your-remote-control-session) |
 | `N sessions ended while this machine was offline — the environment was cleaned up on the server and can't be resumed.` | [ネットワーク](#sessions-ended-while-this-machine-was-offline) |
 | `Couldn't share the transcript.` | [ネットワーク](#couldnt-share-the-transcript) |
 | `Couldn't send feedback` | [ネットワーク](#couldnt-send-feedback) |
@@ -212,6 +217,7 @@
 | `thinking.type.enabled is not supported for this model` | [リクエストエラー](#thinking-type-enabled-is-not-supported-for-this-model) |
 | `Effort '<level>' isn't available with thinking turned off on this model` | [リクエストエラー](#effort-isnt-available-with-thinking-turned-off) |
 | `effort '<level>' is not supported when thinking is disabled` | [リクエストエラー](#effort-isnt-available-with-thinking-turned-off) |
+| `API Error: 400 Invalid effort level` / `Your organization limits effort for <model>, so Claude Code is using '<level>' instead of '<level>'` | [組織の effort 制限](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits) |
 | `max_tokens must be greater than thinking.budget_tokens` | [リクエストエラー](#thinking-budget-exceeds-output-limit) |
 | `Claude's response exceeded the ... output token maximum` | [リクエストエラー](#response-exceeded-the-output-token-maximum) |
 | `API Error: 400 due to tool use concurrency issues` | [リクエストエラー](#tool-use-or-thinking-block-mismatch) |
@@ -318,7 +324,7 @@
 | `Claude Code couldn't restart` | [コマンドラインエラー](#claude-code-couldnt-restart) |
 | `Couldn't open Claude Desktop` | [コマンドラインエラー](#couldnt-open-claude-desktop) |
 | `Failed to open Claude Desktop. Please try opening it manually.` | [コマンドラインエラー](#couldnt-open-claude-desktop) |
-| `Couldn't read your Zed keymap` / `Couldn't back up your Zed keymap` / `Couldn't update your Zed keymap` | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged) |
+| `Couldn't read your Zed keymap` / `Couldn't back up your Zed keymap` / `Couldn't update your Zed keymap` / `Your Zed keymap is a symbolic link` | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged) |
 | `Your Zed keymap isn't a readable list of keybindings` | [コマンドラインエラー](#terminal-setup-left-your-zed-keymap-unchanged) |
 | `Skill usage reports are not available on this connection.` | [コマンドラインエラー](#skill-usage-reports-are-not-available-on-this-connection) |
 | `Custom output styles can't be selected over Remote Control or from a relayed message` | [コマンドラインエラー](#custom-output-styles-cant-be-selected-over-remote-control) |
@@ -356,6 +362,7 @@
 | `"<plugin>" was not uninstalled: it is still switched on in <file>` | [プラグインエラー](#plugin-was-not-uninstalled) |
 | `"<plugin>" was not uninstalled: <file> is there and could not be read` | [プラグインエラー](#plugin-was-not-uninstalled) |
 | `Plugin "<plugin>" was not uninstalled: installed_plugins.json` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#installed-plugins-json-holds-a-record-this-version-cannot-read) |
+| `was updated or removed, so this hook did not run` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-directory-does-not-exist) |
 | `Plugin directory does not exist: <path>` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-directory-does-not-exist) |
 | `Skipping connection (recent failure cached; retries automatically in 15 min, or edit the plugin config to retry now)` | [プラグインエラー](#skipping-connection-recent-failure-cached) |
 | `is not added on this machine, so your organization's marketplace policy keeps its plugins off` | [マーケットプレイスを追加する](https://code.claude.com/docs/ja/plugins/install.md#add-a-marketplace) |
@@ -391,6 +398,7 @@
 | `cannot be handed to a teammate intact` | [ツールエラー](#command-line-deny-rule-cannot-be-handed-to-a-teammate) |
 | `Message too large for cross-session delivery` | [ツールエラー](#message-too-large-for-cross-session-delivery) |
 | `Too many messages to this session just now` | [ツールエラー](#too-many-messages-to-this-session-just-now) |
+| `Held a message from <sender>` / `Dropped the held message from <sender> without delivering it` | [受信メッセージを制御する](https://code.claude.com/docs/ja/cross-session-messaging.md#control-inbound-messages)、または `claude -p` の場合は [非対話型セッション](https://code.claude.com/docs/ja/cross-session-messaging.md#non-interactive-sessions) |
 | `Cross-session message was dropped at the recipient session's inbox` | [ツールエラー](#cross-session-message-dropped-at-the-inbox) |
 | `Refusing to send: reply target is a symlink` / `Refusing to send: cannot vet reply target` | [ツールエラー](#refusing-to-send-a-cross-session-message) |
 | `Refusing to read <path>: its symlink resolution changed after permission was checked (<reason>)` / `Refusing to search <path>: its symlink resolution changed after permission was checked` | [ツールエラー](#refusing-after-a-symlink-changed) |
@@ -410,6 +418,7 @@
 | `File is not valid UTF-8. It may use a legacy encoding such as Windows-1252, Shift-JIS or GBK, or be binary` | [ツールエラー](#file-is-not-valid-utf-8) |
 | `git is not installed on this Mac. To install it, run xcode-select --install, then try again.` | [ツールエラー](#git-is-not-installed-on-this-mac) |
 | `Refusing to apply edits to <path>: a hook is configured for file edits in this session` | [ツールエラー](#a-hook-is-configured-for-file-edits) |
+| `blocking because onFailure is "block"` | [フックが失敗したときにアクションをブロックする](https://code.claude.com/docs/ja/hooks.md#block-the-action-when-a-hook-fails) |
 | `the source file is not valid UTF-8 text` / `the source file is not valid UTF-16 text` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
 | `the source file has the replacement character U+FFFD` | [ツールエラー](#the-source-file-is-not-valid-utf-8-text) |
 | `Not published: that file is on a network share` | [ツールエラー](#not-published-that-file-is-on-a-network-share) |
@@ -602,7 +611,7 @@ v2.1.309 より前は、これらの接続ではバナーは 20 秒後に表示�
 非ストリーミングの試行は、リクエストタイムアウトと本文のアイドルタイムアウトのうち、早く到達した方の時点で終了します。
 
 * **リクエストタイムアウト**: 正の値を設定している場合は `API_TIMEOUT_MS`、それ以外の場合はローカルセッションでは 300 秒です。
-* **[本文のアイドルタイムアウト](https://code.claude.com/docs/ja/network-config.md#streaming-idle-watchdogs)**: レスポンスがないまま 5～6 分が経過した時点です。これが動作する環境で、かつオフにしていない場合に適用され、`API_TIMEOUT_MS` をどれだけ大きく設定していても変わりません。
+* **[本文のアイドルタイムアウト](https://code.claude.com/docs/ja/network-config.md#streaming-idle-watchdogs)（動作する環境の場合）**: デフォルトでは、レスポンスがないまま 5～6 分が経過した時点です。`API_TIMEOUT_MS` をどれだけ大きく設定していても変わりません。
 
 ## サーバーエラー
 
@@ -663,7 +672,8 @@ Request timed out
 
 * すべてのリクエストがこのメッセージで失敗し、`API_TIMEOUT_MS` を `0` に設定している場合は、`claude --version` を確認してください。v2.1.305 より前のバージョンでは、Claude Code を更新するか、正の値を設定してください。
 * リクエストを再試行してください
-* 遅いネットワークまたはプロキシが原因の場合は、[Automatic retries](#automatic-retries) で説明されているように `API_TIMEOUT_MS` を上げてください
+* メッセージが `Request timed out` の後にも続き、[環境変数](https://code.claude.com/docs/ja/env-vars.md#set-environment-variables) を示している場合は、メッセージの指示に従ってください。`No data arrived` は、[ボディのアイドルタイムアウト](https://code.claude.com/docs/ja/network-config.md#streaming-idle-watchdogs) がリクエストを終了したことを意味します。
+* v2.1.328 より前のバージョンでネットワークまたはプロキシが遅い場合は、[`API_TIMEOUT_MS`](#tune-retry-behavior) を上げてください。それでもリクエストがタイムアウトする場合は、[v2.1.328 以降に更新](https://code.claude.com/docs/ja/setup.md#update-claude-code) し、次のタイムアウトメッセージに示されている変数を設定してください。更新できない場合は、[`API_FORCE_IDLE_TIMEOUT`](https://code.claude.com/docs/ja/env-vars) を `0` に設定してください。
 * タイムアウトが頻繁で、ネットワークが正常な場合は、以下の [Network and connection errors](#network-and-connection-errors) を参照してください
 
 ### No response from API
@@ -2350,19 +2360,7 @@ Couldn't load the history of cloud session session_01HJKLMNOPQRSTUVWXYZ. Check i
 
 ### Couldn't reconnect to your Remote Control session
 
-```text theme={null}
-Couldn't reconnect to your Remote Control session. Retry, or start a fresh session without --resume.
-```
-
-`claude --resume` または `claude --continue` で再開すると、その会話に記録された [Remote Control](https://code.claude.com/docs/ja/remote-control.md) セッションに再接続します。このメッセージは、ネットワークの中断やサーバーエラーなど、一時的な可能性がある理由で再接続が失敗したため、Claude Code がリモートセッションがまだ存在するかどうかを確認できないことを意味します。ローカルセッションは Remote Control なしで実行を続けます。
-
-**対処方法:**
-
-* `/remote-control` を実行して接続を再試行します
-* `claude --remote-control` で新しいセッションを開始し、新しい Remote Control セッションを作成します
-* その他の Remote Control 起動時のメッセージについては、[Remote Control のトラブルシューティング](https://code.claude.com/docs/ja/remote-control.md#troubleshooting)を参照してください
-
-サーバーが代わりに以前のセッションがなくなったと報告した場合、このメッセージは表示されません。Claude Code はその代わりに新しいセッションを開始するか、[`Previous session is unavailable — run /remote-control to start a new one`](https://code.claude.com/docs/ja/remote-control#previous-session-is-unavailable) を表示します。
+原因と修正方法については、[Remote Control のトラブルシューティングにおけるこのメッセージ](https://code.claude.com/docs/ja/remote-control.md#couldnt-reconnect-to-your-remote-control-session)を参照してください。
 
 ### Sessions ended while this machine was offline
 
@@ -2700,11 +2698,10 @@ API Error: 400 ... tools.N.custom.input_schema.properties: Property keys should 
 
 Claude Code はサーバーのツールを読み込む際に [この検証に失敗する入力スキーマを持つ MCP ツールを除外](https://code.claude.com/docs/ja/mcp.md#tools-with-invalid-input-schemas)するため、リクエストには通常そのようなツールは含まれません。
 
-[フラグ取得がオフになっているデプロイ](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)、またはフラグが一度も届いていないマシンでは、Claude Code はどのツールが拒否されるかをサーバーのログに記録しますが、そのまま送信するため、このエラーが発生する可能性があります。
+それでも、次のような場合にはエラーが発生することがあります。
 
-このエラーは、`$schema` で draft 2020-12 以外の JSON Schema 方言を宣言するスキーマを持つツールでも発生する可能性があります。Claude Code はこれらのスキーマを JSON Schema メタスキーマに対してチェックしませんが、トップレベルのプロパティ名チェックは引き続き適用されます。
-
-v2.1.216 より前では、どのデプロイでも除外チェックは実行されていませんでした。
+* [機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオンになっているものの、[フラグがまだ届いていない](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)場合。v2.1.328 より前は、取得がオフの場合にもこのエラーが発生することがありました。
+* ツールのスキーマが `$schema` で draft 2020-12 以外の JSON Schema ダイアレクトを宣言している場合。
 
 **対応方法：**
 
@@ -4321,7 +4318,7 @@ v2.1.285 より前は、メッセージは `Open Claude Desktop and run /desktop
 
 Zed で [`/terminal-setup`](https://code.claude.com/docs/ja/terminal-config#enter-multiline-prompts) を実行しましたが、Claude Code は Zed の `keymap.json` の更新を完了できなかったため、ファイルを元のままにしました。
 
-各メッセージにはキーマップへのパスが示され、自分で追加するキーボードショートカットのブロックで終わります。
+各メッセージには、キーマップへのパスと、自分で追加するためのキーボードショートカットのブロックが含まれます:
 
 ```text theme={null}
 Couldn't update your Zed keymap, so it was left unchanged.
@@ -4333,6 +4330,7 @@ To add the binding yourself, add this block to the keymap array in <path to keym
 
 * `Couldn't read your Zed keymap, so it was left unchanged.`: ファイルの権限などの理由で、Claude Code がファイルを読み取れませんでした
 * `Your Zed keymap isn't a readable list of keybindings, so it was left unchanged.`: ファイルは読み取れましたが、`//` コメントと末尾のカンマを許容しても、キーボードショートカットのブロックの配列として解析できません
+* `Your Zed keymap is a symbolic link, so it was left unchanged.`: `keymap.json` が別のファイルにリンクしています
 * `Couldn't back up your Zed keymap; not modifying it.`: Claude Code がファイルを同じ場所の `.bak` バックアップにコピーできなかったため、何も変更しませんでした
 * `Couldn't update your Zed keymap, so it was left unchanged.`: マージした結果が、キーボードショートカットを含む有効なキーマップとして検証されなかったため、Claude Code は書き込まずに破棄しました。キーボードショートカットのブロックでキーが重複していると、これが発生することがあります
 
@@ -4447,19 +4445,7 @@ v2.1.302 より前は、完全なメッセージは `/feedback is disabled by yo
 
 ### マーケットプレイスが信頼されていないソースから登録されています
 
-マーケットプレイスは、[公式 Anthropic マーケットプレイス用に予約されている](https://code.claude.com/docs/ja/plugins/marketplace-reference.md#marketplace-file)名前で登録されていますが、登録されたソースは `anthropics` GitHub リポジトリではありません。Claude Code は、マーケットプレイスを読み込むか更新するたびに予約名を再確認するため、マーケットプレイスとそこからインストールされたプラグインの読み込みが停止します。v2.1.205 より前では、名前が予約される前に登録されたエントリは読み込みを続けていました。
-
-```text theme={null}
-Marketplace "claude-community" is registered from an untrusted source: The name 'claude-community' is reserved for official Anthropic marketplaces. Only repositories from 'github.com/anthropics/' can use this name. To fix it, remove the marketplace and re-add it from the official source.
-```
-
-ソースが GitHub リポジトリまたは Git URL ではなく、ローカルディレクトリなどのマーケットプレイスの場合、中央の文は `can only be used with GitHub sources from the 'anthropics' organization` の代わりに読みます。`claude plugin marketplace add` は同じチェックを実行し、予約名を `Failed to add marketplace:` で拒否し、その後に同じ予約名の文が続きます。
-
-**対処方法：**
-
-* マーケットプレイスが既に登録されている場合は、`claude plugin marketplace remove <name>` を実行してから、公式の `github.com/anthropics` リポジトリから再度追加してください
-* 名前が予約される前に使用した第三者マーケットプレイスを公開する場合は、名前を変更し、ユーザーにソースから再度追加するよう依頼してください
-* [マーケットプレイススキーマ](https://code.claude.com/docs/ja/plugins/marketplace-reference.md#marketplace-file)の下の予約名リストを参照してください
+原因と修正方法については、[プラグインのトラブルシューティングにおけるこのメッセージ](https://code.claude.com/docs/ja/plugins/troubleshooting.md#marketplace-is-registered-from-an-untrusted-source)を参照してください。
 
 ### マーケットプレイス名は予約名の別のスペルです
 
@@ -4549,21 +4535,7 @@ headersHelper for MCP server 'internal-api' references ${user_config.*}. The sub
 
 ### プラグインアーカイブの整合性チェックが失敗しました
 
-プラグインのマーケットプレイスエントリは、`sha256` ピン付きの [`archive` ソース](https://code.claude.com/docs/ja/plugins/marketplace-reference#archive-plugin-source)を使用し、ダウンロードされたファイルのダイジェストはピンと一致しません。Claude Code はインストールを拒否するため、プラグインキャッシュに何も変わりません。不一致には 3 つの考えられる原因があります：
-
-* 著者がピンを計算した後、URL のファイルが変更されました
-* 著者がマーケットプレイスエントリに間違ったダイジェストを入力しました
-* URL は著者がピンしたファイルとは異なるファイルを提供します
-
-```text theme={null}
-Plugin archive integrity check failed for https://artifacts.example.com/claude-plugins/my-plugin.zip: expected sha256 6bfa50e3d2e00c052b46abe51fff89346ac803e45771f76dcf6df1ab74cca5e1, got ac52220c0914ef8ca6a602e4a7362f88d30fb021110f72a6d15b68c3fe7df2b7. The archive was not installed. Verify the sha256 in the marketplace entry, or that the URL serves the intended file.
-```
-
-**対処方法：**
-
-* プラグインを公開する場合は、URL が提供する正確なファイルのダイジェストを再計算します。例えば `shasum -a 256 my-plugin.zip` または PowerShell で `Get-FileHash -Algorithm SHA256 my-plugin.zip` を使用し、マーケットプレイスエントリの `sha256` を更新してください
-* プラグインをインストールする場合は、`/plugin marketplace update <name>` を実行してカタログをリフレッシュします。エントリが修正された場合、インストールを再試行してください
-* リフレッシュ後もダイジェストが一致しない場合は、インストール前にマーケットプレイス所有者にどのファイルをピンしたかを尋ねてください
+原因と修正方法については、[プラグインのトラブルシューティングにおけるこのメッセージ](https://code.claude.com/docs/ja/plugins/troubleshooting.md#plugin-archive-integrity-check-failed)を参照してください。
 
 ### パスがプラグインディレクトリをエスケープします
 

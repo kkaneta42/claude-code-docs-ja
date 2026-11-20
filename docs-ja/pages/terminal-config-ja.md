@@ -39,6 +39,7 @@ Zed では、`/terminal-setup` は `keymap.json` をその場で更新します�
 
 * キーマップに既にバインディングがあり、そのいずれもターミナルの `shift-enter` ではない場合、Claude Code はまずそれを同じディレクトリ内のコピー（`keymap.json.1a2b3c4d.bak` など）にバックアップしてから、Shift+Enter バインディングをキーマップにマージし、他のキーバインディングとコメントを保持します
 * Claude Code がキーマップを読み込めない、解析できない、バックアップできない、またはマージされた結果を検証できない場合、[ファイルを変更せず、追加するキーバインディングブロックを出力します](https://code.claude.com/docs/ja/errors.md#terminal-setup-left-your-zed-keymap-unchanged)
+* キーマップがシンボリックリンクの場合は、[キーボードショートカットを自分で追加してください](https://code.claude.com/docs/ja/errors.md#terminal-setup-left-your-zed-keymap-unchanged)
 
 tmux 内で実行している場合、外側のターミナルがサポートしている場合でも、Shift+Enter には以下の [tmux 設定](#configure-tmux)が必要です。
 
@@ -52,7 +53,7 @@ Claude Code の一部のショートカットは Option キーを使用します
 >
 > 設定 → プロファイル → キーボードを開き、「Use Option as Meta Key」をチェックします。
 >
-> Claude Code の初回実行時のターミナルセットアッププロンプトを受け入れた場合、これはすでに完了しています。そのプロンプトは `/terminal-setup` を実行し、Option を Meta として有効にし、Apple Terminal プロファイルで可聴ベルをオフにします。
+> `/terminal-setup` と初回実行時のターミナルセットアッププロンプトは、macOS 26 以前でのみこの設定を有効にします。どちらもプロファイルの可聴ベルもオフにします。
 >
 > [スクリーンリーダーモード](https://code.claude.com/docs/ja/accessibility.md)では、`/terminal-setup` はベル設定を変更しないままにするため、ターミナルベルは可聴のままです。以前の実行でベルがオフになった場合は、設定 → プロファイル → 詳細 → 「可聴ベル」でオンに戻してください。
 
@@ -336,7 +337,7 @@ $env:CLAUDE_CODE_NO_FLICKER = "1"; claude
 
 ### Claude による貼り付けテキストの扱い
 
-送信すると、Claude は各 `[Pasted text #N]` プレースホルダーの背後にある内容を、ユーザーが入力したものではなく他の場所から貼り付けたテキストとしてマークされた状態で受け取ります。Claude には、貼り付けた内容にはユーザーが書いていない指示が含まれている可能性があること、そしてその中の指示には、ユーザーが入力したメッセージで求められている場合にのみ従うべきであることが伝えられます。[フィーチャーフラグを取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)しないセッションでは、貼り付けた内容はマークされません。
+送信すると、Claude は各 `[Pasted text #N]` プレースホルダーの背後にある内容を、ユーザーが入力したものではなく他の場所から貼り付けたテキストとしてマークされた状態で受け取ります。Claude には、貼り付けた内容にはユーザーが書いていない指示が含まれている可能性があること、そしてその中の指示には、ユーザーが入力したメッセージで求められている場合にのみ従うべきであることが伝えられます。[インストール後の最初のセッション](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)など、貼り付けた内容がマークされずに Claude に届く場合もあります。
 
 ### 折りたたまれた貼り付けの削除と復元
 
