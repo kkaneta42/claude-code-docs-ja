@@ -67,7 +67,7 @@ Claude はプロンプトと学んだことに基づいて、どのツールを�
 * **ターミナル。** 実行できるあらゆるコマンド。ビルドツール、git、パッケージマネージャー、システムユーティリティ、スクリプト。コマンドラインからできることなら、Claude もできます。
 * **git の状態。** 現在のブランチ、コミットされていない変更、最近のコミット履歴。
 * **[CLAUDE.md](https://code.claude.com/docs/ja/memory.md)。** プロジェクト固有の指示、規約、Claude が毎回のセッションで知っておくべきコンテキストを保存するマークダウンファイル。リポジトリに他のコーディングエージェント用の AGENTS.md がある場合、Claude は CLAUDE.md の代わりに [それを読むことができます](https://code.claude.com/docs/ja/memory.md#agents-md)。
-* **[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)。** 作業中に Claude が自動的に保存する学習。設定など。MEMORY.md の最初の 200 行または 25KB のいずれか先に達した方が、各セッションの開始時に読み込まれます。
+* **[自動メモリ](https://code.claude.com/docs/ja/memory.md#auto-memory)。** 作業中に Claude が自動的に保存する学習。設定など。自動メモリが有効な間は、MEMORY.md の最初の 200 行または 25KB のいずれか先に達した方が、セッションの開始時に読み込まれます。
 * **設定した拡張機能。** 外部サービス用の [MCP サーバー](https://code.claude.com/docs/ja/mcp.md)、ワークフロー用の [skills](https://code.claude.com/docs/ja/skills.md)、委譲作業用の [subagents](https://code.claude.com/docs/ja/sub-agents.md)、ブラウザ相互作用用の [Claude in Chrome](https://code.claude.com/docs/ja/chrome.md)。
 
 Claude はプロジェクト全体を見ることができるため、プロジェクト全体で作業できます。「認証バグを修正して」と Claude に求めると、関連ファイルを検索し、複数のファイルを読んでコンテキストを理解し、それらを横断して調整された編集を行い、テストを実行して修正を検証し、求めればコミットします。これは現在のファイルのみを見るインラインコードアシスタントとは異なります。

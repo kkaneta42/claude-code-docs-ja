@@ -739,8 +739,6 @@ claude agents --permission-mode plan --model opus --effort high
 
 `--restricted` を渡すと、ビューからディスパッチするすべてのセッションが、それぞれトップレベルの `--restricted` フラグで起動されたかのように [制限モード](https://code.claude.com/docs/ja/cli-reference.md#cli-flags) で開始されます。Claude Code v2.1.248 以降が必要です。
 
-有効なデフォルトは、ディスパッチ入力の下のフッターに表示されます。
-
 `bypassPermissions` モードで開始されるバックグラウンドセッションには、[バイパスの免責事項への同意](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode) が記録されている必要があります。このモードでは、監視していないセッションが承認なしに操作を行えるためです。`claude agents` に `--dangerously-skip-permissions` または `--permission-mode bypassPermissions` を渡すと、以前に同意していない場合は同じ免責事項が表示され、同意するとビューから起動するセッションに `bypassPermissions` が適用されます。`--allow-dangerously-skip-permissions` を渡した場合も同じ免責事項が表示され、同意すると、それらのセッションをそのモードで開始せずに、`Shift+Tab` サイクルで `bypassPermissions` を利用可能にします。
 
 #### 再起動後も維持されるもの

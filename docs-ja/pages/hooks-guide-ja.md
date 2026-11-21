@@ -768,7 +768,7 @@ matcher がない場合、フックはそのイベントが発生するたびに
 
 #### `if` フィールドでツール名と引数によって絞り込む
 
-`if` フィールドは [権限ルールの構文](https://code.claude.com/docs/ja/permissions.md) を使用して、ツール名と引数の両方でフックを絞り込みます。これにより、ツール呼び出しが一致した場合にのみフックのプロセスが起動されます。これは、グループレベルでツール名のみによって絞り込む `matcher` よりも踏み込んだ絞り込みです。
+`if` フィールドは [権限ルールの構文](https://code.claude.com/docs/ja/permissions.md) を使用して、ツール名と引数の両方でフックを絞り込みます。
 
 たとえば、次の設定では、すべての Bash コマンドではなく、Claude が `git` コマンドを使用したときにのみフックを実行します。
 
@@ -818,7 +818,7 @@ Claude Code が Bash の入力をサブコマンドに分割できない場合�
 | `.claude/settings.local.json` | 単一のプロジェクト | いいえ、Claude Code がこのファイルに設定を保存した時点で gitignore される |
 | 管理ポリシー設定 | 組織全体 | はい、管理者が制御 |
 | [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md) の `hooks/hooks.json` | プラグインが有効なとき | はい、プラグインにバンドル |
-| [スキル](https://code.claude.com/docs/ja/skills.md) のフロントマター | スキルが呼び出された後、セッションの残りの期間。[スキルとエージェントにおけるフック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents) を参照 | はい、スキルファイル内で定義 |
+| [スキル](https://code.claude.com/docs/ja/skills.md) のフロントマター | [スキルとエージェントにおけるフック](https://code.claude.com/docs/ja/hooks.md#hooks-in-skills-and-agents) を参照 | はい、スキルファイル内で定義 |
 | [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) のフロントマター | そのサブエージェントの実行中 | はい、サブエージェントファイル内で定義 |
 
 Claude Code で [`/hooks`](https://code.claude.com/docs/ja/hooks#the-%2Fhooks-menu) を実行すると、設定済みのすべてのフックをイベントごとにグループ化して参照できます。

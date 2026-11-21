@@ -42,7 +42,7 @@ Code Mode をオンにする前に、次の制限を受け入れられるか確�
 * **再開**: Code Mode のセッションは、ターミナルで Code Mode をオンにした状態でのみ再開できます
 * **auto モード**: auto モードの分類器は、[各ツール呼び出しではなくコードをレビューします](#permission-checks)
 * **長時間実行されるコード**: [コードをバックグラウンドで実行できる](#long-running-code)場合を除き、完了するまで待つ必要があり、コードは 10 分後に停止します
-* **フック**: `PreToolUse` フックが実行できない場合やタイムアウトした場合に[ツール呼び出しが拒否される](#tool-call-refused-by-a-hook)ことがあります
+* **フック**: `PreToolUse` フックが完了しない場合（タイムアウト後など）に、[ツール呼び出しが拒否される](#tool-call-refused-by-a-hook)ことがあります
 * **利用できない機能**: [Remote Control](https://code.claude.com/docs/ja/remote-control.md)、[Claude in Chrome](https://code.claude.com/docs/ja/chrome.md)、[computer use](https://code.claude.com/docs/ja/computer-use.md) は使用できません
 * **セッションの移動**: セッションを Desktop アプリに移動したり、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)に変えたりすることはできず、`/fork` でバックグラウンドのコピーを開始することもできません
 
@@ -52,7 +52,7 @@ Code Mode をオンにする前に、次の制限を受け入れられるか確�
 * **アカウント**: Claude のサブスクリプションまたは Console アカウント。ゲートウェイ、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md) を経由して Code Mode を使うことはできません
 * **組織**: 組織が [HIPAA 構成](https://code.claude.com/docs/ja/hipaa-setup.md)や[ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md)を使用していないこと
 * **モデル**: Claude Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable 5.2
-* **サーフェス**: ターミナルでの対話型の `claude` セッション。Code Mode は `-p`、Agent SDK、VS Code パネル、Desktop アプリ、クラウドセッションでは動作しません
+* **サーフェス**: ターミナルでの対話型の `claude` セッション。Code Mode は VS Code パネル、Desktop アプリ、クラウドセッションでは動作しません
 * **エージェントチーム**: [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)をオンにした状態で Code Mode を使用するには、v2.1.326 以降が必要です。チームメイトは、デフォルトの[インプロセス表示モード](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)では Code Mode で実行され、分割ペインでは Code Mode なしで起動します
 * **インストール**: Claude Code の[ネイティブビルド](https://code.claude.com/docs/ja/setup.md)
 * **Windows**: [Git for Windows](https://git-scm.com/downloads/win) がインストールされていること
@@ -228,7 +228,7 @@ Claude が応答中またはコードを待機中にコードを停止するに�
 
 ### フックでコードの出力をチェックする
 
-Claude が読み取る前にコードが返す内容をチェックまたは編集するには、コードを実行するツールである `REPL` にマッチする [`PostToolUse` フック](https://code.claude.com/docs/ja/hooks#posttooluse)を書きます。同じフックは、[バックグラウンドのコード](#long-running-code)が完了したときと、コードがエラーをスローしたときにも実行されます。
+Claude が読み取る前にコードが返す内容をチェックまたは秘匿化するには、コードを実行するツールである `REPL` にマッチする [`PostToolUse` フック](https://code.claude.com/docs/ja/hooks#posttooluse)を書きます。同じフックは、[バックグラウンドのコード](#long-running-code)が完了したときと、コードがエラーをスローしたときにも実行されます。
 
 #### フックでコードの出力を読み取る
 
@@ -244,7 +244,7 @@ Claude が読み取る前にコードが返す内容をチェックまたは編�
 }
 ```
 
-#### コードの出力を編集する
+#### コードの出力を秘匿化する
 
 出力の一部を隠すには、`tool_response` を変更したコピーを [`updatedToolOutput`](https://code.claude.com/docs/ja/hooks#posttooluse-decision-control) として返します。コピーは次のように作成します。
 
@@ -269,18 +269,18 @@ Claude が読み取る前にコードが返す内容をチェックまたは編�
 }
 ```
 
-フックをテストするには、フックが編集する値を含むファイルを作成します。次に Code Mode セッションを開始し、そのファイルを読み取って引用するよう Claude に依頼します。パスは `@` を付けずに入力し、Claude の応答に置換後のテキストが表示されることを確認してください。
+フックをテストするには、フックが秘匿化する値を含むファイルを作成します。次に Code Mode セッションを開始し、そのファイルを読み取って引用するよう Claude に依頼します。パスは `@` を付けずに入力し、Claude の応答に置換後のテキストが表示されることを確認してください。
 
 > [!WARNING]
 >
 > Bash コマンドなど、拒否されたツール呼び出しの入力に含まれる値を隠す目的でこのフックに依存しないでください。`refusedCalls` フィールドにはその入力が繰り返し含まれることがあり、Claude はそれを変更されないまま読み取ります。
 
-#### フックがブロックした場合やエラーが発生した場合に編集する
+#### フックがブロックした場合やエラーが発生した場合に秘匿化する
 
 フックがブロックした場合やエラーが発生した場合でも、`tool_response` を変更したコピーを `updatedToolOutput` として返します。
 
-* **フックがブロックする場合**: [編集したコピー](#redact-code-output)を [`"decision": "block"`](https://code.claude.com/docs/ja/hooks#posttooluse-decision-control) と同じ JSON で出力します。コピーがない場合、ブロックしても Claude は元の出力を読み取ります
-* **フックでエラーが発生した場合**: エラーをキャッチし、編集対象のフィールドにプレースホルダーテキストを入れたコピーを出力します。フックがクラッシュした場合、タイムアウトした場合、または無効な JSON を出力した場合、Claude は元の出力を受け取ります
+* **フックがブロックする場合**: [秘匿化したコピー](#redact-code-output)を [`"decision": "block"`](https://code.claude.com/docs/ja/hooks#posttooluse-decision-control) と同じ JSON で出力します。コピーがない場合、ブロックしても Claude は元の出力を読み取ります
+* **フックでエラーが発生した場合**: エラーをキャッチし、秘匿化するフィールドにプレースホルダーテキストを入れたコピーを出力します。フックがクラッシュした場合、タイムアウトした場合、または無効な JSON を出力した場合、Claude は元の出力を受け取ります
 
 #### `UserPromptSubmit` フックからチェックを移す
 
@@ -324,12 +324,15 @@ v2.1.327 より前では、Claude が新しいコードを開始した後、分�
 
 ### フックによってツール呼び出しが拒否された
 
-Claude がツール呼び出しの拒否を報告した場合は、エラーテキストを尋ねてください。次のエラーは、`PreToolUse` フックが判定を返さなかったことを意味し、[`onFailure`](https://code.claude.com/docs/ja/hooks#block-the-action-when-a-hook-fails) が設定されていない場合でも呼び出しは拒否されます。
+Claude がツール呼び出しの拒否を報告した場合は、エラーテキストを尋ねてください。次のエラーは、[`PreToolUse` フック](https://code.claude.com/docs/ja/hooks#pretooluse)が判定を返さなかったことを意味します。
 
-* **`the hook failed`**: コードからの呼び出しで、フックが開始できなかった、強制終了された、126、127、または 128 を超えるコードで終了した、あるいは HTTP エラーや無効な出力を返しました。フックを修正してください
-* **`the hook did not finish`**: コードからの呼び出し、または Claude がセッション内でコードを実行した後のその他のツール呼び出しで、フックがタイムアウトしました。フックの [`timeout`](https://code.claude.com/docs/ja/hooks#common-fields) を引き上げてください
+* **`the hook did not finish`**: フックがタイムアウトしたか、エージェントフックが判定を返さずに終了しました。タイムアウトした場合は、フックの [`timeout`](https://code.claude.com/docs/ja/hooks#common-fields) を引き上げてください。判定を返さないエージェントフックの場合は、チェックを `command` フックに移動してください。このエラーは、コードからの呼び出し、および Claude がセッション内でコードを実行した後のその他のツール呼び出しで表示されることがあります
+* **`the hook failed`**: コードからの呼び出しで、フックが開始できなかった、強制終了された、126、127、または 128 を超えるコードで終了した、あるいは HTTP エラーや無効な出力を返しました。フックを修正してください。このエラーは v2.1.329 より前のバージョンで表示されることがあります。それ以降のバージョンではまれですが、原因の 1 つとして、Claude がコードを実行した後にセッション中に[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフになることが挙げられます
 
-`command` または `http` フックが失敗またはタイムアウトしたときに呼び出しを続行させるには、そのフックに `"onFailure": "continue"` を設定します。`command` フックが 1 などの通常のコードで終了した場合、`"onFailure": "block"` を設定した場合を除き、呼び出しは続行されます。
+v2.1.329 以降では、`the hook did not finish` 以外のフックの失敗の後、コードからの呼び出しはデフォルトで実行されます。呼び出しを実行するかどうかを選択するには、`command` または `http` フックを使用し、そのフックに [`onFailure`](https://code.claude.com/docs/ja/hooks#block-the-action-when-a-hook-fails) を設定してください。
+
+* **タイムアウトまたは失敗の後に呼び出しを停止するには**: `"onFailure": "block"` を設定します。呼び出しを保護するフックではこれを設定してください
+* **タイムアウトまたは失敗の後に呼び出しを実行させるには**: `"onFailure": "continue"` を設定します
 
 ### フックによってコードの出力が保留された
 

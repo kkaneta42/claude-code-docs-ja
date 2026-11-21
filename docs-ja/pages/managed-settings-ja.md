@@ -51,6 +51,7 @@
 
 * **配信制御**: [`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper)、[`wslInheritsWindowsSettings`](https://code.claude.com/docs/ja/settings-reference#wslinheritswindowssettings)、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior)
 * **ゲートウェイログインキー**: [`forceLoginGatewayUrl`](https://code.claude.com/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](https://code.claude.com/docs/ja/settings-reference#gatewayinternalnetworks)、[`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値
+* **サインイン要件**: [`enforceAnthropicSignIn`](https://code.claude.com/docs/ja/settings-reference#enforceanthropicsignin)
 
 管理設定ファイルや MDM プロファイルでは、それが届くすべてのユーザーに 1 つのポリシーが適用されます。特定の開発者グループに異なるポリシーを適用するには、そのグループに別のファイルまたはプロファイルをデプロイします。Enterprise プランでは、サーバー管理設定で[グループごとに独自の設定を指定する](https://code.claude.com/docs/ja/server-managed-settings.md#give-groups-different-settings)こともできます。セルフホストの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) は IdP グループごとに管理設定を配信します。
 
@@ -121,6 +122,8 @@ Claude Code は最初に `managed-settings.json` をマージし、次にディ�
 * **[`modelPicker`](https://code.claude.com/docs/ja/settings-reference#modelpicker)**: 後のラインナップが前のラインナップ全体を置き換えます
 
 ## Claude Code が管理ソースを組み合わせる方法
+
+claude.ai の **Organization settings > Desktop 3P** でプロバイダーまたはゲートウェイを設定する場合は、まず Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)をお読みください。
 
 組織が同じマシンに複数の管理ソースを配信する場合、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) キーによって、Claude Code がそれ以外のソースをどう扱うかが決まります。
 
@@ -227,7 +230,7 @@ MDM ポリシーまたは管理設定ファイルがあるマシンでは、[リ
 
 [`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) は、MDM ポリシーまたは管理設定ファイルで指定する実行ファイルで、Claude Code は起動時にこれを実行して管理設定を算出します。選択したソースがヘルパーを構成しており、そのヘルパーが `managedSettings` オブジェクトを出力すると、その出力によって Claude Code が読み取る内容が変わります。
 
-* **出力された `managedSettings` オブジェクトが、そのセッションの唯一の管理設定になります**。これは、[通常はすべての管理ソースから読み取るキー](#keys-read-from-every-admin-source)にも当てはまります。ただし、[独自の起動時ルールを持つ `forceRemoteSettingsRefresh`](https://code.claude.com/docs/ja/settings-reference#forceremotesettingsrefresh) は除きます
+* **出力された `managedSettings` オブジェクトが、そのセッションの唯一の管理設定になります**。これは、[通常はすべての管理ソースから読み取るキー](#keys-read-from-every-admin-source)にも当てはまります。ただし、[いくつかのキー](https://code.claude.com/docs/ja/settings-reference.md#write-the-helper-output)は除きます
 
 どのようなヘルパーの実行が失敗とみなされるか、また失敗した場合に Claude Code がどうするかについては、[ヘルパーの失敗](https://code.claude.com/docs/ja/settings-reference.md#helper-failures)を参照してください。
 

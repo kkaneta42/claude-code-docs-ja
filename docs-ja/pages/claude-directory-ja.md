@@ -323,6 +323,7 @@ Claude Code は、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings
 | `usage-data/` | `report.html` と [`/insights`](https://code.claude.com/docs/ja/costs#analyze-your-usage-patterns)で書き込まれたタイムスタンプ付きレポートコピー。それらを構築するために使用されるキャッシュされたセッションごとの分析データ |
 | `skills/.trash/`、`plugins/.trash/` | [スキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)と [プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)。claude.ai 同期で削除されたもの。例えば、claude.ai でオフにした後、または同期を停止した後。ファイルはここに残るため、スイープが削除するまで復元できます |
 | `plugins/installed_plugins.set-aside.<date>.<hash>.json`、`plugins/installed_plugins.unreadable.<date>.<hash>.kept` | 日付付きコピー。Claude Code が [`installed_plugins.json`](https://code.claude.com/docs/ja/plugins/loading#find-plugins-on-disk) を書き直す前に作成します。削除したインストールレコード、および読み込めなかったファイルの内容 |
+| `plugins/data/.set-aside/` | 組織が同じ名前の別のマーケットプレイスに置き換えたマーケットプレイスのプラグインのデータディレクトリ。経過日数は Claude Code がそれらを移動した日から数え、プロジェクト設定でより短い `cleanupPeriodDays` を指定しても適用されません。保持するには、スイープが削除する前に別の場所に移動してください |
 | `plugins/mcpb/` | プラグインが宣言する [MCP バンドル](https://code.claude.com/docs/ja/plugins/components.md#include-a-packaged-mcpb-server)から Claude Code が展開したファイル。バンドルの経過日数は、それを最後に使用したセッションから数えます |
 | `todos/`、`statsig/`、`logs/` | 古いバージョンのレガシーディレクトリ。現在は書き込まれていません。スイープはその内容を削除してから、空のディレクトリを削除します |
 

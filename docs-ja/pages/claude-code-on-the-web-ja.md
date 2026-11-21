@@ -203,13 +203,13 @@ View: https://claude.ai/code/session_01HJKLMNOPQRSTUVWXYZ?from=cli&m=0
 
 次のいずれかの方法で、クラウドセッションをターミナルに取り込みます。
 
-* **`--teleport` を使用する**: コマンドラインから `claude --teleport` を実行すると対話型のセッション選択画面が開き、`claude --teleport <session-id>` を実行すると特定のセッションを直接再開できます。コミットされていない変更がある場合は、先に stash するよう求められます。[`--resume`](https://code.claude.com/docs/ja/sessions#resume-a-session) はこのマシンのローカル履歴から会話を再開するもので、クラウドセッションは一覧に表示されません。
+* **`--teleport` を使用する**: コマンドラインから `claude --teleport` を実行すると対話型のセッション選択画面が開き、`claude --teleport <session-id>` を実行すると特定のセッションを直接再開できます。[`--resume`](https://code.claude.com/docs/ja/sessions#resume-a-session) はこのマシンのローカル履歴から会話を再開するもので、クラウドセッションは一覧に表示されません。
 * **`/teleport` を使用する**: 既存の CLI セッション内で `/teleport` または `/tp` を実行すると、Claude Code を再起動せずに同じセッション選択画面を開けます。
 * **`/tasks` から**: `/tasks` を実行してバックグラウンドセッションを表示し、`t` を押してセッションに teleport します。
 * **claude.ai/code から**: セッションメニューから **Open in > Terminal** を選択すると、ターミナルに貼り付けられるコマンドがコピーされます。
 * **クラウドセッション内から**: `/teleport` と入力すると、Claude Code がそのセッション用の正確な `claude --teleport <session-id>` コマンドを返します。このコマンドはリポジトリのチェックアウトからすぐに実行できます。
 
-セッションを teleport すると、Claude は正しいリポジトリにいることを確認し、クラウドセッションのブランチをフェッチしてチェックアウトし、会話をターミナルに読み込みます。
+セッションを teleport すると、Claude は正しいリポジトリにいることを確認し、会話をターミナルに読み込みます。セッションのブランチも取得するには、[要件](#teleport-requirements)を確認してから `claude --teleport` を実行してください。
 
 > [!NOTE]
 >
@@ -219,13 +219,13 @@ View: https://claude.ai/code/session_01HJKLMNOPQRSTUVWXYZ?from=cli&m=0
 
 #### Teleport の要件
 
-Teleport は、セッションを再開する前に以下の要件を確認します。いずれかの要件が満たされていない場合は、エラーが表示されるか、問題の解決を求められます。
+セッションを teleport する前に、以下の要件を確認してください。
 
 | 要件 | 詳細 |
 | - | - |
-| クリーンな Git の状態 | 作業ディレクトリにコミットされていない変更があってはなりません。必要に応じて、Teleport が変更を stash するよう求めます。 |
+| クリーンな Git の状態 | 先に変更をコミットするか、Teleport に求められたときに stash してください。 |
 | 正しいリポジトリ | `--teleport` は、フォークではなく同じリポジトリのチェックアウトから実行する必要があります。別のリポジトリのチェックアウトから実行すると、Claude Code はセッションのリポジトリとチェックアウトのリポジトリの両方を示すエラーを表示します。`git@work:owner/repo.git` のような SSH ホストエイリアスなど、Claude Code がリモートをホスト名に解析できない場合は確認を求め、リモートのオーナーとリポジトリ名がセッションのリポジトリと一致すればそのチェックアウトを受け入れます。 |
-| ブランチが利用可能 | クラウドセッションのブランチがリモートにプッシュされている必要があります。Teleport は自動的にそれをフェッチしてチェックアウトします。 |
+| ブランチが利用可能 | クラウドセッションのブランチがリモートにプッシュされている必要があります。`claude --teleport` が `was not checked out` と出力した場合は、Claude がチェックアウト内でまだ実行しているコマンドをすべて停止してから、表示された Git コマンドを自分のターミナルで実行してください。 |
 | 同じアカウント | クラウドセッションで使用したものと同じ claude.ai アカウントで認証されている必要があります。 |
 
 Teleport がセッションのブランチをフェッチする際、フェッチがターミナルでの入力を待つことはありません。Git や ssh がパスワード、キーのパスフレーズ、または新しい SSH ホストの確認を求める場合、フェッチは失敗し、ローカルのクローンにすでにそのブランチがある場合にのみチェックアウトが機能します。SSH の 2 つのケースについては、キーを `ssh-agent` に読み込み、先に一度手動で `git fetch` を実行してホストを記録してください。
@@ -299,7 +299,9 @@ Claude Code はこれらの差分を raw git blob コンテンツから計算す
 
 自動圧縮ウィンドウを変更するには、環境変数で [`CLAUDE_CODE_AUTO_COMPACT_WINDOW`](https://code.claude.com/docs/ja/env-vars) を設定するか、変数が設定されていないセッションで [`/autocompact`](https://code.claude.com/docs/ja/commands#all-commands) をトークン数で実行します。
 
-[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)はローカルと同じように機能します。Claude は Agent ツールでサブエージェントをスポーンして、調査や並列作業を別のコンテキストウィンドウにオフロードし、メインの会話を軽く保つことができます。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)のスレッド以外では、リポジトリの `.claude/agents/` で定義されたサブエージェントが自動的に読み込まれます。
+#### サブエージェントとエージェントチームを使用する
+
+[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)はローカルと同じように機能します。Claude は Agent ツールでサブエージェントをスポーンして、調査や並列作業を別のコンテキストウィンドウにオフロードし、メインの会話を軽く保つことができます。リポジトリの `.claude/agents/` で定義されたサブエージェントは自動的に読み込まれます。プロジェクトの場合は、[どのスレッドがそれらを読み込むか](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を確認してください。
 
 [Agent teams](https://code.claude.com/docs/ja/agent-teams.md)はデフォルトでオフですが、[環境変数](https://code.claude.com/docs/ja/cloud-environments.md#set-environment-variables)に `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を追加することで有効にできます。
 
@@ -475,6 +477,7 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 | `Attaching to an existing cloud session is not enabled for your account.` | `-p` なしで `--cloud <session-id>` を実行しました。`claude -p "your message" --cloud <session-id>` でメッセージを送信してください。 |
 | `Session not found: <id>` | ID または URL が、アクセス可能なセッションと一致しません。セッションの claude.ai/code URL と照合してください。 |
 | `cloud session <id> is archived and cannot accept new messages` | セッションはアーカイブされています。代わりに新しいセッションを開始してください。 |
+| `--fork-session can't fork a cloud session, so nothing was opened or sent.` | 既存のクラウドセッションにメッセージを送信するには、`--fork-session` を付けずに `claude -p "your message" --cloud <session-id>` を実行してください。 |
 
 ### 環境の有効期限切れ
 

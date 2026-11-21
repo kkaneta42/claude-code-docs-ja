@@ -280,7 +280,7 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 
 > [!NOTE]
 >
-> この表のリポジトリ設定のうち、[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)内のクラウドスレッドが読み込むのは、リポジトリルートの `CLAUDE.md`、`.claude/CLAUDE.md`、および[パス固有](https://code.claude.com/docs/ja/memory.md#path-specific-rules)ではない `.claude/rules/` ファイルのみです。[スレッドがリポジトリから取り込むもの](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を参照してください。
+> [プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)内のクラウドスレッドは、この表のリポジトリ設定のうち一部しか読み込みません。スレッドは `.mcp.json` サーバーや `.claude/settings.json` のフックと権限ルールなしで開始され、スキル、エージェント、コマンドをスキップする場合があります。[スレッドがリポジトリから取り込むもの](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を参照してください。
 
 クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットしたものはすべて利用可能です。独自のマシンにのみインストールまたは構成したものはセッションでは利用できません。組織のポリシーは[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて別途到着します。
 

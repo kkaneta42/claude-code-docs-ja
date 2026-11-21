@@ -173,7 +173,9 @@ Claude が新しいサブエージェントを見つけられない場合は、C
 
 Claude Code は `.claude/agents/` と `~/.claude/agents/` を再帰的にスキャンするため、定義を `agents/review/` や `agents/research/` などのサブフォルダに整理できます。サブエージェントの識別はフロントマターの `name` フィールドのみによって行われるため、サブディレクトリのパスはサブエージェントの識別方法や呼び出し方法に影響しません。
 
-`name` の値はツリー全体で一意にしてください。同じ `.claude/agents/` ディレクトリ（サブフォルダを含む）の下にある 2 つのファイルが同じ名前を宣言している場合、Claude Code はそのうち 1 つだけを読み込みます。どちらが選ばれるかは文書化された優先順位ではなく、ファイルシステムの読み取り順序によって決まります。ネストされたプロジェクトディレクトリ間では、前述のとおり、作業ディレクトリに最も近い定義が優先されます。[`/doctor`](https://code.claude.com/docs/ja/commands#all-commands) のセットアップチェックは、同じディレクトリ内で名前が重複しているファイルを報告し、1 つを残して名前を変更するか削除することを提案します。
+> [!NOTE]
+>
+> `name` の値はサブフォルダ間で一意にしてください。同じ `.claude/agents/` ディレクトリの下にある 2 つのファイルが同じ名前を宣言している場合、Claude Code はそのうち 1 つだけを読み込みます。[`/doctor`](https://code.claude.com/docs/ja/commands#all-commands) のセットアップチェックは、同じディレクトリ内で名前が重複しているファイルを報告し、1 つを残して名前を変更するか削除することを提案します。
 
 プラグインの `agents/` ディレクトリも再帰的にスキャンされます。プロジェクトスコープやユーザースコープとは異なり、プラグインの `agents/` ディレクトリ内のサブフォルダは[スコープ付き識別子](#invoke-subagents-explicitly)の一部になります。プラグイン `my-plugin` の `agents/review/security.md` にあるファイルは `my-plugin:review:security` として登録されます。
 
@@ -371,8 +373,6 @@ Claude がエイリアスを渡した場合、サブエージェントは[再開
 * `model: inherit` を指定した、または `model` フィールドのないサブエージェント
 * 組み込みの Explore、Plan、general-purpose サブエージェント
 * [フォーク](#fork-the-current-conversation)
-
-plan モードでは、セッションのモデルを [`opusplan`](https://code.claude.com/docs/ja/model-config#opusplan-model-setting) に設定している場合、これらのサブエージェントは Opus で実行され、`haiku` に設定している場合は Sonnet で実行されます。
 
 #### サブエージェントのモデルを確認する
 

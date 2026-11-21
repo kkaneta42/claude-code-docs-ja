@@ -748,7 +748,7 @@ Usage limit reached · limit resets 3:45pm
 Continuing automatically at 3:45pm · Esc to cancel
 ```
 
-いずれの行にも、これらの文言の後に追加の内容が続く場合があります。たとえば、1 行目にはヘルプリンク、2 行目には `/usage-credits to continue now` が表示されることがあります。待機が自動的に開始された場合は、会話にも `Usage limit reached · continuing automatically at 3:45pm · esc to cancel` という行が記録されます。
+いずれの行にも、これらの文言の後に追加の内容が続く場合があります。たとえば、1 行目にはヘルプリンク、2 行目には `/usage-credits to continue now` が表示されることがあります。
 
 セッションをオープンのままにしておいてください。その後の動作は、待機の終わり方によって異なります。
 

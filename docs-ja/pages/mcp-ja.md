@@ -324,7 +324,7 @@ Claude Code は、以下の設定の問題について警告します。各項�
 
 ツール検索が有効な場合、Claude の作業中にサーバーが接続を完了すると、Claude Code は同じターン内の次のリクエストでそのサーバーのツール名を Claude に伝えます。これにより Claude は、次のメッセージを待たずにそれらのツールを検索して呼び出せます。
 
-セッションを再開した後は、ツールの MCP サーバーがまだ接続中であっても、Claude は保存された会話のツールを呼び出すことができます。サーバーが最初の接続試行中の場合、Claude Code は呼び出しを最大 10 秒間保留し、ツールが利用可能になった時点で実行します。サーバーが時間内に接続しない場合、またはすでに[失敗した試行の後に再試行中](#automatic-reconnection)の場合、呼び出しは `No such tool available` の[ツールエラー](https://code.claude.com/docs/ja/errors.md#no-such-tool-available)で失敗します。
+セッションを再開した後、ツールの MCP サーバーがまだ接続中でも、Claude は保存された会話にあるツールを呼び出すことができます。サーバーが最初の接続試行中である間、Claude Code は呼び出しを最大 10 秒間保留し、ツールが利用可能になった時点で実行します。サーバーが時間内に接続しない場合、呼び出しは `No such tool available` [ツールエラー](https://code.claude.com/docs/ja/errors.md#no-such-tool-available)で失敗します。
 
 ### サーバーを削除せずに無効にする
 
@@ -396,7 +396,7 @@ Claude Code はまず、切断されたリモートサーバーへの再接続�
   * **5xx レスポンスやタイムアウトなどの一時的なエラーの後**: Claude Code は HTTP または SSE サーバーの再試行をバックグラウンドで続けます。再試行は最大約 30 分間、一部のサーバーでは約 1 日間続き、いずれかの試行で接続するとサーバーのツールが再び利用可能になります。
 
     それまでの間、Agent SDK セッションは[ステータス](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling) `failed` を報告し、コードから[サーバーを再接続](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling)できます。`claude -p` で再接続するには、実行をやり直してください。
-  * **サーバーで[再度サインインが必要な場合](#authenticate-with-remote-mcp-servers)**: Claude Code は再試行を停止し、Agent SDK セッションはサーバーのステータスを `needs-auth` と報告します。シェルで [`claude mcp login <name>`](#authenticate-from-the-command-line) を使ってサインインしてください。その後、実行をやり直すか、Agent SDK セッションでは代わりに[サーバーを再接続](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling)してください。
+  * **サーバーが[再度のサインインを必要とする](#authenticate-with-remote-mcp-servers)場合**: Agent SDK セッションはサーバーのステータスを `needs-auth` として報告します。`claude mcp list` にサーバーが表示される場合は、シェルで [`claude mcp login <name>`](#authenticate-from-the-command-line) を使ってサインインしてください。その後、実行をやり直すか、Agent SDK のコードから[サーバーを再接続](https://code.claude.com/docs/ja/agent-sdk/mcp.md#error-handling)してください。
 
 #### 最初の接続の失敗
 
@@ -504,7 +504,7 @@ MCP タスクとは、レポートのエクスポートやビルドなど、MCP 
 
 > [!NOTE]
 >
-> MCP タスクは Claude Code CLI でパブリックベータとして提供されており、Claude Code v2.1.304 以降が必要です。MCP タスクを利用できるセッションとサーバーについては、[呼び出しが MCP タスクになるための要件](#requirements-for-mcp-tasks)を参照してください。
+> MCP タスクはパブリックベータであり、Claude Code v2.1.304 以降が必要です。対象となるセッションとサーバーは、[呼び出しが MCP タスクになるための条件](#requirements-for-mcp-tasks)に記載しています。
 
 #### MCP タスクを停止する、または結果を取得する
 
@@ -545,7 +545,10 @@ Claude を[結果を待つ](#make-claude-wait-for-the-result-of-an-mcp-task)よ�
 * サーバーがタスクをサポートしている
 * サーバーが、[プロトコルリビジョン 2026-07-28](#mcp-client-runtimes) で接続された HTTP、stdio、または claude.ai コネクタのサーバーである。[`MCP_SDK_GENERATION=v1` または `MCP_PROTOCOL_NEGOTIATION=legacy`](https://code.claude.com/docs/ja/env-vars) を設定すると、この条件は満たされません
 * セッションが[機能フラグを取得する](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)。つまり、Amazon Bedrock などのサードパーティプロバイダー上ではなく、テレメトリやフラグの取得がオフになっていない
-* Anthropic がそのセッションの種類に対して MCP タスクを有効にしている。v2.1.304 以降では、ターミナルの CLI セッション、[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) セッション、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) の実行が対象です。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)や[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)など、その他のサーフェスには MCP タスクはありません
+* Anthropic が、そのセッションの種類で MCP タスクをオンにしている:
+  * ターミナル CLI セッション、[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) セッション、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) の実行では、v2.1.304 以降で利用できます
+  * デスクトップアプリで開くものを含む[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)では、Anthropic がアカウントまたは組織に対してオンにしている場合にのみ利用できます。設定でオンにしたり、状態を確認したりすることはできません
+  * [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)や[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)のローカルセッションなど、その他の一部の Claude Code サーフェスでは利用できません
 * 呼び出しが[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)からではなく、メイン会話から行われている
 * セッションが対話型であるか、または [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) セッションもしくは `--input-format stream-json` を読み取る `claude -p` の実行で次の条件を満たしている:
   * [`CLAUDE_AUTO_BACKGROUND_TASKS`](https://code.claude.com/docs/ja/env-vars) が `1`
@@ -613,7 +616,7 @@ MCP サーバーを構築する場合、長時間実行される `tools/call` �
   "createdAt": "2026-10-22T14:03:07Z",
   "lastUpdatedAt": "2026-10-22T14:03:07Z",
   "ttlMs": null,
-  "pollIntervalMs": 5000
+  "pollIntervalMs": 10000
 }
 ```
 
@@ -660,6 +663,15 @@ HTTP または claude.ai コネクタのサーバーでは、タスク応答は[
 | JSON-RPC エラー `-32602` | 不明なタスク ID として読み取られます。バックグラウンドのタスクの場合、Claude Code は最大 5 分間問い合わせを続け、その後 Claude に結果が不明であると報告します |
 | `tasks/cancel` | たとえば、サーバーが接続されている間に Claude またはユーザーがタスクを停止したときに送信されます。終了時には送信されません |
 | `tasks/result`、`tasks/list`、`notifications/tasks` | 使用されないため、結果は `tasks/get` レスポンスに含めてください |
+
+#### 有効期間とポーリング間隔を選ぶ
+
+完了したタスクの結果は少なくとも 1 時間、可能であればそれ以上保持してください。ユーザーはリモートサーバーのタスクの実行中に終了し、後で[セッションを再開](#exit-clear-or-resume-while-an-mcp-task-runs)することがあります。その場合、Claude が結果を受け取れるのは、サーバーがまだタスクを把握している場合だけです。
+
+`tools/call` の応答と `tasks/get` レスポンスで、いずれもミリ秒単位の `ttlMs` と `pollIntervalMs` を設定してください。
+
+* **`ttlMs`**: タスクの作成時から数えて、サーバーがタスクを保持する期間を報告します。最長の実行時間に結果を保持する時間を加えた値を送信してください。例えば、30 分のジョブで 1 時間保持する場合は `5400000` です。サーバーが時間制限なしでタスクを保持する場合は、`null` を送信してください
+* **`pollIntervalMs`**: 1 分より長く実行されるジョブでは 10000 から 30000 を送信し、サーバーが応答するステータス確認の数を減らしてください。それより短いジョブでは、Claude が結果をより早く受け取れるように 2000 を送信してください
 
 ### プラグインが提供する MCP サーバー
 

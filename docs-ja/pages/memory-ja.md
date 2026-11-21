@@ -6,7 +6,7 @@
 
 > CLAUDE.md ファイルで Claude に永続的な指示を与え、自動メモリで Claude が自動的に学習を蓄積できるようにします。
 
-Claude Code の各セッションは、新しいコンテキストウィンドウで始まります。2 つのメカニズムがセッション間で知識を保持します。
+Claude Code の各セッションは、新しいコンテキストウィンドウで始まります。CLAUDE.md ファイルと自動メモリが、セッション間で知識を保持します。
 
 * **CLAUDE.md ファイル**: Claude に永続的なコンテキストを与えるために書く指示。Claude は CLAUDE.md の代わりにリポジトリの [`AGENTS.md` ファイル](#agents-md)を読むこともできます
 * **自動メモリ**: あなたの修正と好みに基づいて Claude が自分自身で書くメモ
@@ -21,19 +21,19 @@ Claude Code の各セッションは、新しいコンテキストウィンド�
 
 ## CLAUDE.md と自動メモリ
 
-Claude Code には 2 つの相互補完的なメモリシステムがあります。どちらも各会話の開始時に読み込まれます。Claude はこれらをコンテキストとして扱い、強制的な設定ではありません。アクションをブロックするには、Claude の判断に関わらず [PreToolUse hook](https://code.claude.com/docs/ja/hooks-guide.md) を使用してください。より具体的で簡潔な指示ほど、Claude はそれに従う可能性が高くなります。
+Claude の動作をガイドしたい場合は CLAUDE.md ファイルを使用します。自動メモリにより、Claude は手動の作業なしにユーザーの修正から学習できます。
 
 | | CLAUDE.md ファイル | 自動メモリ |
 | :- | :- | :- |
 | **誰が書くか** | あなた | Claude |
 | **何が含まれるか** | 指示とルール | 学習とパターン |
 | **スコープ** | プロジェクト、ユーザー、または組織 | リポジトリごと、ワーキングツリー全体で共有 |
-| **読み込まれる場所** | すべてのセッション | すべてのセッション（最初の 200 行または 25KB） |
+| **読み込まれる場所** | すべてのセッション | [自動メモリがオン](#enable-or-disable-auto-memory)のセッション（[`MEMORY.md`](#how-it-works) の最初の 200 行または 25KB まで） |
 | **用途** | コーディング標準、ワークフロー、プロジェクトアーキテクチャ | あなたの好み、Claude に与える修正、Claude がコードから導き出せないプロジェクトコンテキスト |
 
-Claude の動作をガイドしたい場合は CLAUDE.md ファイルを使用します。自動メモリにより、Claude は手動の作業なしにあなたの修正から学習できます。
-
 Subagent も独自の自動メモリを保持できます。詳細については、[subagent 設定](https://code.claude.com/docs/ja/sub-agents.md#enable-persistent-memory)を参照してください。
+
+Claude は CLAUDE.md ファイルと自動メモリをコンテキストとして扱います。これらは強制的な設定ではありません。Claude の判断に関わらずアクションをブロックするには、代わりに [PreToolUse フック](https://code.claude.com/docs/ja/hooks-guide.md)を使用してください。指示が具体的かつ簡潔であるほど、Claude はより一貫してそれに従います。
 
 ## CLAUDE.md ファイル
 
@@ -533,7 +533,7 @@ Claude はすべてのセッションで何かを保存するわけではあり�
 
 ```text theme={null}
 ~/.claude/projects/<project>/memory/
-├── MEMORY.md           # インデックス、メモリごとに 1 行、すべてのセッションに読み込まれます
+├── MEMORY.md           # インデックス、メモリごとに 1 行、セッション開始時に読み込まれます
 ├── user_role.md        # 1 つのメモリ
 ├── feedback_testing.md # 1 つのメモリ
 └── ...                 # Claude が作成するその他のトピックファイル
@@ -547,7 +547,7 @@ Claude Code は [`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-r
 
 ### 仕組み
 
-`MEMORY.md` の最初の 200 行、または最初の 25KB のいずれか先に来る方が、すべての会話の開始時に読み込まれます。そのしきい値を超えるコンテンツはセッション開始時に読み込まれません。Claude は詳細なメモを別のトピックファイルに移動することで、`MEMORY.md` を簡潔に保ちます。
+自動メモリがオンの間、`MEMORY.md` の最初の 200 行、または最初の 25KB のいずれか先に来る方が、セッション開始時に読み込まれます。そのしきい値を超えるコンテンツはセッション開始時に読み込まれません。Claude は詳細なメモを別のトピックファイルに移動することで、`MEMORY.md` を簡潔に保ちます。
 
 Claude が `MEMORY.md` に書き込んだ後、Claude Code はファイルを 200 行および 25KB の読み込み制限に対して測定します。ファイルが制限に近い場合、Claude Code は Claude に短縮するよう促します。エントリごとに 1 行を保持し、詳細をトピックファイルに移動し、古いエントリをマージまたは削除します。ファイルが制限を超えている場合、書き込みは成功しますが、Claude Code は[Claude にインデックスを書き直すよう指示するエラー](https://code.claude.com/docs/ja/errors.md#memory-index-is-over-its-read-limit)を返します。次の読み込み時に制限を超えるすべてが削除されるためです。
 

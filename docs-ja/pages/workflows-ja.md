@@ -175,7 +175,7 @@ CLI では、実行ごとのプロンプトは計画されたフェーズとこ�
 | Bypass permissions | Claude Code はプロンプトを表示しません。実行は直ちに開始されます |
 | `claude -p`, Agent SDK | Claude Code はプロンプトを表示しません |
 
-`claude -p` と Agent SDK では、Claude Code はこのプロンプトを表示しません。セッションの残りの部分と同じ[権限評価](https://code.claude.com/docs/ja/agent-sdk/permissions.md#how-permissions-are-evaluated)を通じてワークフロー ツール呼び出しを実行するため、拒否ルール、質問ルール、および `dontAsk` モードはすべてのツール呼び出しに適用されるのと同じように適用されます。これらの実行でワークフローを開始させるには、次のいずれかを使用します。
+`claude -p` と Agent SDK では、Workflow ツール呼び出しはセッションの他の部分と同じ[権限評価](https://code.claude.com/docs/ja/agent-sdk/permissions.md#how-permissions-are-evaluated)を経由します。拒否ルール、確認ルール、および `dontAsk` モードがこの呼び出しに適用されます。これらの実行でワークフローを開始させるには、次のいずれかを使用します。
 
 * **権限ルール**: すべてのワークフローを承認するには許可ルールに `Workflow` を追加し、名前で 1 つの保存されたワークフローを承認するには `Workflow(<name>)` を追加します。
 * **auto 権限モード**: [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で実行します。auto モードでは分類器が呼び出しをレビューし、それを承認できます。
@@ -489,7 +489,7 @@ Claude Code は、各ワークフローエージェントのモデルを、[サ�
 
 ワークフローが無効な場合:
 
-* `/workflows`、ワークフローコマンド、`/workflow-authoring` スキルは利用できません
+* `/workflows` の進捗ビュー、ワークフローコマンド、`/workflow-authoring` スキルは利用できません
 * `ultracode` キーワードで実行がトリガーされなくなり、`/effort` から **Ultracode** トグルが削除されます
 
 すでに進行中だった実行は続行します。

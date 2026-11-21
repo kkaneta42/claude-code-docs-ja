@@ -346,7 +346,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 >
 > **`null` になる可能性のあるフィールド**：
 >
-> * `context_window.current_usage`：セッションの最初の API 呼び出しの前は `null` で、`/compact` の後も次の API 呼び出しで再設定されるまで再び `null` になります
+> * `context_window.current_usage`：[コンテキストウィンドウのフィールド](#context-window-fields)を参照してください
 > * `context_window.used_percentage`、`context_window.remaining_percentage`：セッションの初期段階では `null` になることがあります
 >
 > スクリプトでは、存在しないフィールドは条件付きアクセスで、null 値はフォールバックのデフォルト値で処理してください。
@@ -356,7 +356,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 `context_window` オブジェクトは、直近の API レスポンスに基づく現在のコンテキストウィンドウを表します。
 
 * **合計値**（`total_input_tokens`、`total_output_tokens`）：現在コンテキストウィンドウ内にあるトークン。`total_input_tokens` は `input_tokens`、`cache_creation_input_tokens`、`cache_read_input_tokens` の合計で、`total_output_tokens` は直近の応答の出力トークンです。どちらも最初の API レスポンスの前は `0` です。
-* **コンポーネント別の使用量**（`current_usage`）：同じトークン数をカテゴリ別に分けたもの。キャッシュヒットを新規の入力と分けて把握する必要がある場合に使用します。
+* **コンポーネント別の使用量**（`current_usage`）：同じトークン数をカテゴリ別に分けたもの。キャッシュヒットを新規の入力と分けて把握する必要がある場合に使用します。このオブジェクトは、セッションの最初の API 呼び出しの前は `null` で、`/compact` の後は次の API 呼び出しまで `null` またはすべてゼロになります。どちらも空として扱ってください。
 
 `current_usage` オブジェクトには以下が含まれます。
 
@@ -370,8 +370,6 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 `used_percentage` フィールドは入力トークンのみから計算されます：`input_tokens + cache_creation_input_tokens + cache_read_input_tokens`。`output_tokens` は含まれません。
 
 `current_usage` からコンテキストの割合を手動で計算する場合は、`used_percentage` と一致させるために同じ入力のみの計算式を使用してください。
-
-`current_usage` オブジェクトは、セッションの最初の API 呼び出しの前は `null` で、`/compact` の直後も次の API 呼び出しで再設定されるまで再び `null` になります。
 
 ### 支出上限のフィールド
 

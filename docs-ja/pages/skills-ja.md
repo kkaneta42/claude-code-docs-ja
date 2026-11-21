@@ -161,8 +161,8 @@ What did I change?
 | :- | :- | :- |
 | エンタープライズ | [管理設定ディレクトリ](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)内の `.claude/skills/<skill-name>/SKILL.md` | 組織がデプロイしたマシン上のすべてのユーザー |
 | 個人 | `~/.claude/skills/<skill-name>/SKILL.md` | このマシン上のすべてのプロジェクト（ただし [Cowork やクラウドセッション](#skills-in-cowork-and-cloud-sessions)を除く） |
-| プロジェクト | `.claude/skills/<skill-name>/SKILL.md` | このリポジトリでのセッション（ただし[プロジェクト内のクラウドスレッド](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を除く）。コミットすればチームも利用できます |
-| ネスト | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | `<subdir>` またはその配下で開始したセッション（ただしプロジェクト内のクラウドスレッドを除く）。それらのスレッド以外では、上位ディレクトリで開始したセッションも、Claude がそこのファイルを扱った時点でスキルを読み込みます。[モノレポとサブディレクトリ](#discovery-from-parent-and-nested-directories)を参照してください |
+| プロジェクト | `.claude/skills/<skill-name>/SKILL.md` | このリポジトリでのセッション。プロジェクトのクラウドスレッドについては、[どのスレッドが読み込むか](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を確認してください。コミットすればチームも利用できます |
+| ネスト | `<subdir>/.claude/skills/<skill-name>/SKILL.md` | `<subdir>` またはその配下で開始したセッション。上位ディレクトリで開始したセッションも、Claude がそこのファイルを扱った時点でスキルを読み込めます。[モノレポとサブディレクトリ](#discovery-from-parent-and-nested-directories)を参照してください。プロジェクトのクラウドスレッドについては、[どのスレッドが読み込むか](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を確認してください |
 | 追加ディレクトリ | `--add-dir` で渡したディレクトリ内の `.claude/skills/<skill-name>/SKILL.md` | そのセッション。[プロジェクト外のディレクトリ](#skills-from-additional-directories)を参照してください |
 | プラグイン | `<plugin>/skills/<skill-name>/SKILL.md` | [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)が有効になっている場所で、`/plugin-name:skill-name` として |
 | claude.ai アカウント | claude.ai アカウントで有効にしたスキル | Cowork セッション、クラウドセッション、およびそのアカウントでサインインしたターミナルセッション。[claude.ai から同期されたスキル](#how-synced-skills-behave)を参照してください |
@@ -228,8 +228,8 @@ Claude Code は、起動したディレクトリと、そこからリポジト�
 
 スキルがマシン上の `~/.claude/skills/` にしか存在しない場合、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)がそれを呼び出すと、Claude Code はスキルが見つからないと報告します。これは、各実行が新しいクラウドセッションとして開始されるためです。個人のスキルをこれらのセッションで利用できるようにするには、次のようにします。
 
-* Cowork セッション、クラウドセッション、および[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、claude.ai アカウントでスキルを有効にします。プロジェクトのクラウドスレッドでは、リポジトリの `.claude/skills/` にコミットされたスキルは利用できません。[セルフホスト環境の一部のセッション](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)は、アカウントのスキルを読み込みません。
-* プロジェクトスレッド以外のクラウドセッションでは、代わりにスキルをリポジトリの `.claude/skills/` にコミットすることもできます。リポジトリの `.claude/settings.json` で宣言されたプラグインや、ユーザー設定でのみ有効にしたプラグインは、[クラウドセッションでは読み込まれません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。
+* Cowork セッション、クラウドセッション、および[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、claude.ai アカウントでスキルを有効にします。[セルフホスト環境の一部のセッション](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)は、アカウントのスキルを読み込みません。
+* クラウドセッションでは、代わりにスキルをリポジトリの `.claude/skills/` にコミットすることもできます。プロジェクトについては、[どのスレッドが読み込むか](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を確認してください。リポジトリの `.claude/settings.json` で宣言されたプラグインや、ユーザー設定でのみ有効にしたプラグインは、[クラウドセッションでは読み込まれません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。
 
 [Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md)はマシン上でローカルに実行されるため、`~/.claude/skills/` を読み込みます。
 
@@ -1225,7 +1225,7 @@ Claude がスキルを不要な時に使用する場合：
 
 Claude が最初の応答でスキルに従い、その後に従わなくなった場合は、以下のいずれかのケースに該当するもので始めてください：
 
-* **Claude が毎回成立する必要があるルールをスキップした**：ルールを [hook](https://code.claude.com/docs/ja/hooks-guide.md) に移動してください。Claude Code は hook をそのイベントが発生するたびに実行します。例えば、ファイル編集の前など、Claude がスキルに従っているかどうかに関わらず実行されます。ルールをスキルと一緒に保つには、スキルの [`hooks` frontmatter](https://code.claude.com/docs/ja/hooks#hooks-in-skills-and-agents) で hook を定義してください。その hook はスキルが呼び出された時点からセッション終了まで適用されます。
+* **Claude が毎回守られるべきルールをスキップした**：ルールを[設定ファイル](https://code.claude.com/docs/ja/hooks.md#hook-locations)またはプラグインの `hooks/hooks.json` 内の[フック](https://code.claude.com/docs/ja/hooks-guide.md)に移動してください。Claude Code は、ファイル編集の前など、そのイベントが発生したときに、Claude がスキルに従っているかどうかに関わらずそのフックを実行します。
 * **Claude が判断を伴って適用すべきガイダンスをスキップした**：ガイダンスが全体的なタスクに適用されるように言い換えてください。例えば「すべての編集後にテストを実行する」ではなく「テストを実行する」ではなく、「すべての編集後にテストを実行する」と言ってください。Claude Code はスキルが呼び出された時点で会話にスキルのコンテンツを追加し、[後の段階ではファイルを再読み込みしません](#skill-content-lifecycle)。
 * **会話がコンパクト化された**：スキルを再度呼び出してコンテンツを復元してください。[コンパクト化](https://code.claude.com/docs/ja/how-claude-code-works.md#when-context-fills-up)後、Claude Code は [呼び出されたスキルの開始部分のみを保持できます](#skill-content-lifecycle)。そのため、最も重要な指示を `SKILL.md` の上部に配置してください。
 

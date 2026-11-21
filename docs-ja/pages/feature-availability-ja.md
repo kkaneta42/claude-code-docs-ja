@@ -345,7 +345,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 | [Remote Control](https://code.claude.com/docs/ja/remote-control.md) | ✓ | ✓ | ✓ | Admin-enabled | Admin-enabled |
 | [Channels](https://code.claude.com/docs/ja/channels.md) | ✓ | ✓ | ✓ | Admin-enabled | Admin-enabled |
 | [Computer use](https://code.claude.com/docs/ja/computer-use.md) | ✓ | ✓ | ✓ | ✗ | ✗ |
-| Dispatch（[Desktop](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)） | ✓ | ✓ | ✓ | ✗ | ✗ |
+| Dispatch（[Desktop](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)） | 新規ユーザーは利用不可 | 新規ユーザーは利用不可 | 新規ユーザーは利用不可 | ✗ | ✗ |
 | [Code Review](https://code.claude.com/docs/ja/code-review.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
 | [Artifacts](https://code.claude.com/docs/ja/artifacts.md) | ✓ | ✓ | ✓ | ✓ | ✓ |
 | [アナリティクスダッシュボードと貢献メトリクス](https://code.claude.com/docs/ja/analytics.md) | ✗ | ✗ | ✗ | ✓ | ✓ |

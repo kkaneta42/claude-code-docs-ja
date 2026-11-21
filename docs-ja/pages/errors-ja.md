@@ -108,6 +108,14 @@
 | `Not signed in to the Cloud gateway — run /login.` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
 | `Administrator policy requires a Cloud gateway sign-in on this machine` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
 | `Managed settings on this machine configure a Cloud gateway sign-in; run interactive /login to authenticate.` | [`claude auth login`](https://code.claude.com/docs/ja/cli-reference#cli-commands) |
+| `You chose an organization that is managed in Anthropic's Enterprise Admin Console` | [Claude Code からのサインインを有効にする](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#turn-on-sign-in-from-claude-code) |
+| `The organization's settings won't apply on this computer` | [どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority) |
+| `no usable organization sign-in` / `no readable organization sign-in` | [サインインが終了したとき](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#when-a-sign-in-ends) |
+| `the session no longer runs under that sign-in` / `This Claude Code process ran under your organization` / `After a sign-in to your organization, only a new session sends requests` | [Claude Code にログインする](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) |
+| `This conversation ran under organization` / `This conversation ran under more than one organization` | [Claude Code にログインする](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) |
+| `Claude Code could not read the managed settings that apply to this computer, which may require a sign-in to Anthropic` | [`enforceAnthropicSignIn`](https://code.claude.com/docs/ja/settings-reference#enforceanthropicsignin) |
+| `This computer's managed settings require a sign-in to Anthropic` / `This computer's settings require a sign-in to Anthropic that this app cannot use` | [サインインを必須にする](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#require-the-sign-in-with-managed-settings) |
+| `This computer's managed settings set the Microsoft Foundry key or token in use` / `This computer's managed settings could not be read, so the Microsoft Foundry key or token in use may be theirs` | [コンソールと競合する管理設定](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code-reference#managed-settings-that-conflict-with-the-console) |
 | `Failed to authenticate: OAuth session expired and could not be refreshed` | [認証](#login-expired) |
 | `Login reached its time limit · Please run /login` / `Failed to authenticate: this login reached its time limit` | [認証](#login-expired) |
 | `Failed to authenticate: your claude.ai login expired` | [ログインの有効期限が切れた後](https://code.claude.com/docs/ja/authentication.md#after-the-login-expires) |
@@ -118,6 +126,7 @@
 | `Could not refresh your login: the disk that holds the Claude Code config directory (~/.claude by default), or your disk quota on it, is full` | [認証](#could-not-refresh-your-login-disk-full) |
 | `Failed to refresh OAuth token: the disk that holds the Claude Code config directory (~/.claude by default), or your disk quota on it, is full` | [認証](#could-not-refresh-your-login-disk-full) |
 | `Your account is on hold and can't use Claude Code. View details or appeal: https://claude.ai/restricted` | [認証](#your-account-is-on-hold) |
+| `This account is on hold and can't sign in` / `This Claude Design account is on hold` / `The account signed in to Claude Design is on hold` | メッセージ内のリンクを開いて、詳細を確認するか異議を申し立ててください。 |
 | `Your account is on hold and can't sign in to Claude Code. View details or appeal: https://claude.ai/restricted` | [認証](#your-account-is-on-hold) |
 | `Anthropic profile login expired · Re-authenticate your Anthropic profile` | [認証](#anthropic-profile-login-expired) |
 | `Login expired · Run /login to sign in again, or re-authenticate your Anthropic profile` | [認証](#anthropic-profile-login-expired) |
@@ -247,10 +256,12 @@
 | `Error: bypassPermissions not supported in restricted mode` | [restricted モード](https://code.claude.com/docs/ja/permission-modes.md#restricted-mode-refuses-bypasspermissions) |
 | `Session was started with bypass permissions, so plan mode won't ask before most edits or commands` | [plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode) |
 | `Cloud sessions cannot be created from a --restricted session` | [コマンドラインエラー](#cloud-sessions-cannot-be-created-from-a-restricted-session) |
+| `--fork-session can't fork a cloud session, so nothing was opened or sent` | [クラウドセッションへの送信時のエラー](https://code.claude.com/docs/ja/claude-code-on-the-web.md#errors-when-sending-to-a-cloud-session) |
 | `Cloud sessions are disabled by your organization's policy` | [コマンドラインエラー](#cloud-sessions-are-disabled-by-your-organizations-policy) |
 | 認証情報を名指しするポリシー拒否メッセージの末尾にある `Cloud sessions use your claude.ai login` | [コマンドラインエラー](#cloud-sessions-use-your-claude-ai-login) |
 | `Couldn't verify your organization's policy for cloud sessions` | [コマンドラインエラー](#couldnt-verify-your-organizations-policy-for-cloud-sessions) |
 | `Cloud sessions aren't available:` の後に組織のポリシーを読み込めなかった理由が続くもの | [コマンドラインエラー](#couldnt-verify-your-organizations-policy-for-cloud-sessions) |
+| `Branch '<branch>' was not checked out` | [Teleport の要件](https://code.claude.com/docs/ja/claude-code-on-the-web.md#teleport-requirements) |
 | `Cloud sessions aren't available with this Console sign-in. They need a claude.ai sign-in.` | [組織 UUID を取得できない](https://code.claude.com/docs/ja/claude-code-on-the-web.md#unable-to-get-organization-uuid) |
 | `Cloud sessions need a claude.ai sign-in` | [組織 UUID を取得できない](https://code.claude.com/docs/ja/claude-code-on-the-web.md#unable-to-get-organization-uuid) |
 | `Nothing was stashed: "<path>" is now a folder in place of a tracked file or link` / `are now folders in place of tracked files or links` | [コマンドラインエラー](#nothing-was-stashed-because-a-folder-replaced-a-tracked-file) |
@@ -284,6 +295,7 @@
 | `Can't read .mcp.json: it isn't a regular file or is larger than 2097152 bytes` | [コマンドラインエラー](#cant-read-mcp-json) |
 | `MCP server "<name>" was not saved to` / `was not removed from` | [コマンドラインエラー](#mcp-server-was-not-saved-or-removed) |
 | `MCP server "<name>" may not have been saved` / `may not have been removed` | [コマンドラインエラー](#mcp-server-may-not-have-been-saved-or-removed) |
+| `Names that start with "claude.ai " are claude.ai connectors, which Claude Code can't remove` / `is a claude.ai connector, Claude Code can't remove it` | [claude.ai コネクタを無効にする](https://code.claude.com/docs/ja/mcp.md#disable-claude-ai-connectors) |
 | `Server rejected the Authorization header minted by the configured headersHelper` | [コマンドラインエラー](#server-rejected-the-authorization-header-minted-by-the-configured-headershelper) |
 | `This server (Java MCP SDK 0.17.0 or older) rejected Claude Code's elicitation capability` | [コマンドラインエラー](#mcp-server-rejected-the-elicitation-capability) |
 | `Error: MCP tool <name> (passed via --permission-prompt-tool) not found` | [コマンドラインエラー](#mcp-permission-prompt-tool-not-found) |
@@ -304,6 +316,7 @@
 | `Diff is too large for ultrareview` / `PR #<N> is too large for ultrareview` | [コマンドラインエラー](#diff-is-too-large-for-ultrareview) |
 | `Could not find merge-base with <branch>` | [コマンドラインエラー](#could-not-find-merge-base-with-the-base-branch) |
 | `Your checkout has no branches (detached HEAD only)` | [コマンドラインエラー](#your-checkout-has-no-branches) |
+| `/code-review ultra` または `/ultrareview` からの `but its shell has moved to` | レビュー対象のリポジトリで新しいセッションを開始します。 |
 | `Ultrareview clones <owner>/<repo> in the cloud with the GitHub account connected to your Claude account, and none is connected` | [コマンドラインエラー](#no-github-account-is-connected-to-your-claude-account) |
 | `Your connected GitHub account can't see <owner>/<repo>` | [コマンドラインエラー](#your-connected-github-account-cant-see-the-repository) |
 | `The GitHub App preflight failed transiently (network or service hiccup) — retry in a moment to start from GitHub instead` | [コマンドラインエラー](#the-github-app-preflight-failed-transiently) |
@@ -342,6 +355,8 @@
 | `Cannot add marketplace "<name>": Claude Code cannot install plugins from a marketplace with this name` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#cannot-install-plugins-from-a-marketplace-with-this-name) |
 | `Cannot add marketplace "<name>": Claude Code reserves this name and cannot register a marketplace under it` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#claude-code-reserves-this-name) |
 | `Marketplace "<name>" is added but ignored` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#marketplace-is-added-but-ignored) |
+| `Marketplace "<name>", which managed settings declare, stands from another source and cannot be taken back while its declared source is unreachable` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#marketplace-cannot-be-taken-back-while-its-declared-source-is-unreachable) |
+| `The list of installed plugins (installed_plugins.json) could not be read, so marketplace "<name>", which managed settings declare, cannot be taken back from another source` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#installed-plugins-could-not-be-read-so-marketplace-cannot-be-taken-back) |
 | `Marketplace "<name>" is registered but was refused (see the debug log)` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#marketplace-is-added-but-ignored) |
 | `references ${user_config.*} in a shell-form command` | [プラグインエラー](#plugin-command-references-user-config) |
 | `Monitor "<name>" from plugin <plugin> references ${user_config.*} in its command` | [プラグインエラー](#plugin-command-references-user-config) |
@@ -388,6 +403,7 @@
 | `subagent_type is required: the general-purpose agent is not available in this session` | [ツールエラー](#subagent-type-is-required) |
 | `Error: this write left the memory index at MEMORY.md at ..., over its ... read limit` | [ツールエラー](#memory-index-is-over-its-read-limit) |
 | `Sandbox is required but failed to initialize: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
+| `too long for macOS, which limits their total size` / `one path in the sandbox's rules is longer than macOS accepts` | パスリストを短くする、使用していない git worktree を削除するなど、メッセージに示された修正方法に従います。 |
 | `Sandbox is required (sandbox.failIfUnavailable) and stopped being available in this session: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
 | `pkill: refusing to run` | [ツールエラー](#pkill-pattern-matches-the-claude-code-process) |
 | `Sandbox settings can't be changed here` / `Sandbox settings are overridden by a higher-priority configuration` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#sandbox-settings-overridden) |
@@ -406,6 +422,7 @@
 | `Refusing to write through symlink: <path>` / `Refusing to write into symlinked directory: <path>` | [ツールエラー](#refusing-after-a-symlink-changed) |
 | `Refusing to write <path>: where it leads on disk could not be determined` / `Refusing to read <path>: where it leads on disk could not be determined` | [ツールエラー](#refusing-after-a-symlink-changed) |
 | `Refusing to search <path>: a path one of its Read deny rules is written through changed while the search was being prepared` / `Refusing to search <path>: it could not be opened` | [ツールエラー](#refusing-after-a-symlink-changed) |
+| `can't be verified and was not run` / `Claude can't use tools in its working folder` / `Claude couldn't use a tool in its working folder` | 繰り返し発生する場合は、メッセージが示す場所で新しいセッションを開始します。 |
 | `its permission check expired before it ran (too many concurrent file operations)` / `ripgrep was found only by name on PATH` | [ツールエラー](#refusing-after-a-symlink-changed) |
 | `The search failed, so this is not a "no matches" result: matches may exist` | [ツールエラー](#the-search-failed) |
 | `task output swap refused (tasks dir moved or linked)` | [ツールエラー](#task-output-swap-refused) |
@@ -446,6 +463,7 @@
 | `kept <id> — its worktree is still at <path>` | メッセージの次の行で未プッシュのコミットに言及している場合は [バックグラウンドセッションのエラー](#worktree-has-commits-that-are-not-pushed-anywhere)、それ以外の場合は [セッションの削除で削除されるもの](https://code.claude.com/docs/ja/agent-view.md#what-deleting-a-session-removes) |
 | `kept <id> — <n> unpushed commits on <branch>` | [バックグラウンドセッションのエラー](#worktree-has-commits-that-are-not-pushed-anywhere) |
 | `kept <id> — worktree has commits that are not pushed anywhere` | [バックグラウンドセッションのエラー](#worktree-has-commits-that-are-not-pushed-anywhere) |
+| `another Claude Code session (...) is running in it` を伴う `Worktree kept at` | [worktree をクリーンアップする](https://code.claude.com/docs/ja/worktrees.md#clean-up-worktrees) |
 | `terminal host process died — press Enter to restart` / `This session's terminal host process died` | [バックグラウンドセッションのエラー](#terminal-host-process-died) |
 | `Session isn't responding` / `Press enter again to restart this session — it isn't responding` | [バックグラウンドセッションのエラー](#session-isnt-responding) |
 | `Session <id> was stopped while the respawn was in flight` | [バックグラウンドセッションのエラー](#session-was-stopped-while-the-respawn-was-in-flight) |
@@ -465,6 +483,7 @@
 | `Claude Code did not finish starting` | [ラッパーと IDE のエラー](#subprocess-initialization-did-not-complete-within-60000ms) |
 | `The connection to Claude Code ended before this message completed` | [ラッパーと IDE のエラー](#the-connection-to-claude-code-ended-before-this-message-completed) |
 | `Could not locate the Claude CLI on PATH` | [ラッパーと IDE のエラー](#could-not-locate-the-claude-cli-on-path) |
+| `Claude Code could not be started from <command>: it is the <system> build, and this computer needs the <build> build` | [`claudeCode.claudeProcessWrapper`](https://code.claude.com/docs/ja/vs-code#extension-settings) を設定している場合は、`<build>` 向けにビルドされたプログラムを指すように設定してください。それ以外の場合は、`<build>` 向けの VS Code 拡張機能パッケージをインストールしてください。 |
 | `The Claude Code program for this computer, the <build> build, could not be found` | [ラッパーと IDE のエラー](#the-claude-code-program-for-this-computer-could-not-be-found) |
 | `Restored the code, but skipped N files` | [巻き戻しの警告とエラー](#restored-the-code-but-skipped-files) |
 | `No files were restored: N files failed (backup missing, or the file could not be updated)` | [巻き戻しの警告とエラー](#no-files-were-restored) |
@@ -506,6 +525,7 @@
 | `Managed settings contain invalid entries, including PreToolUse/PermissionRequest hooks that are NOT loaded; fix or remove each entry:` | [設定の警告](#managed-settings-hooks-not-loaded) |
 | `otelHeadersHelper failed; telemetry is not being exported. See /status: ...` | [設定の警告](#otelheadershelper-failed) |
 | `apply_flag_settings: nothing in this request was applied and earlier settings stay in force. Fix or remove these invalid settings and send it again` | [`applyFlagSettings()`](https://code.claude.com/docs/ja/agent-sdk/typescript#applyflagsettings) |
+| `Invalid JSON provided to --settings` / `Invalid JSON provided to the settings option` | [`--settings` フラグ](https://code.claude.com/docs/ja/cli-reference#cli-flags) または [`settings` オプション](https://code.claude.com/docs/ja/agent-sdk/typescript#options) |
 | `"crossSessionInbound" must be one of "accept", "hold", "refuse"` | [設定の警告](#crosssessioninbound-must-be-one-of-accept-hold-refuse) |
 | `API Error: ANTHROPIC_FOUNDRY_RESOURCE must be a Foundry resource name` | [設定の警告](#anthropic-foundry-resource-must-be-a-foundry-resource-name) |
 | `headersHelper not run — this workspace has no persisted trust` | [設定の警告](#headershelper-not-run) |
@@ -1172,7 +1192,7 @@ Invalid API key · Fix external API key
 
 ### Your apiKeyHelper script is failing
 
-Claude Code は [`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) 設定のコマンドを実行しましたが、キーが返されませんでした。キーがない場合、リクエストはプレースホルダーの認証情報で API に到達し、API は `401` で拒否します。ターミナルの `Authentication` パネルに、次のどれが発生したかが表示されます：
+Claude Code は [`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) 設定のコマンドを実行しましたが、キーが返されませんでした。キーがない場合、リクエストはプレースホルダーの認証情報で API に到達し、API はそれを `401` で拒否します。ターミナルのパネルに、次のどれが起きたかが表示されます:
 
 * コマンドがエラーで終了したか、タイムアウトした
 * コマンドが stdout に何も出力しなかった
@@ -1194,7 +1214,6 @@ Claude Code はこのメッセージを表示する前に、スクリプトを�
 * コマンドがセッションの期限切れを報告する場合は、SSO やシークレットボールトに再度サインインするなどして、認証情報プロバイダーで再認証します
 * コマンドを修正して、キーのみを最大 16,384 文字の印刷可能な ASCII からなる単一のトークンとして stdout に出力し、終了コード 0 で終了するようにします。動作する設定については、[apiKeyHelper で認証情報をローテーションする](https://code.claude.com/docs/ja/llm-gateway-connect.md#rotate-credentials-with-apikeyhelper)を参照してください。
 * `/status` を実行して失敗を確認し、`apiKeyHelper` が有効な認証情報ソースであることを確認します。`apiKeyHelper` の行には `Failing` と、終了コードやコマンドのエラー出力など最後の失敗の詳細が表示され、次に実行が成功すると消えます。v2.1.274 より前では、`/status` には認証情報ソースのみが表示され、失敗は表示されませんでした。
-* コマンドが失敗するたびに、その終了コードとエラー出力がターミナルの `Authentication` パネルにも表示されます。v2.1.212 より前では、パネルのタイトルは `Cloud authentication` でした。
 
 ### Claude Code didn't send your claude.ai login
 
@@ -1585,7 +1604,7 @@ Linux または Windows で Console ログインによって API キーが作成
 
 **対処方法：**
 
-* シェルで `claude auth logout` を実行して、保存を再試行します。保存が完了すると、コマンドは `Successfully logged out from your Anthropic account.` と出力します。
+* シェルで `claude auth logout` を実行して保存を再試行します
 
 ### Couldn't start the local listener that receives the browser sign-in
 
@@ -2320,8 +2339,6 @@ The cloud environments service returned an empty response (HTTP 200 with no body
 The cloud environments service returned a response in an unexpected format (HTTP 200 with a non-JSON body). This is usually temporary — try again in a moment.
 The cloud environments service returned a response in an unexpected format (HTTP 200 without a usable environments list). This is usually temporary — try again in a moment.
 ```
-
-サーバーはリクエストを受け付けましたが、環境の一覧ではない本文（空、JSON ではない、または一覧を含まない JSON）で応答しました。これは通常、サービス側の障害に伴って発生し、自然に解消します。一覧をリクエストしたサーフェスによっては、Claude Code がプレフィックスを付けることがあります（`/remote-env` ダイアログでの `couldn't list environments:` など）。
 
 **対処方法:**
 
@@ -3482,11 +3499,11 @@ v2.1.309 より前は、ボリュームがいっぱいの場合やクォータ�
 Error: Claude Code could not save all of this session's transcript under /Users/you/.claude because the disk is full (ENOSPC). If you resume this session, part of the conversation may be missing. Free up space on that disk before the next run.
 ```
 
-text または `json` 出力の場合、実行は終了コード 1 で終了しますが、回答は既に出力されています。`stream-json` 出力の場合、実行は通常の終了コードのままで、回答も届きます。
+出力形式が text または `json` の場合、またはメッセージに `output sent to a file` と示されている場合、実行は終了コード 1 で終了します。その他の `stream-json` の実行は通常の終了コードのままです。
 
 **対処方法:**
 
-* **`the disk is full (ENOSPC)`**: 次回の実行前に、メッセージ内のパスを保持するディスクの容量を空けてください
+* **`the disk is full (ENOSPC)`**：次の実行の前に、出力ファイルまたはメッセージ内のパスがあるディスクの空き容量を確保します
 * **`your disk quota is used up (EDQUOT)`**: 次回の実行前に、容量を空けるか、より大きなクォータを依頼してください
 
 ### Directory couldn't be resolved to a real location
@@ -3919,7 +3936,9 @@ build.sh --target�dist
 
 ### 4,000,000 文字の上限を超えるスキル、コマンド、またはフック
 
-`more than 4,000,000 characters` を含むメッセージは、スキル、コマンド、または[プロンプトフックやエージェントフック](https://code.claude.com/docs/ja/hooks.md#prompt-and-agent-hook-fields)が実行されなかったことを意味します。長いテキストを引数として貼り付けた場合は、それをファイルに保存し、テキストは会話に残るため `/clear` を実行してから、そのパスを渡してください。[Code Mode](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook) の外では、上限を超える `PreToolUse` のプロンプトフックやエージェントフックは呼び出しをブロックしません。このような上限のない[コマンドフック](https://code.claude.com/docs/ja/hooks.md#command-hook-fields)を使用してください。
+`more than 4,000,000 characters` を含むメッセージは、スキル、コマンド、または[プロンプトフックやエージェントフック](https://code.claude.com/docs/ja/hooks.md#prompt-and-agent-hook-fields)が実行されなかったことを意味します。長いテキストを引数として貼り付けた場合は、それをファイルに保存し、テキストが会話に残っているため `/clear` を実行してから、ファイルのパスを渡します。
+
+`PreToolUse` のプロンプトフックまたはエージェントフックが上限を超えている場合、Claude が直接行うツール呼び出しはブロックされません。そのような上限のない[コマンドフック](https://code.claude.com/docs/ja/hooks.md#command-hook-fields)を使用してください。Code Mode のコードからの呼び出しについては、[フックによって拒否されたツール呼び出し](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook)を参照してください。
 
 ### Input must be provided when using `--print`
 
@@ -6675,11 +6694,6 @@ sandbox.filesystem.allowRead is ignored — managed settings set allowManagedRea
 ### Sandbox mask files left behind at write-deny paths
 
 `claude doctor` と `/status` に表示されるこの警告は、マスクファイル、つまり[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)が書き込みを拒否するパスに置かれた 0 バイトの読み取り専用のプレースホルダーファイルを一覧表示します。この警告は、Linux および WSL2 で、ファイルシステムの分離を有効にした状態でサンドボックス化が有効になっている場合に表示されます。それらのファイルを保持しているプロジェクトで Claude Code セッションが開いていない状態になったら、シェルから削除してください。
-
-サンドボックスは、サンドボックス化されたコマンドの実行中にプレースホルダーを作成し、コマンドの終了時に削除します。次のような場合には、プレースホルダーが残ります。
-
-* SIGKILL などにより、コマンドの終了前にセッションが強制終了された
-* バックグラウンドで実行中のコマンドなど、サンドボックス化されたコマンドがまだ実行中の状態でセッションを終了した
 
 `claude doctor` では、警告は次のように表示されます。
 

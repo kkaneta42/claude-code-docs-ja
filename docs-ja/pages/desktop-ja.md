@@ -372,9 +372,9 @@ macOS で\*\*Cmd+/**を、Windows で**Ctrl+/\*\*を押して、Code タブで�
 
 > [!NOTE]
 >
-> コンピューター操作は macOS と Windows で提供されているリサーチプレビューで、Pro、Max、または Ultra プランが必要です。Team プランおよび Enterprise プランでは利用できません。Claude Desktop アプリが起動している必要があります。macOS では、コンピューター操作には macOS 14 以降が必要です。
+> Code タブのコンピューター操作は macOS と Windows で利用でき、Pro、Max、または Ultra プランが必要です。Team プランおよび Enterprise プランでは利用できません。Claude Desktop アプリが起動している必要があります。macOS では、コンピューター操作には macOS 14 以降が必要です。
 
-コンピューター操作はデフォルトでオフになっています。Claude が画面を操作できるようにするには、事前に[設定で有効にしてください](#enable-computer-use)。macOS では、アクセシビリティと画面収録の権限も付与する必要があります。
+Claude に画面の操作を依頼する前に、コンピューター操作が[設定でオンになっている](#enable-computer-use)ことを確認してください。macOS では、アクセシビリティと画面収録の権限も付与する必要があります。
 
 macOS では、コンピューター操作をバックグラウンドで実行することもできます。ユーザーが作業を続けている間に、Claude は承認済みのアプリで作業します。
 
@@ -395,8 +395,6 @@ Claude がアプリやサービスとやり取りする方法はいくつかあ�
 [アプリごとのアクセスレベル](#app-permissions)もこれを補強します。ブラウザは表示のみ、ターミナルと IDE はクリックのみに制限されており、コンピューター操作が有効な場合でも Claude が専用ツールを使うよう誘導します。画面操作は、ネイティブアプリ、ハードウェアのコントロールパネル、API のない独自ツールなど、他の手段では到達できないもののために取っておかれます。
 
 ### コンピューター操作を有効にする
-
-コンピューター操作はデフォルトでオフになっています。
 
 **1. デスクトップアプリを更新する**
 
@@ -439,7 +437,7 @@ Claude が初めてアプリを使う必要があるとき、セッション内�
 
 ターミナル、Finder や File Explorer、System Settings や Settings など、影響範囲の広いアプリでは、承認すると何が許可されるかがわかるよう、プロンプトに追加の警告が表示されます。
 
-Settings で[コンピューター操作をオンにした](#enable-computer-use) **Computer use** セクションには、次のオプションがあります。
+設定の **Computer use** セクションでは、[コンピューター使用をオンにする](#enable-computer-use)ことができ、次のオプションが含まれています:
 
 * **Denied apps**: ここに追加したアプリは、プロンプトを表示せずに拒否されます。Claude が許可されたアプリでのアクションを通じて、拒否されたアプリに間接的に影響を与える可能性はありますが、拒否されたアプリを直接操作することはできません。
 * **Unhide apps when Claude finishes**: コンピューター操作がバックグラウンドで実行されていない場合、Claude は作業中に他のウィンドウを非表示にし、承認されたアプリのみを操作します。Claude の作業が終わると、この設定をオフにしない限り、非表示にしたウィンドウは元に戻ります。
@@ -604,6 +602,10 @@ Claude Code はセッション間で 3 つの安全動作を適用します：
 他のデバイスにすでに表示されているセッションを非表示にするには、Desktop でそのセッションをアーカイブします。Desktop はセッションの Remote Control 側のコピーもアーカイブするため、それらのデバイスのデフォルトのセッションリストから消えます。そこで表示または削除するには、[セッションをアーカイブする](https://code.claude.com/docs/ja/claude-code-on-the-web.md#archive-sessions)を参照してください。
 
 ### Dispatch からのセッション
+
+> [!NOTE]
+>
+> Dispatch は新規ユーザーには提供されていません。Claude アプリに表示されない場合は、[ターミナルから離れて作業する他の方法](https://code.claude.com/docs/ja/platforms.md#work-when-you-are-away-from-your-terminal)を参照してください。
 
 [Dispatch](https://support.claude.com/en/articles/13947068)は、[Cowork](https://claude.com/product/cowork) 内に存在する Claude との永続的な会話です。Dispatch にタスクをメッセージで送信すると、それをどのように処理するかを決定します。
 
@@ -2328,6 +2330,8 @@ Desktop アプリは、`claude_desktop_config.json` から MCP サーバーを�
 * **Windows**：**Help**をクリックしてから、**About Claude**をクリック
 
 バージョン番号をクリックしてクリップボードにコピーします。
+
+Claude Desktop v4.29.0 以降で新しいバージョンをより早く入手するには、**Release channel** を **Latest** に設定します。**Settings > This computer > System** に移動するか、メニューに **This computer** が表示されない場合は **Settings > Desktop app** に移動します。この設定を利用できる場所と、**Stable** に戻したときに想定される動作については、[リリースチャネルを選択する](https://support.claude.com/en/articles/10065433-install-claude-desktop#h_ac219b3bde)を参照してください。
 
 #### Code タブの Claude Code バージョン
 

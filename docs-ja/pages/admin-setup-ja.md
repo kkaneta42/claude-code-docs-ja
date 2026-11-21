@@ -53,6 +53,8 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
 
 Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイは、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
 
+claude.ai の **Organization settings > Desktop 3P** でプロバイダーまたはゲートウェイを設定している場合は、Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)を参照してください。
+
 組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](https://code.claude.com/docs/ja/server-managed-settings.md) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を設定してください。
 
 plist と HKLM レジストリの場所は任意のプロバイダーで機能し、書き込みに管理者権限が必要なため、改ざんに強いです。HKCU の Windows ユーザーレジストリは昇格なしで書き込み可能なため、実行チャネルではなく便利なデフォルトとして扱ってください。
@@ -99,7 +101,9 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド�
 | [カスタマイズのロックダウン](https://code.claude.com/docs/ja/settings-reference.md#strictpluginonlycustomization) | ユーザーおよびプロジェクトのソースからのスキル、エージェント、フック、MCP サーバーをブロックします。スキルをロックすると、[開発者が claude.ai で有効にしたスキル](https://code.claude.com/docs/ja/skills.md#where-synced-skills-load)の同期も停止します | `strictPluginOnlyCustomization` |
 | [claude.ai 同期の無効化](https://code.claude.com/docs/ja/settings-reference.md#syncclaudeaiskills) | 開発者が claude.ai で有効にした[スキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)と[プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)を Claude Code が読み込まないようにします。claude.ai で組織の Skills をオフにすると、Claude Code は両方の同期を停止し、v2.1.273 以降では同期済みのものも削除します。Skills をオフにせずにいずれかを停止するには、管理設定でそのキーを `false` に設定します | `syncClaudeAiSkills`、`syncClaudeAiPlugins` |
 | [フックの制限](https://code.claude.com/docs/ja/settings-reference.md#allowmanagedhooksonly) | 実行するフックと HTTP フックの URL を制限します。影響の全一覧は [`allowManagedHooksOnly` で実行されるもの](https://code.claude.com/docs/ja/settings-reference#what-runs-under-allowmanagedhooksonly)を参照してください | `allowManagedHooksOnly`、`allowedHttpHookUrls` |
-| [ログインの強制](https://code.claude.com/docs/ja/settings-reference.md#forceloginmethod) | ログインを特定の方法または Anthropic 組織に制限します。方法の制限は VS Code 拡張機能、Agent SDK、`claude setup-token`、`/install-github-app` 全体に適用されます。`/login` または初回のオンボーディングで表示されるターミナルの対話型ログイン画面では、その方法が事前に選択されますが、強制はされません。Claude Code は、ターミナル、VS Code 拡張機能、Agent SDK での claude.ai アカウントのログインについて組織を検証しますが、Claude Console のログインや[ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)のサインインについては確認しません。v2.1.212 より前は、いずれのキーもターミナルのログインにのみ適用されていました。設定されている場合、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` で認証されたセッションは起動時にブロックされます。クラウドプロバイダーのセッションは影響を受けませんが、これらの認証情報のいずれか、または以前の Claude Console ログインで保存された API キーも存在する場合は例外としてブロックされます | `forceLoginMethod`、`forceLoginOrgUUID` |
+| [ログイン方法の強制](https://code.claude.com/docs/ja/settings-reference.md#forceloginmethod) | ログインを特定の方法に制限します。この制限は VS Code 拡張機能、Agent SDK、`claude setup-token`、`/install-github-app` 全体に適用されます。`/login` または初回のオンボーディングで表示されるターミナルの対話型ログイン画面で他のログインをブロックする目的で、`claudeai` または `console` の値に頼らないでください。v2.1.212 より前は、このキーまたは `forceLoginOrgUUID` が適用されるのはターミナルのログインのみでした | `forceLoginMethod` |
+| [ログイン組織の強制](https://code.claude.com/docs/ja/settings-reference.md#forceloginorguuid) | ターミナル、VS Code 拡張機能、Agent SDK での claude.ai のログインを自組織に制限します。Claude Console のログインの組織を制限する目的でこのキーに頼らないでください。Claude Code は[ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)のサインインではこのキーを確認しません | `forceLoginOrgUUID` |
+| [ログインキーがブロックする認証情報](https://code.claude.com/docs/ja/authentication.md#restrict-login-to-your-organization) | いずれかのキーが設定されている場合、`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` で認証されたセッションは起動時にブロックされます。クラウドプロバイダーのセッションは、これらの認証情報のいずれか、または以前の Claude Console ログインで保存された API キーも存在する場合を除き、影響を受けません | `forceLoginMethod`、`forceLoginOrgUUID` |
 | [プロバイダーの制限](https://code.claude.com/docs/ja/settings-reference.md#allowedproviders) | マシンが使用できる API プロバイダーを制限します。リストにないプロバイダーのセッションは、起動時、ログイン時、および次に API に接続したときに拒否されます。Claude Code v2.1.285 以降が必要です | `allowedProviders` |
 | [エージェントビューの無効化](https://code.claude.com/docs/ja/agent-view.md#how-background-sessions-are-hosted) | `claude agents`、`--bg`、`/background`、およびオンデマンドのスーパーバイザーをオフにします | `disableAgentView` |
 | [企業ランチャーの設定](https://code.claude.com/docs/ja/corporate-launcher.md) | エージェントビューをオフにする代わりに、[バックグラウンドエージェントのスーパーバイザー](https://code.claude.com/docs/ja/agent-view.md#how-background-sessions-are-hosted)、そのワーカー、および[対象となるその他のバックグラウンドプロセス](https://code.claude.com/docs/ja/corporate-launcher.md#what-the-launcher-covers)の前に、必須の企業ランチャーを付加します | `processWrapper` |
@@ -131,16 +135,50 @@ WSL 2 ユーティリティ VM 内のプロセスは、Windows 側のエンド�
 
 Team プランと Enterprise プランでは、[**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションに、[Claude GitHub App](https://github.com/apps/claude) を通じて Claude 組織にリンクされた GitHub 組織と個人アカウントが一覧表示されます。Claude Code、[Claude Tag](https://claude.com/docs/claude-tag/admins/configure-github)、Claude Security はこの一覧を共有します。このページを開くには、Claude 組織の [Owner ロール](https://code.claude.com/docs/ja/server-managed-settings.md#access-control)が必要です。Admin ロールではこのページを開けません。
 
-アカウントは、Git プロバイダーページから、または GitHub を Claude に接続することでリンクできます。
+デフォルトでは、Git プロバイダーページから、または GitHub を Claude に接続することで、アカウントをリンクできます。
 
 * **Owner による接続**：Owner がそのセクションで **Connect** をクリックするか、アカウントが接続済みの場合は **Add organization** をクリックし、GitHub 組織に Claude GitHub App をインストールします。この方法で組織をリンクするには、Claude 組織の Owner であり、かつ GitHub 組織の所有者でもあるユーザーが必要です。
 * **メンバーによる接続**：メンバーが自分の GitHub アカウントを Claude に接続すると（たとえば[クラウドセッションのセットアップ](https://code.claude.com/docs/ja/web-quickstart.md#connect-github)中）、Claude は、そのメンバーが所有し、Claude GitHub App がすでにインストールされている GitHub アカウントをリンクします。これには、メンバーの個人アカウントや、メンバーが所有する GitHub 組織が含まれる場合があります。
 
-**Not linked** と表示されている行は、自分自身の GitHub サインインに由来するものです。これは、GitHub 上で自分が参照でき、Claude GitHub App がインストールされているアカウントです。
+**Not linked** と表示されている行は、自分自身の GitHub サインインに由来する場合があります。これは、GitHub 上で自分が参照でき、Claude GitHub App がインストールされているアカウントです。
 
-Claude 組織からアカウントのリンクを解除するには、その行のメニューを開いて **Unlink from this workspace** を選択します。リンクを解除しても Claude GitHub App は GitHub 上にインストールされたままであり、そのアカウントのいずれかの Owner が次に GitHub を Claude に接続すると、アカウントは再びリンクされます。再びリンクされないようにするには、GitHub 上でそのアカウントから Claude GitHub App をアンインストールしてください。
+Claude 組織からアカウントのリンクを解除するには、その行のメニューを開いて **Unlink from this workspace** を選択します。Claude GitHub App は GitHub 上にインストールされたままです。[リンクできるアカウントを制限](#limit-which-github-accounts-can-be-linked)している場合を除き、そのアカウントの所有者のいずれかが次に GitHub を Claude に接続すると、アカウントは再びリンクされます。再びリンクされないようにするには、GitHub 上でそのアカウントから Claude GitHub App をアンインストールしてください。
+
+> [!NOTE]
+>
+> 承認していないアカウントへの新しいリンクを防ぐには、またはアプリをアンインストールせずにアカウントのリンク解除状態を維持するには、[リンクできるアカウントを制限](#limit-which-github-accounts-can-be-linked)してください。
 
 Enterprise プランでは、リンクおよびリンク解除に対応する [Compliance API](https://platform.claude.com/docs/en/api/compliance/activities/list) のアクティビティタイプは `github_app_installation_linked` と `github_app_installation_unlinked` です。
+
+#### リンクできる GitHub アカウントを制限する
+
+Claude 組織にリンクできる github.com の組織と個人アカウントを制限するには、承認するものを許可し、**Only allowed accounts can be linked** をオンにします。たとえば、`example-corp` のみを許可した場合、メンバーも Owner もメンバーの個人アカウントをリンクできません。すでにリンクされているアカウントは、許可されていなくても、リンクを解除するまで引き続き機能します。
+
+アカウントがリンクされると、Claude は [Code Review](https://code.claude.com/docs/ja/code-review.md) や Claude Tag などの機能のために、Claude GitHub App としてそのアカウントのリポジトリ上で操作できます。この設定がオンの間も、メンバーは GitHub を Claude に接続できます。メンバー自身のクラウドセッションは[各メンバーの GitHub アクセス](https://code.claude.com/docs/ja/claude-code-on-the-web.md#github-authentication-options)を使用するため、それらのセッションがアクセスするリポジトリを制限する目的でこの設定に頼らないでください。
+
+**1. 組織を許可する**
+
+Team または Enterprise プランの Owner として、ブラウザで [**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションを開き、**Choose organizations** をクリックします。承認する組織を表で選択し、**Allow** をクリックします。すでにリンクされている組織は自動的には許可されないため、それらも含めてください。
+
+**2. その他のアカウントを名前で許可する**
+
+個人アカウント、または表にない組織を許可するには、**Allow by name** をクリックし、その GitHub ユーザー名または組織名を入力します。求められた場合は、まず自分の GitHub アカウントを接続してください。そのプロンプトから接続しても、アカウントはリンクされません。
+
+**3. 設定をオンにする**
+
+表の上にある **Only allowed accounts can be linked** をオンにします。この設定はデフォルトではオフです。
+
+**4. 承認していないアカウントのリンクを解除する**
+
+アカウントのリンクを解除すると、Claude 組織では、Code Review などの機能がそのアカウントのリポジトリで動作しなくなります。[Claude エージェント ID](https://claude.com/docs/claude-tag/concepts/agent-identity) がそれらのリポジトリで実行するスケジュールタスクはオフになります。メンバー自身の[クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)はオンのままです。
+
+許可されていないアカウントを確認するには、組織については **Not allowed** を、個人アカウントについては **Linked personal accounts** を展開します。削除するリンク済みアカウントを選択して **Unlink** をクリックするか、残すアカウントについては **Allow** をクリックします。
+
+**5. 許可したアカウントをリンクしてもらう**
+
+許可したアカウントに **Not linked** と表示されている場合は、GitHub 上でそのアカウントを所有しているユーザーに、[Owner またはメンバーによる接続](#connected-github-accounts)を通じてリンクするよう依頼してください。メンバーによる接続の場合は、先にそのアカウントに [Claude GitHub App をインストール](https://github.com/apps/claude/installations/new)してもらってください。
+
+リンクを維持したまま許可リストからアカウントを外すには、**Allowed** でそのアカウントを選択し、**Disallow** をクリックします。許可されたアカウントのリンクを解除すると、そのアカウントは許可リストからも外れます。
 
 ## 使用状況の可視性をセットアップする
 

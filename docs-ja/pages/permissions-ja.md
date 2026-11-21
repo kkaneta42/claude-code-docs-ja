@@ -642,7 +642,7 @@ Claude Desktop アプリの [Cowork](https://claude.com/docs/cowork/overview) �
 
 ## フックで権限を拡張する
 
-[Claude Code フック](https://code.claude.com/docs/ja/hooks-guide.md)は、実行時に権限評価を実行するカスタムシェルコマンドを登録する方法を提供します。Claude Code がツール呼び出しを行うと、PreToolUse フックは権限プロンプトの前に実行されます。ただし、[`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior)を除くすべてのツールに対して実行されます。フック出力はツール呼び出しを拒否し、プロンプトを強制し、またはプロンプトをスキップしてコールを続行させることができます。
+[Claude Code フック](https://code.claude.com/docs/ja/hooks-guide.md)は、実行時に権限評価を実行するカスタムシェルコマンドを登録する方法を提供します。PreToolUse フックは権限プロンプトの前に実行されます。フック出力はツール呼び出しを拒否し、プロンプトを強制し、またはプロンプトをスキップしてコールを続行させることができます。[`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) の呼び出しでは PreToolUse フックはスキップされます。
 
 ### ルール、フック、mod の間の優先順位
 
@@ -758,7 +758,7 @@ Claude Code は現在の作業ディレクトリとその親、`~/.claude/` の�
 
 権限と[サンドボックス化](https://code.claude.com/docs/ja/sandboxing.md)は、互いを補完するセキュリティレイヤーです。
 
-* **権限**は、Claude Code が使用できるツールと、アクセスできるファイルやドメインを制御します。権限は Bash、Read、Edit、WebFetch、MCP をはじめとするすべてのツールに適用されます。ただし、他のツールが 1 つでも残っている間は、拒否ルールや確認ルールで [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) をブロックすることはできません。
+* **権限**は、Claude Code が使用できるツールと、アクセスできるファイルやドメインを制御します。権限は Bash、Read、Edit、WebFetch、MCP、およびその他のツールに適用されます。他のツールが 1 つでも残っている間は、拒否ルールや確認ルールで [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) をブロックすることはできません。
 * **サンドボックス化**は、シェルコマンドのファイルシステムおよびネットワークへのアクセスを制限する OS レベルの強制を提供します。これは Bash、PowerShell、[Monitor](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool) ツールのコマンドとその子プロセスに適用されます。
 
 多層防御のために両方を使用してください。プロンプトインジェクションによって Claude の意思決定が回避された場合でも、サンドボックスの制限は引き続き適用されるためです。サンドボックス設定のパスとドメインも、権限ルールのパスとドメインも、[最終的なサンドボックス設定にマージされます](https://code.claude.com/docs/ja/sandboxing.md#permission-rules)。

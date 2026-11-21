@@ -54,7 +54,7 @@
 * **スレッド**: ワーカー。各スレッドは独自のコンテキストウィンドウを持つ個別のセッションで、1 つの作業を実行し、完了時に会話に報告します。クラウドスレッドは独自のブランチで作業し、作業が必要な場合はプルリクエストを開きます。
 * **すべてのクラウドスレッドが開始時に持つもの**:
   * プロジェクトのリポジトリとファイル、およびその [指示とメモリ](#give-a-project-standing-context)
-  * [プロジェクトの各リポジトリ](#what-threads-pick-up-from-your-repositories) にある `CLAUDE.md`。ただし、リポジトリのスキル、`.claude/settings.json`、`.mcp.json` は含まれません
+  * [プロジェクトの各リポジトリ](#what-threads-pick-up-from-your-repositories) にある `CLAUDE.md`。ただし、リポジトリの `.mcp.json` のサーバーや、`.claude/settings.json` のフック、権限ルール、`env` は含まれません
   * claude.ai アカウントの [コネクタ](#get-skills-plugins-connectors-and-tools-into-threads)
   * ネットワークアクセス、環境変数、ネットワークシークレット、インストール済みツールを設定する [クラウド環境](#choose-an-environment-for-threads)
 * **Overview ペイン**: [すべてのスレッドを一度に確認](#see-what-needs-you-in-overview) でき、どのスレッドがユーザーの対応を必要としているかを確認できる場所。
@@ -208,10 +208,10 @@ Claude がメッセージを希望と異なる方法でルーティングした�
 
 会話でスレッドをクリックするか、概要でその行をクリックすると、概要ペインでスレッドが開きます。そこから以下を実行できます。
 
-* Claude が何をしたかをステップバイステップで読みます。
+* Claude のメッセージを読み、スレッドが現在何に取り組んでいるかを確認します。
 * スレッド独自のメッセージボックスに書き込んでタスクを操舵します。そこのメッセージはそのスレッドに直接送られ、プロジェクト会話でのフォローアップは Claude がフォローアップをそのスレッドと一致させるときにのみそれに到達します。
 * スレッドが待機している権限プロンプトに答えます。
-* **停止**でスレッドを中断します。これはスレッドが作業中に送信ボタンを置き換えるか、Esc を押します。
+* **停止**でスレッドを中断します。これはスレッドが作業中に送信ボタンの代わりに表示されます。
 
 ### モデルを選択して Claude にコンテキストを管理させる
 
@@ -233,7 +233,7 @@ Claude がメッセージを希望と異なる方法でルーティングした�
 * 「このタスクをより小さいモデルで実行してください」
 * 「計画を見るまでプルリクエストを開かないでください」
 * 「これらのリポジトリで何が間違っているかを教えてください。まだ何も修正しないでください」。スレッドになる前に調査結果を確認したい場合
-* 「代わりにここで答えてください」。Claude が簡単な質問として意図したものに対してスレッドを開始する場合
+* 「スレッドを開始せずに、ここで答えて」（ユーザーがちょっとした質問のつもりで送ったものに対して Claude がスレッドを開始した場合）
 
 Claude はこのような設定を[プロジェクトメモリ](#give-a-project-standing-context)に自動的に保存し、後のスレッドでそれに従います。これらは Claude が守る指示であり、強制される設定ではないため、この方法で与えるスレッド制限はハードキャップではありません。最初からすべてのスレッドに正確に適用したい場合は、プロジェクト指示に 1 つを追加します。
 
@@ -314,7 +314,7 @@ Claude は**コンピューター上のフォルダーで作業することを C
 
 ### 追加するリポジトリを決定する
 
-プロジェクトに追加したリポジトリは、すべてのクラウドスレッドでそのコードと `CLAUDE.md` を提供しますが、[スキル、`.claude/settings.json`、`.mcp.json` は提供しません](#what-threads-pick-up-from-your-repositories)。追加していないリポジトリにもアクセスできます：クラウドスレッドは、タスクで必要になったときに自分自身にリポジトリを追加できます。ほとんどのプロジェクトは両方を使用します：
+すべてのクラウドスレッドは、プロジェクトに追加したリポジトリのコードと `CLAUDE.md` を読み込んだ状態で開始しますが、[それらの `.mcp.json` のサーバーや、`.claude/settings.json` のフック、権限ルール、`env` は読み込みません](#what-threads-pick-up-from-your-repositories)。追加していないリポジトリにもアクセスできます：クラウドスレッドは、タスクで必要になったときに自分自身にリポジトリを追加できます。ほとんどのプロジェクトは両方を使用します：
 
 * **プロジェクトに追加します**。**新規プロジェクト** ダイアログ、**プロジェクト設定 > 環境**、または会話内で Claude にプロジェクトへの追加を依頼します。その後のすべてのクラウドスレッドは、タスクがそれに触れるかどうかに関わらず、それをクローンし、`CLAUDE.md` を読み込んだ状態で開始します。
 * **プロジェクトには追加せず、必要な場合にスレッドに追加させます。** タスクがプロジェクトにないリポジトリを必要とするクラウドスレッドは、自分自身にそれを追加でき、スレッド内のメモはそれがこのスレッドのみに追加されたことを示します。クローンはタスクの途中で行われるため、スレッド開始時にはそのリポジトリの `CLAUDE.md` は存在しませんでした。次のスレッドはそれなしで開始します。この方法で追加するリポジトリには、プロジェクトリポジトリと同じ [前提条件](#check-the-prerequisites) が必要です：リポジトリに Claude GitHub App がインストールされていることと、GitHub アカウントからのプッシュアクセスです。
@@ -335,18 +335,25 @@ Claude は**コンピューター上のフォルダーで作業することを C
 
 ### スレッドがリポジトリから取得するもの
 
-プロジェクトのリポジトリが 1 つでも複数でも、クラウドスレッドは各リポジトリの `CLAUDE.md` の指示を読み込みますが、スキル、`.mcp.json` のサーバー、`.claude/settings.json` は読み込みません。
+クラウドスレッドは、各リポジトリのスキル、エージェント、コマンドを読み込むことができます。クラウドスレッドは各リポジトリの `CLAUDE.md` の指示を読み込んだ状態で開始しますが、リポジトリの `.mcp.json` のサーバーや、`.claude/settings.json` のフック、権限ルール、`env` は読み込みません。
 
 | 各リポジトリ内 | クラウドスレッドでの扱い |
 | :- | :- |
-| リポジトリルートの `CLAUDE.md`、`.claude/CLAUDE.md`、`.claude/rules/` | スレッド開始時にすべてのリポジトリから読み込まれます。サブディレクトリ内の `CLAUDE.md` ファイルと [パス固有のルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules) は読み込まれません |
-| `.claude/skills/` の下のスキル | 読み込まれません。代わりに、[スキル、プラグイン、コネクタ、ツールをスレッドに取得する](#get-skills-plugins-connectors-and-tools-into-threads) の説明に従って、claude.ai アカウントでスキルを有効化してください |
-| `.claude/` の下のエージェントとコマンド | 読み込まれません。使用するには、[自分のコンピューターでスレッドを実行](#run-a-thread-on-your-own-computer) してください |
+| リポジトリルートの `CLAUDE.md`、`.claude/CLAUDE.md`、`.claude/rules/` | スレッド開始時にすべてのリポジトリから読み込まれます。[パス固有のルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules) は開始時には読み込まれません |
+| `.claude/` の下のスキル、エージェント、コマンド | すべてのリポジトリから読み込まれます。ただし、[これらをスキップするスレッド](#threads-that-skip-repository-skills) では読み込まれません |
 | `.mcp.json` の MCP サーバー | 読み込まれません。代わりに、[スキル、プラグイン、コネクタ、ツールをスレッドに取得する](#get-skills-plugins-connectors-and-tools-into-threads) の説明に従って、claude.ai アカウントのコネクタを使用してください |
 | `.claude/settings.json` で有効化されたプラグイン | 読み込まれません。代わりに **プロジェクト設定 > プラグイン** でプラグインを追加してください |
 | `.claude/settings.json` の権限ルール | 適用されません。[承認待ちのスレッドのブロックを解除する](#unblock-a-thread-waiting-on-approval) の説明に従ってスレッド内でツール呼び出しを承認するか、[自分のコンピューターでスレッドを実行](#run-a-thread-on-your-own-computer) してください |
 | `.claude/settings.json` のフック | 実行されません。フックを使用するには、[自分のコンピューターでスレッドを実行](#run-a-thread-on-your-own-computer) してください |
 | `.claude/settings.json` の `env` | 適用されません。[クラウド環境](#choose-an-environment-for-threads) で環境変数を設定してください |
+
+#### リポジトリのスキルをスキップするスレッド
+
+クラウドスレッドは、次のような場合にリポジトリのスキル、エージェント、コマンドを読み込みません：
+
+* **古いスレッド**：スレッドが 2026 年 10 月 1 日より前に開始された場合は、Claude に新しいスレッドを開始するよう依頼してください
+* **ドットで始まるリポジトリ名**：スレッドのいずれかのリポジトリ名がドットで始まる場合（`.github` など）は、[スレッドを Remote Control セッションとして実行](#run-a-thread-on-your-own-computer) してください。スキルについては、[claude.ai アカウントで有効化する](#get-skills-plugins-connectors-and-tools-into-threads) こともできます。
+* **セルフホスト環境**：[スキル、エージェント、コマンドをランナーイメージに追加](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled) してください
 
 ### スレッドの環境を選択する
 
@@ -358,7 +365,7 @@ Claude は**コンピューター上のフォルダーで作業することを C
 
 クラウドスレッドはマシンにのみインストールされているスキル、MCP サーバー、プラグイン、ツールを持っていません。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) を通じてマシン上で Claude が実行するスレッドは、そこにインストールされているものを使用します。これらのそれぞれをクラウドスレッドで利用可能にするには：
 
-* スキル：claude.ai アカウントで有効化すると、クラウドスレッドは [そこで有効化したスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions) を読み込みます。ただし、[セルフホスト環境の一部のスレッド](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled) は除きます。リポジトリの `.claude/skills/` にコミットされたスキルは、クラウドスレッドでは読み込まれません。
+* スキル：claude.ai アカウントで有効化すると、クラウドスレッドは [そこで有効化したスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions) を読み込みます。ただし、[セルフホスト環境の一部のスレッド](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled) は除きます。リポジトリにコミットされたスキルについては、[スレッドがリポジトリから取得するもの](#what-threads-pick-up-from-your-repositories) を参照してください。
 * プラグイン：**プロジェクト設定 > プラグイン** で追加します。各新しいクラウドスレッドに読み込まれます。リポジトリが `.claude/settings.json` で宣言するプラグインは、クラウドスレッドでは [読み込まれません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。
 * MCP サーバー：クラウドスレッドは、claude.ai アカウントのコネクタから MCP ツールを取得します。これは、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) で 1 回接続する MCP サーバーです。すべてのクラウドスレッドは、プロジェクト固有のセットアップなしでそれらすべてを使用できます。プロジェクト会話自体にはコネクタがないため、コネクタが必要な作業をクラウドスレッドのタスクとして送信してください。[コネクタが Claude Code に到達する方法](https://code.claude.com/docs/ja/mcp.md#how-connectors-reach-claude-code) は、クラウドセッションのルールとコネクタをオフにする設定をリストしています。
 * コマンドラインツールとパッケージ：環境の [セットアップスクリプト](https://code.claude.com/docs/ja/cloud-environments.md#setup-scripts) にインストールします。
@@ -453,7 +460,7 @@ Claude は**コンピューター上のフォルダーで作業することを C
 
 ### スレッドがハングしているように見える
 
-Claude は、スレッドが実行する各ステップを投稿しないため、プロジェクト会話に新しいメッセージがない実行中として表示されるスレッドは、通常、まだ動作しています。新しいクラウド スレッドは、Claude が開始する前に、その[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)もプロビジョニングするため、最初の更新には少し時間がかかります。スレッドを開いて、そのトランスクリプトを読んでください。スレッドが権限プロンプトを待機している場合は、そこで応答してください。
+Claude は、スレッドが実行する各ステップを投稿しないため、プロジェクト会話に新しいメッセージがない実行中として表示されるスレッドは、通常、まだ動作しています。新しいクラウド スレッドは、Claude が開始する前に、その[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)もプロビジョニングするため、最初の更新には少し時間がかかります。スレッドを開いて、何に取り組んでいるかを確認してください。スレッドが権限プロンプトを待機している場合は、そこで応答してください。
 
 ### スレッドが尋ねる代わりに推測または停止した
 

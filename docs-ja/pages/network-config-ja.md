@@ -259,6 +259,8 @@ npm または独自のバイナリ配布を通じて Claude Code をインスト
 
 [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)、またはサインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッションを使用する場合、モデルトラフィックと認証は `api.anthropic.com`、`claude.ai`、または `platform.claude.com` ではなく、プロバイダーまたはゲートウェイに送信されます。WebFetch ツールは、[設定](https://code.claude.com/docs/ja/settings.md)で `skipWebFetchPreflight: true` を設定しない限り、[ドメイン安全性チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check)のために `api.anthropic.com` を呼び出します。
 
+Enterprise Admin Console でプロバイダーまたはゲートウェイを設定する場合、組織にサインインする開発者は[これらの Anthropic ホスト](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#before-you-start)にもアクセスできる必要があります。
+
 開発者が [`ANTHROPIC_BASE_URL`](https://code.claude.com/docs/ja/llm-gateway-connect#set-the-base-url-and-credential) で設定した [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)の背後で [fast mode](https://code.claude.com/docs/ja/fast-mode.md) を使用する場合は、プロキシ経由で `api.anthropic.com` に到達できる状態を維持してください。Claude Code が fast mode の可用性チェックを送信する場合、そのチェックは設定済みの HTTP プロキシを経由してこのホストに送られ、ゲートウェイには決して送られません。チェックが送信されないケースと、各ケースで fast mode を復元する変数については、[プロキシと LLM ゲートウェイの背後で fast mode を使用する](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-behind-proxies-and-llm-gateways)を参照してください。
 
 ### 組織 IP ホワイトリストとプロキシ出力

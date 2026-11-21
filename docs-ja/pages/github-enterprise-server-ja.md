@@ -108,7 +108,7 @@ claude --cloud "Add retry logic to the payment webhook handler"
 
 ### セッションをターミナルに Teleport する
 
-クラウドセッションをローカルターミナルに `claude --teleport` でプルします。Teleport は、ブランチをフェッチしてセッション履歴を読み込む前に、同じ GHES リポジトリのチェックアウトにいることを確認します。詳細については、[teleport 要件](https://code.claude.com/docs/ja/claude-code-on-the-web.md#teleport-requirements) を参照してください。
+クラウドセッションをローカルターミナルに `claude --teleport` でプルします。Teleport は、セッション履歴を読み込む前に、同じ GHES リポジトリのチェックアウトにいることを確認します。詳細については、[teleport 要件](https://code.claude.com/docs/ja/claude-code-on-the-web.md#teleport-requirements) を参照してください。
 
 ## GHES 上のプラグインマーケットプレイス
 

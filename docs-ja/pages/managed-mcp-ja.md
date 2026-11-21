@@ -125,7 +125,7 @@ Claude Code は、さまざまな制限レベルをサポートしています�
 
 1. `claude mcp list` は `managed-mcp.json` 内のサーバーのみを表示します。`managedMcpServers` を通じて提供するサーバーも表示されます。2 つの他の結果は何かが間違っていることを意味します。
    * ユーザー独自のサーバーがまだ表示される場合、Claude Code はファイルを読み込んでいません。そのパスと親ディレクトリの権限を確認してください。
-   * ファイルのサーバーが表示されず、`MCP config diagnostics` セクションがエンタープライズ構成の解析失敗をマークしている場合、Claude Code はファイルを読み込むか解析できません。そのセクションが名前を付けるエラーを修正してから、ユーザーに Claude Code を再起動させてください。
+   * ファイルのサーバーが表示されず、`MCP config diagnostics` セクションにエンタープライズ構成のエラーが表示される場合は、それらのエラーを修正してから、ユーザーに Claude Code を再起動させてください。
 2. `claude mcp add --transport http test https://example.com/mcp` は `Cannot add MCP server: enterprise MCP configuration is active and has exclusive control over MCP servers` で失敗します。ポリシーチェックが何かに接続される前にコマンドを拒否するため、URL は実際のサーバーである必要はありません。
 
 ### MCP を完全に無効にする

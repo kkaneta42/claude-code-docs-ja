@@ -181,8 +181,8 @@ Claude Code でできることのその他のアイデアについては、[一�
 * **Claude から送られたファイル**: セッションが [Remote Control](https://code.claude.com/docs/ja/remote-control.md#start-a-remote-control-session) に接続されていて、Claude が [`SendUserFile` ツール](https://code.claude.com/docs/ja/tools-reference)でファイルを送った場合、会話には **Sent report.md, chart.png** のような行が表示されます。ファイル名をクリックするとエディターで開きます。この行は Focus view でも表示されたままになります。Claude Code v2.1.295 以降が必要です。
 
   パスがネットワークホストを指しているファイルは、`\\server\share\report.md` のようにクリックできない完全なパスとして表示されます。そのファイルを開くとそのホストに接続することになり、Windows では [Windows の認証情報がそのホストに送信される可能性がある](https://code.claude.com/docs/ja/permissions.md#read-only-commands)ため、Claude Code はそのファイルをリンクにしません。
-* **コンテキストインジケーター**: プロンプトボックスには、Claude のコンテキストウィンドウをどれだけ使用しているかが表示されます。Claude は必要に応じて自動的に圧縮しますが、`/compact` を手動で実行することもできます。
-* **プロンプトキャッシュの時計**: コンテキストインジケーターの横にある時計アイコンは、会話の[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)の有効期限が切れるまでの残り時間を推定して表示します。キャッシュの 5 分または 1 時間の[有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)からカウントダウンし、キャッシュを使用する応答があるたびにカウントダウンがリセットされます。コンテキスト圧縮を除き、[キャッシュを無効化するアクション](https://code.claude.com/docs/ja/prompt-caching.md#actions-that-invalidate-the-cache)では時計はリセットされないため、モデルを切り替えた後も残り時間が表示されることがあります。
+* **コンテキストインジケーター**: 使用量が [`contextUsageThreshold`](#extension-settings)（デフォルトは 50%）を超えると、プロンプトボックスには Claude のコンテキストウィンドウをどれだけ使用しているかが表示されます。Claude は必要に応じて自動的に圧縮しますが、`/compact` を手動で実行することもできます。
+* **プロンプトキャッシュの時計**: プロンプトボックス内の時計アイコンは、会話の[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md)の有効期限が切れるまでの残り時間を推定して表示します。キャッシュの 5 分または 1 時間の[有効期間](https://code.claude.com/docs/ja/prompt-caching.md#cache-lifetime)からカウントダウンし、キャッシュを使用する応答があるたびにカウントダウンがリセットされます。コンテキスト圧縮を除き、[キャッシュを無効化するアクション](https://code.claude.com/docs/ja/prompt-caching.md#actions-that-invalidate-the-cache)では時計はリセットされないため、モデルを切り替えた後も残り時間が表示されることがあります。
   * カウントダウンが終わるまで、アイコンには **12m** のように残りの分数が表示されます。
   * カウントダウンが終わると、次の応答まで分数が消え、アイコンが赤色（またはテーマのエラーカラー）に変わります。キャッシュは期限切れになっている可能性が高いため、キャッシュが再構築される間、次のメッセージへの応答は遅く、コストも高くなると考えてください。5 分の有効期間がメッセージの間に何度も切れてしまう場合は、[TTL を自分で選択する](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself)を参照してください。
   * 会話が[圧縮](https://code.claude.com/docs/ja/prompt-caching.md#compacting-the-conversation)された直後も、キャッシュが圧縮後の会話をまだカバーしていないため、次の応答までアイコンは分数なしで赤色になります。
@@ -192,9 +192,9 @@ Claude Code でできることのその他のアイデアについては、[一�
 
   マップには、エージェントの下にセッションのその他の[バックグラウンドタスク](https://code.claude.com/docs/ja/tools-reference.md#background-commands)（バックグラウンドのシェルコマンドや[モニター](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool)など）も一覧表示されます。行をクリックするとタスクのカードが開き、そこで停止できます。
 
-  Claude がバックグラウンドシェルを開始したもののサブエージェントがない場合など、エージェント数が表示されていないときにマップを開くには、プロンプトボックスに `/tasks` と入力します。マップ内のバックグラウンドタスクと、入力による `/tasks` には Claude Code v2.1.277 以降が必要です。
+  Claude がバックグラウンドシェルを開始したもののサブエージェントがない場合など、エージェント数が表示されていないときにマップを開くには、プロンプトボックスに `/tasks` または `/workflows` と入力します。マップ内のバックグラウンドタスクと、入力による `/tasks` には Claude Code v2.1.277 以降が必要です。入力による `/workflows` には Claude Code v2.1.330 以降が必要です。
 
-  Claude Code v2.1.286 以降では、**Stop** をクリックするか `Esc` を押すと、現在のターンが終了します。バックグラウンドエージェントは、完了するか、マップから停止するまで実行を続けます。
+  Claude Code v2.1.286 以降では、Claude を停止すると、現在のターンが終了します。バックグラウンドエージェントは、完了するか、マップから停止するまで実行を続けます。
 * **拡張思考**: 複雑な問題について Claude がより多くの時間をかけて推論できるようにします。オフにしたり再びオンにしたりするには、コマンドメニュー（`/`）の Model セクションにある **Thinking** スイッチを使用します。[思考をオフにできない](https://code.claude.com/docs/ja/model-config.md#extended-thinking)モデルでは、メニューに **Thinking** スイッチはなく、思考はオンのままになります。
 
   `Thought for 12s` のようなラベルだけが表示される思考ブロックにはテキストがなく、クリックしても開きません。思考の要約を表示するには、`~/.claude/settings.json` で [`showThinkingSummaries`](https://code.claude.com/docs/ja/settings-reference#showthinkingsummaries) を `true` に設定し、コマンドパレットから **Developer: Reload Window** を実行します。
@@ -375,6 +375,8 @@ VS Code 拡張機能はチェックポイントをサポートしています。
 * **Fork conversation from here**: すべてのコード変更をそのまま保持しつつ、このメッセージから新しい会話の分岐を開始します
 * **Rewind code to here**: 会話履歴全体を保持しつつ、ファイルの変更を会話のこの時点まで元に戻します
 * **Fork conversation and rewind code**: 新しい会話の分岐を開始し、ファイルの変更をこの時点まで元に戻します
+
+最新のメッセージからフォークするには、Claude の応答が完了した後にプロンプトボックスに `/fork` と入力します。`/fork try the other approach` のように追加したテキストは、送信されずにフォーク先のプロンプトボックスに入った状態で待機します。Claude Code v2.1.330 以降が必要です。
 
 チェックポイントの仕組みと制限について詳しくは、[チェックポイント機能](https://code.claude.com/docs/ja/checkpointing.md)を参照してください。
 
@@ -669,7 +671,7 @@ VS Code では、デフォルトでサブエージェントにこのアクショ
 
 コマンドパレットを開くには、Mac では `Cmd+Shift+P`、Windows/Linux では `Ctrl+Shift+P` を押します。そこで「Claude Code」と入力すると、拡張機能のコマンドパレットコマンドが表示されます。
 
-一部のショートカットは、どのパネルが「フォーカス」されているか（キーボード入力を受け付けているか）によって動作が変わります。カーソルがコードファイル内にあるときはエディターがフォーカスされています。カーソルが Claude のプロンプトボックス内にあるときは Claude がフォーカスされています。`Cmd+Esc` / `Ctrl+Esc` を使用して両者を切り替えます。
+一部のショートカットは、どのパネルが「フォーカス」されているか（キーボード入力を受け付けているか）によって動作が変わります。カーソルがコードファイル内にあるときはエディターがフォーカスされています。カーソルが Claude のプロンプトボックス内にあるときは Claude がフォーカスされています。
 
 > [!NOTE]
 >
@@ -679,7 +681,7 @@ VS Code では、デフォルトでサブエージェントにこのアクショ
 | - | - | - |
 | Focus Input | `Cmd+Esc`（Mac）/ `Ctrl+Esc`（Windows/Linux） | エディターと Claude の間でフォーカスを切り替えます |
 | Focus last message | - | キーボードフォーカスを会話内の最新のメッセージ、または待機中の権限プロンプトに移動し、そこからキーボードやスクリーンリーダーで読めるようにします。[ターミナルモード](#switch-to-terminal-mode)では使用できません。Claude Code v2.1.268 以降が必要です |
-| Open in Side Bar | - | Claude をサイドバーで開きます |
+| Open in Side Bar | - | Claude をサイドバーで開きます。Claude Code v2.1.330 以降で新しい会話に事前入力するには、`"args": { "prompt": "Review this file" }` を指定して `claude-vscode.sidebar.open` にキーをバインドします |
 | Open in Terminal | - | Claude をターミナルモードで開きます |
 | Open in New Tab | `Cmd+Shift+Esc`（Mac）/ `Ctrl+Shift+Esc`（Windows/Linux） | 新しい会話をエディタータブとして開きます |
 | Open in New Window | - | 新しい会話を別のウィンドウで開きます |
@@ -765,16 +767,19 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | `useTerminal` | `false` | グラフィカルパネルの代わりにターミナルモードで Claude を起動します |
 | `initialPermissionMode` | - | 新しい会話の承認プロンプトを制御します：`default`、`plan`、`acceptEdits`、または `bypassPermissions`。`manual` は `default` のエイリアスで、モードインジケーターで **Manual** と表示されるモードを選択します。未設定のままにすると、拡張機能は[権限モードを切り替える](https://code.claude.com/docs/ja/permission-modes.md#switch-permission-modes)で説明されているとおりに開始時の権限モードを選択します。 |
 | `preferredLocation` | `panel` | Claude を開く場所：`sidebar`（右側）または `panel`（新しいタブ） |
-| `lockEditorGroups` | `true` | [Claude がタブ用に開始したエディターグループをロック](#choose-where-claude-lives)し、Claude タブにフォーカスがある間に開いたファイルが別のグループで開くようにします。オフにすると、拡張機能はエディターグループを一切ロックしません。Claude Code v2.1.274 以降が必要です |
+| `lockEditorGroups` | `true` | [Claude がタブ用に開始したエディターグループをロック](#choose-where-claude-lives)し、Claude タブにフォーカスがある間に開いたファイルが別のグループで開くようにします。Claude Code v2.1.274 以降が必要です |
 | `autosave` | `true` | Read、Edit、Write ツールが実行される前にファイルを自動保存します |
 | `attachOpenFile` | `true` | エディターで開いているファイルをメッセージに追加し、プロンプトボックスに表示します。オフにすると、ファイルはテキストを選択した場合にのみ、そのテキストと一緒に追加されます。Claude Code v2.1.271 以降が必要です |
 | `attachSelection` | `true` | エディターで選択したテキストをメッセージに追加し、プロンプトボックスに表示します。オフにしても、[選択範囲を @-メンションとして追加](#automatic-context-from-your-selection-and-open-file)することはできます。Claude Code v2.1.300 以降が必要です |
 | `useCtrlEnterToSend` | `false` | プロンプトの送信に Enter の代わりに Ctrl/Cmd+Enter を使用します |
 | `scrollToBottomOnSend` | `true` | メッセージを送信したときに会話を最下部までスクロールします。オフにすると、会話は表示していた位置のままになります。Claude Code v2.1.275 以降が必要です |
+| `pinPrompt` | `true` | Claude の応答をスクロールしている間、自分のメッセージを上部に固定したままにします。Claude Code v2.1.330 以降が必要です |
 | `showMessageTimestamps` | `true` | 各メッセージの送信日時を表示します。日付が変わる箇所には日付行が表示されます。Claude Code v2.1.284 以降が必要です。v2.1.290 より前はデフォルトが `false` でした |
 | `spinnerVerbs` | `{"mode": "append", "verbs": []}` | ターンの実行中に会話のスピナーが順番に表示する動詞を設定します。CLI の [`spinnerVerbs`](https://code.claude.com/docs/ja/settings-reference#spinnerverbs) と同じ `mode` および `verbs` フィールドを使用します。 |
+| `escapeStopsClaude` | `true` | `Esc` でターンの途中の Claude を停止します。オフにすると、代わりに **Stop** をクリックします。`Esc` は引き続きメニューを閉じ、権限リクエストや質問を拒否します。Claude Code v2.1.330 以降が必要です |
+| `contextUsageThreshold` | `50` | コンテキスト使用量がこのパーセンテージを超えたときに、コンテキストインジケーターを表示します。Claude Code v2.1.330 以降が必要です |
 | `enableNewConversationShortcut` | `false` | Cmd/Ctrl+N で新しい会話を開始できるようにします |
-| `enableReopenClosedSessionShortcut` | `true` | Cmd/Ctrl+Shift+T で、最後に閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションでない場合、このショートカットは代わりに VS Code の通常の「閉じたエディターを再度開く」コマンドを実行します。 |
+| `enableReopenClosedSessionShortcut` | `true` | Cmd/Ctrl+Shift+T で、[最後に閉じた Claude セッションタブを再度開きます](#vs-code-commands-and-shortcuts)。 |
 | `archiveInactiveSessions` | `14` | アクティビティがないままこの日数が経過すると、[セッションを自動的にアーカイブ](#resume-past-conversations)します：`1`、`2`、`7`、または `14`。`0` に設定するとオフになります。Claude Code v2.1.265 以降が必要です |
 | `continueAfterReload` | `true` | ウィンドウの再読み込み後、Claude は復元されたセッションで[中断されたステップを続行](#continue-conversations-after-a-reload)します。Claude Code v2.1.274 以降が必要です |
 | `hideOnboarding` | `false` | オンボーディングチェックリスト（卒業帽アイコン）を非表示にします |

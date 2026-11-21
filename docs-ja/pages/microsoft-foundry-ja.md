@@ -143,7 +143,7 @@ export ENABLE_PROMPT_CACHING_1H=1
 claude
 ```
 
-Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Microsoft Foundry 変数を読み込み、最初のプロンプトで Azure リソースに接続します。Amazon Bedrock および Google Cloud の Agent Platform とは異なり、Microsoft Foundry には対話型セットアップウィザードがないため、ステップ 3 およびステップ 4 の環境変数が唯一の設定方法です。
+Claude Code は環境から `CLAUDE_CODE_USE_FOUNDRY` およびその他の Microsoft Foundry 変数を読み込み、最初のプロンプトで Azure リソースに接続します。Amazon Bedrock および Google Cloud の Agent Platform とは異なり、Microsoft Foundry には対話型セットアップウィザードがありません。
 
 セットアップを確認するには、Claude Code 内で `/status` を実行します。API プロバイダー行に `Microsoft Foundry` が表示され、設定したリソース名またはベース URL が表示されます。
 

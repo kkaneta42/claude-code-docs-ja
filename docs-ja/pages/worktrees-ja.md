@@ -21,7 +21,7 @@ worktree は Claude を並列で実行するいくつかの方法の 1 つで、
 
 ## worktree で Claude を開始する
 
-`--worktree` または `-w` に名前を付けて渡すと、分離された worktree を作成し、その中で Claude を開始します。デフォルトでは、worktree はリポジトリルートの `.claude/worktrees/<name>/` の下に、`worktree-<name>` という名前の新しいブランチ上に作成されます。
+`--worktree` または `-w` に名前を付けて渡すと、worktree を作成し、その中で Claude を開始します。デフォルトでは、worktree はリポジトリルートの `.claude/worktrees/<name>/` の下に、`worktree-<name>` という名前の新しいブランチ上に作成されます。
 
 ```bash theme={null}
 claude --worktree feature-auth
@@ -70,6 +70,7 @@ Claude に worktree で作業するよう依頼しても `EnterWorktree` や `Ex
 
 対話的な worktree セッションを終了すると、Claude は削除によって失われる作業がないか worktree を確認します。対象は、変更されたファイルや追跡されていないファイル、チェックアウトされたサブモジュール内のコミットされていない作業、および新しいコミットです。これらのルールは、Claude が git で作成した worktree に適用されます。[WorktreeCreate フック](https://code.claude.com/docs/ja/hooks.md#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](https://code.claude.com/docs/ja/hooks.md#worktreeremove) を参照してください。
 
+* **Claude Code が worktree 内で別のセッションを検出した場合**: 削除を選択しても、worktree とブランチは保持されます。`Worktree kept at` メッセージに従ってください
 * **worktree がクリーンな場合**: 名前のないセッションでは、Claude は worktree とそのブランチを自動的に削除します。[名前付き](https://code.claude.com/docs/ja/sessions.md#name-your-sessions)セッションでは最初にプロンプトが表示されるため、後で使用するために worktree を保持できます
 * **worktree に作業が含まれている場合**: Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。保持するとディレクトリとブランチが保存されます。後で戻るには、Claude Code が終了時に出力する `claude --worktree <name> --resume` コマンドを実行します。削除すると worktree ディレクトリとそのブランチが、その中のすべての作業とともに削除されます
 * **別のブランチがチェックアウトされている場合**: worktree が自身のブランチ以外のブランチ上にあり、そのブランチに worktree の開始コミット以降のコミットがある場合、Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。どちらを選択しても、その別のブランチとそのコミットは保持されます。削除すると、worktree ディレクトリと、Claude が worktree とともに作成した worktree 自身のブランチが削除されます
@@ -81,13 +82,14 @@ Windows では、worktree を削除しても worktree 外のファイルは削�
 
 ## worktree セッションを再開する
 
-worktree 内で[終了](#clean-up-worktrees)せずに終わったセッションを再開すると、Claude Code はセッションをその worktree に戻します。これは対話的な再開、`-p` を使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)での `--continue` と `--resume`、および Agent SDK に当てはまります。`--continue` は、起動したディレクトリの下に記録されている最新のセッションを選択します。worktree 内に戻った後、[セッションにそのツールがある場合](#claude-has-no-enterworktree-tool)は、Claude は [`ExitWorktree`](https://code.claude.com/docs/ja/tools-reference) ツールで worktree を終了できます。
+worktree 内で[分離](#how-claude-code-enforces-isolation)された状態のまま、worktree を[終了](#clean-up-worktrees)せずに終わったセッションを再開すると、Claude Code はセッションをその worktree に戻し、分離された状態を維持します。これは対話的な再開、`-p` を使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)での `--continue` と `--resume`、および Agent SDK に当てはまります。worktree 内に戻った後、[セッションにそのツールがある場合](#claude-has-no-enterworktree-tool)は、Claude は [`ExitWorktree`](https://code.claude.com/docs/ja/tools-reference) ツールで worktree を終了できます。
 
 セッションを worktree に戻す前に、Claude Code は worktree がメインのチェックアウトとは別のチェックアウトのままであることを検証し、チェックに失敗した worktree への再入を拒否します。git worktree の場合、チェックはその git メタデータを読み取ります。[`WorktreeCreate` フック](#non-git-version-control)が作成したものなど、git メタデータを持たない worktree はチェックに合格する場合があります。Claude Code が引き続き拒否するケースは、その回復方法とともに [Claude Code が worktree の使用を拒否する](#claude-code-refuses-to-use-a-worktree) に記載されています。メッセージとそれぞれからの回復方法については、[セッションが worktree の外で再開される](#the-session-resumes-outside-its-worktree) を参照してください。
 
 起動する場所と再開の方法によって、Claude Code が再入する対象が変わります。
 
 * **起動ディレクトリ**: メインのチェックアウトまたはリポジトリの別のディレクトリから `--resume` で再開します。Claude Code は、`.claude/worktrees/` の下に git で作成した worktree には、その内部から起動した場合でも再入します。その他の worktree の内部から起動した場合、Claude Code はそこからその worktree が安全であると確認できる場合にのみ再入します。独自のリポジトリである worktree、git メタデータを持たない worktree、または `git worktree add` で作成した worktree のサブディレクトリからの起動は拒否されるため、これらはメインのチェックアウトから起動してください。
+* **`--continue`**: Claude Code は、起動したディレクトリの下に記録されている最新のセッションを選択します。
 * **`--fork-session`**: フォークされたセッションは Claude を起動したディレクトリで開始され、Claude Code は元のセッションの worktree に手を加えません。
 * **削除された worktree**: worktree ディレクトリが存在しなくなった場合、Claude Code は Claude を起動したディレクトリでセッションを再開します。worktree がなくなったことを通知し、セッションの worktree バインディングをクリアします。
 
@@ -99,9 +101,9 @@ Claude Code が git で作成した worktree に Claude が入るか出ると、
 
 ## Claude Code が分離を強制する仕組み
 
-セッションが worktree 内で分離されている間、Claude Code は以下のチェックで定義されるツール呼び出しをブロックします。セッションを `--worktree` で開始した場合も、Claude が `EnterWorktree` で worktree に入った場合も、worktree セッションを再開した場合も、同じルールが適用されます。
+セッションが worktree 内で分離されている間、Claude Code は以下のチェックで定義されるツール呼び出しをブロックします。セッションは、`--tmux` なしで `--worktree` を指定して開始した場合、または Claude が `EnterWorktree` でセッションを移動した場合に分離されます。
 
-分離されたセッションから Claude が生成するすべてのサブエージェントにも同じ強制が適用されます。これはセッションが対話的な場合でも、[バックグラウンド](https://code.claude.com/docs/ja/agent-view.md#how-file-edits-are-isolated)で実行される場合でも適用されます。[独自の worktree で実行されるサブエージェント](#isolate-subagents-with-worktrees)にも同じチェックが適用されます。そのバージョン履歴は [サブエージェントファイルの書き込み](https://code.claude.com/docs/ja/sub-agents.md#write-subagent-files) にあります。
+同じ強制は、Claude が分離されたセッションから起動するすべてのサブエージェントにも適用されます。これは、セッションがインタラクティブであっても、[バックグラウンド](https://code.claude.com/docs/ja/agent-view.md#how-file-edits-are-isolated)で開始されたものであっても適用されます。[独自の worktree で実行されるサブエージェント](#isolate-subagents-with-worktrees)にも同じチェックが適用されます。
 
 Claude Code は 4 つのチェックを適用します。
 

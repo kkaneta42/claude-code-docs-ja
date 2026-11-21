@@ -50,7 +50,7 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 スケジュールタスクは、[claude.ai/code/routines](https://claude.ai/code/routines) の Web、Desktop アプリ、または CLI から作成できます。3 つのサーフェスはすべて同じクラウドアカウントに書き込むため、どれかで作成したスケジュールタスクは他のサーフェスにもすぐに表示されます。Desktop アプリの **Code** タブで、サイドバーまたはサイドバーの **More** メニューにある **Scheduled** をクリックしてから **New task** をクリックし、[Web から作成する](#create-from-the-web)の手順に進みます。
 
-スケジュールタスクは完全な Claude Code クラウドセッションとして自律的に実行されます。セッションはシェルコマンドを実行し、[スキル](https://code.claude.com/docs/ja/skills.md)を使用し、含めたコネクタを呼び出します。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)のスレッドの外では、これらのスキルにはクローンされたリポジトリにコミットされたスキルも含まれます。タスクの作成時に権限モードは選択しません。実行が停止してユーザーを待つ場合については、[実行中の権限プロンプト](#permission-prompts-during-a-run)を参照してください。
+スケジュールタスクは完全な Claude Code クラウドセッションとして自律的に実行されます。セッションはシェルコマンドを実行し、[スキル](https://code.claude.com/docs/ja/skills.md)を使用し、含めたコネクタを呼び出します。これらのスキルには、クローンされたリポジトリにコミットされたスキルも含まれます。プロジェクト内のタスクについては、[どのスレッドがそれらを読み込むか](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を確認してください。タスクの作成時に権限モードは選択しません。実行が停止してユーザーを待つ場合については、[実行中の権限プロンプト](#permission-prompts-during-a-run)を参照してください。
 
 スケジュールタスクがアクセスできる範囲は、次によって決まります。
 

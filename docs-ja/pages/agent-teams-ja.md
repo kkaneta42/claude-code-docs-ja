@@ -329,7 +329,7 @@ Claude がすでに実行されていないインプロセスのチームメイ�
 [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では、分類器はエージェント間のメッセージに 2 つのチェックを適用します。
 
 * 別のエージェントから中継された承認の主張を、ユーザーからの確認ではなく、信頼できない入力として扱います。
-* シャットダウン要求などの構造化プロトコルメッセージを含め、Claude Code が配信する前にメッセージを確認します。ブロックされたメッセージは配信されません。この確認に頼る前に、[どのメッセージがこの確認をスキップするか](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)を確認してください。
+* シャットダウン要求などの構造化プロトコルメッセージを含め、Claude Code が配信する前に `SendMessage` メッセージを確認します。ブロックされたメッセージは配信されません。この確認に頼る前に、[どのメッセージがこの確認をスキップするか](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)を確認してください。
 
 ### コンテキストと通信
 

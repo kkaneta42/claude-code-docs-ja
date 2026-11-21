@@ -15,11 +15,11 @@ Claude Code は、どこでも同じ基盤となるエンジンを実行しま�
 | プラットフォーム | 最適な用途 | 提供される機能 |
 | :- | :- | :- |
 | [CLI](https://code.claude.com/docs/ja/quickstart.md) | ターミナルワークフロー、スクリプティング、リモートサーバー | 完全な機能セット、[Agent SDK](https://code.claude.com/docs/ja/headless.md)、[コンピューター使用](https://code.claude.com/docs/ja/computer-use.md)（macOS の Pro、Max、Ultra）、サードパーティプロバイダー |
-| [Desktop](https://code.claude.com/docs/ja/desktop.md) | ビジュアルレビュー、並列セッション、管理されたセットアップ | Diff ビューアー、アプリプレビュー、Pro、Max、Ultra での[コンピューター使用](https://code.claude.com/docs/ja/desktop.md#let-claude-use-your-computer)および[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) |
+| [Desktop](https://code.claude.com/docs/ja/desktop.md) | ビジュアルレビュー、並列セッション、管理されたセットアップ | Diff ビューアー、アプリプレビュー、Pro、Max、Ultra での[コンピューター使用](https://code.claude.com/docs/ja/desktop.md#let-claude-use-your-computer) |
 | [VS Code](https://code.claude.com/docs/ja/vs-code.md) | ターミナルに切り替えずに VS Code 内で作業 | インラインの Diff、統合ターミナル、ファイルコンテキスト |
 | [JetBrains](https://code.claude.com/docs/ja/jetbrains.md) | IntelliJ、PyCharm、WebStorm、またはその他の JetBrains IDE 内で作業 | Diff ビューアー、選択共有、ターミナルセッション |
 | [Web](https://code.claude.com/docs/ja/claude-code-on-the-web.md) | あまり操作が必要ない長時間実行タスク、またはオフラインの場合も続行すべき作業 | クラウド、Anthropic 管理（デフォルト）、切断後も続行 |
-| [Mobile](https://code.claude.com/docs/ja/mobile.md) | コンピューターから離れている間にタスクを開始および監視 | iOS および Android 用 Claude アプリからのクラウドセッション、ローカルセッション用の[Remote Control](https://code.claude.com/docs/ja/remote-control.md)、Pro、Max、Ultra での Desktop への[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) |
+| [Mobile](https://code.claude.com/docs/ja/mobile.md) | コンピューターから離れている間にタスクを開始および監視 | iOS および Android 用 Claude アプリからのクラウドセッション、ローカルセッション用の[Remote Control](https://code.claude.com/docs/ja/remote-control.md) |
 
 CLI はターミナルネイティブな作業に最も完全なサーフェスです。スクリプティングと Agent SDK は CLI のみです。サードパーティプロバイダーは[VS Code](https://code.claude.com/docs/ja/vs-code.md#use-third-party-providers)でも[JetBrains](https://code.claude.com/docs/ja/feature-availability.md#features-available-on-every-provider)でも機能します。JetBrains は IDE のターミナルで CLI を実行します。Enterprise [Desktop](https://code.claude.com/docs/ja/desktop.md) デプロイメントは Google Cloud の Agent Platform をサポートしており、Desktop は[ゲートウェイプロバイダー](https://code.claude.com/docs/ja/llm-gateway-connect.md#desktop-app)をサポートしています。Amazon Bedrock または Microsoft Foundry の場合は、CLI または IDE 拡張機能を使用するか、[Claude Desktop on 3P](https://claude.com/docs/third-party/claude-desktop/overview)を使用してください。これは、それらのプロバイダーで Code タブを実行します。Desktop と IDE 拡張機能は、CLI のみの機能の一部をビジュアルレビューとより緊密なエディター統合と引き換えにします。Web はクラウドで実行されるため、切断後もタスクが続行されます。モバイルは、これらの同じクラウドセッションへのシンクライアント、または Remote Control 経由のローカルセッションへのシンクライアントであり、Dispatch で Desktop にタスクを送信できます。
 
@@ -42,7 +42,7 @@ CLI はターミナルネイティブな作業に最も完全なサーフェス�
 
 ## ターミナルから離れているときに作業する
 
-Claude Code は、ターミナルにいない時に作業するための複数の方法を提供しています。これらは、何が作業をトリガーするか、Claude がどこで実行されるか、そしてセットアップにどの程度の手間が必要かが異なります。
+Claude Code は、ターミナルにいない時に作業するための複数の方法を提供しています。これらは、何が作業をトリガーするか、Claude がどこで実行されるか、そしてセットアップにどの程度の手間が必要かが異なります。[Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) は新規ユーザーには提供されていません。
 
 | | トリガー | Claude が実行される場所 | セットアップ | 最適な用途 |
 | :- | :- | :- | :- | :- |

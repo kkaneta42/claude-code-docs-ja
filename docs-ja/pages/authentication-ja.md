@@ -26,8 +26,9 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ�
 * **Claude Pro、Max、または Ultra サブスクリプション**: claude.ai アカウントでログインします。[claude.com/pricing](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_pro_max) で購読してください。
 * **Claude for Teams または Enterprise**: チーム管理者が招待した claude.ai アカウントでログインします。
 * **Claude Console**: Console 認証情報でログインします。管理者が事前に[招待](#claude-console-authentication)している必要があります。[API キーを作成せずにサインイン](#sign-in-without-an-api-key)することも、API キーを作成することもできます。
-* **クラウドプロバイダー**: 組織が [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) を使用している場合は、`claude` を実行する前に必要な環境変数を設定するか、ログインプロンプトで **3rd-party platform** を選択してください。これにより、Bedrock と Vertex AI 向けのインタラクティブセットアップウィザードが起動します。ブラウザログインは不要です。
+* **クラウドプロバイダー**: 組織が [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) を使用している場合は、`claude` を実行する前に必要な環境変数を設定します。ログインプロンプトで **3rd-party platform** を選択することもでき、これにより Bedrock と Agent Platform 向けのインタラクティブセットアップウィザードが起動します。
 * **Cloud gateway**: 組織がセルフホストされた [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を実行している場合は、`/login` を通じて、または [VS Code から](https://code.claude.com/docs/ja/vs-code.md#sign-in-to-a-claude-apps-gateway)企業 SSO でサインインします。ゲートウェイが発行したトークンはセッションの唯一の認証情報です。
+* **Enterprise Admin Console**: Owner が組織のプロバイダーまたはゲートウェイに対して[このサインインを有効にしている](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#turn-on-sign-in-from-claude-code)場合は、シェルで `claude auth login` を実行し、ブラウザで組織を選択します。確認するには、ターミナルに `Signed in to the organization` と表示されているかを確認してください。必要な Claude Code のバージョンについては、[始める前に](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#before-you-start)を参照してください。
 
 管理者は、どのログイン方法を開発者が使用するかを指定し、claude.ai ログインが特定の組織に属することを要求できます。[ログインを組織に制限する](#restrict-login-to-your-organization)を参照してください。
 
@@ -124,7 +125,7 @@ API キーを作成しなくても Console アカウントにサインインで�
 
 実際には、プロファイルは OAuth ログインを保存し、API キーは静的な認証情報です。Claude Code はプロファイルのログインを自動的に更新し、更新に失敗すると、再度サインインするまで [Anthropic プロファイルログイン期限切れ](https://code.claude.com/docs/ja/errors.md#anthropic-profile-login-expired) でリクエストが失敗します。
 
-すべてのマシンで選択肢が得られるわけではありません。Claude Code は以下の場合、確認なしに API キーを作成します。
+以下の場合、キーレスのオプションは表示されません。
 
 * Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などの [クラウドプロバイダーに対して実行](https://code.claude.com/docs/ja/third-party-integrations.md)するか、[AWS 上の Claude Platform](https://code.claude.com/docs/ja/claude-platform-on-aws.md) に対して実行する
 * 任意の設定ファイルが [`forceLoginOrgUUID`](#restrict-login-to-your-organization) を設定するか、`forceLoginMethod` を `"claudeai"` に設定する
@@ -171,11 +172,15 @@ Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry �
 
 開発者の claude.ai ログインが特定の Anthropic 組織に属することを要求するには、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で [`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) と [`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid) を設定します。`forceLoginOrgUUID` を組織 ID に設定します。組織 ID は Claude for Teams または Enterprise 組織の [claude.ai 管理設定](https://claude.ai/admin-settings/organization)に表示されます。Claude Code は他の組織への claude.ai ログインについてエラーを報告し、使用中の claude.ai 認証情報がリストされていない組織に属している場合、起動時に終了します。
 
-Claude Console ログインの場合、Claude Code は `forceLoginOrgUUID` を使用して、単一の Console 組織 ID に設定した場合、Console サインインページで組織を事前選択します。組織 ID は [platform.claude.com/settings/organization](https://platform.claude.com/settings/organization) に表示されます。ログイン時または起動時に、結果の Console 認証情報がどの組織に属しているかを確認しません。キーをデプロイする前に Console アカウントでログインした開発者はログインしたままになり、その保存されたキーは [ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)サインインも必要とするマシン上、またはクラウドプロバイダーを選択するセッション内でブロックされます。
+`forceLoginOrgUUID` を単一の Console 組織 ID に設定した場合、Claude Code は Claude Console のサインインページでその組織を事前選択します。組織 ID は [platform.claude.com/settings/organization](https://platform.claude.com/settings/organization) で確認できます。
 
-任意の設定ファイルで `forceLoginOrgUUID` を設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](#sign-in-without-an-api-key)の提供を停止し、代わりに API キーを作成します。開発者を claude.ai サインインに向かわせるには、`forceLoginMethod` を `"claudeai"` に設定します。
+> [!NOTE]
+>
+> 起動時に、Claude Code は保存済みの Console 認証情報がどの組織に属しているかを確認しません。Console ログインの組織を制限する目的で `forceLoginOrgUUID` に頼らないでください。`forceLoginMethod` または `forceLoginOrgUUID` をデプロイした後も、既に Console にログインしている開発者はログインしたままになります。ただし、保存済みの Console API キーは、[ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)サインインも必要とするマシン上、またはクラウドプロバイダーを選択するセッション内ではブロックされます。
 
-Claude Code v2.1.212 以降では、ここにリストされているすべてのログインパスが `forceLoginMethod` を適用します。ターミナルのインタラクティブログイン画面（`/login` または初回オンボーディングで到達）では、Claude Code は `claudeai` または `console` メソッドを強制せずに事前選択するため、`forceLoginMethod` が `"claudeai"` に設定されている場合でも、開発者は Console ログインをそこで完了できます。
+任意の設定ファイルで `forceLoginOrgUUID` を設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](#sign-in-without-an-api-key)の提供を停止します。代わりに開発者を claude.ai サインインに向かわせるには、`forceLoginMethod` を `"claudeai"` に設定します。
+
+Claude Code v2.1.212 以降では、ここにリストされているすべてのログインパスが `forceLoginMethod` を適用します。ターミナルのインタラクティブログイン画面（`/login` または初回オンボーディングで到達）では、Claude Code は `claudeai` または `console` メソッドを事前選択します。そこで他のログインをブロックするために、どちらの値にも頼らないでください。
 
 パスは `forceLoginOrgUUID` で異なります。
 
@@ -271,6 +276,8 @@ Sign-in ends: between 2026-11-20 and 2026-11-23 (2026-11-23T17:04:11.000Z)
 7. `/login` からのサブスクリプション OAuth 認証情報。これは Claude Pro、Max、Ultra、Team、および Enterprise ユーザーのデフォルトです。
 
 サインイン済みの [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) セッションは、このリストの対象外です。これは Amazon Bedrock や Google Cloud の Agent Platform と同様のプロバイダー選択であり、それらより優先されます。ゲートウェイセッションが存在する場合、`CLAUDE_CODE_USE_BEDROCK`、`CLAUDE_CODE_USE_VERTEX`、または `CLAUDE_CODE_USE_FOUNDRY` が設定されていても CLI はゲートウェイトークンで認証し、ベアラートークン、API キー、`apiKeyHelper`、プロファイルなど上記の認証情報ソースは使用されません。
+
+組織が Enterprise Admin Console でプロバイダーまたはゲートウェイを設定しており、[その組織にサインインしている](#log-in-to-claude-code)場合は、代わりに[リクエストの送信先](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#how-console-settings-reach-claude-code)を参照してください。
 
 マシンの[管理設定](https://code.claude.com/docs/ja/managed-settings.md)が [`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) を `"gateway"` に設定するか、[`forceLoginGatewayUrl`](https://code.claude.com/docs/ja/settings-reference#forcelogingatewayurl) を設定しており、`CLAUDE_CODE_USE_BEDROCK` や `CLAUDE_CODE_USE_VERTEX` などの変数を通じてクラウドプロバイダーを選択していない場合、セッションはゲートウェイサインインのみを使用します。Claude Code は他の認証情報ソースをスキップし、`/login` でサインインするよう求めます。残っている各認証情報で表示される内容については、[Administrator policy requires a Cloud gateway sign-in](https://code.claude.com/docs/ja/errors.md#administrator-policy-requires-a-cloud-gateway-sign-in) を参照してください。Claude Code v2.1.261 以降が必要です。`forceLoginGatewayUrl` のみを設定するマシンでは v2.1.265 以降が必要です。
 

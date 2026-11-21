@@ -10,7 +10,9 @@
 
 > [!NOTE]
 >
-> サーバー管理設定は [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_teams#team-&-enterprise) および [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_enterprise) カスタマー向けに利用可能です。
+> サーバー管理設定は [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_teams#team-&-enterprise) および [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_enterprise) の顧客向けに利用可能です。
+>
+> claude.ai の **Organization settings > Desktop 3P** でプロバイダーまたはゲートウェイを設定している場合は、代わりに [Enterprise Admin Console ガイド](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code)に従ってください。
 
 ## 要件
 
@@ -178,7 +180,9 @@ Enterprise プランでは、組織全体で 1 つの設定を使う代わりに
 
 管理層の中では、Claude Code はデフォルトで、少なくとも 1 つのポリシーキーを配信する最初のソースを使用します。確認する順序はサーバー管理設定が先で、次にエンドポイント管理設定です。ただし、[次に説明する例外キー](#per-key-exceptions-across-managed-sources)は除きます。完全な順位付け、制御キーに対する除外規定、すべてのソースを適用するオプトインについては、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#precedence-within-the-managed-tier)を参照してください。
 
-選択されたソースが MDM ポリシーまたは管理設定ファイルで、その [`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) が管理設定を提供する場合、ヘルパーの出力がそのソースに置き換わり、その実行における唯一の管理設定になります。サーバー管理設定がポリシーキーを配信している間、Claude Code は MDM やファイルベースの設定で構成された `policyHelper` を参照しません。
+#### エンドポイント管理設定が引き継ぐ場合
+
+選択されたソースが MDM ポリシーまたは管理設定ファイルで、その `policyHelper` が管理設定を提供する場合は、[ヘルパーの出力が置き換える内容](https://code.claude.com/docs/ja/settings-reference.md#write-the-helper-output)を参照してください。サーバー管理設定がポリシーキーを配信している間、Claude Code は MDM やファイルベースの設定で構成された `policyHelper` を参照しません。
 
 後続のフェッチでサーバー管理設定が削除されていることが判明した場合、Claude Code は次回の起動時ではなく、すぐにそのヘルパーを実行します。その実行が失敗した場合の動作については、[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) の項目を参照してください。
 
@@ -196,6 +200,7 @@ Enterprise プランでは、組織全体で 1 つの設定を使う代わりに
   * **認証情報と組み合わされたルーティング**: `apiKeyHelper` や `otelHeadersHelper` など、選択されたソースでのみ有効な認証情報キーとルーティング変数を組み合わせているソースは、そのスロットで優先された場合にのみ、それらのルーティング変数を提供します。
 * **`allowedProviders`**: マシン上で設定されたリストとサーバー管理のリストは、[その項目のスコープに関する注記](https://code.claude.com/docs/ja/settings-reference.md#allowedproviders)に記載されているとおりに組み合わされます。Claude Code v2.1.285 以降が必要です
 * **ファーストパーティのサインインキー**: [`forceLoginOrgUUID`](https://code.claude.com/docs/ja/settings-reference#forceloginorguuid) と、[`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) の `"claudeai"` および `"console"` 値です。MDM ポリシーまたは管理設定ファイルもデプロイしている場合は、すべてのクライアントが v2.1.299 以降を実行するまで、そこと claude.ai のサーバー管理設定の両方でこれらを設定してください。その後にキーを設定する場所と、どのソースの値が適用されるかについては、[ログインキーを提供する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#which-managed-source-supplies-login-keys)を参照してください。
+* **`enforceAnthropicSignIn`**: どのソースがこれを提供するかについては、[その項目のスコープに関する注記](https://code.claude.com/docs/ja/settings-reference.md#enforceanthropicsignin)を参照してください
 * **ゲートウェイのサインインキー**: Claude Code は、[`forceLoginGatewayUrl`](https://code.claude.com/docs/ja/settings-reference#forcelogingatewayurl)、[`gatewayInternalNetworks`](https://code.claude.com/docs/ja/settings-reference#gatewayinternalnetworks)、または [`forceLoginMethod`](https://code.claude.com/docs/ja/settings-reference#forceloginmethod) の `"gateway"` 値をサーバー管理設定から読み取ることはありません。そのため、サーバー管理設定にある値は適用されず、MDM ポリシーや管理設定ファイルで設定された値を隠すこともありません。マシン上のどの管理者ソースがこれらを提供するかについては、[`managedSourcesBehavior` の項目](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior)を参照してください。
 
 #### マシンの `apiKeyHelper` が有効でない場合
@@ -310,8 +315,6 @@ Claude Code は、ほとんどの設定の更新を再起動なしで実行中�
 
 2 回目以降の起動では、Claude Code はサーバーから配信された値をキャッシュされた設定から読み取るため、新しいセッションの最初のフェッチより前にこの設定が有効になります。キャッシュされたコピーに頼らずにこの設定を有効な状態に保つには、エンドポイント管理のソースでもこのキーを設定してください。
 
-[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper) が管理設定を提供する場合、Claude Code が起動後に読み取るキーについては、その出力が他のすべての管理ソースを置き換えます。Claude Code がこのキーを読み取るソースについては、[その設定項目](https://code.claude.com/docs/ja/settings-reference.md#forceremotesettingsrefresh)を参照してください。Claude Code がどのソースからヘルパーを読み取り、いつ実行するかについては、`policyHelper` の項目を参照してください。
-
 設定フェッチでは `Cache-Control: no-cache` ヘッダーも送信されるため、中間の HTTP プロキシが古いレスポンスを返すことはありません。
 
 この設定を有効にする前に、ネットワークポリシーで `api.anthropic.com` への接続が許可されていることを確認してください。このエンドポイントに到達できない場合、CLI は起動時に終了し、ユーザーは Claude Code を起動できなくなります。
@@ -398,7 +401,7 @@ Claude Code は、[`API_FORCE_IDLE_TIMEOUT`](https://code.claude.com/docs/ja/env
 * 直接設定された API キー
 * Anthropic プロファイルの `user_oauth`（[Anthropic プロファイル](https://code.claude.com/docs/ja/authentication.md#anthropic-profiles-and-federation-credentials)、ただしプロファイルが Anthropic API 以外の `base_url` を設定していない場合）。Claude Code v2.1.257 以降が必要です。
 
-[`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) スクリプトによって返されたキーも [Workload Identity Federation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation) 認証情報も設定フェッチをトリガーしません。
+[`apiKeyHelper`](https://code.claude.com/docs/ja/settings-reference#apikeyhelper) スクリプトによって返されたキーも [Workload Identity Federation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation) 認証情報も設定フェッチをトリガーしません。Enterprise Admin Console でプロバイダーまたはゲートウェイを設定する場合は、[コンソール設定が適用されるタイミング](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)を参照してください。
 
 セッションは、認証に使用する認証情報を所有する組織の管理設定を受け取ります。[Claude Console](https://platform.claude.com) の API キーは、そのキーが作成された Console 組織に属しており、これは claude.ai の Team または Enterprise 組織とは別の組織です。そのため、claude.ai の Admin Settings で構成した設定は、会社の Console API キーを使用する CI ジョブなど、そのキーで認証するセッションには届きません。そのジョブに設定を適用するには、以下のいずれかのオプションを使用します。OAuth トークンのオプションは、[`--bare`](https://code.claude.com/docs/ja/headless#start-faster-with-bare-mode) で実行されるジョブには適用されません。bare モードは `CLAUDE_CODE_OAUTH_TOKEN` を読み取らないためです。
 

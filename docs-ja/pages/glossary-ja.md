@@ -48,7 +48,7 @@ Claude Code がセッションから claude.ai 上のプライベート URL に�
 
 ### Auto memory
 
-Claude が自分自身のために書いたメモ。あなたの修正と設定に基づいて、git リポジトリごとに `~/.claude/projects/` に保存されます。同じリポジトリのすべてのワークツリーは 1 つの auto memory ディレクトリを共有します。`MEMORY.md` インデックスの最初の 200 行または 25 KB がすべてのセッションの開始時にロードされます。Auto memory は、あなたが書く [CLAUDE.md](#claude-md) に対する Claude が書いた対応物です。
+ユーザーの修正や好みに基づいて Claude が自分自身のために書くメモで、git リポジトリごとに `~/.claude/projects/` 配下に保存されます。同じリポジトリのすべての worktree は 1 つの自動メモリディレクトリを共有します。自動メモリがオンの間は、セッション開始時に `MEMORY.md` インデックスの最初の 200 行または 25 KB が読み込まれます。自動メモリは、ユーザーが書く [CLAUDE.md](#claude-md) に対して、Claude が書く対応物です。
 
 詳細情報: [Auto memory](https://code.claude.com/docs/ja/memory.md#auto-memory)
 
@@ -143,7 +143,7 @@ Claude Code で設定するのではなく、claude.ai アカウントに追加�
 
 ### Dispatch
 
-電話で開始されたタスクルーター。Claude モバイルアプリからコーディングタスクを送信すると、Desktop アプリで Claude Code セッションを生成します。プロンプトは自動的に正しいツールにルーティングされます。Pro、Max、Ultra プランで利用可能です。
+電話で開始されたタスクルーター。Claude モバイルアプリからコーディングタスクを送信すると、Desktop アプリで Claude Code セッションを生成します。プロンプトは自動的に正しいツールにルーティングされます。新規ユーザーは利用できません。
 
 詳細情報: [Sessions from Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)
 
@@ -348,7 +348,7 @@ Claude Code が [harness](#agentic-harness) として会話に追加するメッ
 
 ### Teleport
 
-コマンド `/teleport`。クラウド Claude Code セッションをローカルターミナルにプルします。Claude はブランチをフェッチし、会話履歴をロードし、クラウドセッションの最後の状態から再開します。逆方向は `--cloud` です。ローカルタスクをクラウドで実行するために送信します。
+コマンド `/teleport`。クラウド Claude Code セッションをローカルターミナルにプルします。逆方向は `--cloud` です。ローカルタスクをクラウドで実行するために送信します。
 
 詳細情報: [ターミナルでクラウドセッションを続行する](https://code.claude.com/docs/ja/claude-code-on-the-web.md#from-cloud-to-terminal)
 

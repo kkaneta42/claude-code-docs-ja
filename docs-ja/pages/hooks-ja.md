@@ -70,7 +70,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 
 > [tab] macOS/Linux
 >
-> `matcher` は Bash ツール呼び出しと [Monitor コマンド](#match-monitor-commands)に絞り込み、`if` 条件は `rm *` にマッチする Bash サブコマンドにさらに絞り込むため、`block-rm.sh` は両方のフィルターがマッチするときのみ生成されます。
+> `matcher` は Bash ツール呼び出しと [Monitor コマンド](#match-monitor-commands)に絞り込み、`if` 条件は `rm *` にマッチする Bash サブコマンドにさらに絞り込みます。
 >
 > ```json theme={null}
 > {
@@ -245,7 +245,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 | `.claude/settings.local.json` | 単一プロジェクト | いいえ、Claude Code が設定を保存する際に gitignore 対象になります |
 | 管理ポリシー設定 | 組織全体 | はい、管理者が制御 |
 | [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md) `hooks/hooks.json` | プラグインが有効な場合 | はい、プラグインにバンドル |
-| [スキル](https://code.claude.com/docs/ja/skills.md)のフロントマター | スキルが呼び出された後のセッションの残りの期間。[スキルとエージェントのフック](#hooks-in-skills-and-agents)を参照 | はい、スキルファイルで定義 |
+| [スキル](https://code.claude.com/docs/ja/skills.md)のフロントマター | [スキルとエージェントのフック](#hooks-in-skills-and-agents)を参照 | はい、スキルファイルで定義 |
 | [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)のフロントマター | そのサブエージェントの実行中 | はい、サブエージェントファイルで定義 |
 
 [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、ローカルの `~/.claude/settings.json` を読み取りません。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#permissions-and-tool-approval)では、Claude Code はオペレーターがランナーホストの `~/.claude/` に用意したフックも実行します。また、ランナーイメージの管理設定ファイルが [Claude Code が適用する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に含まれる場合は、そのファイル内のフックも実行します。デフォルトでは、これはサーバー管理設定も MDM で配布された Claude Code ポリシーも管理層を提供していない場合に限られます。どの設定ファイルとプラグイン、つまりどのフックがクラウドセッションに届くかについては、[セットアップから引き継がれるもの](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)を参照してください。
@@ -681,9 +681,9 @@ MCP tool "security_scan" on server "my_server" answered without its text, which 
 設定ファイルとプラグインに加えて、フックは[スキル](https://code.claude.com/docs/ja/skills.md)と[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)でフロントマターを使用して直接定義できます。設定形式は設定ベースのフックと同じです。Claude Code がこれらを登録しておく期間は、コンポーネントによって異なります。
 
 * **サブエージェントのフック**: Claude Code は、そのサブエージェントの実行中にのみこれらを実行し、サブエージェントが終了すると削除します。ここでの `Stop` フックは、Claude Code によって `SubagentStop` に変換されます。これはサブエージェントが完了したときに発火するイベントです。
-* **スキルのフック**: Claude Code は、ユーザーまたは Claude がスキルを呼び出したときにこれらを登録し、スキル自体のターンの後のターンも含めて、セッションの残りの期間ずっと実行し続けます。代わりに最初の実行が成功した後で Claude Code にフックを削除させるには、そのフックに [`once: true`](#common-fields) を設定します。
+* **スキルのフック**: ユーザーまたは Claude がスキルを呼び出すまでは実行されません。終了したとき、または `/clear` や `/resume` などのコマンドで会話を離れたときに削除されます。それより早く削除するには、[`once`](#common-fields) を参照してください。
 
-このスキルは、各 `Bash` コマンドの前にセキュリティ検証スクリプトを実行する `PreToolUse` フックを定義します。
+このスキルは、`Bash` にマッチしてセキュリティ検証スクリプトを実行する `PreToolUse` フックを定義します。
 
 ```yaml theme={null}
 ---
@@ -700,7 +700,7 @@ hooks:
 
 サブエージェントは YAML フロントマターで同じ形式を使用します。
 
-プロジェクトスキルのフロントマターのフックは、[設定ファイルのフックと同じワークスペース信頼ルール](#workspace-trust)に従います。Claude Code は、ユーザーまたは Claude がスキルを呼び出したときにこれらを登録します。これには、信頼していないフォルダーでの `-p` 実行も含まれます。
+プロジェクトスキルのフロントマターのフックは、[設定ファイルのフックと同じワークスペース信頼ルール](#workspace-trust)に従うため、信頼していないフォルダーでも `-p` の下で実行される可能性があります。
 
 プロジェクトサブエージェントのフロントマターのフックは、エージェントファイルの取得元フォルダーについて[ワークスペース信頼ダイアログ](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)を承認した後にのみ実行されます。`-p` セッションは承認したことになりません。[フォルダーを信頼する前に実行されるもの](https://code.claude.com/docs/ja/permissions.md#what-runs-before-you-trust-a-folder)ではこれを設定ファイルのルールと比較しており、サブエージェントのページには[どのスコープが対象外か](https://code.claude.com/docs/ja/sub-agents.md#hooks-in-subagent-frontmatter)が記載されています。
 
@@ -994,7 +994,7 @@ Error: Cannot find module '/path/to/project/.claude/hooks/check-command.js'
 
 > [!NOTE]
 >
-> Code Mode を使用している場合、`PreToolUse` での失敗の動作は異なります。[フックによって拒否されたツール呼び出し](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook)を参照してください。
+> Code Mode を使用している場合、`PreToolUse` でのタイムアウトの動作は異なります。[フックによって拒否されたツール呼び出し](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook)を参照してください。
 
 #### Git Bash のない Windows で失敗したフック
 
@@ -1229,7 +1229,7 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 * `PostToolUse`: `updatedToolOutput` はツールの結果を置き換えます。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでは、ツールが `AskUserQuestion` または `ExitPlanMode` の場合、Claude Code は `updatedToolOutput` を無視し、Claude は元の回答またはプランを読み取ります。[PostToolUse 決定制御](#posttooluse-decision-control)を参照してください
 * `UserPromptSubmit`: プロンプトを置き換えることはできません。`additionalContext` をそれと一緒に注入するだけです
 
-秘匿化や変換のユースケースの場合、アウトバウンド ツール入力は `PreToolUse` で、成功した呼び出しの結果は `PostToolUse` で傍受します。`PostToolUseFailure` は結果を書き換えられないため、失敗したコマンドの出力はそのまま Claude に届きます。
+秘匿化や変換のユースケースの場合、アウトバウンド ツール入力は `PreToolUse` で、成功した呼び出しの結果は `PostToolUse` で傍受します。`PostToolUseFailure` は結果を書き換えられないため、失敗したコマンドの出力を秘匿化することはできません。
 
 各パターンの実行例を以下に示します。
 
@@ -1786,7 +1786,7 @@ markdown を含まないバッチはそのまま通過します。スクリプ�
 
 ### PreToolUse
 
-Claude がツールのパラメータを作成した後、ツール呼び出しを処理する前に実行されます。`EndConversation` を除くすべてのツール名にマッチします。`Bash`、`PowerShell`、`Edit`、`Write`、`Read`、`Glob`、`Grep`、`Agent`、`Workflow`、`WebFetch`、`WebSearch`、`AskUserQuestion`、`ExitPlanMode` などの組み込みツールと、任意の [MCP ツール名](#match-mcp-tools)が対象です。
+Claude がツールのパラメータを作成した後、ツール呼び出しを処理する前に実行されます。`EndConversation` 以外のツール名でマッチします：`Bash`、`PowerShell`、`Edit`、`Write`、`Read`、`Glob`、`Grep`、`Agent`、`Workflow`、`WebFetch`、`WebSearch`、`AskUserQuestion`、`ExitPlanMode` などの組み込みツール、および任意の [MCP ツール名](#match-mcp-tools)です。
 
 何が書き込んだかにかかわらず、特定のファイルがディスク上で変更されたときにフックを実行するには、ファイル編集ツールを名前でマッチさせる代わりに [FileChanged](#filechanged) を使用してください。PreToolUse とは異なり、Claude Code は FileChanged フックを変更の後に実行し、決定制御もないため、書き込みをブロックすることはできません。
 
@@ -2271,7 +2271,7 @@ Monitor コマンドを許可または書き換えるには、[Monitor コマン
 
 ### PostToolUse
 
-ツールが正常に完了した直後に実行されます。
+ツールが正常に完了した直後に実行されます。メインの会話では、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)の `PostToolUse` フックは一部の失敗した呼び出しの後にも実行されるため、両方を処理できるように記述してください。
 
 ツール名で照合します。値は PreToolUse と同じです。
 
@@ -2294,7 +2294,7 @@ v2.1.319 より前では、メッセージでターンを中断した後にフ�
 
 #### PostToolUse の入力
 
-`PostToolUse` フックは、ツールがすでに正常に実行された後に発火します。入力には、ツールに送信された引数である `tool_input` と、ツールが返した結果である `tool_response` の両方が含まれます。どちらの正確なスキーマもツールによって異なります。ファイルツールの `tool_input` のパスは [PreToolUse](#pretooluse-input) と同じ形式で渡されます。つまり、常に絶対パスで、プラットフォーム固有の区切り文字（Windows ではバックスラッシュ）が使われます。MCP ツールの場合、入力には [`mcp_server`](#pretooluse-input) オブジェクトも含まれます。
+入力には、ツールに送信された引数である `tool_input` と、ツールが返した結果である `tool_response` の両方が含まれます。両方の正確なスキーマはツールによって異なります。失敗した呼び出しの場合、`tool_response` は文字列としてのエラーテキストです。MCP ツールの場合、入力には [`mcp_server`](#pretooluse-input) オブジェクトも含まれます。
 
 ```json theme={null}
 {

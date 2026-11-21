@@ -98,6 +98,7 @@
 | [`enabledMcpjsonServers`](#enabledmcpjsonservers) | プロジェクトの [`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-server-approvals-and-workspace-trust) から特定のサーバーを承認します | MCP | Any file |
 | [`enabledPlugins`](#enabledplugins) | スコープごとに個々の[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)をオンまたはオフにします | プラグインとスキル | Any file |
 | [`enableWorkflows`](#enableworkflows) | プランのデフォルトに対して[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)をオンまたはオフにします | フックと自動化 | Any file |
+| [`enforceAnthropicSignIn`](#enforceanthropicsignin) | Anthropic の API での claude.ai へのログイン、または Enterprise Admin Console へのサインインを必須にします | 認証とプロバイダー | Managed |
 | [`enforceAvailableModels`](#enforceavailablemodels) | [`/model` の Default の選択肢](https://code.claude.com/docs/ja/model-config#enforce-the-allowlist-for-the-default-model)を `availableModels` の許可リスト内に保ちます | モデルと応答 | Any file |
 | [`env`](#env) | すべてのセッションとそのサブプロセスに[環境変数](https://code.claude.com/docs/ja/env-vars.md#in-settings-files)を設定します | メモリとコンテキスト | Any file |
 | [`externalEditorContext`](#externaleditorcontext) | [Ctrl+G](https://code.claude.com/docs/ja/interactive-mode.md#general-controls) を押して編集するときに、Claude の最後の応答をコメントとして表示します | グローバル設定 | Global config |
@@ -5286,6 +5287,23 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 [`awsAuthRefresh`](#awsauthrefresh) とは異なり、Claude Code はこのコマンドが設定されている場合、環境の認証情報を最初にチェックせずに常に実行します。[高度な認証情報設定](https://code.claude.com/docs/ja/amazon-bedrock.md#advanced-credential-configuration)を参照してください。
 
+### `enforceAnthropicSignIn`
+
+Anthropic の API での claude.ai ログイン、または [Enterprise Admin Console](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code) サインインを必須にします。Enterprise Admin Console サインインは、[`forceLoginOrgUUID`](#forceloginorguuid) が組織を指定し、かつ [`policyHelper`](#policyhelper) を設定していない場合にのみカウントされます。Claude Code v2.1.329 以降が必要です。
+
+このキーはクラウドプロバイダーまたはゲートウェイ上で動作する Claude Desktop セッションも停止させるため、先に[管理設定でサインインを必須にする](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#require-the-sign-in-with-managed-settings)をお読みください。
+
+* **スコープ**: [`Managed`](#scopes)。管理設定ファイルで設定します。管理設定ファイルでは、サーバー管理設定の下でも適用されます。マシンに MDM ポリシーもある場合は、そこでも設定します。Claude Code は、サーバー管理設定、HKCU、およびポリシーヘルパーの出力ではこのキーを無視します。
+* **タイプ**: ブール値
+* **デフォルト**: 未設定
+
+```json managed-settings.json theme={null}
+{
+  "forceLoginOrgUUID": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "enforceAnthropicSignIn": true
+}
+```
+
 ### `forceLoginMethod`
 
 ユーザーがログインに使用できるアカウントの種類を制限します。claude.ai サインインには `"claudeai"`、Claude Console サインインには `"console"` を指定します。`"gateway"` を設定すると、ファーストパーティログインの代わりに [クラウドゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)にユーザーを送信します。管理者は管理設定で設定し、[`forceLoginOrgUUID`](#forceloginorguuid) と組み合わせて開発者の claude.ai ログインを 1 つの組織内に保ちます。
@@ -5305,7 +5323,7 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 }
 ```
 
-すべてのファーストパーティログインパスが制限を適用します。[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、Agent SDK、`claude setup-token`、および `/install-github-app` を含みます。ただし、ターミナルのインタラクティブログイン画面（`/login` または初回実行オンボーディングで到達）は、メソッドを事前選択しますが強制しません。v2.1.212 より前は、ターミナルログインのみが適用されていました。[ログインを組織に制限する](https://code.claude.com/docs/ja/authentication.md#restrict-login-to-your-organization)を参照して、各ログインパス、環境認証情報、およびサードパーティプロバイダーがどのように処理されるかを確認してください。
+[VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、Agent SDK、`claude setup-token`、`/install-github-app` を含むすべてのファーストパーティのログイン経路にこの制限が適用されます。ただし、`/login` または初回起動時のオンボーディングから表示されるターミナルの対話型ログイン画面は例外で、この画面では方法を事前に選択することはできますが、制限は強制されません。v2.1.212 より前は、ターミナルでのログインにのみこの制限が適用されていました。各ログイン経路、環境の認証情報、サードパーティプロバイダーがどのように扱われるかについては、[ログインを組織に制限する](https://code.claude.com/docs/ja/authentication.md#restrict-login-to-your-organization)を参照してください。
 
 マシン上の管理ソースが `"gateway"` を設定する場合、Claude Code は残されたログイン、API キー、または `apiKeyHelper` 認証情報を使用しません。各メッセージについては [管理者ポリシーがクラウドゲートウェイサインインを必要とします](https://code.claude.com/docs/ja/errors.md#administrator-policy-requires-a-cloud-gateway-sign-in)を参照してください。`CLAUDE_CODE_USE_BEDROCK` または同様の環境変数を通じてクラウドプロバイダーを選択する場合、セッションはゲートウェイサインインを必要としません。v2.1.261 より前は、Claude Code はこれらのマシンで残されたログインを使用していました。
 
@@ -5329,7 +5347,9 @@ AWS 認証情報を JSON として出力する独自のコマンドを実行し�
 
 ### `forceLoginOrgUUID`
 
-管理ソースから、claude.ai アカウントログインが 1 つの Anthropic 組織（単一の UUID として指定）または複数の組織（配列として指定）に属することを要求します。任意の設定ファイルから、Claude Code は単一の UUID を使用して claude.ai または Claude Console ログイン中にその組織を事前選択し、配列の場合は何も事前選択しません。任意の設定ファイルでキーを設定する場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)の提供も停止し、代わりに API キーを作成します。
+管理ソースから、claude.ai アカウントログインが 1 つの Anthropic 組織（単一の UUID として指定）または複数の組織（配列として指定）に属することを要求します。任意の設定ファイルから、Claude Code は単一の UUID を使用して claude.ai または Claude Console ログイン中にその組織を事前選択し、配列の場合は何も事前選択しません。
+
+任意の設定ファイルでキーを設定した場合、Claude Code はそのファイルが適用されるセッションで [キーレス Console サインイン](https://code.claude.com/docs/ja/authentication.md#sign-in-without-an-api-key)の提供を停止します。
 
 * **スコープ**: [`Any file`](#scopes)。管理ソースではない設定ファイルでは、Claude Code はログインがどの組織に属するかをチェックせず、単一の UUID はログイン中にその組織を事前選択します。
 * **タイプ**: 文字列、1 つの UUID、または文字列の配列、複数の UUID
@@ -5722,6 +5742,7 @@ Claude Code が[サーバー管理設定](https://code.claude.com/docs/ja/server
 * **[`modelOverrides`](#modeloverrides)**: `availableModels` と対になります。Claude Code は `modelOverrides` を設定している最上位のソースから採用しますが、上位のソースが `modelOverrides` なしで `availableModels` を設定している場合は例外です。その場合、すべてのソースの `modelOverrides` を無視します。
 * **[`forceLoginGatewayUrl`](#forcelogingatewayurl)、[`gatewayInternalNetworks`](#gatewayinternalnetworks)、[`forceLoginMethod`](#forceloginmethod) の `"gateway"` の値**: Claude Code はこれらをサーバー管理設定から読み取ることはないため、そこにある値は適用されず、MDM ポリシーや管理設定ファイルで設定された値を隠すこともありません。マシン上の管理ソースのうち、ポリシーキーを含む最上位のものだけがこれらを提供します。これはサーバー管理設定も存在するかどうかに関係ありません。
 * **[`forceLoginOrgUUID`](#forceloginorguuid) と [`forceLoginMethod`](#forceloginmethod) の `"claudeai"` と `"console"` の値**: どの値が適用されるかは、表ではなく[ログインキーを提供する管理ソース](https://code.claude.com/docs/ja/managed-settings.md#which-managed-source-supplies-login-keys)で確認してください。
+* **[`enforceAnthropicSignIn`](#enforceanthropicsignin)**: どのソースがこれを提供するかは、そのエントリのスコープの注記に記載されています。
 * **[`allowedProviders`](#allowedproviders)**: 表のルールを適用した後も、そのエントリのスコープの注記にあるとおり、マシン自身のリストが結果を引き続き制限します。
 
 マシン上でどのソースが組み合わされたかを確認するには、`/status` を実行して [`Setting sources` 行を確認してください](https://code.claude.com/docs/ja/managed-settings#read-the-source-in-/status)。
@@ -5782,9 +5803,12 @@ Claude Code は引数なしでヘルパーを実行し、その環境に `CLAUDE
 }
 ```
 
-ヘルパーが `managedSettings` を出力すると、そのオブジェクトがその実行における唯一の管理設定ソースになります。Claude Code は MDM、ファイル、HKCU のソースを無視し、[ソース横断キー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source)をヘルパーの出力のみから読み取り、[親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts)をマージすることはありません。
+ヘルパーが `managedSettings` を出力すると、そのオブジェクトがその実行における管理設定ソースになります。Claude Code は[ソース横断キー](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source)をそこから読み取り、[親設定](https://code.claude.com/docs/ja/managed-settings.md#parent-settings-from-embedding-hosts)はマージしません。MDM、ファイル、HKCU のソースは無視しますが、次のようなキーは例外です。
 
-起動時の `forceRemoteSettingsRefresh` チェックはヘルパーより前に実行され、任意の管理ソースを読み取ります。`managedSettings` を省略したエンベロープで `0` で終了するヘルパーは管理設定を提供せず、他のソースが通常どおり適用されます。
+* **[`forceRemoteSettingsRefresh`](#forceremotesettingsrefresh)**: 起動時のチェックはヘルパーより前に実行され、任意の管理ソースを読み取ります
+* **[`enforceAnthropicSignIn`](#enforceanthropicsignin)**: Claude Code はこれを MDM ポリシーまたは管理設定ファイルから読み取ります
+
+`managedSettings` を省略したエンベロープで `0` で終了するヘルパーは管理設定を提供せず、他のソースが通常どおり適用されます。
 
 #### ヘルパーの失敗
 
