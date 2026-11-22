@@ -17,6 +17,211 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-11-22</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/env-vars-ja.md         |   4 +-
+ docs-ja/pages/hooks-ja.md            |  28 +++++---
+ docs-ja/pages/permission-modes-ja.md |   8 ++-
+ docs-ja/pages/sub-agents-ja.md       |  69 +++++++++----------
+ docs-ja/pages/tools-reference-ja.md  | 127 +++++++++++++++++++++++++++--------
+ docs-ja/pages/vs-code-ja.md          |   2 +-
+ 6 files changed, 161 insertions(+), 77 deletions(-)
+```
+
+<details>
+<summary>env-vars-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
+index a8f1149..3458bc5 100644
+--- a/docs-ja/pages/env-vars-ja.md
++++ b/docs-ja/pages/env-vars-ja.md
+@@ -314,5 +314,5 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む
+ | `CLAUDE_CODE_FORCE_SYNC_OUTPUT` | ターミナルがサポートしているものの自動検出されない場合に、`1` に設定すると DEC プライベートモード 2026 の [同期出力](https://gist.github.com/christianparpart/d8a62cc1ab659194337d73e399004036) を強制的に有効にします。BSU/ESU を実装しているものの機能プローブに応答しない Emacs `eat` などのエミュレーターに便利です。tmux の下では効果がありません。[フルスクリーンレンダリング](https://code.claude.com/docs/ja/fullscreen.md) に切り替える `CLAUDE_CODE_NO_FLICKER` とは異なり、これはレンダラーを変更しません |
+ | `CLAUDE_CODE_FORCE_TERMINAL_IMAGES` | ターミナルが Unicode プレースホルダー付きの kitty グラフィックスプロトコル画像を描画できるのに、`Image` の薄く表示された `alt` テキストが表示される場合に、`1` に設定すると [mod の `Image` 要素](https://code.claude.com/docs/ja/plugins/mods/reference#elements)を画像として描画します。[`Image` を描画するターミナルと、この変数を設定すべきでない場所](https://code.claude.com/docs/ja/plugins/mods/gallery#image-and-client)を参照してください |
+-| `CLAUDE_CODE_FORK_SUBAGENT` | fork モードを制御します。fork モードはデフォルトでオンで、Claude が自ら[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)を開始できるようにします。fork モードがオンの間、Claude はマシン上の対話型ターミナル、VS Code、またはデスクトップのセッションで[サブエージェントを待機する](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)こともできません。`0` に設定すると fork モードをオフにします。バージョンについては、[fork モードをオフにする](https://code.claude.com/docs/ja/sub-agents.md#turn-fork-mode-on-or-off)を参照してください |
++| `CLAUDE_CODE_FORK_SUBAGENT` | fork モードを制御します。fork モードはデフォルトでオンで、Claude が自ら[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)を開始できるようにします。`0` に設定すると fork モードをオフにします。例えば、[Claude にサブエージェントを待たせる](https://code.claude.com/docs/ja/sub-agents.md#let-claude-wait-for-a-subagent)場合に使用します。バージョンについては、[fork モードをオフにする](https://code.claude.com/docs/ja/sub-agents.md#turn-fork-mode-on-or-off)を参照してください |
+ | `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT` | `1` に設定すると、`claude -p --output-format stream-json` の出力に [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) のテキストと思考ブロックを出力します。これは [`--forward-subagent-text`](https://code.claude.com/docs/ja/cli-reference#cli-flags) フラグと同じ動作です。ハーネスが `claude` を呼び出し、フラグ自体を渡せない場合にこの変数を使用します。stream-json 出力を伴う非対話モード以外ではエラーで終了するフラグとは異なり、この変数はそのような場合には無視されるため、プロセス全体で設定されていてもネストされた呼び出しは引き続き動作します。Claude Code v2.1.211 以降が必要です |
+ | `CLAUDE_CODE_FULL_SIGN_IN_LINK` | 短い URL の代わりに完全な claude.ai ログイン URL を表示するには `1` に設定します。短い URL でエラーが表示される場合や、スクリプトが URL から値を読み取る場合に使用します。シェルまたはユーザー設定で設定してください。Claude Code v2.1.330 以降が必要です |
+@@ -442,5 +442,5 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む
+ | `CLAUDE_CODE_WARN_DISK_FREE_GIB` | `10` などの GiB 単位の整数に設定すると、作業ディレクトリのファイルシステムの空き容量がその量を下回ったときに、Claude Code が Claude に警告します。警告は空き容量を示すシステムリマインダーです。変数が未設定、`0`、または数字のみでない場合、リマインダーはオフになります。Claude Code は設定の `env` ブロックで渡された値を無視するため、Claude Code を起動する環境で設定してください。Claude Code v2.1.304 以降が必要です |
+ | `CLAUDE_CODE_WARN_MEMORY_FREE_GIB` | Linux と WSL で、`4` などの GiB 単位の整数に設定すると、利用可能なメモリがその量を下回ったときに、Claude Code が Claude に警告します。警告は利用可能な量を示すシステムリマインダーです。変数が未設定、`0`、または数字のみでない場合、リマインダーはオフになります。Claude Code は設定の `env` ブロックで渡された値を無視するため、Claude Code を起動する環境で設定してください。Claude Code v2.1.304 以降が必要です |
+-| `CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS` | [WebFetch](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior) が取得した各 URL のレスポンスをキャッシュしておく時間をミリ秒で設定します。デフォルトは `900000`（15 分）です。数字のみを受け付けます。`0`、小数、その他の表記ではデフォルトが維持されます。Claude Code は起動ごとに 1 回だけ値を読み取るため、設定の `env` ブロックでの変更は次に `claude` を起動したときに適用されます。Claude Code v2.1.233 以降が必要です |
++| `CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS` | [WebFetch](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior) が取得した各ページをキャッシュに保持するミリ秒数を設定します。デフォルトは `900000`（15 分）です。数字のみを受け付けます。`0`、小数、その他の表記ではデフォルトが維持されます。Claude Code は起動ごとに 1 回値を読み取るため、設定の `env` ブロックでの変更は、次に `claude` を起動したときに適用されます。Claude Code v2.1.233 以降が必要です |
+ | `CLAUDE_CODE_WEBFETCH_DEADLINE_MS` | [WebFetch](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior) がページのダウンロード（たどるリダイレクトを含む）を待機する時間の上限（ミリ秒）。その時点までに完了しないダウンロードは期限エラーで失敗します。デフォルトは `300000`（5 分）です。`0` に設定すると制限がなくなります。数字のみを受け付けます。小数やその他の表記ではデフォルトが維持されます。Claude Code v2.1.268 以降が必要です |
+ | `CLAUDE_CODE_WEB_SEARCH_REFILLS_PER_HOUR` | セッションの [WebSearch の制限](https://code.claude.com/docs/ja/tools-reference.md#session-search-limit)が補充されるレート（1 時間あたりの呼び出し数）。対話型のターミナルセッションではデフォルトは `100` です。[非対話](https://code.claude.com/docs/ja/headless.md)セッションではデフォルトは `0` で、補充はオフになります。数字のみを受け付けます。その他の表記は未設定として扱われます。Claude Code v2.1.290 以降が必要です |
+```
+
+</details>
+
+<details>
+<summary>hooks-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
+index 775d707..da4c30e 100644
+--- a/docs-ja/pages/hooks-ja.md
++++ b/docs-ja/pages/hooks-ja.md
+@@ -2597,7 +2597,7 @@ Claude Code が通知を送信するときに実行されます。通知タイ
+ > * `permission_prompt` は、ユーザーが約 6 秒間入力していないときに発火します。タイマーは権限プロンプトが表示されたときに開始され、キー入力のたびに延期されます。Claude がツールの使用権限を求めたときにすぐにフックを実行するには、代わりに [PermissionRequest](#permissionrequest) を使用してください。
+ > * `idle_prompt` は、Claude が応答を完了してから約 60 秒後に発火します。ただし、それ以降ユーザーが入力しておらず、バックグラウンドの[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)などのバックグラウンドエージェントが実行中でない場合に限ります。claude.ai の使用制限のリセットを待っている間、Claude Code は `idle_prompt` を送信しません。待機が自然に終了すると、代わりに `quota_auto_resume_*` タイプのいずれかが発火します。
+-> * `elicitation_dialog`（elicitation フォームの場合）または `elicitation_url_dialog`（ブラウザの URL リクエストの場合）は、ユーザーが約 6 秒間入力していないときに発火します。どちらも `permission_prompt` と同じ 6 秒間の条件を共有しており、タイマーはダイアログが表示されたときに開始され、キー入力のたびに延期されます。
++> * elicitation フォームの場合は `elicitation_dialog`、ブラウザ URL のリクエストの場合は `elicitation_url_dialog` が、約 6 秒間入力がなかった時点で発生します。
+ >
+-> 別のダイアログが画面に表示されている間に届いた権限リクエストや elicitation にも、同じ 6 秒間の条件が適用され、タイマーはリクエストが届いた時点から計測されます。そのため、リクエストが開いているダイアログの後ろで待機している間に、その通知が届くことがあります。
++> 別のダイアログが画面に表示されている間に届いた権限リクエストや elicitation も、リクエストが届いた時点から計測される同じ 6 秒のタイミングを維持します。その通知は、リクエストが開いているダイアログの後ろでまだ待機している間に届くことがあります。
+ 
+ Claude Code が権限リクエストを Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input)に送信するセッションでは、`permission_prompt` のタイミングが異なります。これは、Claude Desktop と VS Code 拡張機能が Claude Code をホストする方法です。
+@@ -2653,5 +2653,5 @@ v2.1.233 より前では、これらのセッションで `permission_prompt` 
+ ```
+ 
+-Notification フックは、通知をブロックしたり変更したりすることはできません。Claude Code はこれらのフックの `systemMessage` と `continue` フィールドを破棄しますが、[`terminalSequence`](#emit-terminal-notifications) は引き続き出力します。デスクトップ通知の例はこれを利用しています。Notification フックは、通知を外部サービスに転送するなどの副作用を目的としています。
++Notification フックは通知をブロックしたり変更したりできません。Claude Code はそれらの `systemMessage` と `continue` フィールドを破棄しますが、[`terminalSequence`](#emit-terminal-notifications) は引き続き出力します。
+ 
+ ### SubagentStart
+@@ -2661,4 +2661,8 @@ Claude が Agent ツールでサブエージェントを生成したとき、Cla
+ [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)に含まれるサブエージェントの場合、エージェントタイプは素のフロントマターの名前ではなく、`my-plugin:reviewer` のようなプラグインスコープの識別子になります。コロンが含まれるとプラグインスコープの名前は正規表現として扱われるため、完全一致させるには matcher を `^` と `$` で固定してください（`^my-plugin:reviewer$`）。
+ 
++> [!NOTE]
++>
++> 組み込みの [`web-fetch` サブエージェント](https://code.claude.com/docs/ja/tools-reference#web-fetch-subagent)については、Claude Code は管理設定の `SubagentStart` フックのみを実行します。それ以外の場所で設定したフックの場合は、代わりに `PreToolUse` フックで `WebFetch` をマッチさせてください。
++
+ #### SubagentStart の入力
+ 
+```
+
+</details>
+
+<details>
+<summary>permission-modes-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/permission-modes-ja.md b/docs-ja/pages/permission-modes-ja.md
+index c0a5df5..77065d1 100644
+--- a/docs-ja/pages/permission-modes-ja.md
++++ b/docs-ja/pages/permission-modes-ja.md
+@@ -629,9 +629,13 @@ auto モードがセッションのアクションを承認できない場合、
+ > [accordion] auto モードがサブエージェントを扱う方法
+ >
+-> 分類器は[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)の作業を 3 つの時点でチェックします。
++> Claude が Agent ツールで[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)を開始すると、分類器はサブエージェントの作業を 3 つの時点でチェックします。
+ >
+ > 1. サブエージェントが開始する前に、委任されたタスクの説明が評価されるため、危険に見えるタスクは生成時にブロックされます。
+ > 2. サブエージェントの実行中、その各アクションは親セッションと同じ[決定順序](#how-the-classifier-evaluates-actions)で、同じブロックルールと allow ルールに基づいて処理されます。サブエージェントのフロントマターにある `permissionMode` は無視されます。
+-> 3. サブエージェントが終了すると、親がレポートを読む前に、分類器がその作業と最終レポートをレビューします。分類器がサブエージェントの作業やレポートを指摘した場合、または別の API 安全チェックがレビューを拒否した場合でも、レポートはセキュリティ警告を先頭に付けて配信されます。分類器がレビューに利用できない場合、レポートには、行動する前にサブエージェントの作業を検証するよう促すメモが付いて届きます。
++> 3. [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイト以外のサブエージェントが終了すると、親がレポートを読む前に、分類器がその作業と最終レポートをレビューします。
++>
++>    分類器がサブエージェントの作業やレポートを指摘した場合、または別の API 安全チェックがレビューを拒否した場合でも、レポートはセキュリティ警告を先頭に付けて配信されます。分類器がレビューに利用できない場合、レポートには、行動する前にサブエージェントの作業を検証するよう促すメモが付いて届きます。
++>
++> [`web-fetch` サブエージェント](https://code.claude.com/docs/ja/tools-reference#web-fetch-subagent)については、`WebFetch(domain:...)` の許可ルールまたは[事前承認済みドメイン](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior)がタスク内のすべての URL をカバーしている場合、Claude Code は最初の 2 つのチェックをスキップできます。その場合、サブエージェントは [`dontAsk` モード](#allow-only-pre-approved-tools-with-dontask-mode)で開始するため、承認が必要なその他の取得はすべて拒否されます。3 つ目のチェックは引き続き実行されます。
+ 
+ > [accordion] コストとレイテンシー
+```
+
+</details>
+
+<details>
+<summary>sub-agents-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/sub-agents-ja.md b/docs-ja/pages/sub-agents-ja.md
+index 5183ca7..6b2fd30 100644
+--- a/docs-ja/pages/sub-agents-ja.md
++++ b/docs-ja/pages/sub-agents-ja.md
+@@ -31,5 +31,5 @@ Claude は各サブエージェントの説明を使用して、タスクを委
+ Claude Code には、Claude が必要に応じて自動的に使用する組み込みサブエージェントが含まれています。各サブエージェントは親の会話の権限を継承します。ほとんどは制限されたツールセットで実行されます。
+ 
+-Explore と Plan は、調査を高速かつ低コストに保つために、CLAUDE.md ファイルと git ステータスのスナップショットを読み込まずに開始します。その他の組み込みサブエージェントと[カスタムサブエージェント](#configure-subagents)は両方を読み込みます。ただし、カスタムサブエージェントの定義で [`omitClaudeMd`](#supported-frontmatter-fields) を設定すると、ユーザー、プロジェクト、およびローカルの CLAUDE.md ファイルを読み込まずに開始できます。サブエージェントに到達するものの完全な内訳については、[スタートアップ時に読み込まれるもの](#what-loads-at-startup)を参照してください。
++Explore と Plan は、調査を高速かつ低コストに保つために、CLAUDE.md ファイルと git ステータスのスナップショットを読み込まずに開始します。サブエージェントに到達するものの完全な内訳については、[スタートアップ時に読み込まれるもの](#what-loads-at-startup)を参照してください。
+ 
+ > [tab] Explore
+@@ -71,5 +71,5 @@ Explore と Plan は、調査を高速かつ低コストに保つために、CLA
+ > [tab] Other
+ >
+-> Claude Code には、特定のタスク用の追加のヘルパーエージェントが含まれています。これらは通常自動的に呼び出されるため、直接使用する必要はありません。
++> Claude Code には、特定のタスク用の追加のヘルパーエージェントが含まれています。
+ >
+ > | エージェント | モデル | Claude が使用する場合 |
+@@ -78,4 +78,5 @@ Explore と Plan は、調査を高速かつ低コストに保つために、CLA
+ > | statusline-setup | Sonnet | `/statusline`を実行してステータスラインを設定する場合 |
+ > | claude-code-guide | Haiku | Claude Code 機能について質問する場合 |
++> | web-fetch | Haiku、または [Haiku を使用できない場合](https://code.claude.com/docs/ja/tools-reference.md#which-model-the-web-fetch-subagent-runs-on)はこれを開始した会話のモデル | [このサブエージェントを使用するセッション](https://code.claude.com/docs/ja/tools-reference.md#web-fetch-subagent)で Claude が Web ページを読み取る場合 |
+ 
+ 組み込みサブエージェントはインタラクティブセッションでデフォルトで登録されます。これらを制限するには：
+@@ -88,5 +89,5 @@ Explore と Plan は、調査を高速かつ低コストに保つために、CLA
+ `subagent_type` を省略する Agent ツール呼び出しは、フォールバック先となる `general-purpose` サブエージェントがセッションにない場合、[`subagent_type is required`](https://code.claude.com/docs/ja/errors#subagent-type-is-required) で失敗します。
+ 
+-これらの組み込みサブエージェント以外に、カスタムプロンプト、ツール制限、権限モード、フック、およびスキルを使用して独自のサブエージェントを作成できます。次のセクションでは、サブエージェントの使用を開始し、カスタマイズする方法を示します。
++これらの組み込みサブエージェント以外に、カスタムプロンプト、ツール制限、権限モード、フック、およびスキルを使用して独自のサブエージェントを作成できます。
+ 
+```
+
+</details>
+
+<details>
+<summary>tools-reference-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/tools-reference-ja.md b/docs-ja/pages/tools-reference-ja.md
+index 51ad93e..2612508 100644
+--- a/docs-ja/pages/tools-reference-ja.md
++++ b/docs-ja/pages/tools-reference-ja.md
+@@ -111,5 +111,5 @@ Agent ツールは、別のコンテキストウィンドウでサブエージ
+ * **フォーク**: [フォークモード](https://code.claude.com/docs/ja/sub-agents.md#turn-fork-mode-on-or-off) がオンの場所では、このツールは [フォークされたサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation) を起動できます。フォークされたサブエージェントは、新規に開始する代わりに親の会話全体を継承します
+ 
+-サブエージェントが実行するターン数を制限するには、[subagent definition](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields) で `maxTurns` を設定します。サブエージェントが制限に達すると、Claude Code は返された結果を部分的な出力としてマークし、Claude は [subagent を再開](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents) して続行することができます。
++サブエージェントが実行するターン数を制限するには、[サブエージェント定義](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields) で `maxTurns` を設定します。
+ 
+ 非フォーク subagent が使用できるツールは、[subagent definition](https://code.claude.com/docs/ja/sub-agents.md) の `tools` フィールドと `disallowedTools` フィールドに依存します。
+@@ -220,5 +220,5 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ
+ #### フォアグラウンドコマンドがバックグラウンドに移動する
+ 
+-フォアグラウンドコマンドが完了せずにタイムアウトに達すると、Claude Code はそれを停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。移動されたコマンドの[時間制限](#time-limit-for-background-commands)は移動からカウントされ、フォアグラウンドサブエージェントの移動されたコマンドはそのサブエージェントの実行が終了すると停止します。
++フォアグラウンドコマンドが完了せずにタイムアウトに達すると、Claude Code はそれを停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。
+ 
+ [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`](https://code.claude.com/docs/ja/env-vars#variables) を設定するか、[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)で実行すると、自動バックグラウンド化が無効になるため、タイムアウトに達したコマンドは代わりに停止します。
+@@ -392,6 +392,4 @@ Monitor ツールは Claude がバックグラウンドで何かを監視し、
+ ほとんどの監視では、Claude は小さなスクリプトを作成し、バックグラウンドで実行し、到着した各出力行を受け取ります。既にイベントをプッシュしているサーバーの場合、Claude はスクリプトを実行する代わりに [WebSocket](#websocket-source) を開くことができます。
+ 
+-同じセッションで作業を続けることができ、イベントが到着すると Claude が割り込みます。
+-
+ Claude が開始するすべての監視には期限があります。デフォルトでは 5 分、最大 30 分、および `-p` で単一のプロンプトが与えられた [非対話型](https://code.claude.com/docs/ja/headless.md) 実行では最大 10 分です。
+ 
+@@ -658,41 +656,114 @@ Task ツールがない場合、エージェントは[共有タスクリスト](
+ ## WebFetch ツールの動作
+ 
+-WebFetch は URL とそこから抽出する内容を説明するプロンプトを受け取ります。ページをフェッチし、サーバーが HTML を返した場合はレスポンスを Markdown に変換します。ほとんどのフェッチでは、その後、別のモデル呼び出しでコンテンツに対してプロンプトを実行し、Claude は生のページではなくその呼び出しの結果を受け取ります。変換ステップは設定できません。
++Claude は WebFetch を使用して Web ページ上の情報を調べます。URL はユーザーが指定することも、Claude が指定することもあります（たとえば [WebSearch](#websearch-tool-behavior) の結果から）。ほとんどのページでは、Claude は全文を見ません。Claude がページについて質問し、別のモデル呼び出しがページを読んで回答を返します。
+```
+
+</details>
+
+<details>
+<summary>vs-code-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/vs-code-ja.md b/docs-ja/pages/vs-code-ja.md
+index 180966a..4da46b9 100644
+--- a/docs-ja/pages/vs-code-ja.md
++++ b/docs-ja/pages/vs-code-ja.md
+@@ -653,5 +653,5 @@ Claude がコードセルを置き換えると、ファイル内のセルのソ
+ #### サブエージェントの下に Run in background アクションが表示されない
+ 
+-VS Code では、デフォルトでサブエージェントにこのアクションは表示されません。特定のサブエージェントについてその理由を確認するには、[エージェントマップ](#use-the-prompt-box)でそのカードを開き、`Spawned by` の行を確認します：
++VS Code では、デフォルトでほとんどのサブエージェントにこのアクションは表示されません。特定のサブエージェントについてその理由を確認するには、[エージェントマップ](#use-the-prompt-box)でそのカードを開き、`Spawned by` の行を確認します：
+ 
+ * **`Spawned by the main agent`**：サブエージェントはバックグラウンドで開始されたため、Claude はその完了を待っておらず、操作は必要ありません。代わりに Claude にサブエージェントを待機させるには、[Claude にサブエージェントを待機させる](https://code.claude.com/docs/ja/sub-agents.md#let-claude-wait-for-a-subagent)を参照してください。
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-11-21</summary>
 
 **変更ファイル:**
@@ -2559,252 +2764,5 @@ index 34f907f..da60dc0 100644
 ```
 
 </details>
-
-<details>
-<summary>desktop-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
-index 553bcc7..56ce934 100644
---- a/docs-ja/pages/desktop-ja.md
-+++ b/docs-ja/pages/desktop-ja.md
-@@ -149,7 +149,11 @@ Browser の保存データをクリアするには、Browser ペインの **⋮*
- #### 組織の SSH および WSL プレビューでスクリプトをオフにする
- 
--[SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableBrowserExternalNavigation` 管理設定](#managed-settings)を `true` に設定します。この設定を有効にすると、ユーザーは Browser ペインで[外部サイトを閲覧する](#restrict-external-browsing-for-your-organization)こともできなくなります。
-+[SSH および WSL セッションでの HTML プレビュー](#preview-html-files-in-ssh-and-wsl-sessions)でスクリプトが実行されないようにするには、[`disableRemotePreviewScripts` 管理設定](#managed-settings)を `true` に設定します。ユーザーは引き続き外部サイトを閲覧できます。Claude Desktop v5.1231.0 以降が必要です。
- 
--この設定は、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で行うか、Desktop を実行するコンピューター上の [Claude Code MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)で行います。Desktop はリモートマシンや WSL ディストリビューションからこの設定を読み取りません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合は、MDM ポリシーまたはファイルを使用します。
-+> [!NOTE]
-+>
-+> 以前のバージョンは `disableRemotePreviewScripts` を無視します。それらのバージョンでスクリプトを停止するには、Desktop を更新するか、`disableBrowserExternalNavigation` も `true` に設定します。その場合、`disableBrowserExternalNavigation` を受け取るすべてのコンピューターで、ユーザーは[外部サイトを閲覧できなくなります](#restrict-external-browsing-for-your-organization)。
-+
-+各キーは、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)で設定するか、Desktop を実行するコンピューター上の [Claude Code MDM ポリシーまたは管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)で設定します。Desktop は、リモートマシン、WSL ディストリビューション、[`policyHelper`](https://code.claude.com/docs/ja/settings-reference#policyhelper)、または [Desktop 独自のポリシー](#device-management-policies)からこれらのキーを読み取りません。[サードパーティプロバイダー](https://code.claude.com/docs/ja/third-party-integrations.md)を使用する場合は、MDM ポリシーまたはファイルを使用します。
- 
- > [!WARNING]
-@@ -161,8 +165,12 @@ Browser の保存データをクリアするには、Browser ペインの **⋮*
- その後、設定が確実に適用されるようにユーザーに Desktop を再起動してもらい、次の動作について伝えます：
- 
--* **ユーザーが開くファイル**：プレビューでスクリプトが実行されないため、スクリプトで描画されるグラフや表は空のままになります
-+* **ユーザーが開くファイル**：プレビューでスクリプトが実行されないため、スクリプトで描画されるグラフや表は空のままになります。通知は `This preview doesn't run scripts` で始まります。
- * **スクリプトを実行中のプレビュー**：再起動前に Desktop が設定を取得した場合、プレビューは閉じます。ユーザーには `This preview closed because scripts are turned off for previews. Open the file again to view it without scripts.` と表示されます
- * **ユーザーがエクスポートするファイル**：ユーザーが[ファイルをエクスポート](#preview-html-files-in-ssh-and-wsl-sessions)してブラウザで開いた場合、この設定の有無にかかわらず、そのファイルのスクリプトはブラウザで実行されます
- 
-+##### スクリプトがまだ実行されるコンピューターを確認する
-+
-+再起動後、そのコンピューターで SSH または WSL セッションから HTML ファイルを開きます。プレビューの上の通知が `This preview doesn't load anything from the web` で始まる場合、そのコンピューターではまだスクリプトが実行されています。[Desktop のバージョン](#check-your-version)、キーを配置した場所、およびその値が JSON のブール値 `true` であることを確認してください。
-+
-```
-
-</details>
-
-<details>
-<summary>env-vars-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/env-vars-ja.md b/docs-ja/pages/env-vars-ja.md
-index 069745e..b5b111d 100644
---- a/docs-ja/pages/env-vars-ja.md
-+++ b/docs-ja/pages/env-vars-ja.md
-@@ -244,5 +244,5 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む
- | `CLAUDE_CODE_DISABLE_CFC_PROMPT` | Claude Code を組み込み、独自のブラウザーガイダンスを提供するホスト向けです。`1` に設定すると、[Claude in Chrome](https://code.claude.com/docs/ja/chrome.md) のブラウザーツールを利用可能なままにしつつ、システムプロンプトの Chrome セクションと `/claude-in-chrome` [バンドルスキル](https://code.claude.com/docs/ja/skills.md#bundled-skills)を省略します。VS Code では、v2.1.314 以降の拡張機能は、セッションのメッセージからも Claude in Chrome の指示を除外します。Claude Code v2.1.257 以降が必要です |
- | `CLAUDE_CODE_DISABLE_CLAUDE_MDS` | `1` に設定すると、ユーザー、プロジェクト、自動メモリのファイルを含む、すべての CLAUDE.md メモリファイルをコンテキストに読み込まないようにします |
--| `CLAUDE_CODE_DISABLE_CRON` | `1` に設定すると、[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)を無効にします。`/loop` スキルと cron ツールは使用できなくなり、セッション途中ですでに実行中のタスクを含め、すでにスケジュールされたタスクは起動しなくなります |
-+| `CLAUDE_CODE_DISABLE_CRON` | `1` に設定すると、[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md#disable-scheduled-tasks) を無効にします。`/loop` スキルと `CronCreate` は使用できなくなり、セッションの途中ですでに実行中のタスクを含め、すでにスケジュールされているタスクは起動しなくなります |
- | `CLAUDE_CODE_DISABLE_DANGEROUS_RM_TIMEOUT` | `1` に設定すると、クリティカルパスの削除に対する `auto` モードと `bypassPermissions` モードの[制限時間と拒否](https://code.claude.com/docs/ja/permission-modes.md#time-limits-and-denials-in-auto-and-bypasspermissions-modes)をオフにします。その場合、これらの削除は `auto` モードでは分類器に送られ、`bypassPermissions` モードでは Claude Code が権限プロンプトを表示できる場合は常に、時間制限のない権限プロンプトが表示されます。Claude Code は設定の `env` ブロックで渡された値を無視するため、Claude Code を起動する環境で設定してください。Claude Code v2.1.281 以降が必要です |
- | `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | `1` に設定すると、プレリリースの `anthropic-beta` リクエストヘッダー、それと対になるボディフィールド、`defer_loading` や `eager_input_streaming` などのベータ版ツールスキーマフィールドを API リクエストから除去します。プロキシゲートウェイが `anthropic-beta` ヘッダーについて `Unexpected value(s)` エラー、または `Extra inputs are not permitted` エラーでリクエストを拒否する場合に使用します。[プレリリース機能を無効にする](https://code.claude.com/docs/ja/llm-gateway-protocol.md#disable-pre-release-capabilities)には、[MCP ツール検索](https://code.claude.com/docs/ja/mcp.md#scale-with-mcp-tool-search)を含めこの変数が削除するものと、Claude Code が引き続き送信するものが記載されています |
-```
-
-</details>
-
-<details>
-<summary>errors-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/errors-ja.md b/docs-ja/pages/errors-ja.md
-index c41cc76..5bc4475 100644
---- a/docs-ja/pages/errors-ja.md
-+++ b/docs-ja/pages/errors-ja.md
-@@ -2350,5 +2350,5 @@ Couldn't send feedback: Feedback has not been enabled for your organization. To
- 
- * **サインインしていない場合**：メッセージは `: not signed in. Run /login, then retry.` と続きます。`/login` を実行してから、再度送信してください。
--* **組織による拒否**：例えば `: Feedback has not been enabled for your organization.` や `: Feedback collection is not available for organizations with custom data retention policies.` です。メッセージに `To report a bug, open an issue` が追加されている場合は、[github.com/anthropics/claude-code/issues](https://github.com/anthropics/claude-code/issues) で issue を作成してください。その後 7 日間、`/feedback` は [組織のポリシーによって無効になっている](#feedback-is-disabled-by-your-organizations-policy) と応答することがあります。キューに入っているドラフトはキューに残り、引き続き [予定どおり期限切れになります](https://code.claude.com/docs/ja/tools-reference.md#discard-or-keep-a-draft)。
-+* **組織による拒否**：例えば `: Feedback has not been enabled for your organization.` や `: Feedback collection is not available for organizations with custom data retention policies.` です。その後 7 日間、`/feedback` は [組織のポリシーによって無効になっている](#feedback-is-disabled-by-your-organizations-policy) と応答することがあります。キューに入っているドラフトはキューに残り、引き続き [予定どおり期限切れになります](https://code.claude.com/docs/ja/tools-reference.md#discard-or-keep-a-draft)。
- * **拒否された認証情報**：メッセージは `: the sign-in this session uses is not allowed to send feedback` または `: the server did not accept the credentials this session uses` と続きます。Claude Code のプロンプトで `/status` を実行して、このセッションが送信するログイン、トークン、または API キーを確認してください。
- * **`Couldn't send feedback` の直後に `(request timed out)` または `(couldn't reach the service)` がある場合**：レポートまたはキューに入っているドラフトを再度送信してください。ダイアログはテキストを保持し、キューに入っているドラフトのメッセージには `The draft is still queued.` と表示されます。他のリクエストも失敗している場合は、ネットワーク接続を確認し、[Unable to connect to API](#unable-to-connect-to-api) を参照してください。失敗し続ける場合は、[github.com/anthropics/claude-code/issues](https://github.com/anthropics/claude-code/issues) でレポートを提出してください。
-@@ -6623,5 +6623,5 @@ Windows では、`grep` コマンドを含む文の代わりに `The one with ha
- **2. ホームディレクトリを共有するすべてのホストを更新する**
- 
--複数のホストがこのホームディレクトリを共有している場合は、まずすべてのホストで Claude Code をメッセージに示されたバージョン以降に更新します。古いバージョンでは、移動した `.config.json` が書き戻される可能性があります。
-+複数のホストがこのホームディレクトリを共有している場合は、まずすべてのホストで Claude Code をメッセージに示されたバージョン以降に更新します。
- 
- **3. Claude Code を停止する**
-```
-
-</details>
-
-<details>
-<summary>glossary-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/glossary-ja.md b/docs-ja/pages/glossary-ja.md
-index 8946191..77854d5 100644
---- a/docs-ja/pages/glossary-ja.md
-+++ b/docs-ja/pages/glossary-ja.md
-@@ -55,5 +55,5 @@ Claude が自分自身のために書いたメモ。あなたの修正と設定
- ### Auto mode
- 
--[permission mode](#permission-mode) の一種。ユーザーの代わりに別の分類器モデルがアクションをレビューするため、Claude Code はほとんどのアクションを確認なしで実行します。明示的な ask ルールに一致するアクションについては、Claude Code は引き続き実行前に確認を求めます。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。分類器が見る内容からはツール結果が除去されるため、ファイルや Web ページ内の悪意のあるコンテンツが分類器を直接操作することはできません。
-+[permission mode](#permission-mode) の一種。ユーザーの代わりに別の分類器モデルがアクションをレビューするため、Claude Code はほとんどのアクションを確認なしで実行します。明示的な ask ルールに一致するアクションについては、Claude Code は引き続き実行前に確認を求めます。分類器はスコープエスカレーション、信頼されていないインフラストラクチャ、および [prompt injection](#prompt-injection) をブロックします。
- 
- * **Claude Code v2.1.283 以降**: auto モードは、インタラクティブなターミナルセッションと VS Code セッションの [built-in starting permission mode](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in) です
-@@ -262,5 +262,5 @@ Claude Code がその設定をロードする前に、ディレクトリを受
- ### Prompt injection
- 
--ファイル、ウェブページ、またはツール結果に埋め込まれた敵対的な指示。Claude を、あなたが決して求めなかったアクションにリダイレクトしようとします。Claude Code の防御には、権限システム、コマンドインジェクション検出、信頼検証が含まれます。[Auto mode](#auto-mode) は、ツール結果の疑わしいコンテンツをスキャンするサーバー側プローブと、ツール結果を見ない分類器を追加します。そのため、注入されたテキストが直接それを操作することはできません。
-+ファイル、ウェブページ、またはツール結果に埋め込まれた敵対的な指示で、ユーザーが求めていないアクションへ Claude を誘導しようとするもの。Claude Code の防御には、権限システム、コマンドインジェクション検出、信頼検証が含まれます。[auto モード](#auto-mode) では、サーバー側のプローブがツール結果をスキャンして疑わしいコンテンツを検出し、分類器がアクションをレビューします。
- 
- 詳細情報: [Prompt injection から保護する](https://code.claude.com/docs/ja/security.md#protect-against-prompt-injection)
-```
-
-</details>
-
-<details>
-<summary>hooks-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/hooks-ja.md b/docs-ja/pages/hooks-ja.md
-index 2ea0b90..c2da33d 100644
---- a/docs-ja/pages/hooks-ja.md
-+++ b/docs-ja/pages/hooks-ja.md
-@@ -2342,5 +2342,5 @@ v2.1.319 より前では、メッセージでターンを中断した後にフ
- #### auto モードの分類器向けに結果に注釈を付ける
- 
--`classifierContext` を返すと、ツール呼び出しの結果に関する短いメモを、Claude ではなく [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器に送信できます。分類器は[ツールの結果そのものを受け取ることはない](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)ため、このフィールドは、分類器が後続のアクションを審査する前に、呼び出しが返した内容について伝えるためのサポートされた方法です。このフィールドには Claude Code v2.1.236 以降が必要です。
-+`classifierContext` を返すと、ツール呼び出しの結果に関する短い注記を Claude ではなく [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)分類器に送信できます。この注記は、分類器が後続のアクションをレビューする際に使用されます。このフィールドには Claude Code v2.1.236 以降が必要です。
- 
- 次の例は、クエリの出力がどこから得られたかを分類器に伝えます。
-```
-
-</details>
-
-<details>
-<summary>model-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/model-config-ja.md b/docs-ja/pages/model-config-ja.md
-index 1ffc5c0..dba1cb7 100644
---- a/docs-ja/pages/model-config-ja.md
-+++ b/docs-ja/pages/model-config-ja.md
-@@ -169,5 +169,5 @@ v2.1.144 から v2.1.152 では、`/model` は現在のセッションにのみ
- メッセージについては、[Model is not a recognized model id](https://code.claude.com/docs/ja/errors.md#model-is-not-a-recognized-model-id) および [Model not found](https://code.claude.com/docs/ja/errors.md#model-not-found) を参照してください。
- 
--`--model` フラグ、`ANTHROPIC_MODEL` 環境変数、または `model` 設定でモデルを設定した場合、Claude Code は誤入力された値を事前に拒否しません。セッションは開始され、最初のリクエストで [There's an issue with the selected model](https://code.claude.com/docs/ja/errors.md#theres-an-issue-with-the-selected-model) が発生します。Anthropic API では、`claude-` で始まらず、モデル名またはエイリアスに近いつづりの値の場合、[正しい候補を示す起動時の警告](#fix-a-mistyped-model-name)が表示されることもあります。
-+`--model` フラグ、`ANTHROPIC_MODEL` 環境変数、または `model` 設定でモデルを設定した場合、Claude Code は誤入力された値を事前に拒否しません。セッションは開始され、最初のリクエストで [There's an issue with the selected model](https://code.claude.com/docs/ja/errors.md#theres-an-issue-with-the-selected-model) が発生します。Anthropic API では、`claude-` で始まらず、モデル名またはエイリアスに近いつづりの値の場合、[最も近い名前を提案する警告](#fix-a-mistyped-model-name)が表示されることがあります。
- 
- 要求されたモデルに廃止予定日が設定されている場合、または新しいバージョンに自動的に再マッピングされる場合、Claude Code は要求されたモデル名を示す警告を表示します。対話セッションでは、起動時の通知として表示されます。v2.1.182 以降、デフォルトのテキスト出力形式を使用している場合、[非対話モード](https://code.claude.com/docs/ja/headless.md)でも同じ警告が stderr に書き込まれます。このチェックは、[サブエージェントのフロントマター](https://code.claude.com/docs/ja/sub-agents.md)で設定された `model` も対象とします。`--output-format json` および `stream-json` では stderr への警告は抑制されます。代わりに、[結果メッセージ](https://code.claude.com/docs/ja/headless.md#get-structured-output)の `modelUsage` フィールドから実際のモデルを読み取ってください。
-@@ -196,4 +196,16 @@ claude --model opus
- ```
- 
-+#### 誤入力されたモデル名を修正する
-+
-+次のいずれかの警告は、設定したモデル ID を Claude Code が認識しておらず、その ID が Claude Code が認識するモデル名またはエイリアスに近いつづりであることを意味します。
-+
-+```text theme={null}
-+⚠ Model "<model>" isn't recognized · did you mean "<suggestion>"?
-+Claude Code doesn't recognize the model "<model>". Did you mean "<suggestion>"?
-+```
-+
-+* **ID を誤入力した場合**: [モデルを設定した場所](#setting-your-model)で、提案された値に変更します
-+* **ID が意図的なものである場合**: そのままにしておきます。セッションは記述したとおりにその ID を送信します。Claude Code がその ID に対して想定するコンテキストウィンドウが誤っている場合は、[ウィンドウを修正](#correct-the-window-for-a-gateway-or-custom-model-id)します
-+
- #### 新しいセッションのデフォルトモデルを設定する
- 
-@@ -773,9 +785,16 @@ Opus 4.6 と Sonnet 4.6 では、`CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING=1` を
- | 現在のセッションで切り替える | macOS では `Option+T`、Windows と Linux では `Alt+T` を押します |
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-11-11</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/admin-setup-ja.md                    |   2 +-
- docs-ja/pages/advisor-ja.md                        |   9 +-
- docs-ja/pages/agent-view-ja.md                     |   4 +-
- docs-ja/pages/amazon-bedrock-ja.md                 |   4 +-
- docs-ja/pages/artifacts-ja.md                      |  21 +-
- docs-ja/pages/auto-mode-classifier-billing-ja.md   |   2 +-
- docs-ja/pages/auto-mode-config-ja.md               |   8 +-
- docs-ja/pages/channels-reference-ja.md             |   2 +-
- docs-ja/pages/claude-apps-gateway-config-ja.md     |   8 +-
- docs-ja/pages/claude-apps-gateway-deploy-ja.md     |   4 +-
- docs-ja/pages/claude-apps-gateway-ja.md            | 224 ++---
- .../pages/claude-apps-gateway-spend-limits-ja.md   |   2 +-
- docs-ja/pages/claude-code-on-the-web-ja.md         |   7 +-
- docs-ja/pages/claude-directory-ja.md               |   9 +-
- docs-ja/pages/claude-platform-on-aws-ja.md         |   4 +-
- docs-ja/pages/claude-projects-ja.md                |  50 +-
- docs-ja/pages/claude-security-ja.md                |   8 +-
- docs-ja/pages/cloud-environments-ja.md             |  32 +-
- docs-ja/pages/code-review-local-ja.md              |   4 +-
- docs-ja/pages/commands-ja.md                       |   4 +-
- docs-ja/pages/costs-ja.md                          |  12 +-
- docs-ja/pages/desktop-ios-simulator-ja.md          |   4 +-
- docs-ja/pages/desktop-ja.md                        |   4 +-
- docs-ja/pages/env-vars-ja.md                       |  19 +-
- docs-ja/pages/errors-ja.md                         | 897 ++++++++++++---------
- docs-ja/pages/fast-mode-ja.md                      |  58 +-
- docs-ja/pages/feature-availability-ja.md           |  13 +-
- docs-ja/pages/gateways-ja.md                       |   2 +-
- docs-ja/pages/github-enterprise-server-ja.md       |   2 +-
- docs-ja/pages/goal-ja.md                           |   3 +-
- docs-ja/pages/google-vertex-ai-ja.md               |   4 +-
- docs-ja/pages/hooks-ja.md                          |  32 +-
- docs-ja/pages/interactive-mode-ja.md               |   4 +-
- docs-ja/pages/keybindings-ja.md                    | 372 ++++-----
- docs-ja/pages/large-codebases-ja.md                |   2 +-
- docs-ja/pages/llm-gateway-connect-ja.md            |   4 +-
- docs-ja/pages/llm-gateway-ja.md                    |   2 +-
- docs-ja/pages/llm-gateway-protocol-ja.md           |   6 +-
- docs-ja/pages/llm-gateway-rollout-ja.md            |   2 +-
- docs-ja/pages/managed-mcp-ja.md                    |   2 +-
- docs-ja/pages/managed-settings-ja.md               |   2 +-
- docs-ja/pages/mcp-ja.md                            | 524 ++++++------
- docs-ja/pages/memory-ja.md                         |   2 +-
- docs-ja/pages/model-config-ja.md                   |   4 +-
- docs-ja/pages/monitoring-usage-ja.md               | 721 +++++++++--------
- docs-ja/pages/permission-modes-ja.md               |   8 +-
- docs-ja/pages/permissions-ja.md                    |   2 +
- docs-ja/pages/prompt-caching-ja.md                 |   2 +-
- docs-ja/pages/quickstart-ja.md                     |  12 +-
- docs-ja/pages/remote-control-ja.md                 |  19 +-
- docs-ja/pages/routines-ja.md                       |  10 +-
- docs-ja/pages/sandbox-environments-ja.md           |   5 +-
- docs-ja/pages/sandboxing-ja.md                     |   2 +-
- docs-ja/pages/scheduled-tasks-ja.md                |   6 +-
- docs-ja/pages/security-guidance-ja.md              |   6 +-
- .../self-hosted-environments-configuration-ja.md   |   4 +-
- .../pages/self-hosted-environments-deploy-ja.md    |   8 +-
- .../pages/self-hosted-environments-reference-ja.md | 224 ++---
- .../pages/self-hosted-environments-testing-ja.md   |   2 +-
- docs-ja/pages/server-managed-settings-ja.md        |  51 +-
- docs-ja/pages/settings-example-ja.md               |  55 +-
- docs-ja/pages/settings-ja.md                       |   4 +-
- docs-ja/pages/terminal-config-ja.md                |  24 +-
- docs-ja/pages/troubleshoot-install-ja.md           |  20 +-
- docs-ja/pages/web-quickstart-ja.md                 |   8 +-
- docs-ja/pages/workflows-ja.md                      |  14 +-
- docs-ja/pages/zero-data-retention-ja.md            |   6 +-
- 67 files changed, 1952 insertions(+), 1645 deletions(-)
-```
 
 <!-- UPDATE_LOG_END -->

@@ -2596,9 +2596,9 @@ Claude Code が通知を送信するときに実行されます。通知タイ�
 >
 > * `permission_prompt` は、ユーザーが約 6 秒間入力していないときに発火します。タイマーは権限プロンプトが表示されたときに開始され、キー入力のたびに延期されます。Claude がツールの使用権限を求めたときにすぐにフックを実行するには、代わりに [PermissionRequest](#permissionrequest) を使用してください。
 > * `idle_prompt` は、Claude が応答を完了してから約 60 秒後に発火します。ただし、それ以降ユーザーが入力しておらず、バックグラウンドの[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)などのバックグラウンドエージェントが実行中でない場合に限ります。claude.ai の使用制限のリセットを待っている間、Claude Code は `idle_prompt` を送信しません。待機が自然に終了すると、代わりに `quota_auto_resume_*` タイプのいずれかが発火します。
-> * `elicitation_dialog`（elicitation フォームの場合）または `elicitation_url_dialog`（ブラウザの URL リクエストの場合）は、ユーザーが約 6 秒間入力していないときに発火します。どちらも `permission_prompt` と同じ 6 秒間の条件を共有しており、タイマーはダイアログが表示されたときに開始され、キー入力のたびに延期されます。
+> * elicitation フォームの場合は `elicitation_dialog`、ブラウザ URL のリクエストの場合は `elicitation_url_dialog` が、約 6 秒間入力がなかった時点で発生します。
 >
-> 別のダイアログが画面に表示されている間に届いた権限リクエストや elicitation にも、同じ 6 秒間の条件が適用され、タイマーはリクエストが届いた時点から計測されます。そのため、リクエストが開いているダイアログの後ろで待機している間に、その通知が届くことがあります。
+> 別のダイアログが画面に表示されている間に届いた権限リクエストや elicitation も、リクエストが届いた時点から計測される同じ 6 秒のタイミングを維持します。その通知は、リクエストが開いているダイアログの後ろでまだ待機している間に届くことがあります。
 
 Claude Code が権限リクエストを Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input)に送信するセッションでは、`permission_prompt` のタイミングが異なります。これは、Claude Desktop と VS Code 拡張機能が Claude Code をホストする方法です。
 
@@ -2652,13 +2652,17 @@ v2.1.233 より前では、これらのセッションで `permission_prompt` �
 }
 ```
 
-Notification フックは、通知をブロックしたり変更したりすることはできません。Claude Code はこれらのフックの `systemMessage` と `continue` フィールドを破棄しますが、[`terminalSequence`](#emit-terminal-notifications) は引き続き出力します。デスクトップ通知の例はこれを利用しています。Notification フックは、通知を外部サービスに転送するなどの副作用を目的としています。
+Notification フックは通知をブロックしたり変更したりできません。Claude Code はそれらの `systemMessage` と `continue` フィールドを破棄しますが、[`terminalSequence`](#emit-terminal-notifications) は引き続き出力します。
 
 ### SubagentStart
 
 Claude が Agent ツールでサブエージェントを生成したとき、Claude が[サブエージェントを再開](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)したとき、およびプロセス内の[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)のチームメイトが新しいメッセージを処理するたびに実行されます。エージェントタイプ名でフィルタリングする matcher をサポートしています。組み込みエージェントの場合、これは `general-purpose`、`Explore`、`Plan` などのエージェント名です。[カスタムサブエージェント](https://code.claude.com/docs/ja/sub-agents.md)の場合は、ファイル名ではなく、エージェントのフロントマターの `name` フィールドです。
 
 [プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)に含まれるサブエージェントの場合、エージェントタイプは素のフロントマターの名前ではなく、`my-plugin:reviewer` のようなプラグインスコープの識別子になります。コロンが含まれるとプラグインスコープの名前は正規表現として扱われるため、完全一致させるには matcher を `^` と `$` で固定してください（`^my-plugin:reviewer$`）。
+
+> [!NOTE]
+>
+> 組み込みの [`web-fetch` サブエージェント](https://code.claude.com/docs/ja/tools-reference#web-fetch-subagent)については、Claude Code は管理設定の `SubagentStart` フックのみを実行します。それ以外の場所で設定したフックの場合は、代わりに `PreToolUse` フックで `WebFetch` をマッチさせてください。
 
 #### SubagentStart の入力
 
@@ -2690,17 +2694,21 @@ SubagentStart フックはサブエージェントの作成をブロックでき
 }
 ```
 
-同じサブエージェントに対してフックが再度実行された場合、Claude Code は、サブエージェントのコンテキストに以前の実行時のコピーがまだ含まれていない場合にのみ、返されたコンテキストを注入します。起動時に注入されたコピーはそのまま残るため、サブエージェントの[プロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#subagents-and-the-cache)は維持されます。[自動圧縮](https://code.claude.com/docs/ja/sub-agents.md#auto-compaction)によってそのコピーが破棄された後は、Claude Code は次の実行時のコンテキストを再び注入します。
+同じサブエージェントに対してフックが再度実行された場合、Claude Code は、サブエージェントのコンテキストに以前の実行時のコピーがまだ含まれていない場合にのみ、返されたコンテキストを注入します。[自動圧縮](https://code.claude.com/docs/ja/sub-agents.md#auto-compaction)によってそのコピーが破棄された後は、Claude Code は次の実行のコンテキストを再度注入します。
 
 ### SubagentStop
 
 Claude Code のサブエージェントが応答を完了したときに実行されます。エージェントタイプで照合します。値は SubagentStart と同じです。
 
+> [!NOTE]
+>
+> 組み込みの [`web-fetch` サブエージェント](https://code.claude.com/docs/ja/tools-reference#web-fetch-subagent)については、Claude Code は管理設定の `SubagentStop` フックのみを実行します。それ以外の場所で設定したフックの場合は、代わりに `PostToolUse` フックで `WebFetch` をマッチさせてください。
+
 #### SubagentStop の入力
 
-[共通入力フィールド](#common-input-fields)に加えて、SubagentStop フックは `stop_hook_active`、`agent_id`、`agent_type`、`agent_transcript_path`、`last_assistant_message` を受け取ります。`agent_type` フィールドは、matcher のフィルタリングに使用される値です。`transcript_path` はメインセッションのトランスクリプトであり、`agent_transcript_path` はネストされた `subagents/` フォルダに保存されているサブエージェント自身のトランスクリプトです。`last_assistant_message` フィールドにはサブエージェントの最終応答のテキスト内容が含まれるため、フックはトランスクリプトファイルを解析せずにアクセスできます。
+[共通の入力フィールド](#common-input-fields)に加えて、SubagentStop フックは `stop_hook_active`、`agent_id`、`agent_type`、`agent_transcript_path`、`last_assistant_message` を受け取ります。`transcript_path` はメインセッションのトランスクリプトであり、`agent_transcript_path` はネストされた `subagents/` フォルダに保存されたサブエージェント自身のトランスクリプトです。`last_assistant_message` フィールドには、サブエージェントの最終応答のテキスト内容が含まれます。
 
-すべての SubagentStop イベントが、Claude が生成したサブエージェントに由来するわけではありません。Claude Code は、[プロンプトの提案](https://code.claude.com/docs/ja/interactive-mode.md#prompt-suggestions)や [`/btw` による横道の質問](https://code.claude.com/docs/ja/interactive-mode#side-questions-with-%2Fbtw)など、一部の独自機能のために内部エージェントも実行しており、それらが完了したときにも SubagentStop が発火します。これらのイベントでは、`agent_type` は [`--agent`](https://code.claude.com/docs/ja/cli-reference#cli-flags) や [`agent` 設定](https://code.claude.com/docs/ja/settings-reference#agent)で設定されたものなど、セッション自体が実行されているエージェント名になり、セッションがエージェントなしで実行されている場合は空文字列になります。
+Claude Code は、[プロンプトの提案](https://code.claude.com/docs/ja/interactive-mode.md#prompt-suggestions)や [`/btw` によるサイドクエスチョン](https://code.claude.com/docs/ja/interactive-mode#side-questions-with-%2Fbtw)など、自身の一部の機能のために内部エージェントを実行しており、それらのいずれかが終了したときにも SubagentStop が発火します。これらのイベントの場合、`agent_type` は、[`--agent`](https://code.claude.com/docs/ja/cli-reference#cli-flags) や [`agent` 設定](https://code.claude.com/docs/ja/settings-reference#agent)で設定されたものなど、セッション自体が実行されているエージェントの名前であり、セッションがエージェントなしで実行されている場合は空文字列になります。
 
 エージェントタイプを指定する `matcher` は、空の `agent_type` には一致しません。matcher が省略されているフック、`""` または `"*"` のフック、あるいは空文字列に一致する正規表現のフックは、`agent_type` が空のイベントでも実行されます。
 
@@ -2725,7 +2733,7 @@ SubagentStop フックは、[Stop の入力](#stop-input)で説明している `
 }
 ```
 
-SubagentStop フックは、[Stop フック](#stop-decision-control)と同じ決定制御の形式を使用します。これには、サブエージェントの実行を継続させるエラー以外のフィードバックとして、`hookEventName` を `"SubagentStop"` に設定した `hookSpecificOutput.additionalContext` も含まれます。`reason` とともに `decision: "block"` を返すと、サブエージェントの実行が継続され、`reason` が次の指示としてサブエージェントに配信されます。終了コード 2 で終了してブロックするフックも、同じ方法で stderr メッセージを配信します。サブエージェントが戻った後に親セッションにコンテキストを注入するには、代わりに `Agent` ツールに対する [`PostToolUse`](#posttooluse) フックを使用してください。
+SubagentStop フックは [Stop フック](#stop-decision-control)と同じ決定制御の形式を使用します。これには、サブエージェントの実行を継続させるエラーではないフィードバック用の、`hookEventName` を `"SubagentStop"` に設定した `hookSpecificOutput.additionalContext` も含まれます。`reason` とともに `decision: "block"` を返すと、サブエージェントの実行が継続され、`reason` が次の指示としてサブエージェントに配信されます。サブエージェントが戻った後に親セッションにコンテキストを注入するには、代わりに `Agent` ツールに対する [`PostToolUse`](#posttooluse) フックを使用してください。
 
 ### TaskCreated
 
@@ -2946,7 +2954,7 @@ Claude Code は連続 8 回の継続上限を適用します。Stop フックが
 
 ### StopFailure
 
-API エラーによってターンが終了したときに、[Stop](#stop) の代わりに実行されます。Claude Code は、[`terminalSequence`](#emit-terminal-notifications) を除き、フックの出力と終了コードを無視します。レート制限、認証の問題、その他の API エラーによって Claude が応答を完了できない場合に、失敗のログ記録、アラートの送信、復旧アクションの実行に使用します。
+API エラーによってターンが終了したときに、[Stop](#stop) の代わりに実行されます。Claude Code は、[`terminalSequence`](#emit-terminal-notifications) を除き、フックの出力と終了コードを無視します。失敗をログに記録したり、アラートを送信したり、復旧のためのアクションを実行したりするために使用します。
 
 #### StopFailure の入力
 
@@ -2970,7 +2978,7 @@ API エラーによってターンが終了したときに、[Stop](#stop) の�
 }
 ```
 
-StopFailure フックには決定制御がありません。通知とログ記録の目的でのみ実行されます。
+StopFailure フックには決定制御はありません。
 
 ### TeammateIdle
 
@@ -3456,7 +3464,7 @@ Claude Code がコンテキスト圧縮の操作を完了した後に実行さ�
 }
 ```
 
-PostCompact フックには判定の制御がありません。圧縮の結果に影響を与えることはできませんが、後続のタスクを実行できます。
+PostCompact フックには判定制御がありません。
 
 ### PreModelSwitch
 

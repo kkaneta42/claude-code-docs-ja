@@ -110,7 +110,7 @@ Agent ツールは、別のコンテキストウィンドウでサブエージ�
 * **チームメイト**: [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md) が有効な場合、`name` を持つ呼び出しは代わりに [チームメイト](https://code.claude.com/docs/ja/agent-teams.md#how-claude-starts-agent-teams) を起動できます。チームメイトは結果を返すのではなく、チームメッセージを通じて報告します
 * **フォーク**: [フォークモード](https://code.claude.com/docs/ja/sub-agents.md#turn-fork-mode-on-or-off) がオンの場所では、このツールは [フォークされたサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation) を起動できます。フォークされたサブエージェントは、新規に開始する代わりに親の会話全体を継承します
 
-サブエージェントが実行するターン数を制限するには、[subagent definition](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields) で `maxTurns` を設定します。サブエージェントが制限に達すると、Claude Code は返された結果を部分的な出力としてマークし、Claude は [subagent を再開](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents) して続行することができます。
+サブエージェントが実行するターン数を制限するには、[サブエージェント定義](https://code.claude.com/docs/ja/sub-agents.md#supported-frontmatter-fields) で `maxTurns` を設定します。
 
 非フォーク subagent が使用できるツールは、[subagent definition](https://code.claude.com/docs/ja/sub-agents.md) の `tools` フィールドと `disallowedTools` フィールドに依存します。
 
@@ -219,7 +219,7 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 
 #### フォアグラウンドコマンドがバックグラウンドに移動する
 
-フォアグラウンドコマンドが完了せずにタイムアウトに達すると、Claude Code はそれを停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。移動されたコマンドの[時間制限](#time-limit-for-background-commands)は移動からカウントされ、フォアグラウンドサブエージェントの移動されたコマンドはそのサブエージェントの実行が終了すると停止します。
+フォアグラウンドコマンドが完了せずにタイムアウトに達すると、Claude Code はそれを停止する代わりにバックグラウンドに移動します。ただし、コマンドが `sleep` で始まる場合は除きます。
 
 [`CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`](https://code.claude.com/docs/ja/env-vars#variables) を設定するか、[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)で実行すると、自動バックグラウンド化が無効になるため、タイムアウトに達したコマンドは代わりに停止します。
 
@@ -390,8 +390,6 @@ Monitor ツールは Claude がバックグラウンドで何かを監視し、�
 * WebSocket フィードに接続して、到着した各メッセージを報告する
 
 ほとんどの監視では、Claude は小さなスクリプトを作成し、バックグラウンドで実行し、到着した各出力行を受け取ります。既にイベントをプッシュしているサーバーの場合、Claude はスクリプトを実行する代わりに [WebSocket](#websocket-source) を開くことができます。
-
-同じセッションで作業を続けることができ、イベントが到着すると Claude が割り込みます。
 
 Claude が開始するすべての監視には期限があります。デフォルトでは 5 分、最大 30 分、および `-p` で単一のプロンプトが与えられた [非対話型](https://code.claude.com/docs/ja/headless.md) 実行では最大 10 分です。
 
@@ -657,49 +655,122 @@ Task ツールがない場合、エージェントは[共有タスクリスト](
 
 ## WebFetch ツールの動作
 
-WebFetch は URL とそこから抽出する内容を説明するプロンプトを受け取ります。ページをフェッチし、サーバーが HTML を返した場合はレスポンスを Markdown に変換します。ほとんどのフェッチでは、その後、別のモデル呼び出しでコンテンツに対してプロンプトを実行し、Claude は生のページではなくその呼び出しの結果を受け取ります。変換ステップは設定できません。
+Claude は WebFetch を使用して Web ページ上の情報を調べます。URL はユーザーが指定することも、Claude が指定することもあります（たとえば [WebSearch](#websearch-tool-behavior) の結果から）。ほとんどのページでは、Claude は全文を見ません。Claude がページについて質問し、別のモデル呼び出しがページを読んで回答を返します。
 
-これにより WebFetch は設計上、情報損失が発生します。抽出プロンプトが Claude に到達する内容を決定するため、ページがあるものについて言及していないという結果は、単にプロンプトがそれについて尋ねなかったことを意味するだけかもしれません。Claude に別のより具体的なプロンプトでもう一度フェッチするよう依頼するか、Bash 経由で `curl` を使用して未処理のページを取得してください。
+### ドメインを許可する
 
-Claude が受け取るレスポンスを形作るいくつかの動作があります。
+ターミナルと VS Code のセッションは[デフォルトで auto モードで開始します](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-session-starts-in)。auto モードでは、`ask` ルールに一致するドメインを除き、フェッチ前にプロンプトは表示されません。代わりに[分類器](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)がフェッチを確認し、ブロックすることがあります。Manual モードと `acceptEdits` モードでは、Claude Code が権限を求めます。
 
-* WebFetch は `localhost` およびドットのない他のホスト名（ベアなイントラネット名など）をリクエストを行う前に拒否します。[返されるエラー](https://code.claude.com/docs/ja/errors.md#webfetch-cannot-fetch-localhost) は Claude に Bash 経由で `curl` を使用してローカルサーバーに到達するよう指示します。
-* HTTP URL は自動的に HTTPS にアップグレードされます。
-* WebFetch は 1 回の呼び出しにつき、ページのコンテンツを最大 100,000 文字まで読み取ります。Claude Code v2.1.290 以降では、より長いページの結果で読み取られなかった量が Claude に伝えられるため、Claude は次の部分をフェッチできます。
-* WebFetch はデフォルトで各レスポンスを 15 分間キャッシュするため、同じ URL の繰り返しフェッチは迅速に返されます。Claude Code v2.1.233 以降では、[`CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定して、WebFetch が各レスポンスを保持する期間を変更できます。
-* ページが 5 分以内（WebFetch が従うリダイレクトを含む）にダウンロードを完了しない場合、デッドラインエラーで失敗します。Claude Code v2.1.268 以降では、[`CLAUDE_CODE_WEBFETCH_DEADLINE_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定して制限を変更するか、`0` に設定して削除できます。
-* URL が別のホストにリダイレクトされる場合、WebFetch はそれに従う代わりに、元の URL とリダイレクト先を名前で示すテキスト結果を返します。その後 Claude は 2 番目の WebFetch 呼び出しで新しい URL をフェッチします。
-* 抽出ステップが過負荷の API にヒットした場合、Claude Code はバックオフで再試行します。それでも失敗するフェッチはエラー結果を返します。
+事前にドメインを承認するには、[設定ファイル](https://code.claude.com/docs/ja/settings.md)に許可ルールを追加するか、プロンプトに **Yes, and don't ask again for `<domain>`** が表示されたときにそれを選択します。次の例では `example.com` を許可します。
 
-Manual および `acceptEdits` [権限モード](https://code.claude.com/docs/ja/permission-modes.md) では、WebFetch はフェッチ前にプロンプトを表示します。ただし、[権限ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions) で既に許可または拒否されているドメインと、プロンプトなしでフェッチされる事前承認済みドキュメンテーションドメインの組み込みセットは例外です。ルールが許可するものが何であれ、フェッチは最初に [WebFetch ドメイン安全性チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check) に合格する必要があります。そのセクションではチェックが送信する内容とそれをスキップする設定について説明しています。プロンプトは 3 つのオプションを提供します。
+```json theme={null}
+{
+  "permissions": {
+    "allow": ["WebFetch(domain:example.com)"]
+  }
+}
+```
 
-* **Yes**: このフェッチのみを承認します。次の WebFetch 呼び出しは、同じドメインであってもプロンプトを再度表示します。
-* **Yes, and don't ask again for `<domain>`**: フェッチを承認し、そのドメインの `WebFetch(domain:...)` 許可ルールをそのリポジトリの `.claude/settings.local.json` に保存します。[保存された承認の永続化方法](https://code.claude.com/docs/ja/permissions.md#permission-system) を参照してください。組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/permissions#managed-only-settings) を設定している場合、Claude Code はこのオプションを非表示にします。
-* **No, and tell Claude what to do differently**: フェッチを拒否します。
+確認するには、セッションで `/permissions` を実行します。ダイアログにルールが一覧表示されます。ルールを選択すると、どの設定から来ているかを確認できます。
 
-プロンプトなしで事前にドメインを許可するには、`WebFetch(domain:example.com)` のような許可ルールを追加します。`WebFetch(domain:*)` はすべてのドメインを許可します。`auto` および `bypassPermissions` [権限モード](https://code.claude.com/docs/ja/permissions.md#permission-modes) はプロンプトをスキップします。ただし、明示的な `ask` ルールが一致するドメインは除きます。
+| 許可する対象 | 使用するルール |
+| :- | :- |
+| 1 つのドメイン | `WebFetch(domain:example.com)` |
+| そのサブドメイン | `WebFetch(domain:*.example.com)` |
+| すべてのサイト | `WebFetch` または `WebFetch(domain:*)`。[2 つの違い](https://code.claude.com/docs/ja/permissions.md#allow-or-deny-every-fetch)を参照してください。 |
 
-`deny`、`ask`、または `allow` の明示的な `WebFetch(domain:...)` ルールは事前承認セットより優先されるため、事前承認されたドメインをブロックするか、そのドメインに対してプロンプトを要求できます。
+`domain:` 許可ルールがあると、[サンドボックス化された Bash コマンド](https://code.claude.com/docs/ja/sandboxing.md#network-isolation)もそのドメインに到達できます。ただし、[サンドボックスロック](https://code.claude.com/docs/ja/sandboxing.md#keep-developers-from-widening-the-policy)によってサンドボックスがルールを無視する場合を除きます。
 
-URL が claude.ai の [アーティファクト](https://code.claude.com/docs/ja/artifacts.md) リンクである場合、Claude Code はアーティファクト自体を読み取るための承認を求めることもあります。承認を求めるケースについては、[共有されたアーティファクトを読む](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you) を参照してください。
+### サイトをブロックする、または WebFetch をオフにする
+
+| 目的 | 方法 |
+| :- | :- |
+| ドメインをブロックする | そのドメインの `WebFetch(domain:...)` ルールを `deny` に追加します |
+| ドメインに対してプロンプトを必須にする | そのドメインの `WebFetch(domain:...)` ルールを `ask` に追加します |
+| WebFetch をオフにする | `WebFetch` を `deny` に追加するか、[`CLAUDE_CODE_DISABLE_WEB_FETCH`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定します |
+| 組織全体でこれらのいずれかを行う | ルールを[管理設定](https://code.claude.com/docs/ja/managed-settings.md)に配置します |
+
+サンドボックスの外では、Bash が許可されている場合、Claude は引き続き `curl`、`wget`、その他のツールを使用して任意の URL に到達できます。[ツール固有の権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)を参照してください。
+
+### フェッチでプロンプトが表示される、フェッチが失敗する、または WebFetch がない場合
+
+Claude の返答では、Claude が質問しなかったページ上の内容が省かれることがあります。ターミナルでは、`Ctrl+O` を押すと、Claude が何を質問し、どのような回答を受け取ったかを確認できます。
+
+| 気づいた現象 | 対処方法 |
+| :- | :- |
+| ページにあるとわかっている内容について、ページに記載されていないと Claude が言う | Claude にページをもう一度フェッチするよう依頼し、何を探すべきかを伝えます。生のページを取得するには、Bash ツール経由で URL に対して `curl` を実行するよう依頼します。 |
+| Claude が長いページの末尾を省く、またはページの一部が読み取られなかったと言う | Claude にページの次の部分をフェッチするよう依頼します。これには Claude Code v2.1.290 以降が必要です。[`web-fetch` サブエージェント](#web-fetch-subagent)は約 48,000 文字までのページを全文読み取り、Claude が WebFetch を呼び出した場合、WebFetch は最初の 100,000 文字を読み取ります。 |
+| Claude が最近の変更前の状態でページを説明する | WebFetch はページのコピーを 15 分間再利用します。期間を変更するには、[`CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。 |
+| ダウンロードが時間切れになったと Claude が言う | ダウンロードは 5 分経過すると失敗します。制限を変更するには、[`CLAUDE_CODE_WEBFETCH_DEADLINE_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。 |
+| Claude がリダイレクトを報告し、そこで停止する | Claude に新しい URL をフェッチするよう依頼します。リダイレクトによって `www.` の追加または削除以上にホストが変わる場合、WebFetch は新しい URL を返し、ページのコンテンツは返しません。 |
+| Claude がローカルサーバーやイントラネットサーバーをフェッチできない | WebFetch は [`localhost` を拒否し](https://code.claude.com/docs/ja/errors#webfetch-cannot-fetch-localhost)、ドットを含まないその他のホスト名も拒否します。Bash ツール経由で `curl` を使ってサーバーに到達するよう Claude に依頼します。 |
+| クラウドセッションで、ネットワークがドメインをブロックしていると Claude が言う | クラウドセッションでは許可ルールだけでは不十分です。クラウド環境のネットワークアクセスにも[ドメインを追加](https://code.claude.com/docs/ja/cloud-environments.md#allow-specific-domains)します。 |
+| auto モードでフェッチがブロックされ、プロンプトが表示されない | ドメインの許可ルールを追加します。分類器がフェッチをブロックした場合は、ターミナルで `/permissions` を開き、**Recently blocked** タブで[フェッチを承認](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)して、Claude が再試行できるようにすることもできます。 |
+| `claude -p` または Agent SDK でフェッチが拒否される | これらの実行は [Manual モードで開始し](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-non-interactive-run-starts-in)、承認が必要な呼び出しは拒否されます。許可ルールを追加するか、auto モードで開始します。 |
+| 許可したドメインのフェッチが失敗する | URL は [WebFetch ドメイン安全性チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check)にも合格する必要があります。ただし、[`skipWebFetchPreflight`](https://code.claude.com/docs/ja/settings-reference#skipwebfetchpreflight) でチェックをオフにした場合を除きます。[WebFetch domain safety check failed](https://code.claude.com/docs/ja/errors.md#webfetch-domain-safety-check-failed) を参照してください。 |
+| 自分の設定ファイルのルールが効果を持たない | 組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定している場合、Claude Code はそのルールを無視します。管理者に管理設定への追加を依頼してください。 |
+| サンドボックスの [`allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains) にドメインを追加した後もプロンプトが表示され続ける | WebFetch はそのリストを読み取らないため、WebFetch 許可ルールを追加します |
+| 許可していないドメインでプロンプトが表示されない | Claude Code は、事前承認済みドキュメンテーションドメインの組み込みセットに対して、また `auto` モードと `bypassPermissions` モードでは、プロンプトをスキップします。それでもプロンプトを必須にするには、そのドメインの `ask` ルールを追加します。サンドボックス化された Bash コマンドは事前承認セットを継承しません。 |
+| claude.ai のアーティファクトリンクで別のプロンプトが表示される | [共有されたアーティファクトを読む](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を参照してください |
+| Claude がどのページもフェッチできない | セッションで `/status` を実行します。`Organization configuration` 行に `HIPAA` が表示されている場合、WebFetch はオフです。[Claude Code で開発者に表示される内容](https://code.claude.com/docs/ja/hipaa-setup.md#what-developers-see-in-claude-code)を参照してください。`Organization policy` 行でポリシーが読み込まれなかったことが報告され、Web フェッチが名前で示されている場合は、その行に示されている修正に従ってください。WebFetch を許可するポリシーが読み込まれると、再起動なしで WebFetch が再び利用可能になります。 |
+
+### web-fetch サブエージェント
+
+`web-fetch` は Claude Code に組み込まれた[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md#built-in-subagents)で、Claude のために Web ページを読み取ります。Claude がページを必要とすると、[Agent ツール](#agent-tool-behavior)を呼び出して、URL とページに関する質問を `web-fetch` に渡します。サブエージェントは WebFetch を呼び出してページを読み、Claude に回答を送ります。
+
+Claude Code v2.1.287 以降で claude.ai アカウントでサインインしている場合、セッションでサブエージェントを使用できます。サブエージェントがない場合、Claude は WebFetch を自ら呼び出し、Claude Code が[バックグラウンドタスク](https://code.claude.com/docs/ja/model-config.md#environment-variables)に使用するモデルがページを読みます。次のような構成ではサブエージェントはオフになります。
+
+* [サブエージェントをオフにした](#turn-off-the-web-fetch-subagent)
+* Claude Code v2.1.330 以降で [LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway)経由で接続している
+* Amazon Bedrock 上や `DISABLE_TELEMETRY` が設定されている場合など、Claude Code が[機能フラグをフェッチしない](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)
+
+次の兆候は、サブエージェントがページをフェッチしたことを示します。
+
+* **ターミナル**: 権限プロンプトのタイトルが `Fetch · from the web-fetch agent` になります。`Received` で始まる行には、`Received 87 bytes` のようにサイズのみが表示されます。
+* **VS Code**: フェッチは **Agent** 行として表示されます
+* **デスクトップアプリまたは claude.ai/code**: フェッチはサブエージェントペインを開く行として表示されます
+* **`claude -p` または Agent SDK**: [`system/init` イベント](https://code.claude.com/docs/ja/headless#read-session-metadata)で、`agents` に `web-fetch` が含まれ、`tools` に `WebFetch` が含まれません
+
+#### web-fetch サブエージェントが実行されるモデル
+
+デフォルトでは、`web-fetch` サブエージェントは `haiku` [モデルエイリアス](https://code.claude.com/docs/ja/model-config.md#model-aliases)が指すモデルで実行されます。[`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストにそのモデルが含まれていない場合など、サブエージェントがそのモデルを使用できない場合は、サブエージェントを開始した会話と同じモデルで実行されます。モデルを自分で選択するには、[すべてのサブエージェントを 1 つのモデルで実行します](https://code.claude.com/docs/ja/sub-agents.md#run-every-subagent-on-one-model)。
+
+#### web-fetch サブエージェントでのルール、フック、CLAUDE.md
+
+`WebFetch` [権限ルール](https://code.claude.com/docs/ja/permissions.md#webfetch)は `web-fetch` サブエージェントがフェッチするページに適用され、`WebFetch` に一致する `PreToolUse` および `PostToolUse` [フック](https://code.claude.com/docs/ja/hooks.md)も同様に適用されます。
+
+| 依存しているもの | サブエージェントの場合 | 対処方法 |
+| :- | :- | :- |
+| フェッチするページに関する CLAUDE.md の指示 | サブエージェントは、組織の管理 CLAUDE.md を含め、CLAUDE.md ファイルなしで開始します | `WebFetch` 権限ルールでフェッチを制限します |
+| `SubagentStart` または `SubagentStop` フック | このサブエージェントでは、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で定義されたフックのみが実行されます | その他の設定ファイルでは、`WebFetch` に一致する `PreToolUse` または `PostToolUse` フックを使用します |
+| `WebFetch` の結果を解析する `PostToolUse` フック | 結果はページのテキストです。Claude が WebFetch を自ら呼び出す場合、結果は Claude の質問への回答です。 | フックでページのテキストと回答の両方を処理します |
+| `Agent` 呼び出しをブロックする `PreToolUse` フック | Claude は `Agent` ツールでサブエージェントを開始するため、ページはフェッチされません | [サブエージェントをオフにします](#turn-off-the-web-fetch-subagent) |
+
+#### web-fetch サブエージェントをオフにする
+
+Claude が WebFetch を自ら呼び出すことに構成が依存している場合、たとえば `PreToolUse` フックがすべての `Agent` 呼び出しをブロックする場合は、`web-fetch` サブエージェントをオフにします。この[拒否ルール](https://code.claude.com/docs/ja/sub-agents.md#disable-specific-subagents)を[設定ファイル](https://code.claude.com/docs/ja/settings.md)に追加するか、組織全体を対象にするには管理設定に追加します。
+
+```json theme={null}
+{
+  "permissions": {
+    "deny": ["Agent(web-fetch)"]
+  }
+}
+```
+
+確認するには、新しいセッションを開始し、Claude にページのフェッチを依頼して、[サブエージェントの兆候](#web-fetch-subagent)が表示されないことを確認します。`system/init` イベントでは、`tools` に再び `WebFetch` が含まれ、`agents` には引き続き `web-fetch` が含まれます。
+
+組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定している場合、Claude Code は自分の設定ファイル内の拒否ルールを無視するため、管理者に管理設定への追加を依頼してください。
+
+### サイトへの WebFetch リクエストを識別する
 
 WebFetch は `Claude-User` で始まる `User-Agent` ヘッダーと、コンテンツネゴシエーションをサポートするサーバーが Markdown を直接返すことができるように HTML より Markdown を優先する `Accept` ヘッダーを設定します。
-
-サンドボックス化されたコマンドは WebFetch の事前承認されたドキュメンテーションドメインの組み込みセットを継承しません。サンドボックス化されたコマンドがプロンプトなしでドメインに到達できるようにするには、ドメインを [`allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains) に追加するか、`WebFetch(domain:...)` ルールで許可します。[サンドボックスもこれを尊重します](https://code.claude.com/docs/ja/sandboxing.md#network-isolation)。WebFetch は代わりにサンドボックス許可リストを読み取ることはないため、ドメインをサンドボックスまたは組織ネットワーク許可リストに追加しても、WebFetch がそれについてプロンプトを表示するのを止めることはできません。
-
-### WebFetch の利用可能性
-
-Claude Code v2.1.285 以降では、[`CLAUDE_CODE_DISABLE_WEB_FETCH`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定して WebFetch をオフにできます。
-
-Team または Enterprise claude.ai アカウントでサインインし、[LLM ゲートウェイ](https://code.claude.com/docs/ja/llm-gateway) を経由して接続しない場合、WebFetch はまた組織のポリシーに依存します。Claude Code はセッション開始時に `api.anthropic.com` からこのポリシーをリクエストします。同じことは、Claude Code が計画を決定できないセッション（別のアプリが提供した claude.ai トークンで実行されているセッションなど）にも当てはまります。
-
-WebFetch がセッションから欠落している場合、セッションで `/status` を実行してください。その `Organization policy` 行がポリシーが読み込まれなかったことを報告し、ポリシーを待つ機能の中に Web フェッチを名前で示す場合、Claude Code は組織がそれを許可することを確認できるまで WebFetch を保留しています。セッション外では、`claude doctor` は独自のリクエストを行い、同じ行を出力します。WebFetch を許可するポリシーが読み込まれると、ツールは再起動なしで返されます。
 
 ## WebSearch ツールの動作
 
 WebSearch は Anthropic の [ウェブ検索](https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool) バックエンドに対してクエリを実行し、結果のタイトルと URL を返します。結果ページを取得することはありません。Claude が検索結果で見つけたページを読むには、[WebFetch](#webfetch-tool-behavior) でフォローアップします。
 
-このツールは呼び出しごとに最大 8 つのバックエンド検索を実行でき、結果を返す前に内部で検索を絞り込みます。Claude は `allowed_domains` で結果を特定のホストのみに含めるようにスコープできます。または `blocked_domains` で結果を除外できます。この 2 つのリストは 1 回の呼び出しで組み合わせることはできません。
+このツールは呼び出しごとに最大 8 つのバックエンド検索を実行できます。Claude は `allowed_domains` で結果を特定のホストのみに含めるようにスコープできます。または `blocked_domains` で結果を除外できます。この 2 つのリストは 1 回の呼び出しで組み合わせることはできません。
 
 検索リクエストが過負荷状態の API にヒットした場合、Claude Code はバックオフで再試行します。それでも失敗した呼び出しはエラー結果を返します。
 

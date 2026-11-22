@@ -652,7 +652,7 @@ Claude がコードセルを置き換えると、ファイル内のセルのソ�
 
 #### サブエージェントの下に Run in background アクションが表示されない
 
-VS Code では、デフォルトでサブエージェントにこのアクションは表示されません。特定のサブエージェントについてその理由を確認するには、[エージェントマップ](#use-the-prompt-box)でそのカードを開き、`Spawned by` の行を確認します：
+VS Code では、デフォルトでほとんどのサブエージェントにこのアクションは表示されません。特定のサブエージェントについてその理由を確認するには、[エージェントマップ](#use-the-prompt-box)でそのカードを開き、`Spawned by` の行を確認します：
 
 * **`Spawned by the main agent`**：サブエージェントはバックグラウンドで開始されたため、Claude はその完了を待っておらず、操作は必要ありません。代わりに Claude にサブエージェントを待機させるには、[Claude にサブエージェントを待機させる](https://code.claude.com/docs/ja/sub-agents.md#let-claude-wait-for-a-subagent)を参照してください。
 * **`Spawned by` に別のサブエージェントの名前が表示される**：このアクションは、メインエージェントが起動したサブエージェントにのみ表示され、別のサブエージェントが待機している[ネストされたサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#let-subagents-spawn-their-own-subagents)には表示されません。ネストされたサブエージェントを早期に終了するには、そのカードで **Stop agent** をクリックします。待機していたサブエージェントは、その結果なしで処理を続行します。
