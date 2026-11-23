@@ -986,17 +986,15 @@ claude daemon stop --any --keep-workers
 | `was not sent SIGKILL` | macOS、Linux | 停止コマンドを再度実行します。プロセスが残っている場合は、`ps -ww -o args= -p <pid>` で確認します。`daemon` 付きで起動された Claude Code はスーパーバイザーなので、`kill -9 <pid>` を実行します。それ以外のものはそのままにしておきます。その後 `claude agents` がスーパーバイザーを起動できない場合は、`~/.claude/daemon.lock` を削除します。 |
 | `supervisor (pid=<pid>) is still running` | Windows | `taskkill /PID <pid>` でプロセスを終了します |
 
-### ディスパッチが `Could not resolve authentication method` で失敗する
+### バックグラウンドセッションに `Not logged in` と表示される
 
-バックグラウンドディスパッチが `Could not resolve authentication method` で失敗し、インタラクティブセッションが正常に認証される場合、ディスパッチを受け取ったワーカーは認証情報を取得しませんでした。バックグラウンドセッションは[スーパーバイザー](#the-supervisor-process)から認証情報を取得するため、このエラーはスーパーバイザープロセス自体で利用可能な保存された認証情報がないことを意味します。`/login` を実行したか、API キーを設定したことを確認してから、スーパーバイザーを停止してください：
+インタラクティブセッションは正常に認証されるのに、バックグラウンドセッションに [`Not logged in`](https://code.claude.com/docs/ja/errors#not-logged-in) と表示される場合は、`/login` を実行したか API キーを設定したことを確認してから、[スーパーバイザー](#the-supervisor-process)を停止してください：
 
 ```bash theme={null}
 claude daemon stop --any --keep-workers
 ```
 
-[約 1 分](#the-supervisor-process)以内に、シェルで `claude agents` または `claude --bg` を実行して、保存された認証情報を読み取る新しいスーパーバイザーを開始します。`/login` ではなく `ANTHROPIC_API_KEY` などの環境変数で認証する場合は、変数が設定されているシェルからその次のコマンドを実行してください。
-
-原因と修正の完全なリストについては、[エラーリファレンス](https://code.claude.com/docs/ja/errors.md#could-not-resolve-authentication-method)を参照してください。
+停止してから[約 1 分](#the-supervisor-process)以内に、シェルで `claude agents` を実行して新しいスーパーバイザーを開始します。`CLAUDE_CODE_OAUTH_TOKEN` などの環境変数で認証する場合は、その変数が設定されているシェルから `claude agents` を実行してください。その後、[`claude respawn <id>`](#manage-sessions-from-the-shell) を実行してセッションを再起動し、メッセージを再送信します。
 
 ### バックグラウンドセッションに `No LLM gateway` と表示される
 

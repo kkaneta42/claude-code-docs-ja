@@ -356,7 +356,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 `context_window` オブジェクトは、直近の API レスポンスに基づく現在のコンテキストウィンドウを表します。
 
 * **合計値**（`total_input_tokens`、`total_output_tokens`）：現在コンテキストウィンドウ内にあるトークン。`total_input_tokens` は `input_tokens`、`cache_creation_input_tokens`、`cache_read_input_tokens` の合計で、`total_output_tokens` は直近の応答の出力トークンです。どちらも最初の API レスポンスの前は `0` です。
-* **コンポーネント別の使用量**（`current_usage`）：同じトークン数をカテゴリ別に分けたもの。キャッシュヒットを新規の入力と分けて把握する必要がある場合に使用します。このオブジェクトは、セッションの最初の API 呼び出しの前は `null` で、`/compact` の後は次の API 呼び出しまで `null` またはすべてゼロになります。どちらも空として扱ってください。
+* **コンポーネント別の使用量**（`current_usage`）：同じトークン数をカテゴリ別に分けたもの。キャッシュヒットを新規の入力と分けて把握する必要がある場合に使用します。`current_usage` は、会話に API レスポンスが返されるまでは `null` で、`/compact` の後は次の API 呼び出しまで `null` またはすべてゼロになります。どちらも空として扱ってください。
 
 `current_usage` オブジェクトには以下が含まれます。
 

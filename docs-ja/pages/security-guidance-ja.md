@@ -31,7 +31,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 
 * **Claude デスクトップアプリ、ローカルまたは SSH セッション**：[プラグインをインストールする](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)の **Desktop app** タブを使用します
 * **VS Code 拡張機能**：[**Manage plugins** ダイアログ](https://code.claude.com/docs/ja/vs-code.md#manage-plugins)からインストールします
-* **クラウドセッション**：クラウドセッションは、ユーザー設定またはリポジトリの `.claude/settings.json` からプラグインを読み込みません。[セットアップから引き継がれるもの](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)で説明されています。組織が管理設定を通じて配布するプラグインについては、[組織のプラグインを管理](https://code.claude.com/docs/ja/plugins/org.md)を参照してください
+* **クラウドセッション**：[セットアップから引き継がれるもの](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)で説明されているとおり、クラウドセッションはユーザー設定からプラグインを読み込みません。組織が管理設定を通じて配布するプラグインについては、[組織のプラグインを管理](https://code.claude.com/docs/ja/plugins/org.md)を参照してください
 
 ターミナルインストールはスコープを求めます。ユーザースコープを選択して、プラグインをユーザー設定に書き込み、このマシンで開始するすべての新しいローカルセッションで読み込まれるようにします。
 

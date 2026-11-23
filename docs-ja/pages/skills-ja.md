@@ -229,7 +229,7 @@ Claude Code は、起動したディレクトリと、そこからリポジト�
 スキルがマシン上の `~/.claude/skills/` にしか存在しない場合、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)がそれを呼び出すと、Claude Code はスキルが見つからないと報告します。これは、各実行が新しいクラウドセッションとして開始されるためです。個人のスキルをこれらのセッションで利用できるようにするには、次のようにします。
 
 * Cowork セッション、クラウドセッション、および[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、claude.ai アカウントでスキルを有効にします。[セルフホスト環境の一部のセッション](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled)は、アカウントのスキルを読み込みません。
-* クラウドセッションでは、代わりにスキルをリポジトリの `.claude/skills/` にコミットすることもできます。プロジェクトについては、[どのスレッドが読み込むか](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を確認してください。リポジトリの `.claude/settings.json` で宣言されたプラグインや、ユーザー設定でのみ有効にしたプラグインは、[クラウドセッションでは読み込まれません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。
+* クラウドセッションでは、代わりにスキルをリポジトリの `.claude/skills/` にコミットすることもできます。プロジェクトについては、[どのスレッドが読み込むか](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を確認してください。ユーザー設定でのみ有効にしたプラグインは、[クラウドセッションでは読み込まれません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。
 
 [Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md)はマシン上でローカルに実行されるため、`~/.claude/skills/` を読み込みます。
 

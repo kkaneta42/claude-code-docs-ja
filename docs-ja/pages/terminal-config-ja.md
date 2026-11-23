@@ -337,7 +337,7 @@ $env:CLAUDE_CODE_NO_FLICKER = "1"; claude
 
 ### Claude による貼り付けテキストの扱い
 
-送信すると、Claude は各 `[Pasted text #N]` プレースホルダーの背後にある内容を、ユーザーが入力したものではなく他の場所から貼り付けたテキストとしてマークされた状態で受け取ります。Claude には、貼り付けた内容にはユーザーが書いていない指示が含まれている可能性があること、そしてその中の指示には、ユーザーが入力したメッセージで求められている場合にのみ従うべきであることが伝えられます。[インストール後の最初のセッション](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)など、貼り付けた内容がマークされずに Claude に届く場合もあります。
+送信すると、Claude は各 `[Pasted text #N]` プレースホルダーの背後にある内容を、ユーザーが入力したものではなく他の場所から貼り付けたテキストとしてマークされた状態で受け取ります。[インストール後の最初のセッション](https://code.claude.com/docs/ja/env-vars.md#first-session-after-an-install-or-upgrade)など、貼り付けた内容がマークされずに Claude に届く場合もあります。
 
 ### 折りたたまれた貼り付けの削除と復元
 

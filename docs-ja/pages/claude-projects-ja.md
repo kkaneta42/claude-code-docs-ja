@@ -30,7 +30,7 @@
 
 * **多くのリポジトリにまたがる 1 つの目標**: 「すべてのサービスを新しい lint 設定に対応させる」。Claude はリポジトリごとに 1 つのスレッドを実行でき、各スレッドは独自のプルリクエストを持ち、[Overview ペイン](#see-what-needs-you-in-overview) にはどのスレッドがレビュー準備ができているかが表示されます。
 * **継続的に供給する領域**: 1 つのサービスのバグ、スタックトレース、レビューリクエストが到達するたびに会話に貼り付けられます。1 つの修正後に Claude に覚えておくよう指示した落とし穴は、次のために [プロジェクトメモリ](#give-a-project-standing-context) に含まれます。
-* **セッションより大きいビルドまたはマイグレーション**: 「`docs/spec.md` が説明していることをビルドする」または「アプリを非推奨の ORM から移動する」。作業は各部分を取得するスレッドに分割され、Claude に早期に覚えておくよう求めた決定は後のスレッドに到達し、ビルド中に見つかった仕様の変更とバグが同じ会話に入ります。
+* **セッションより大きいビルドまたはマイグレーション**: 「`docs/spec.md` が説明していることをビルドする」または「アプリを非推奨の ORM から移動する」。作業は各部分を取得するスレッドに分割され、Claude に早期に覚えておくよう求めた決定は後のクラウドスレッドに到達し、ビルド中に見つかった仕様の変更とバグが同じ会話に入ります。
 * **コードではない作業**: 「これらのチケットで最も一般的な 10 の統合ミスを見つける」など、新しい質問で何度も戻ってくる契約フォルダまたはサポートチケットエクスポート。リポジトリを追加する代わりにドキュメントをアップロードし、スレッドはプロジェクトの [**Library**](#see-what-needs-you-in-overview) にファイルとして各レポートを配信します。
 
 これらのいずれの場合も、タスクのバッチを送信し、確認を求めずに開始するよう Claude に指示して、その場を離れることができます。戻ったときには、対応が必要なスレッドを [**Waiting on you**](#see-what-needs-you-in-overview) の下で見つけられます。また、作業の一部を [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) としてスケジュールに入れるよう Claude に求めることもできます。これらのいずれかが状況に当てはまる場合は、[プロジェクトを作成してください](#create-a-project)。
@@ -79,7 +79,7 @@
 プロジェクトを作成する前に、プランと GitHub のセットアップ、および作業が到達する必要があるものを確認してください。
 
 * **プラン**：Pro、Max、または Ultra プランを利用しており、サイドバーに **Projects** が直接または **More** の下に表示されている。**Projects** を選択し、**New project** または **Get started** が表示されることを確認してください。
-* **GitHub（プロジェクトがコードで作業する場合）**：コードが GitHub Enterprise Server、GitLab、または Bitbucket ではなく github.com にあり、接続された GitHub アカウントがそれへのプッシュアクセス権を持っており、Claude GitHub App がインストールされている。[`/web-setup`](https://code.claude.com/docs/ja/web-quickstart#connect-from-your-terminal)で GitHub を接続した場合、そのトークンは他のクラウドセッションがリポジトリに到達することを許可しますが、Claude GitHub App が必要なプロジェクトスレッドには十分ではありません。[GitHub アクセスをセットアップする](#set-up-github-access)に手順があります。
+* **GitHub（プロジェクトがコードで作業する場合）**：コードが GitHub Enterprise Server、GitLab、または Bitbucket ではなく github.com にあり、接続された GitHub アカウントがそれへのプッシュアクセス権を持っており、Claude GitHub App がインストールされている。[`/web-setup`](https://code.claude.com/docs/ja/web-quickstart#connect-from-your-terminal)で GitHub を接続した場合、そのトークンは他のクラウドセッションがリポジトリに到達することを許可しますが、Claude GitHub App が必要なプロジェクトのクラウドスレッドには十分ではありません。[GitHub アクセスをセットアップする](#set-up-github-access)に手順があります。
 * **ネットワークアクセス、シークレット、ツール**：クラウドスレッドの場合、これらはプロジェクトの [クラウド環境](#choose-an-environment-for-threads)から取得されます。デフォルト環境は既に [一般的なパッケージレジストリ](https://code.claude.com/docs/ja/cloud-environments.md#default-allowed-domains)に到達しているため、作業が他のドメイン、シークレット、またはプリインストールされていないツールを必要とする場合のみ確認してください。作業が MCP サーバーを必要とする場合は、[claude.ai connectors](https://claude.ai/customize/connectors)で接続済みとして表示されていることを確認してください。
 
 ### ゼロからプロジェクトを開始する
@@ -235,7 +235,7 @@ Claude がメッセージを希望と異なる方法でルーティングした�
 * 「これらのリポジトリで何が間違っているかを教えてください。まだ何も修正しないでください」。スレッドになる前に調査結果を確認したい場合
 * 「スレッドを開始せずに、ここで答えて」（ユーザーがちょっとした質問のつもりで送ったものに対して Claude がスレッドを開始した場合）
 
-Claude はこのような設定を[プロジェクトメモリ](#give-a-project-standing-context)に自動的に保存し、後のスレッドでそれに従います。これらは Claude が守る指示であり、強制される設定ではないため、この方法で与えるスレッド制限はハードキャップではありません。最初からすべてのスレッドに正確に適用したい場合は、プロジェクト指示に 1 つを追加します。
+Claude はこのような設定を[プロジェクトメモリ](#give-a-project-standing-context)に自動的に保存し、後のクラウドスレッドでそれに従います。これらは Claude が守る指示であり、強制される設定ではないため、この方法で与えるスレッド制限はハードキャップではありません。正確な文言で記述し、最初からすべてのスレッドに適用したい場合は、プロジェクト指示に 1 つを追加します。
 
 ### 承認を待機しているスレッドのブロックを解除する
 
@@ -279,7 +279,7 @@ Claude は**コンピューター上のフォルダーで作業することを C
 
 ## プロジェクトに常時コンテキストを付与する
 
-プロジェクトメモリ、プロジェクト指示、およびプロジェクトのリポジトリ、ファイル、環境は、スレッド全体でコンテキストを保持します。各項目を 1 回設定すると、すべての新しいスレッドに適用されます。
+プロジェクトメモリ、プロジェクト指示、そしてプロジェクトのリポジトリ、ファイル、環境は、スレッドをまたいでコンテキストを引き継ぎます。それぞれの設定は一度だけで済みます。
 
 | コンテキスト | 保持される内容 | 設定方法 |
 | :- | :- | :- |
@@ -302,12 +302,12 @@ Claude は**コンピューター上のフォルダーで作業することを C
 例：
 
 ```text theme={null}
-このプロジェクトは、payments API の p95 レイテンシを 200 ms 以下に保ちます：プロファイリング、クエリとキャッシング修正、およびそれに伴う依存関係のアップグレードを payments-api リポジトリで行います。
+This project holds p95 latency for the payments API under 200 ms: profiling, query and caching fixes, and the dependency upgrades that come with them, in the payments-api repository.
 
-- main からブランチを作成し、スレッドごとに 1 つのドラフトプルリクエストを開きます。
-- 作業完了と判断する前に、`make test` と `make lint` を実行し、最終メッセージに概要行を貼り付けます。
-- リポジトリ、シークレット、API、コネクタなど、必要なものに到達できない場合は、最初のメッセージで正確に何が不足しているかを述べて停止します。代替案を提案したり、モックを作成したり、推測したりしないでください。
-- マージ、強制プッシュ、CI 設定の変更は、スレッド内で私に確認してから行ってください。
+- Branch from main and open one draft pull request per thread.
+- Before you call work done, run `make test` and `make lint` and paste the summary lines in your final message.
+- If you can't reach something you need, such as a repository, a secret, an API, or a connector, say exactly what's missing in your first message and stop. Don't substitute, mock, or guess.
+- Don't merge, force-push, or change CI configuration without asking me in the thread.
 ```
 
 1 つのリポジトリに関するルール（ビルドコマンドなど）は、そのリポジトリの `CLAUDE.md` に属します。このファイルは、リポジトリがプロジェクトの一部である場合、すべてのクラウドスレッドが開始時に読み込みます。作業が進行中の場合、スレッドを修正するときは、Claude にその修正を記憶するよう依頼してください。修正は [プロジェクトメモリ](#give-a-project-standing-context) に記録され、後のクラウドスレッドはそれを使用して開始します。
@@ -342,7 +342,6 @@ Claude は**コンピューター上のフォルダーで作業することを C
 | リポジトリルートの `CLAUDE.md`、`.claude/CLAUDE.md`、`.claude/rules/` | スレッド開始時にすべてのリポジトリから読み込まれます。[パス固有のルール](https://code.claude.com/docs/ja/memory.md#path-specific-rules) は開始時には読み込まれません |
 | `.claude/` の下のスキル、エージェント、コマンド | すべてのリポジトリから読み込まれます。ただし、[これらをスキップするスレッド](#threads-that-skip-repository-skills) では読み込まれません |
 | `.mcp.json` の MCP サーバー | 読み込まれません。代わりに、[スキル、プラグイン、コネクタ、ツールをスレッドに取得する](#get-skills-plugins-connectors-and-tools-into-threads) の説明に従って、claude.ai アカウントのコネクタを使用してください |
-| `.claude/settings.json` で有効化されたプラグイン | 読み込まれません。代わりに **プロジェクト設定 > プラグイン** でプラグインを追加してください |
 | `.claude/settings.json` の権限ルール | 適用されません。[承認待ちのスレッドのブロックを解除する](#unblock-a-thread-waiting-on-approval) の説明に従ってスレッド内でツール呼び出しを承認するか、[自分のコンピューターでスレッドを実行](#run-a-thread-on-your-own-computer) してください |
 | `.claude/settings.json` のフック | 実行されません。フックを使用するには、[自分のコンピューターでスレッドを実行](#run-a-thread-on-your-own-computer) してください |
 | `.claude/settings.json` の `env` | 適用されません。[クラウド環境](#choose-an-environment-for-threads) で環境変数を設定してください |
@@ -366,7 +365,7 @@ Claude は**コンピューター上のフォルダーで作業することを C
 クラウドスレッドはマシンにのみインストールされているスキル、MCP サーバー、プラグイン、ツールを持っていません。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) を通じてマシン上で Claude が実行するスレッドは、そこにインストールされているものを使用します。これらのそれぞれをクラウドスレッドで利用可能にするには：
 
 * スキル：claude.ai アカウントで有効化すると、クラウドスレッドは [そこで有効化したスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions) を読み込みます。ただし、[セルフホスト環境の一部のスレッド](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#how-each-session’s-config-is-assembled) は除きます。リポジトリにコミットされたスキルについては、[スレッドがリポジトリから取得するもの](#what-threads-pick-up-from-your-repositories) を参照してください。
-* プラグイン：**プロジェクト設定 > プラグイン** で追加します。各新しいクラウドスレッドに読み込まれます。リポジトリが `.claude/settings.json` で宣言するプラグインは、クラウドスレッドでは [読み込まれません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。
+* プラグイン：**プロジェクト設定 > プラグイン** で追加します。各新しいクラウドスレッドに読み込まれます。
 * MCP サーバー：クラウドスレッドは、claude.ai アカウントのコネクタから MCP ツールを取得します。これは、[claude.ai/customize/connectors](https://claude.ai/customize/connectors) で 1 回接続する MCP サーバーです。すべてのクラウドスレッドは、プロジェクト固有のセットアップなしでそれらすべてを使用できます。プロジェクト会話自体にはコネクタがないため、コネクタが必要な作業をクラウドスレッドのタスクとして送信してください。[コネクタが Claude Code に到達する方法](https://code.claude.com/docs/ja/mcp.md#how-connectors-reach-claude-code) は、クラウドセッションのルールとコネクタをオフにする設定をリストしています。
 * コマンドラインツールとパッケージ：環境の [セットアップスクリプト](https://code.claude.com/docs/ja/cloud-environments.md#setup-scripts) にインストールします。
 

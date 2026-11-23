@@ -1662,7 +1662,6 @@ MessageDisplay は次の用途に使用します：
 
 * 最小限の表示のために markdown を除去する
 * Agent SDK アプリケーションがユーザーに表示するテキストを変換する
-* Claude の応答から API キーや内部ホスト名を秘匿する
 
 Claude Code はフックが返るまで各バッチを保持するため、フックは高速に保ってください。フックが失敗またはタイムアウトした場合、Claude Code は元のテキストを表示します。このイベントのデフォルトのタイムアウトは 10 秒です。フックにより多くの時間が必要な場合は、フックエントリで `timeout` フィールドを設定してください。
 
@@ -2509,7 +2508,9 @@ PostToolUseFailure フックは、PostToolUse と同じ `tool_name` と `tool_in
 
 ### PermissionDenied
 
-[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)がツール呼び出しを拒否したときに実行されます。これには、[auto モードとは別の安全性チェックが分類器自身のリクエストを拒否した](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)場合や、分類器の応答を解析できなかった場合など、分類器の判定なしで拒否した場合も含まれます。このフックは auto モードでのみ発火します。権限ダイアログを手動で拒否した場合、`PreToolUse` フックが呼び出しをブロックした場合、`deny` ルールに一致した場合には実行されません。拒否のログ記録、設定の調整、またはツール呼び出しを再試行してよいことをモデルに伝えるために使用します。
+[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器がツール呼び出しを拒否したときに実行されます。これには、[auto モードとは別の安全性チェックが分類器自身のリクエストを拒否した](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)ため、または分類器の応答を解析できなかったために判定がないまま拒否された場合も含まれます。PermissionDenied は、拒否のログ記録、設定の調整、またはツール呼び出しを再試行してよいことをモデルに伝えるために使用します。
+
+ユーザーが権限ダイアログで拒否した場合、`PreToolUse` フックが呼び出しをブロックした場合、または `deny` ルールがマッチした場合、このフックは実行されません。
 
 ツール名で照合します。値は PreToolUse と同じです。
 

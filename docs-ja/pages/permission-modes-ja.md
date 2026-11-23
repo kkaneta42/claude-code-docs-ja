@@ -586,6 +586,7 @@ auto モードがセッションのアクションを承認できない場合、
 >    * 認識された `rm` および `rmdir` による[重要なパスの削除](#critical-paths)は、どの許可ルールでも承認されません
 >    * [`requiresUserInteraction`](https://code.claude.com/docs/ja/mcp#require-approval-for-a-specific-tool) が指定された MCP ツールは、許可ルールに一致する場合でも直接プロンプトを表示します。[組織が `ask` に設定した](https://code.claude.com/docs/ja/mcp#organization-controls-on-connector-tools)コネクタツールも、その設定が Claude Code に適用されるセッションでは同様です
 >    * [コマンドごとの許可ドメイン](https://code.claude.com/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode)を伴うシェルコマンドも、許可ルールに一致する場合でも分類器に回されます。ルールが承認するのはコマンドであり、そのホストではないためです
+>    * Manual、`acceptEdits`、`dontAsk` モードであっても、許可ルールに一致する [Claude in Chrome](https://code.claude.com/docs/ja/chrome.md) のアクションを分類器がレビューすることがあります
 >    * `Bash(git push *)` のようにコマンドの内容に一致する確認ルールは、権限プロンプトにフォールバックします
 >    * [シンボリックリンクのチェック](https://code.claude.com/docs/ja/permissions.md#symlinks)によって保護されたパスに解決される書き込みは、Claude が要求したパス自体が保護されていない場合にプロンプトを表示します
 >    * [ネットワークパス](https://code.claude.com/docs/ja/permissions.md#network-paths)からの読み取りは、許可ルールに一致する場合でもプロンプトを表示します
@@ -652,7 +653,7 @@ auto モードがセッションのアクションを承認できない場合、
 
 `dontAsk` モードを設定すると、Claude Code は本来プロンプトを表示するすべてのツール呼び出しを自動的に拒否します。ただし、インストールした [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) は、それらの呼び出しの一部を引き続き承認できます。mod が承認できる呼び出しを確認するには、[フックで権限を拡張する](https://code.claude.com/docs/ja/permissions.md#precedence-among-rules-hooks-and-mods)を参照してください。[mod 自身が行うツール呼び出し](https://code.claude.com/docs/ja/plugins/mods/reference.md#mods-api-methods)を止めるために `dontAsk` に頼らないでください。
 
-Claude は、Manual モードで承認が不要なアクション（作業ディレクトリ内のファイル読み取りや[読み取り専用 Bash コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)など）を引き続き実行します。`permissions.allow` ルールに一致するアクションや、[PreToolUse フック](https://code.claude.com/docs/ja/permissions.md#extend-permissions-with-hooks)によって承認された呼び出しも実行されます。このモードは、Claude が実行できる内容を事前に定義しておく CI パイプラインや制限された環境で使用します。このモードでは、ステータスバーに `⏵⏵ don't ask on` が表示されます。
+Claude は、Manual モードで承認が不要なアクション（作業ディレクトリ内のファイル読み取りや[読み取り専用 Bash コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)など）を引き続き実行します。`permissions.allow` ルールまたは [PreToolUse フック](https://code.claude.com/docs/ja/permissions.md#extend-permissions-with-hooks)が承認する呼び出しも、ほとんどが実行されます。このモードは、Claude が実行できる内容を事前に定義しておく CI パイプラインや制限された環境で使用します。このモードでは、ステータスバーに `⏵⏵ don't ask on` が表示されます。
 
 本来プロンプトが表示される場面で、次の呼び出しは拒否されます：
 

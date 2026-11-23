@@ -1157,13 +1157,13 @@ macOS の v2.1.286 より前では、別のウィンドウからサインイン�
 
 ### Could not resolve authentication method
 
-セッションが認証情報なしで API クライアントに到達しました。[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)とクラウドセッションでは、ワーカーが認証情報なしで起動したときにこのメッセージが表示されます。対話モード、`-p`、Agent SDK の実行では、同じ状態を [Not logged in](#not-logged-in) として報告し、この文字列はデバッグログにのみ書き込まれます。そのため、デバッグログでこれを見つけた場合は、代わりにそちらの項目に従ってください。
+セッションが認証情報なしで API クライアントに到達しました。対話実行、`-p` 実行、または Agent SDK 実行で [Not logged in](#not-logged-in) が表示され、この文字列がそのデバッグログにある場合は、そのエントリの手順に従ってください。
 
 ```text theme={null}
 Could not resolve authentication method. Expected one of apiKey, authToken, credentials, config, or profile to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
 ```
 
-現在のバージョンでは、このエラーはワーカープロセスが使用できる認証情報がなかったことを意味します。v2.1.174 より前では、アイドル状態の事前初期化済みワーカーに割り当てられたバックグラウンドセッションが、有効な認証情報が設定されていてもこのように失敗することがありました。v2.1.176 より前では、割り当てられる前にアイドル状態だったクラウドセッションでも同様でした。アップグレードすると復旧します。
+v2.1.174 より前では、アイドル状態の事前初期化済みワーカーに割り当てられたバックグラウンドセッションが、有効な認証情報が設定されていてもこのように失敗することがありました。v2.1.176 より前では、割り当てられる前にアイドル状態だったクラウドセッションでも同様に失敗することがありました。復旧するにはアップグレードしてください。
 
 **対処方法：**
 
@@ -5995,7 +5995,7 @@ Claude Code は、[retention sweep](https://code.claude.com/docs/ja/claude-direc
 **対応方法：**
 
 * 別の方法で変更を元に戻してください。Claude に編集を逆にするよう依頼するか、バージョン管理からファイルを復元してください。バックアップがなくなると、`/rewind` を再度実行しても同じ方法で失敗します。
-* Claude Code がファイルに書き込みまたは削除できない場合は、ファイル権限など書き込みをブロックしているものを修正してから、`/rewind` を再度実行してください。
+* **Restore code** を選択した後に Claude Code がファイルに書き込みまたは削除できなかった場合は、ファイル権限など書き込みをブロックしているものを修正してから、`/rewind` を再度実行してください。
 * 今後のセッションでバックアップをより長く保持するには、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) を増やしてください。
 
 v2.1.260 より前では、Claude Code はバックアップが見つからないファイルをサイレントにスキップし、rewind が成功したように見えました。

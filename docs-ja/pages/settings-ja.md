@@ -157,7 +157,7 @@ Claude Code 内で `/config` を実行し、**Config** タブを開きます。�
 
 値を保存せずに試すには、Claude Code を開始するときに設定します。値はそのセッションに適用され、設定ファイルはそのままです。3 つの方法があります：
 
-* **`--settings`**：JSON としてキーを渡します。インラインまたはファイルへのパス。Claude Code はそれをユーザー、プロジェクト、およびローカルファイルの上に適用し、管理設定の下に適用します。ユーザー設定ファイルが設定できるキーを設定できます。`Managed` または `Global config` キーを設定することはできません。
+* **`--settings`**：JSON としてキーを渡します。インラインまたはファイルへのパス。Claude Code はそれをユーザー、プロジェクト、およびローカルファイルの上に適用し、管理設定の下に適用します。`--settings` では、[`Managed` または `Global config`](https://code.claude.com/docs/ja/settings-reference#scopes) キーや、[`prependPlugins`](https://code.claude.com/docs/ja/settings-reference#prependplugins) などの一部のユーザー設定キーを設定することはできません。
 * **そのキーのフラグ**：いくつかのキーには独自のフラグがあります。`model` の `--model` や `effortLevel` と `modelSettings` の `--effort` など。
 * **環境変数**：`model` の `ANTHROPIC_MODEL` など、キーのペアリングされた変数をエクスポートしてから `claude` を実行してください。
 
@@ -327,7 +327,7 @@ Claude Code を内部で実行し、[`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](htt
 
 * **プロジェクト内のクラウドスレッド**：[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)内のクラウドスレッドでは、プロジェクトに含まれるリポジトリの数にかかわらず、リポジトリの `.claude/settings.json` の権限ルール、フック、`env` はいずれも適用されません。代わりに使用するものについては、[スレッドがリポジトリから取り込むもの](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)に記載されています。
 * **共有プロジェクト設定**（`.claude/settings.json`）：プロジェクトのスレッド外の 1 つのリポジトリを持つセッションで読み込まれます。ファイルはクローンの一部であり、セッションはその内部で開始されるためです。その設定をコミットして、それらのセッションに適用してください。
-* **複数のリポジトリを持つ共有プロジェクト設定**：Anthropic がホストする環境では、複数のリポジトリを持つセッションはクローンの上で開始され、各リポジトリの `.claude/settings.json` から `enabledPlugins` と `extraKnownMarketplaces` キーのみを読み込み、権限ルール、フック、`env`、またはその他のキーは読み込みません。これら 2 つのキーが宣言するマーケットプレイスとプラグインは、それでも[クラウドセッションでは読み込まれません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。自己ホスト型環境については、[どのリポジトリの設定が適用されるか](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories)を参照してください。
+* **複数のリポジトリを持つ共有プロジェクト設定**：Anthropic がホストする環境では、複数のリポジトリを持つセッションはクローンの上で開始され、各リポジトリの `.claude/settings.json` から `enabledPlugins` と `extraKnownMarketplaces` キーのみを読み込み、権限ルール、フック、`env`、またはその他のキーは読み込みません。リポジトリが宣言するマーケットプレイスは、それでも[クラウドセッションでは追加されません](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)。自己ホスト型環境については、[どのリポジトリの設定が適用されるか](https://code.claude.com/docs/ja/self-hosted-environments-configuration.md#repository-settings-in-sessions-with-several-repositories)を参照してください。
 * **ユーザーおよびプロジェクトローカル設定**（`~/.claude/settings.json` および `.claude/settings.local.json`）：読み込まれません。両方ともマシンに留まり、ローカルファイルはクローンにありません。
 * **管理設定**：デバイスの `managed-settings.json` ファイルまたは MDM プロファイルはクラウドセッションに到達しません。組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)は到達します。[サーフェスカバレッジ](https://code.claude.com/docs/ja/model-config.md#surface-coverage)はどのクラウドセッションがそれらを受け取るかをリストします。[自己ホスト型環境](https://code.claude.com/docs/ja/self-hosted-environments)もランナーイメージの管理設定ファイルを読み込みます。[Claude Code が管理ソースを結合する方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)はそのファイルがいつ適用されるかを説明します。
 * **`/config`**：ブラウザの claude.ai/code では、値を変更する代わりに claude.ai の **Code** または **Claude Code** 設定ページを開きます。クラウドセッションの設定を変更するには、環境で[環境変数](https://code.claude.com/docs/ja/cloud-environments.md#set-environment-variables)を設定してください。プロジェクトのスレッド外の 1 つのリポジトリを持つセッションでは、代わりにそのリポジトリの `.claude/settings.json` にキーをコミットすることもできます。

@@ -22,10 +22,10 @@ Claude Code は API トークン消費によって課金されます。サブス
 
 Claude Code のプロンプトで `/usage` を実行し、**Session** 見出しの下で現在のセッションのトークン使用量を確認します。
 
-Claude Code は、[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効でない限り、トークン数から定価に基づいてドル数値をローカルで計算します。管理者は組織の管理設定でこのテーブルを設定し、数値が契約レートを使用するようにします。テーブルが有効な間、`Total cost` 行には `at your organization's configured rates` という注記が付きます。この数値は推定値であるため、正式な請求情報については [組織のコストを管理する](#manage-costs-for-your-organization) を参照してください。
+Claude Code は、[`modelPricing`](https://code.claude.com/docs/ja/settings-reference#modelpricing) テーブルが有効でない限り、トークン数から定価に基づいてドル数値をローカルで計算します。管理者は組織の管理設定でこのテーブルを設定し、数値が契約レートを使用するようにします。テーブルが有効な間、`Estimated cost` 行には `at your organization's configured rates` という注記が付きます。この数値は推定値であるため、正式な請求情報については [組織のコストを管理する](#manage-costs-for-your-organization) を参照してください。
 
 ```text theme={null}
-Total cost:            $0.55
+Estimated cost:        $0.55
 Total duration (API):  6m 20s
 Total duration (wall): 6h 33m 10s
 Total code changes:    0 lines added, 0 lines removed
@@ -174,7 +174,7 @@ Claude Code にアクセスする方法によって、利用可能なコント�
 
 [マネージド設定](https://code.claude.com/docs/ja/managed-settings.md) として配信してください。サーバー管理設定、MDM ポリシー、`managed-settings.json`、または [ポリシーヘルパー](https://code.claude.com/docs/ja/managed-settings.md#compute-the-policy-with-a-helper-program)。Claude Code はユーザー、プロジェクト、ローカル設定、および `--settings` のキーを無視します。
 
-レートが有効であることを確認するには、[マネージド設定を受け取った](https://code.claude.com/docs/ja/managed-settings.md#read-the-source-in-%2Fstatus) セッションで `/usage` を実行してください。Session ブロックの `Total cost` 行には `at your organization's configured rates` という注記が付きます。数値はまだ推定値であり、請求書ではありません。`/model` ピッカーのトークンあたり百万単位の価格は定価のままです。
+レートが有効であることを確認するには、[管理設定を受け取った](https://code.claude.com/docs/ja/managed-settings.md#read-the-source-in-%2Fstatus) セッションで `/usage` を実行してください。Session ブロックの `Estimated cost` 行には `at your organization's configured rates` という注記が付きます。数値はあくまで推定値であり、請求書ではありません。`/model` ピッカーの 100 万トークンあたりの価格は定価のままです。
 
 ### Claude for Teams および Enterprise
 
@@ -251,7 +251,7 @@ Amazon Bedrock、Google Cloud の Agent Platform、および Microsoft Foundry �
 * チームメイトに Sonnet を使用します。これは調整タスクの機能とコストのバランスを取ります。
 * チームを小さく保ちます。各チームメイトは独自のコンテキストウィンドウを実行するため、トークン使用量はおおよそチームサイズに比例します。
 * スポーンプロンプトを焦点を絞ったものにします。チームメイトは CLAUDE.md、MCP サーバー、およびスキルを自動的に読み込みますが、スポーンプロンプト内のすべてが最初からコンテキストに追加されます。
-* 作業が完了したらチームをシャットダウンします。アクティブなチームメイトはアイドル状態でもトークンを消費し続けます。
+* 作業が完了したらチームメイトをシャットダウンします。アクティブな各チームメイトは、終了するかセッションが終わるまでトークンを消費し続けます。
 * エージェントチームはデフォルトで無効になっています。[settings.json](https://code.claude.com/docs/ja/settings.md) または環境で `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` を設定して有効にします。[エージェントチームを有効にする](https://code.claude.com/docs/ja/agent-teams.md#enable-agent-teams) を参照してください。
 
 ## トークン使用量を削減する

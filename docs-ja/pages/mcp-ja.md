@@ -845,7 +845,7 @@ claude mcp add --transport http hubspot --scope user https://mcp.hubspot.com/ant
 2. プロジェクトスコープ
 3. ユーザースコープ
 4. [プラグイン提供サーバー](https://code.claude.com/docs/ja/plugins/components.md#mcp-servers)
-5. [claude.ai コネクタ](#use-mcp-servers-from-claude-ai)
+5. [claude.ai コネクタ](#use-mcp-servers-from-claude-ai)。`claude -p`、Agent SDK、および VS Code のセッションでは、コネクタはプラグイン提供サーバーより上位にランクされます。
 
 Claude Code は 3 つのスコープ全体で名前によって重複を照合します。プラグインとコネクタはエンドポイントで照合するため、上記のサーバーと同じ URL またはコマンドを指すものは重複として扱われます。
 
