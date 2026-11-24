@@ -4,7 +4,7 @@
 
 # すべての設定
 
-> Claude Code の settings.json キーの完全なリファレンス：各キーの場所、型とデフォルト値、貼り付け可能な例、およびすべてのキーのインデックス。
+> Claude Code の settings.json キーのリファレンス：各キーの配置場所、型とデフォルト値、貼り付け可能な例、およびキーのインデックス。
 
 [Back to index](#all-settings)
 
@@ -2913,7 +2913,7 @@ your-repo-file-index --query "$query" | head -20
 
 ターンが完了すると、Claude Code はメインスレッドで各エントリの `pattern` 正規表現をターンの出力と照合するため、遅い正規表現は完了するまで UI をブロックします。`(a+)+$` のようなネストした量指定子は、特定の入力に対して指数関数的に時間がかかり、セッションをフリーズさせる可能性があるため、各 `pattern` は線形に保ち、`+` や `*` のネストは避けてください。
 
-[カスタムステータスライン](https://code.claude.com/docs/ja/statusline.md)が設定されている場合、フッターバッジはそれと並んでレンダリングされ、どちらも他方を置き換えることはありません。セッションデータから独自にコンテンツを計算するスクリプト駆動の行にはステータスラインを使用し、スクリプトなしで会話中の ID をリンクに変えるにはフッターバッジを使用します。
+[カスタムステータスライン](https://code.claude.com/docs/ja/statusline.md)が設定されている場合、フッターバッジはそれと並んでレンダリングされます。セッションデータから独自にコンテンツを計算するスクリプト駆動の行にはステータスラインを使用し、スクリプトなしで会話中の ID をリンクに変えるにはフッターバッジを使用します。
 
 ### `keybindingFlavor`
 
@@ -4481,9 +4481,7 @@ Claude Code が自身で取得する[claude.ai コネクタ](https://code.claude
 
 ユーザーが追加できる MCP サーバーをホワイトリストに登録します。Claude Code は、プラグインサーバー、`--mcp-config` で渡されたサーバー、claude.ai からのサーバーを含め、どこで定義されていても、エントリに一致しないサーバーをブロックします。
 
-Claude in Chrome、実行中の[VS Code](https://code.claude.com/docs/ja/vs-code.md#the-built-in-ide-mcp-server)または[JetBrains](https://code.claude.com/docs/ja/jetbrains.md#the-built-in-ide-mcp-server) IDE に Claude Code が接続する `ide` サーバー、CLI 自体が設定するサーバーなどの組み込みサーバーは、ホワイトリストから除外され、デニーリストは引き続きこれらに適用されます。Claude Code v2.1.268 以降では、[Claude Tag](https://code.claude.com/docs/ja/claude-tag.md)セッションの Slack ツールもホワイトリストから除外され、デニーリストは引き続きこれらに適用されます。インプロセス `type: "sdk"` サーバーは両方のリストから除外されます。[セッションを開始したアプリ](https://code.claude.com/docs/ja/mcp.md#how-connectors-reach-claude-code)がこれらを登録します。
-
-組織が配信するサーバーも許可リストから除外され、拒否リストは引き続きこれらに適用されます。この除外は、すべての[`managedMcpServers`](#managedmcpservers)エントリと、値が[`env` 以外で `${VAR}` 展開を使用しない](https://code.claude.com/docs/ja/managed-mcp#how-allowlists-and-denylists-apply-to-the-managed-set)[`managed-mcp.json`](https://code.claude.com/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json)エントリをカバーします。完全なチェック順序については、[サーバーの評価方法](https://code.claude.com/docs/ja/managed-mcp.md#how-a-server-is-evaluated)を参照してください。v2.1.259 より前では、`managed-mcp.json` からのサーバーも一致する必要がありました。
+[`managedMcpServers`](#managedmcpservers) エントリなど、[一部のサーバーは許可リストのチェックをスキップします](https://code.claude.com/docs/ja/managed-mcp.md#servers-that-skip-the-allowlist-check)。v2.1.268 以降では、[Claude Tag](https://code.claude.com/docs/ja/claude-tag.md)セッションの Slack ツールもこれをスキップします。管理設定またはユーザー設定の拒否リストのエントリは、引き続きこれらのサーバーに適用されます。インプロセス `type: "sdk"` サーバーは両方のリストから除外されます。
 
 * **スコープ**: [`Any file`](#scopes)。ユーザーが追加するサーバーについては、[`allowManagedMcpServersOnly`](#allowmanagedmcpserversonly) が設定されている場合を除き、すべてのファイルからのエントリが 1 つの許可リストにマージされます。ユーザーがエントリを追加できないようにするには、両方のキーを管理設定にデプロイします。
 * **型**: オブジェクトの配列で、各オブジェクトはキーを 1 つだけ持ちます。英字、数字、ハイフン、アンダースコアのみで構成される文字列の `serverName`、コマンドとその引数を完全一致で照合する配列の `serverCommand`、または `*` ワイルドカードを使用する URL パターンの `serverUrl` のいずれかを使用します

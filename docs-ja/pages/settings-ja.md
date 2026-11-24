@@ -155,7 +155,7 @@ Claude Code 内で `/config` を実行し、**Config** タブを開きます。�
 
 ### 1 つのセッションの設定を変更する
 
-値を保存せずに試すには、Claude Code を開始するときに設定します。値はそのセッションに適用され、設定ファイルはそのままです。3 つの方法があります：
+値を保存せずに試すには、Claude Code を開始するときに設定します。3 つの方法があります：
 
 * **`--settings`**：JSON としてキーを渡します。インラインまたはファイルへのパス。Claude Code はそれをユーザー、プロジェクト、およびローカルファイルの上に適用し、管理設定の下に適用します。`--settings` では、[`Managed` または `Global config`](https://code.claude.com/docs/ja/settings-reference#scopes) キーや、[`prependPlugins`](https://code.claude.com/docs/ja/settings-reference#prependplugins) などの一部のユーザー設定キーを設定することはできません。
 * **そのキーのフラグ**：いくつかのキーには独自のフラグがあります。`model` の `--model` や `effortLevel` と `modelSettings` の `--effort` など。

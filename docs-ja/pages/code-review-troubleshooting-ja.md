@@ -20,21 +20,26 @@
 | **Code review skipped — no new changes** | 最新のプッシュに対して自動レビューが実行されませんでした | それでもレビューを受けたい場合は、`@claude review` とコメントします |
 | **Code review not repeated — earlier findings still open** | 最新のプッシュに対して自動レビューが実行されず、以前のレビューの Important の指摘事項がまだ未解決です | 修正をプッシュするか、それでもレビューを受けたい場合は `@claude review` とコメントします。[プッシュ後も以前の結果が維持される場合](https://code.claude.com/docs/ja/code-review-pull-requests.md#when-a-push-keeps-the-earlier-result)を参照してください |
 | **Code review failed** または **Code review timed out** | レビューが完了しませんでした | 再実行するには、[失敗またはタイムアウトしたレビューを再トリガーする](#retrigger-a-failed-or-timed-out-review)を参照してください |
+| **Code review not run: no policy rule uses it** | リポジトリの Claude Approvals ポリシーにより、自動レビューが実行されませんでした | [Code review not run: no policy rule uses it](#code-review-not-run-no-policy-rule-uses-it) を参照してください |
 | **Code review declined** | レビューは実行されませんでした | チェック実行の概要を読んでください。予算または支出上限について記載されている場合は、[レビューが実行されず、PR に予算に関するメッセージが表示される](#review-didn’t-run-and-the-pr-shows-a-budget-message)を参照してください |
 | チェック実行なし | レビューが開始されていません | `@claude review` とコメントします。その後もチェック実行が表示されない場合は、[コメントコマンドでレビューが開始されなかった](#a-comment-command-didn’t-start-a-review)を参照してください |
 
 ## レビューが開始されなかった
 
-**Claude Code Review** チェック実行が表示されない場合、または Claude がレビューをスキップしたというコメントを投稿した場合は、次のケースを確認してください。
+**Claude Code Review** チェック実行が表示されない場合、または Claude がレビューをスキップしたというコメントを投稿した場合は、次のケースを確認してください。そのうち 1 つは、レビューが実行されなかったことをタイトルで示すチェック実行に関するケースです。
 
 ### コメントコマンドでレビューが開始されなかった
 
 `@claude review` とコメントした後、プルリクエスト上に **Code review queued...** または **Code review in progress...** というタイトルの **Claude Code Review** チェック実行があるかを確認してください。コメントに 👀 リアクションが付いても、レビューが開始されることの確認にはなりません。チェック実行が表示されない場合は、次の各原因を確認してください。
 
-* **このリポジトリで Code Review がオンになっていない**：Claude はコマンドに対してコメントもチェック実行も投稿しません。Owner に[リポジトリを追加する](https://code.claude.com/docs/ja/code-review-setup.md#add-more-repositories)よう依頼してください。
+* **このリポジトリで Code Review がオンになっていない**：Claude はコマンドに対してコメントもチェック実行も投稿しません。Owner に[リポジトリを追加する](https://code.claude.com/docs/ja/code-review-setup.md#add-more-repositories)よう依頼してください。[Claude Approvals](https://code.claude.com/docs/ja/approvals.md) ポリシーが Claude のレビューを読み取る場合は、`@claude review` のみを含む新しいコメントでもレビューを開始できます。
 * **コメントが条件を満たしていない**：新しいトップレベルのコメントではなく、インラインコメントやレビュー本文だった場合、またはコマンドがコメントの先頭になかった場合です。新しいコメントを投稿せずに以前のコメントを編集した場合も対象外で、プルリクエストはオープンである必要があります。[コメントコマンドの条件](https://code.claude.com/docs/ja/code-review-pull-requests.md#comment-commands)を確認し、条件を満たす新しいコメントを投稿してください。
 * **書き込みアクセス権がない**：リポジトリに対する write、maintain、または admin の権限が必要です。フォークからのプルリクエストの場合は、ベースリポジトリに対する権限が対象になります。プルリクエストが自分のものでない場合、Claude は[ヒント](https://code.claude.com/docs/ja/code-review-setup.md#turn-tip-comments-on-or-off)として「No review was started: manual reviews can only be requested by someone with write access to this repository.」と返信することがあります。書き込みアクセス権を持つ人に代わりにコメントしてもらってください。
 * **予算が尽きた**：Claude は「⚠️ Code review skipped」で始まるコメントを投稿します。[レビューが実行されず、PR に予算に関するメッセージが表示される](#review-didn’t-run-and-the-pr-shows-a-budget-message)を参照してください。
+
+### Code review not run: no policy rule uses it
+
+**Claude Code Review** チェックにこのタイトルが表示される場合、リポジトリに [Claude Approvals](https://code.claude.com/docs/ja/approvals.md) ポリシーファイルがあり、そのポリシーがこのプルリクエストに対してレビューを求めていないことを意味します。それでもレビューを受けるには、プルリクエストに `@claude review` とコメントしてください。自動レビューを再び有効にするには、[`verdict` を持ち、変更されたファイルに一致するルールで Code Review を指定してください](https://code.claude.com/docs/ja/approvals-policy#advisory)。
 
 ### レビューが実行されず、PR に予算に関するメッセージが表示される
 
@@ -88,7 +93,7 @@
 
 ### テスト用のプルリクエストにチェック実行が表示されない
 
-**Allow code review** がオンになっていること、**Code review** セクションの **Repositories** にリポジトリが表示されていること、Claude GitHub App がそのリポジトリにアクセスできることを確認してください。自動レビューはドラフトのプルリクエストをスキップします。また、**Manual (@claude review)** に設定されたリポジトリでは、最初のレビューを開始するために `@claude review` コメントが必要です。
+[**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) で、**Review** の下のスイッチがオンになっていること、および **Repositories** にリポジトリが表示されていることを確認してください。また、Claude GitHub App がそのリポジトリにアクセスできることも確認してください。自動レビューはドラフトのプルリクエストをスキップします。また、**Manual (@claude review)** に設定されたリポジトリでは、最初のレビューを開始するために `@claude review` コメントが必要です。
 
 ## 関連リソース
 

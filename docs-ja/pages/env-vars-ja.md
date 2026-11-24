@@ -316,7 +316,7 @@ Claude Code はスタートアップ時にシェル環境変数を読み込む�
 | `CLAUDE_CODE_FORCE_TERMINAL_IMAGES` | ターミナルが Unicode プレースホルダー付きの kitty グラフィックスプロトコル画像を描画できるのに、`Image` の薄く表示された `alt` テキストが表示される場合に、`1` に設定すると [mod の `Image` 要素](https://code.claude.com/docs/ja/plugins/mods/reference#elements)を画像として描画します。[`Image` を描画するターミナルと、この変数を設定すべきでない場所](https://code.claude.com/docs/ja/plugins/mods/gallery#image-and-client)を参照してください |
 | `CLAUDE_CODE_FORK_SUBAGENT` | fork モードを制御します。fork モードはデフォルトでオンで、Claude が自ら[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)を開始できるようにします。`0` に設定すると fork モードをオフにします。例えば、[Claude にサブエージェントを待たせる](https://code.claude.com/docs/ja/sub-agents.md#let-claude-wait-for-a-subagent)場合に使用します。バージョンについては、[fork モードをオフにする](https://code.claude.com/docs/ja/sub-agents.md#turn-fork-mode-on-or-off)を参照してください |
 | `CLAUDE_CODE_FORWARD_SUBAGENT_TEXT` | `1` に設定すると、`claude -p --output-format stream-json` の出力に [サブエージェント](https://code.claude.com/docs/ja/sub-agents.md) のテキストと思考ブロックを出力します。これは [`--forward-subagent-text`](https://code.claude.com/docs/ja/cli-reference#cli-flags) フラグと同じ動作です。ハーネスが `claude` を呼び出し、フラグ自体を渡せない場合にこの変数を使用します。stream-json 出力を伴う非対話モード以外ではエラーで終了するフラグとは異なり、この変数はそのような場合には無視されるため、プロセス全体で設定されていてもネストされた呼び出しは引き続き動作します。Claude Code v2.1.211 以降が必要です |
-| `CLAUDE_CODE_FULL_SIGN_IN_LINK` | 短い URL の代わりに完全な claude.ai ログイン URL を表示するには `1` に設定します。短い URL でエラーが表示される場合や、スクリプトが URL から値を読み取る場合に使用します。シェルまたはユーザー設定で設定してください。Claude Code v2.1.330 以降が必要です |
+| `CLAUDE_CODE_FULL_SIGN_IN_LINK` | 完全なログイン URL を表示するには `1` に設定します。短いログイン URL でエラーが表示される場合や、スクリプトが URL から値を読み取る場合に使用します。シェルまたはユーザー設定で設定してください。Claude Code v2.1.330 以降が必要です |
 | `CLAUDE_CODE_GATEWAY_HINT_HEADERS` | `1` に設定すると、カスタムプロキシや、Amazon Bedrock、Claude Platform on AWS などのサードパーティプロバイダーで、`x-claude-code-request-class` や `x-claude-code-compaction` などの [ゲートウェイヒントヘッダー](https://code.claude.com/docs/ja/llm-gateway-protocol.md#gateway-hint-headers) を送信します。`0` に設定すると、Claude Code がデフォルトでこれらを送信する Anthropic API への直接接続を含むすべての接続で、送信を停止します。Claude Code v2.1.273 以降が必要です |
 | `CLAUDE_CODE_GATEWAY_MODEL_DISCOVERY_TIMEOUT_MS` | `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` がオンにする [ゲートウェイモデル検出](https://code.claude.com/docs/ja/llm-gateway-protocol.md#model-discovery) リクエストのタイムアウト（ミリ秒）（デフォルト: `3000`）。起動時にゲートウェイが `/v1/models` に応答するのに 3 秒より長くかかる場合は、値を増やしてください。数字のみを受け付けます。`0`、負の値、その他の表記ではデフォルトが維持されます。Claude Code v2.1.269 以降が必要です |
 | `CLAUDE_CODE_GIT_BASH_PATH` | Windows のみ: Git Bash 実行ファイル（`bash.exe`）へのパス。Git Bash がインストールされているものの PATH にない場合に使用します。パスが存在しない場合、またはファイル名が `bash.exe`、`sh.exe`、`bash`、`sh` のいずれでもない場合、Claude Code はこの変数を無視し、未設定の場合と同様に Git Bash を自動検出して、`--debug` で確認できる警告をログに記録します。v2.1.219 より前は、パスが存在しない場合に Claude Code は起動時に終了し、既存のファイルであれば bash または sh であるかを確認せずにシェルとして使用していました。[Windows でのセットアップ](https://code.claude.com/docs/ja/setup.md#set-up-on-windows) を参照してください |
@@ -600,18 +600,18 @@ Claude Code の一部の機能は、Anthropic から取得する機能フラグ�
 * [`claude import` または `/import` コマンド](https://code.claude.com/docs/ja/cli-reference#cli-commands)を実行する
 * [`/skill-doctor`](https://code.claude.com/docs/ja/skills#find-unused-skills) を実行する、またはそのレポートを `/plugin` の **Stats** タブで開く
 * Pro、Max、および Ultra プランで [`/restart`](https://code.claude.com/docs/ja/commands) を実行する
+* [`/ship` または `/steward`](https://code.claude.com/docs/ja/ship-command) を実行する
 * claude.ai アカウントで有効にした[スキル](https://code.claude.com/docs/ja/skills.md#where-synced-skills-load)と[プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)をターミナルセッションに同期する
 * [You should know mod](https://code.claude.com/docs/ja/interactive-mode.md#you-should-know-suggestions) をオンにする
 * [アドバイザーツール](https://code.claude.com/docs/ja/advisor.md#requirements)を使用する。ただし、Claude Platform on AWS または [Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/feature-availability.md#availability-by-model-provider) で Claude Code v2.1.300 以降を使用する場合を除きます
 * [MCP タスク](https://code.claude.com/docs/ja/mcp.md#mcp-tasks-that-run-on-the-server)を使用する
-* [Code Mode](https://code.claude.com/docs/ja/code-mode.md#requirements) をオンにする
 * Claude に[別の組織の公開アーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読ませる
 * Git Bash がインストールされた Windows 上の claude.ai アカウントおよび Console アカウントで、[PowerShell ツール](https://code.claude.com/docs/ja/tools-reference.md#powershell-tool)をデフォルトで利用する。`CLAUDE_CODE_USE_POWERSHELL_TOOL=1` を設定しない限り、Claude Code はシェルコマンドを Git Bash 経由で実行します。Git Bash のない Windows では、このツールはオンのままです
 * [Claude が下書きするフィードバック](https://code.claude.com/docs/ja/tools-reference.md#sendfeedback-tool-behavior)を利用する。この機能は、Claude Code が取得したフラグによってオンにします
 
 ### インストールまたはアップグレード後の最初のセッション
 
-Claude Code をインストールした後、または機能が追加されたバージョンにアップグレードした後の最初のセッションでは、[フラグで制御される機能](#features-that-need-feature-flag-fetching)が利用できないことがあります。そのセッション中に Claude Code が機能フラグを取得すると、フラグはマシンに保存されるため、そのマシンでの次のセッションでは機能が利用できます。
+Claude Code をインストールした後、または機能が追加されたバージョンにアップグレードした後の最初のセッションでは、[フラグで制御される機能](#features-that-need-feature-flag-fetching)が利用できないことがあります。Anthropic が機能をオンにした後の最初のセッションでも同様です。そのセッション中に Claude Code が機能フラグを取得すると、フラグはマシンに保存されるため、そのマシンで次に Claude Code を起動したときには機能が利用できます。
 
 次のような構成では、最初以降のセッションも、新たに取得したフラグなしで開始されます。
 

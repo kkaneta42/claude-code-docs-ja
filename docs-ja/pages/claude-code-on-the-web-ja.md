@@ -281,7 +281,7 @@ Claude Code はこれらの差分を raw git blob コンテンツから計算す
 
 ### コンテキストを管理
 
-クラウドセッションは[組み込みコマンド](https://code.claude.com/docs/ja/commands.md)をサポートしており、テキスト出力を生成します。ターミナルインターフェイスでのみ実行されるコマンド（`/plugin` や `/resume` など）は利用できません。ターミナルでピッカーまたはパネルを開くコマンドはクラウドセッションで異なる動作をします：
+クラウドセッションは[組み込みコマンド](https://code.claude.com/docs/ja/commands.md)をサポートしており、テキスト出力を生成します。ターミナルインターフェイスでのみ実行されるコマンド（`/resume` など）は利用できません。ターミナルでピッカーまたはパネルを開くコマンドはクラウドセッションで異なる動作をします：
 
 * **`/model`、`/effort`、`/color`、`/rename`**：ターミナルピッカーまたはスライダーを開く代わりに、引数として値を渡します。例えば `/model sonnet` のように使用します。引数形式は各コマンドの[利用可能性に関する注記](https://code.claude.com/docs/ja/commands.md#all-commands)に従います。
 * **`/fast`**：アカウントで[利用可能な場合](https://code.claude.com/docs/ja/fast-mode.md#requirements)、セッションの[ファストモード](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-in-cloud-sessions)を切り替えます。セッションの環境で Claude Code v2.1.271 以降が必要です。
@@ -335,27 +335,7 @@ Claude がすでにメッセージを読んでいる場合、それは会話に�
 
 ### セッションを共有
 
-セッションを共有するには、以下のアカウントタイプに従ってその可視性を切り替えます。その後、セッションリンクをそのまま共有します。受信者はリンクを開くと最新の状態を表示しますが、ビューはリアルタイムで更新されません。
-
-#### Enterprise または Team アカウントから共有
-
-Enterprise および Team アカウントでは、共有は次のように機能します：
-
-* **可視性オプション**：**Private** と **Team**。Team 可視性により、セッションは claude.ai 組織の他のメンバーに表示されます
-* **リポジトリアクセス**：検証はデフォルトで有効になっており、受信者のアカウントに接続された GitHub アカウントに基づいて行われます
-* **ユーザーの名前**：アカウントの表示名はアクセス権を持つすべての受信者に表示されます
-* **Slack セッション**：[Claude in Slack](https://code.claude.com/docs/ja/slack.md) セッションは自動的に Team 可視性で共有されます
-
-#### Max、Ultra、または Pro アカウントから共有
-
-* **可視性オプション**：**Private** と **Public**。Public 可視性により、セッションは claude.ai にログインしているすべてのユーザーに表示されます
-* **リポジトリアクセス**：検証はデフォルトで有効になっていません
-* **機密コンテンツ**：共有する前にセッションを確認してください。セッションにはプライベート GitHub リポジトリのコードと認証情報が含まれる可能性があります
-
-受信者がリポジトリアクセスを持つことを要求するか、共有セッションから名前を非表示にするには、claude.ai で Settings を開き、次の操作を行います：
-
-* **Settings メニューに Claude Code ではなく Code が表示される場合**：これらの設定がある [**Privacy**](https://claude.ai/settings/data-privacy-controls) に移動します
-* **それ以外の場合**：[**Claude Code > Sharing settings**](https://claude.ai/settings/claude-code) に移動します
+リンクでセッションを共有する方法、受信者が閲覧できる内容、共有を停止する方法については、[クラウドセッションまたは Remote Control セッションを共有する](https://code.claude.com/docs/ja/share-sessions.md)を参照してください。
 
 ### セッションをアーカイブ
 
@@ -391,6 +371,8 @@ PR がどこから来たか、どのデバイスを使用しているかに応�
 * **既存の PR**：PR URL をセッションに貼り付けて、Claude に auto-fix するよう指示します
 
 監視を停止するには、セッションの [**Changes** カード](#review-changes)にあるプルリクエストの **⋮** メニューで **Auto-fix** をオフにするか、Claude に PR の監視を停止するよう指示します。
+
+PR Steward がプルリクエストを処理しているリポジトリでは、**Auto-fix** トグルは使用できません。PR Steward が監視しているプルリクエストを auto-fix するリクエストは失敗します。[Auto-fix が利用できない](https://code.claude.com/docs/ja/pr-steward-troubleshooting.md#auto-fix-is-unavailable)を参照してください。
 
 ### Claude が PR アクティビティにどのように応答するか
 

@@ -1034,7 +1034,7 @@ v2.1.309 より前は、メッセージは `blocking because Git Bash wasn't fou
 | フック イベント | ブロック可能？ | 終了 2 で何が起こるか |
 | :- | :- | :- |
 | `PreToolUse` | はい | ツール呼び出しをブロック |
-| `PermissionRequest` | いいえ | このイベントでは終了コード 2 は尊重されず、権限フローは変更されずに進行します。代わりに [`decision` オブジェクト](#permissionrequest-decision-control)を通じて拒否してください |
+| `PermissionRequest` | いいえ | 決定としては読み取られません。代わりに [`decision` オブジェクト](#permissionrequest-decision-control)を通じて拒否してください |
 | `UserPromptSubmit` | はい | プロンプトをブロック。[ブロックされたプロンプトが残すもの](#what-a-blocked-prompt-leaves-behind)を参照してください |
 | `UserPromptExpansion` | はい | 拡張をブロック |
 | `Stop` | はい | Claude が停止するのを防ぎ、会話を続行 |
@@ -1226,7 +1226,7 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 
 * `PreToolUse`: `hookSpecificOutput` の直下の `updatedInput` は、ツールが実行される前にそのツールの引数を置き換えます。[PreToolUse 決定制御](#pretooluse-decision-control)を参照してください
 * `PermissionRequest`: `decision` オブジェクト内の `updatedInput`。[PermissionRequest 決定制御](#permissionrequest-decision-control)を参照してください
-* `PostToolUse`: `updatedToolOutput` はツールの結果を置き換えます。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでは、ツールが `AskUserQuestion` または `ExitPlanMode` の場合、Claude Code は `updatedToolOutput` を無視し、Claude は元の回答またはプランを読み取ります。[PostToolUse 決定制御](#posttooluse-decision-control)を参照してください
+* `PostToolUse`: `updatedToolOutput` はツールの結果を置き換えます。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでの制限も含め、[PostToolUse 決定制御](#posttooluse-decision-control)を参照してください
 * `UserPromptSubmit`: プロンプトを置き換えることはできません。`additionalContext` をそれと一緒に注入するだけです
 
 秘匿化や変換のユースケースの場合、アウトバウンド ツール入力は `PreToolUse` で、成功した呼び出しの結果は `PostToolUse` で傍受します。`PostToolUseFailure` は結果を書き換えられないため、失敗したコマンドの出力を秘匿化することはできません。
@@ -1444,7 +1444,7 @@ exit 0
 
 ### Setup
 
-`--init-only` を指定して Claude Code を起動した場合、または `-p` フラグを使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)で `--init` または `--maintenance` を指定した場合にのみ発火します。通常の起動では発火しません。通常のセッション起動とは別に、CI やスクリプトから明示的にトリガーする一回限りの依存関係のインストールや定期的なクリーンアップに使用してください。セッションごとの初期化には、代わりに [SessionStart](#sessionstart) を使用してください。
+`--init-only` を付けて Claude Code を起動した場合、または `-p` フラグを使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)で `--init` または `--maintenance` を付けて起動した場合にのみ発火します。CI やスクリプトから明示的にトリガーする、1 回限りの依存関係のインストールや定期的なクリーンアップに使用します。セッションごとの初期化には、代わりに [SessionStart](#sessionstart) を使用してください。
 
 matcher の値は、フックをトリガーした CLI フラグに対応します：
 
@@ -2160,8 +2160,10 @@ v2.1.319 より前では、Claude Code はツールの結果なしでプロン�
 
 ### PermissionRequest
 
-Claude Code がツールの使用について権限を求めようとするときに実行されます。[非対話モード](https://code.claude.com/docs/ja/headless.md)のバックグラウンドのサブエージェントなど、プロンプトを表示できないセッションでも Claude Code はこれらのフックを実行し、どのフックも決定を返さない場合はツール呼び出しを拒否します。`--permission-prompt-tool` または Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/permissions)に到達する呼び出しでは、フックはホストと並行して実行され、先に決定した方が適用されます。
-[PermissionRequest の決定制御](#permissionrequest-decision-control)を使用して、ユーザーの代わりに許可または拒否します。
+Claude Code がツールの使用について権限を求めようとするときに実行されます。`--permission-prompt-tool` または Agent SDK の [`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/permissions)に到達する呼び出しの場合、フックはホストと並行して実行され、先に決定した方が適用されます。
+[PermissionRequest の決定制御](#permissionrequest-decision-control)を使用して、ユーザーに代わって許可または拒否します。
+
+[`dontAsk` モード](https://code.claude.com/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)以外の `-p` 実行で、`--permission-prompt-tool` も `canUseTool` コールバックもない場合、プロンプトに応答できる者はいません。そこでは、PermissionRequest フックなどの何かが承認しない限り、プロンプトを表示するはずの呼び出しは拒否されます。
 
 Claude がツールの使用について権限を求めた瞬間にシグナルが必要な場合は、このイベントを使用してください。Claude Code は、プロンプトが約 6 秒待機した後にのみ、`permission_prompt` タイプの [Notification](#notification) フックを実行します。
 
@@ -2214,7 +2216,7 @@ PreToolUse フックは、権限が必要かどうかにかかわらず、すべ
 
 Monitor コマンドを許可または書き換えるには、[Monitor コマンドをマッチさせる](#match-monitor-commands)を参照してください。
 
-`decision` オブジェクトを返さずに終了コード 2 で終了するフックは権限フローを変更せず、その stderr は破棄されます。リクエストを許可または拒否するには、`decision` オブジェクトを返してください。
+Claude Code は、このイベントでは終了コード 2 を決定として解釈しません。リクエストを許可または拒否するには、`decision` オブジェクトを返してください。
 
 ```json theme={null}
 {
@@ -2330,7 +2332,7 @@ v2.1.319 より前では、メッセージでターンを中断した後にフ�
 | `reason` | `decision` が `"block"` の場合に Claude に表示される説明 |
 | `additionalContext` | ツールの結果とともに Claude のコンテキストに追加される文字列。[Claude にコンテキストを追加する](#add-context-for-claude)を参照してください |
 | `classifierContext` | この呼び出しの結果について、Claude ではなく [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)の分類器に向けた短いメモ。[auto モードの分類器向けに結果に注釈を付ける](#annotate-a-result-for-the-auto-mode-classifier)を参照してください。Claude Code v2.1.236 以降が必要です |
-| `updatedToolOutput` | Claude に送信される前に、ツールの出力を指定した値に置き換えます。値はツールの出力の形式と一致している必要があります。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでは、ツールが `AskUserQuestion` または `ExitPlanMode` の場合、Claude Code はこのフィールドを無視し、Claude は元の回答またはプランを読み取ります |
+| `updatedToolOutput` | Claude に送信される前に、ツールの出力を指定された値で置き換えます。値はツールの出力の形式と一致する必要があります。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでは、`AskUserQuestion` や `ExitPlanMode` など一部のツールについて、Claude Code はこのフィールドと `updatedMCPToolOutput` を無視します。その場合、Claude は元の結果を読み取ります |
 | `updatedMCPToolOutput` | [MCP ツール](#match-mcp-tools)の場合のみ出力を置き換えます。組み込みツールでも機能する `updatedToolOutput` を優先してください |
 
 次の例は、`Bash` 呼び出しの出力を置き換えます。置き換える値は `Bash` ツールの出力の形式と一致しています。
@@ -3358,7 +3360,7 @@ git ベースの worktree では、Claude Code は `git worktree remove` でク�
   * **worktree セッションを終了した場合、または Claude が `ExitWorktree` を呼び出した場合**: Claude Code は WorktreeCreate フックが返したパスを `git worktree remove --force` と同じように削除するため、git が認識している worktree は削除されます。git が認識していない worktree（たとえば、フックが git 以外のバージョン管理システムで作成したもの）はディスク上に残ります。
   * **`claude remote-control` がセッションの worktree をクリーンアップする場合**: worktree はディスク上に残り、`claude remote-control` を実行しているターミナルに `worktree removal failed, kept: <path>` と表示されます。
   * **バックグラウンドセッションを削除した場合**: [セッションの削除で削除されるもの](https://code.claude.com/docs/ja/agent-view.md#what-deleting-a-session-removes)を参照してください。
-* **フックが 0 で終了した場合**: worktree は削除済みとみなされます。Claude Code はフックからそれ以外に何も読み取らないため、フックが確実にディレクトリを削除するようにしてください。
+* **フックが 0 で終了した場合**: Claude Code は git にフォールバックしないため、worktree のディレクトリがまだ残っている場合は自分で削除してください。
 * **フックが 0 以外で終了した場合**: その後も `worktree_path` のディレクトリが存在していれば削除は失敗し、worktree は git へのフォールバックなしにディスク上に残ります。0 以外で終了する前にディレクトリを削除したフックは、削除済みとみなされます。失敗の報告方法については、[WorktreeRemove の入力](#worktreeremove-input)を参照してください。
 
 Claude Code は WorktreeCreate フックが返したパスしか知らないため、フックで作成された worktree に属するブランチを削除することはありません。WorktreeCreate フックでブランチを作成する場合は、WorktreeRemove フックでそのブランチを削除してください。Claude Code は、`systemMessage` や `continue` など、WorktreeRemove フックの [JSON 出力フィールド](#json-output)を破棄します。
@@ -3398,7 +3400,7 @@ Claude Code は、WorktreeCreate が返したパスをフックの入力の `wor
 }
 ```
 
-結果は WorktreeRemove フックの終了コードによって決まります。フックが 0 以外で終了し、その後も `worktree_path` のディレクトリが存在している場合、削除は失敗します。
+フックが 0 以外で終了し、その後も `worktree_path` のディレクトリが存在する場合、削除は失敗します。
 
 * バックグラウンドセッションを削除しようとしていた場合は、セッションも残ります。[エージェントビュー](https://code.claude.com/docs/ja/agent-view.md#what-deleting-a-session-removes)の拒否メッセージには、`exited 1` のようにフックがどのように終了したかが示され、stderr の冒頭が引用され、セッションを再度削除した場合にディレクトリが強制的に削除されるかどうかが示されます。
 * `claude remote-control` がセッションの worktree をクリーンアップしていた場合は、それを実行しているターミナルに `worktree removal failed, kept: <path>` と表示されます。
@@ -3741,7 +3743,7 @@ matcher フィールドは MCP サーバー名に対して照合されます。
   "cwd": "/Users/...",
   "hook_event_name": "Elicitation",
   "mcp_server_name": "my-mcp-server",
-  "message": "Please provide your credentials",
+  "message": "Please provide your username",
   "mode": "form",
   "requested_schema": {
     "type": "object",
@@ -4106,7 +4108,7 @@ LLM は以下を含む JSON で応答する必要があります：
 * `PostToolUseFailure`、`TaskCreated`：理由は `continueOnBlock` に関係なくツール エラーとして Claude に返され、ターンが続行されます
 * `TaskUpdate` 呼び出し時の `TaskCompleted`：`continueOnBlock` に関係なく、Claude は理由をツール結果として受け取り、ターンが続行されます
 * `TeammateIdle`、およびチームメイトのターン終了時の `TaskCompleted`：デフォルトではチームメイトがアイドル状態になり、理由はそのトランスクリプトに表示されます。理由をチームメイトに送信して作業を続けさせるには、`continueOnBlock: true` を設定します
-* `PermissionRequest`：`ok: false` は効果がありません。フックから承認を拒否するには、[コマンド フック](#command-hook-fields)を使用して `hookSpecificOutput.decision.behavior: "deny"` を返します
+* `PermissionRequest`：`ok: false` はリクエストを拒否しません。フックから承認を拒否するには、[コマンド フック](#command-hook-fields)を使用して `hookSpecificOutput.decision.behavior: "deny"` を返します
 * `PermissionDenied`：`ok: false` は効果がありません。拒否は既に発生しているためです。このイベントが読み取る唯一の出力は `hookSpecificOutput.retry` です。プロンプト フックとエージェント フックはこれを設定できません。これらはこのイベントで実行されますが、その出力は破棄されます。`retry` を返すには、[コマンド フック](#command-hook-fields)を使用してください
 
 任意のイベントでより細かい制御が必要な場合は、[決定制御](#decision-control)で説明されているイベント ごとのフィールドを使用して、[コマンド フック](#command-hook-fields)を使用してください。

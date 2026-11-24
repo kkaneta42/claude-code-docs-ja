@@ -30,13 +30,15 @@ Code Review は、プランに含まれる使用量とは別に、[使用クレ�
 * **`@claude review`**：今後のプッシュをサブスクライブせずに、1 回だけレビューを実行します
 * **ドラフトとフォークからのプルリクエスト**：[自動レビューはどちらもスキップする](https://code.claude.com/docs/ja/code-review-pull-requests.md#review-drafts-and-pull-requests-from-forks)ため、これらへのプッシュでレビューが増えることはありません
 
+[Claude Approvals](https://code.claude.com/docs/ja/approvals-setup.md#what-approvals-costs) のポリシーファイルがあるリポジトリでは、**Review runs** 設定では開始されないレビューが開始されることがあり、[自動レビューが停止することもあります](https://code.claude.com/docs/ja/approvals-policy.md#advisory)。
+
 ## 支出を見積もる
 
 本格的に展開する前に、小規模なパイロットを実施して、自組織のプルリクエストから月間の支出を見積もります。
 
 1. パイロット用に[月間支出上限](#limit-your-spend)を設定します。
 2. 代表的ないくつかのリポジトリで Code Review をオンにし、**Review runs** を **Once after PR creation** または **Manual (@claude review)** に設定します。
-3. いくつかのレビューが実行された後、[**Admin settings > Claude Code**](https://claude.ai/admin-settings/claude-code#code-review) の **Code review** セクションにある **Repositories** テーブルの **Average cost** 列で、各リポジトリのレビューあたりの平均コストを確認します。
+3. いくつかのレビューが実行された後、[**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) に移動し、**Repositories** テーブルの各リポジトリの行で **Edit** をクリックします。**Cost** で、そのリポジトリのレビューあたりの平均コストを確認します。
 4. その平均値に、そのリポジトリで 1 か月間に作成されるプルリクエストの数を掛けます。**After every push** の場合は、さらにプルリクエストあたりの一般的なプッシュ回数を掛けます。
 
 リポジトリの平均値は、そのプルリクエストの規模と選択したレビューレベルに応じて変動します。

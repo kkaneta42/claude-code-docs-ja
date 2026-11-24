@@ -867,7 +867,7 @@ Claude Code は、OpenTelemetry のログ/イベントを介して次のイベ�
 * `event.sequence`: イベントを順序付けるためのプロセスごとのカウンター。[イベント相関属性](#event-correlation-attributes)で説明しています
 * `tool_name`: ツールの名前
 * `tool_use_id`: このツール呼び出しの一意の識別子。フックに渡される `tool_use_id` と一致するため、OTel イベントとフックがキャプチャしたデータを関連付けることができます。
-* `request_id`: このツール呼び出しを含む API レスポンスの [`request_id`](#event-correlation-attributes)。これにより、呼び出しをそのレスポンスの API イベントと結合できます。そのレスポンスにリクエスト ID がなかった場合、またはどの API レスポンスにもその呼び出しが含まれていなかった場合は含まれません。Claude Code v2.1.310 以降が必要です
+* `request_id`: このツール呼び出しを含んでいた API レスポンス、またはこの呼び出しを行った [Code Mode](https://code.claude.com/docs/ja/code-mode.md#monitor-code-mode-with-opentelemetry) のコードを含んでいた API レスポンスの [`request_id`](#event-correlation-attributes)。これを使用して、呼び出しをそのレスポンスの API イベントと結合します。そのレスポンスにリクエスト ID がなかった場合、または呼び出しやそのコードを含む API レスポンスがなかった場合は含まれません。Claude Code v2.1.310 以降が必要です
 * `success`: `"true"` または `"false"`
 * `duration_ms`: 実行時間（ミリ秒）
 * `error_type`: ツールが失敗した場合のエラーカテゴリ文字列。例: `"Error:ENOENT"` や `"ShellError"`
@@ -1021,7 +1021,7 @@ API リクエストが `stop_reason: "refusal"` を返したときに記録さ�
 * `event.sequence`: イベントを順序付けるためのプロセスごとのカウンター。[イベント相関属性](#event-correlation-attributes)で説明しています
 * `tool_name`: ツールの名前（例: "Read"、"Edit"、"Write"、"NotebookEdit"）
 * `tool_use_id`: このツール呼び出しの一意の識別子。フックに渡される `tool_use_id` と一致するため、OTel イベントとフックがキャプチャしたデータを関連付けることができます。
-* `request_id`: このツール呼び出しを含む API レスポンスの [`request_id`](#event-correlation-attributes)。これにより、呼び出しをそのレスポンスの API イベントと結合できます。そのレスポンスにリクエスト ID がなかった場合、またはどの API レスポンスにもその呼び出しが含まれていなかった場合は含まれません。Claude Code v2.1.310 以降が必要です
+* `request_id`: このツール呼び出しを含んでいた API レスポンス、またはこの呼び出しを行った [Code Mode](https://code.claude.com/docs/ja/code-mode.md#monitor-code-mode-with-opentelemetry) のコードを含んでいた API レスポンスの [`request_id`](#event-correlation-attributes)。これを使用して、呼び出しをそのレスポンスの API イベントと結合します。そのレスポンスにリクエスト ID がなかった場合、または呼び出しやそのコードを含む API レスポンスがなかった場合は含まれません。Claude Code v2.1.310 以降が必要です
 * `decision`: `"accept"` または `"reject"`
 * `tool_source`: 常に含まれます。ツールの出所で、CLI が定義する値の閉じた集合です。
   * `"builtin"`: CLI 自身のツール
@@ -1054,12 +1054,13 @@ API リクエストが `stop_reason: "refusal"` を返したときに記録さ�
   * `"no_verdict"`: チェックは実行されましたが[使用可能な判定](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action)が得られなかったため、Claude Code が呼び出しを拒否しました。この拒否は、分類器が呼び出しを安全でないと判断したことを意味するものではありません
   * `"unavailable"`: レート制限、タイムアウト、接続エラーなどにより分類器へのリクエストが失敗したため、Claude Code が呼び出しを拒否しました。[サーバー側の分類器レビュー](https://code.claude.com/docs/ja/permission-modes.md#server-side-classifier-review)では、[サーバーが安全性の判定を返さなかった](https://code.claude.com/docs/ja/errors.md#the-server-returned-no-safety-verdict)ために拒否された呼び出しも示します
 
-  [分類器が plan モードでコマンドをレビューする](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)場合は、plan モードの呼び出しにもこの属性が含まれます。次の場合、この属性は含まれません。
+  この属性は、[分類器が plan モードでコマンドをレビューする](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)場合の plan モードの呼び出しにも含まれます。以下の場合、この属性は含まれません。
 
   * 許可または拒否の[権限ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)が呼び出しを決定した場合
-  * Claude Code が auto モードで分類器に問い合わせずに呼び出しを承認した場合
-  * [繰り返しのブロック](https://code.claude.com/docs/ja/permission-modes.md#repeated-block-thresholds)の後に Claude Code が表示したプロンプトにユーザーが回答した場合
-  * `--permission-prompt-tool` なしの `-p` 実行で、プロンプトに回答する人がいないため、Claude Code が繰り返しのブロックの後に呼び出しを拒否した場合。そのイベントでは `decision` が `"reject"`、`source` が `"config"` として報告されます
+  * auto モードで Claude Code が分類器に問い合わせずに呼び出しを承認した場合
+  * [Code Mode](https://code.claude.com/docs/ja/code-mode.md#monitor-code-mode-with-opentelemetry) で、コードに対する分類器のレビューが呼び出しを対象としていた場合
+  * [ブロックが繰り返された](https://code.claude.com/docs/ja/permission-modes.md#repeated-block-thresholds)後に Claude Code が表示したプロンプトにユーザーが応答した場合
+  * `--permission-prompt-tool` なしの `-p` 実行で、プロンプトに応答する人がいないため、ブロックが繰り返された後に Claude Code が呼び出しを拒否した場合。そのイベントは `decision` を `"reject"`、`source` を `"config"` として報告します
 * `classifier_category`（`OTEL_LOG_TOOL_DETAILS=1` の場合）: 分類器が呼び出しをブロックしたときに示した[ポリシー](https://code.claude.com/docs/ja/auto-mode-config.md#fix-a-policy-denial)または[組み込みルール](https://code.claude.com/docs/ja/auto-mode-config.md#inspect-the-defaults-and-your-effective-config)の名前。アンダースコア付きの小文字で表され、たとえば Data Exfiltration ルールの場合は `"data_exfiltration"` です。Claude Code v2.1.301 以降が必要です。この属性は、次の両方が成り立つ場合に含まれます。
 
   * `classifier_verdict` が `"block"` である

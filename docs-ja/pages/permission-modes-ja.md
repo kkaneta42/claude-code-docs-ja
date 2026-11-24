@@ -294,7 +294,7 @@ plan モードは、Claude に変更を加えずに調査と変更の提案を�
 
 計画中のシェルコマンドがどう扱われるかはセッションによって異なり、以下のケースのうち最初に該当するものが適用されます。
 
-* **bypass permissions が利用可能なインタラクティブなターミナルセッション**: 計画中のコマンドには分類器もプロンプトも適用されません。それでもプロンプトが表示されるいくつかの操作については、[bypassPermissions モードですべてのチェックをスキップする](#skip-all-checks-with-bypasspermissions-mode)を参照してください。
+* **bypass permissions が利用可能なインタラクティブなターミナルセッション**: 計画中のコマンドは、分類器もプロンプトもなしで実行できます。そこでも引き続きプロンプトが表示される操作については、[bypassPermissions モードですべてのチェックをスキップする](#skip-all-checks-with-bypasspermissions-mode)を参照してください。
 * **[auto モード](https://code.claude.com/docs/ja/auto-mode-config.md)が利用可能で、`useAutoModeDuringPlan` 設定がオン**（デフォルトでオン）: 分類器が、[クリティカルパスの削除](#critical-paths)以外のシェルコマンドを、プロンプトを表示する代わりにレビューします。承認されたコマンドは実行され、拒否されたコマンドはブロックされます。
 * **auto モードが利用できない、または `useAutoModeDuringPlan` がオフ**: [組み込みの読み取り専用セット](https://code.claude.com/docs/ja/permissions.md#read-only-commands)に含まれないコマンドは、サンドボックスの [auto-allow モード](https://code.claude.com/docs/ja/sandboxing.md#sandbox-modes)が有効な場合も含めて、承認を求めるプロンプトが表示されます。
 
@@ -326,7 +326,7 @@ claude --permission-mode plan
 
 ## auto モードで権限プロンプトを排除する
 
-auto モードを使用すると、Claude は日常的な権限プロンプトなしで実行できます。別の分類器モデルが実行前にアクションをレビューし、リクエストの範囲を超えるもの、認識されていないインフラストラクチャを対象とするもの、または Claude が読んだ悪意のあるコンテンツによって駆動されているように見えるものをブロックします。明示的な [ask ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)は引き続きプロンプトを強制します。
+auto モードを使用すると、Claude は日常的な権限プロンプトなしで実行できます。別の分類器モデルが実行前にアクションをレビューし、[リスクがあると判断した](#what-the-classifier-blocks-by-default)ものをブロックします。分類器は、リクエストの範囲を超えるアクション、認識されていないインフラストラクチャを対象とするアクション、または Claude が読んだ悪意のあるコンテンツに従うアクションを探します。
 
 Claude Code v2.1.283 以降では、auto モードはすべてのプランとプロバイダーにおいて、インタラクティブなターミナルセッションと VS Code セッションの[組み込みの開始権限モード](#which-mode-a-session-starts-in)です。それより前のバージョンでは、Pro、Max、Ultra、Team プランでのみ組み込みの開始権限モードです。
 
@@ -545,7 +545,7 @@ Claude Code v2.1.261 以降では、以下もデフォルトでブロックさ�
 
 分類器は、会話で伝えた境界をブロックのシグナルとして扱います。Claude に「プッシュしないで」や「デプロイする前に私のレビューを待って」と伝えると、デフォルトのルールでは許可されるアクションであっても、分類器は[分類器がレビューする](#how-the-classifier-evaluates-actions)アクションのうち該当するものをブロックします。境界は、後のメッセージで解除するまで有効です。条件が満たされたという Claude 自身の判断では解除されません。
 
-境界はルールとして保存されません。分類器はチェックのたびにトランスクリプトから境界を読み直すため、[コンテキスト圧縮](https://code.claude.com/docs/ja/costs.md#reduce-token-usage)によって境界を伝えたメッセージが削除されると、境界が失われる可能性があります。確実な保証が必要な場合は、代わりに [deny ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)を追加してください。
+境界はルールとして保存されません。分類器はチェックのたびにトランスクリプトから境界を読み直すため、[コンテキスト圧縮](https://code.claude.com/docs/ja/costs.md#reduce-token-usage)によって境界を伝えたメッセージが削除されると、境界が失われる可能性があります。境界が失われないようにするには、代わりに[拒否ルール](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)を追加してください。
 
 ### 会話で伝えた承認
 
@@ -686,7 +686,7 @@ claude --permission-mode dontAsk
 * このマシンを超えたセッションへのメッセージに対する [`isolatePeerMachines`](https://code.claude.com/docs/ja/settings-reference#isolatepeermachines) 承認プロンプトが引き続き表示されます。
 * [`crossSessionInbound`](https://code.claude.com/docs/ja/cross-session-messaging#control-inbound-messages) 値が適用されない場合、Claude Code は別のセッションからのインバウンドメッセージを承認待ちで保持し、送信セッションが権限プロンプトもバイパスしていることを識別した場合にのみ確認なしで配信します。権限モードを終了してメッセージが保持されている場合、Claude Code はインバウンドルールを再適用し、保持されているメッセージのうち現在受け入れるものを配信します。
 
-権限バイパスが利用可能な対話ターミナルセッションでは、Claude Code は [plan モードの](#analyze-before-you-edit-with-plan-mode)ブロックも強制しません。Claude は引き続き編集せずに計画するよう指示されていますが、計画中に試みるファイル編集またはシェルコマンドはプロンプトなしで実行されます。明示的な [ask ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)と、認識された `rm` および `rmdir` による[クリティカルパスの削除](#critical-paths)は引き続きプロンプトが表示されます。
+権限バイパスが利用可能な対話ターミナルセッションでは、[plan モードの](#analyze-before-you-edit-with-plan-mode)ブロックに頼らないでください。計画中に Claude が試みるファイル編集やシェルコマンドは、プロンプトなしで実行される可能性があります。明示的な [ask ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)と、認識された `rm` および `rmdir` による[クリティカルパスの削除](#critical-paths)は引き続きプロンプトが表示されます。
 
 プランモードは Claude Code がインタラクティブターミナルなしで実行される場所ではブロックを保持します。これには `-p` を使用した[非インタラクティブ実行](https://code.claude.com/docs/ja/headless.md)、[Agent SDK](https://code.claude.com/docs/ja/agent-sdk/permissions.md#plan-mode-plan) セッション、および [VS Code 拡張機能](https://code.claude.com/docs/ja/vs-code.md)のチャットパネルでの会話が含まれます。そこでは、`--allow-dangerously-skip-permissions` により `bypassPermissions` が後で選択可能になります。
 

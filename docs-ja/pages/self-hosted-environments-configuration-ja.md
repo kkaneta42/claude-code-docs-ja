@@ -618,7 +618,7 @@ env | grep -E 'CLAUDE_CODE_USE_(BEDROCK|VERTEX)'
 モデルリクエストを Amazon Bedrock または Google Cloud の Agent Platform に送信するセッションは、Anthropic API 上のセッションと次の点で異なります。
 
 * **claude.ai からのポリシー**：[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)はこれらのセッションに届きません。Owner が Claude Code の管理設定で設定する組織ポリシーも届かないため、Claude Code はセッション内でそれらを適用しません。依存するルールは、ランナーイメージの[管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)に記述してください。
-* **アカウントのスキル**：これらのセッションは、各ユーザーの claude.ai アカウントで有効になっているスキルをダウンロードしません。[各セッションの設定の組み立て方](#how-each-session’s-config-is-assembled)を参照してください。
+* **アカウントのスキルとプラグイン**：これらのセッションは、各ユーザーの claude.ai アカウントで有効になっているスキルやプラグインをダウンロードしません。[各セッションの設定の組み立て方](#how-each-session’s-config-is-assembled)を参照してください。
 * **ファイル**：claude.ai やモバイルアプリ、デスクトップアプリでセッションに添付されたファイルはセッションに届かず、Claude は [`SendUserFile` ツール](https://code.claude.com/docs/ja/tools-reference)でファイルを送り返すこともできません。代わりに、入力ファイルはリポジトリまたはランナー上に配置してください。
 * **モデルの選択**：Anthropic のコントロールプレーンが各セッションのモデルを送信し、モデルが指定されずにセッションが開始された場合、Claude Code はそのプロバイダーのデフォルトを使用します。ランナーの環境で `ANTHROPIC_MODEL` や `ANTHROPIC_DEFAULT_MODEL` を使ってモデルを選択することはできませんが、エイリアスの解決先を固定することはできます。
   * **`ANTHROPIC_MODEL` と `ANTHROPIC_DEFAULT_MODEL`**：プロバイダーのページの例では `ANTHROPIC_MODEL` を設定していますが、ランナーはセッションに渡す環境からこれらを削除します。
@@ -866,7 +866,7 @@ auto モードでは、別の分類器モデルがアクションの実行前に
 
 ### 各セッションの設定がどのように組み立てられるか
 
-ランナーは各セッションに独自の設定ディレクトリを提供します。ランナーが起動時に 1 回キャプチャするホストの `~/.claude/` のスナップショットからシードされます。`settings.json`、`CLAUDE.md`、フック、エージェント、コマンド、スキルがランナーイメージにあります。これらはすべてのセッションにユーザーレベルのベースラインとして適用されます。実行中のホストで設定を変更する場合、変更はランナーを再起動した後にのみ有効になります。
+セルフホストランナーは各セッションに独自の設定ディレクトリを提供し、このディレクトリはランナーが起動時に 1 回キャプチャするホストの `~/.claude/` のスナップショットからシードされます。ランナーイメージ内の `settings.json`、`CLAUDE.md`、フック、エージェント、コマンド、スキルは、ユーザーレベルのベースラインとしてセッションに適用されます。実行中のホストで設定を変更する場合、変更はランナーを再起動した後にのみ有効になります。
 
 `SELF_HOSTED_RUNNER_HOST_CONFIG_DIR` を設定して別のパスからシードするか、空のディレクトリに指定してシーディングを無効にします。
 
@@ -876,6 +876,10 @@ auto モードでは、別の分類器モデルがアクションの実行前に
 * **管理設定**：セッションはランナーイメージの標準システムパスから [`managed-settings.json`](https://code.claude.com/docs/ja/settings#where-settings-live) を読み取ります。そのキーが [サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) と一緒に適用されるかどうかについては、[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources) を参照してください。
 
 これらのソースが適用される順序については、[設定の優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence) を参照してください。
+
+> [!NOTE]
+>
+> [PR Steward](https://code.claude.com/docs/ja/pr-steward-setup.md#choose-the-environment-pr-steward-runs-in) のセッションでは、Claude Code はランナーから `CLAUDE.md` やルールファイルを一切読み込みません。これにはランナーイメージとリポジトリのチェックアウトの両方が含まれます。PR Steward はリポジトリの指示ファイルを [デフォルトブランチから](https://code.claude.com/docs/ja/pr-steward-pull-requests.md#save-pr-steward-instructions-for-everyone-in-a-repository) 読み取るため、従わせたい内容はそこに記述してください。
 
 Anthropic のコントロールプレーンがセッションに [Claude Code フック](https://code.claude.com/docs/ja/hooks.md) を提供する場合、ランナーはそれらを独自の設定の上ではなく隣に設定します。Claude Code v2.1.229 以降が必要です。それより古いランナーは提供されたフックを無視します。提供されたフックは `python3` を実行するため、[ランナーイメージ](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#build-the-runner-image) に `python3` をインストールしてください。
 
@@ -919,7 +923,7 @@ claude.ai の管理コンソールでもキーを設定している場合でも�
 * **デフォルトである `--capacity 1` と組み込みのチェックアウトを使用する場合**: セッションは、リポジトリのリストにある最初のリポジトリで開始されます。そのリポジトリの `.claude/settings.json` がプロジェクト設定として有効になり、その [`.mcp.json`](#mcp-servers) が読み込まれますが、他のリポジトリのものは有効にならず、読み込まれません。
 * **1 より大きい `--capacity`、または [`checkout` フック](#checkout) を使用する場合**：セッションはチェックアウトを含むセッションごとのディレクトリで開始します。どのリポジトリの `.claude/settings.json` もプロジェクト設定として有効にならず、どのリポジトリの `.mcp.json` も読み込まれず、フックコマンド内の [`$CLAUDE_PROJECT_DIR`](https://code.claude.com/docs/ja/hooks#reference-scripts-by-path) はチェックアウトではなくそのディレクトリになります。
 
-各リポジトリの `CLAUDE.md` は、セッションがどこで開始しても読み込まれます。プロジェクトのスレッド以外では、そのスキルも読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration) として Claude Code に渡すため、プロジェクトのスレッド以外では、Claude Code は各リポジトリの `.claude/settings.json` から `enabledPlugins` キーと `extraKnownMarketplaces` キーも読み取ります。[`--trust-workspace false`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動した場合、Claude Code は両方のキーをスキップします。`enabledPlugins` のスキップには Claude Code v2.1.323 以降が必要です。
+各リポジトリの `CLAUDE.md` は、セッションがどこで開始しても読み込まれます。プロジェクトのスレッド以外では、そのスキルも読み込まれます。ランナーはすべてのリポジトリを [追加ディレクトリ](https://code.claude.com/docs/ja/permissions.md#additional-directories-grant-file-access-not-configuration) として Claude Code に渡します。プロジェクトのスレッド以外では、`enabledPlugins` キーと `extraKnownMarketplaces` キーも各リポジトリの `.claude/settings.json` から取得される場合があります。[`--trust-workspace false`](https://code.claude.com/docs/ja/self-hosted-environments-reference#runner-cli-flags) を指定してランナーを起動した場合、Claude Code は両方のキーをスキップします。`enabledPlugins` のスキップには Claude Code v2.1.323 以降が必要です。
 
 すべてのセッションでフックを実行したり権限ルールを適用したりするには、ランナーホストの `~/.claude/settings.json` に記述します。ランナーは、セッションがどこで開始しても、[ホストのファイルをすべてのセッションにシードします](#how-each-session’s-config-is-assembled)。`Read` ルールまたは `Edit` ルールのパスは、`//` による絶対パスまたは `~/` によるホーム相対の [パターン](https://code.claude.com/docs/ja/permissions.md#read-and-edit) として記述してください。それ以外のパターンは設定ソースまたは現在のディレクトリを基準とするためです。
 

@@ -69,7 +69,7 @@ Claude アプリゲートウェイは、開発者の Claude Code クライアン
 
 | 必要なもの | 詳細 |
 | - | - |
-| Claude Code v2.1.195 以降 | `claude gateway` サブコマンドとゲートウェイサインインフローは v2.1.195 で提供されます。以前のパブリックビルドには含まれていません。ゲートウェイサーバーを実行するマシンと各開発者のマシンの両方が v2.1.195 以降である必要があります。`claude update` を実行して最新リリースを取得します。[Claude Platform on AWS アップストリーム](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#claude-platform-on-aws)はゲートウェイサーバーで Claude Code v2.1.198 以降が必要です。 |
+| Claude Code v2.1.195 以降 | `claude gateway` サブコマンドとゲートウェイサインインフローは v2.1.195 で提供されます。ゲートウェイサーバーを実行するマシンと各開発者のマシンの両方が v2.1.195 以降である必要があります。`claude update` を実行して最新リリースを取得します。[Claude Platform on AWS アップストリーム](https://code.claude.com/docs/ja/claude-apps-gateway-config.md#claude-platform-on-aws)はゲートウェイサーバーで Claude Code v2.1.198 以降が必要です。 |
 | OpenID Connect（OIDC）ID プロバイダー | Okta、Microsoft Entra ID、Google Workspace、Keycloak、Dex、または PingFederate などの OIDC 準拠の IdP。ゲートウェイは標準 OIDC ディスカバリーと認可コードフローを実行します。SAML と LDAP はサポートされていません。 |
 | PostgreSQL 11 以降 | デバイスサインインフローとレート制限カウンターをサポートします。最小層を含むマネージド PostgreSQL サービスが利用できます。[サポートされているデータベース](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#postgres)を参照してください。[支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md)を使用すると、バックアップする必要がある耐久的な支出、監査、およびアイデンティティテーブルも保持します。`?sslmode=require` 経由の TLS が推奨されます。PostgreSQL 11、12、13 には、ゲートウェイサーバーで Claude Code v2.1.290 以降が必要です。PostgreSQL プロジェクトはこれらのバージョンの保守を終了しているため、可能な場合は新しいバージョンを使用してください。 |
 | モデルアップストリーム | Amazon Bedrock 認証情報、Claude Platform on AWS 認証情報、Google Cloud 認証情報、Microsoft Foundry リソース、または Anthropic API キー。複数のアップストリームがサポートされ、フェイルオーバーがあります。 |
@@ -138,12 +138,12 @@ auto_include_builtin_models: true
 
 **4. 実行する**
 
-[イメージ要件](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#container-image)を満たす `claude` バイナリの周りにコンテナイメージをビルドし、Postgres と一緒に実行します。Compose ファイルはイメージを `registry.example.com/claude-gateway:2.1.198` として参照します。独自のレジストリとイメージタグに置き換えます。
+[イメージ要件](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#container-image)を満たす `claude` バイナリの周りにコンテナイメージをビルドし、Postgres と一緒に実行します。Compose ファイルはイメージを `registry.example.com/claude-gateway:<version>` として参照します。独自のレジストリとイメージタグに置き換えます。
 
 ```yaml docker-compose.yaml theme={null}
 services:
   gateway:
-    image: registry.example.com/claude-gateway:2.1.198
+    image: registry.example.com/claude-gateway:<version>
     ports: ["8080:8080"]
     volumes: ["./gateway.yaml:/etc/claude/gateway.yaml:ro"]
     environment:
@@ -185,7 +185,7 @@ volumes: { pgdata: }
 [gateway] 2026-06-10T17:03:21.512Z info claude gateway listening on http://0.0.0.0:8080
 ```
 
-ゲートウェイは、`access_control.allow_cidrs` が空であることを示す警告もログに記録します。これはここでは想定どおりです。許可リストを設定するまで、ゲートウェイがサーブするクライアントアドレスを制限するものがないためです。[`access_control` リファレンス](https://code.claude.com/docs/ja/claude-apps-gateway-config#http-tuning)には推奨範囲があります。
+起動バナーは、ゲートウェイをプライベートネットワーク上に置いておくよう毎回注意を促します。この設定では、ゲートウェイはあらゆるクライアントアドレスにサーブします。サーブするアドレスを制限するには、`access_control` を設定します。[`access_control` リファレンス](https://code.claude.com/docs/ja/claude-apps-gateway-config#http-tuning)には推奨範囲があります。
 
 起動が `claude gateway listening on` 行の前に終了する場合、stderr の最後の行は問題を名前付けます。
 

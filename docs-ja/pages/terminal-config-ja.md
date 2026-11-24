@@ -6,7 +6,7 @@
 
 > Shift+Enter で改行を挿入する、Claude の処理完了時にターミナルベルを鳴らす、tmux を設定する、カラーテーマを合わせる、Claude Code CLI で Vim モードを有効にする方法を説明します。
 
-Claude Code はターミナル設定なしで任意のターミナルで動作します。このページは、特定の動作が期待通りに機能していない場合のためのものです。以下から症状を見つけてください。すべてが既に正常に動作している場合は、このページは不要です。
+Claude Code はターミナル設定なしで任意のターミナルで動作します。このページは、特定の動作が期待通りに機能していない場合のためのものです。以下から症状を見つけてください。
 
 * [Shift+Enter が改行を挿入する代わりに送信する](#enter-multiline-prompts)
 * [macOS でオプションキーのショートカットが機能しない](#enable-option-key-shortcuts-on-macos)
@@ -41,7 +41,7 @@ Zed では、`/terminal-setup` は `keymap.json` をその場で更新します�
 * Claude Code がキーマップを読み込めない、解析できない、バックアップできない、またはマージされた結果を検証できない場合、[ファイルを変更せず、追加するキーバインディングブロックを出力します](https://code.claude.com/docs/ja/errors.md#terminal-setup-left-your-zed-keymap-unchanged)
 * キーマップがシンボリックリンクの場合は、[キーボードショートカットを自分で追加してください](https://code.claude.com/docs/ja/errors.md#terminal-setup-left-your-zed-keymap-unchanged)
 
-tmux 内で実行している場合、外側のターミナルがサポートしている場合でも、Shift+Enter には以下の [tmux 設定](#configure-tmux)が必要です。
+tmux 内で実行している場合、Shift+Enter には以下の [tmux 設定](#configure-tmux)も必要です。
 
 改行を別のキーにバインドするか、Enter が改行を挿入し Shift+Enter が送信するように動作を入れ替えるには、[キーバインディングファイル](https://code.claude.com/docs/ja/keybindings.md)で `chat:newline` および `chat:submit` アクションをマップしてください。
 
@@ -169,7 +169,7 @@ Backspace を押すたびにワード全体が削除される場合、ターミ�
 | `base` | string | テーマのベースとなる組み込みプリセット：`dark`、`light`、`dark-daltonized`、`light-daltonized`、`dark-ansi`、または `light-ansi`。デフォルトは `dark` です |
 | `overrides` | object | カラートークン名とカラー値のマップ。ここに記載されていないトークンはベースプリセットの値が使用されます |
 
-カラー値には `#rrggbb`、`#rgb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>` を指定できます。`<name>` は `red` や `cyanBright` などの 16 種類の標準 ANSI カラー名のいずれかです。不明なトークンや無効なカラー値は無視されるため、タイプミスによって表示が壊れることはありません。
+カラー値には `#rrggbb`、`#rgb`、`rgb(r,g,b)`、`ansi256(n)`、または `ansi:<name>` を指定できます。`<name>` は `red` や `cyanBright` などの 16 種類の標準 ANSI カラー名のいずれかです。不明なトークンや無効なカラー値は無視されます。
 
 次の例では、dark プリセットを維持しつつ、プロンプトのアクセント、エラーテキスト、成功テキストの色を変更するテーマを定義しています。
 
@@ -185,7 +185,7 @@ Backspace を押すたびにワード全体が削除される場合、ターミ�
 }
 ```
 
-Claude Code は `~/.claude/themes/` を監視しており、ファイルが追加または変更されると再読み込みするため、エディターで行った編集は再起動なしで実行中のセッションに適用されます。Claude Code の起動時に `~/.claude/themes/` フォルダー自体が存在しなかった場合は、最初のテーマファイルを作成した後に一度再起動してください。それ以降は、変更が再起動なしで適用されます。
+Claude Code は `~/.claude/themes/` を監視しており、ファイルが追加または変更されると再読み込みするため、エディターで行った編集は再起動なしで実行中のセッションに適用されます。Claude Code の起動時に `~/.claude/themes/` フォルダー自体が存在しなかった場合は、最初のテーマファイルを作成した後に一度再起動してください。
 
 以下のリファレンスでは、`overrides` で設定できるトークンについて説明します。`/theme` の対話型エディターでは、同じトークンがライブプレビュー付きで表示されるほか、ここでは省略しているオンボーディング画面の色などの単一用途のアクセントもいくつか表示されます。
 

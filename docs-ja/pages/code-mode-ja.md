@@ -54,10 +54,11 @@ Code Mode をオンにする前に、次の制限を受け入れられるか確�
 * **モデル**: Claude Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable 5.2
 * **サーフェス**: ターミナルでの対話型の `claude` セッション。Code Mode は VS Code パネル、Desktop アプリ、クラウドセッションでは動作しません
 * **エージェントチーム**: [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)をオンにした状態で Code Mode を使用するには、v2.1.326 以降が必要です。チームメイトは、デフォルトの[インプロセス表示モード](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)では Code Mode で実行され、分割ペインでは Code Mode なしで起動します
+* **テレメトリ設定**: [機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)をオフにした状態、または [OpenTelemetry](https://code.claude.com/docs/ja/monitoring-usage.md) のイベントとメトリクスをオンにした状態で Code Mode を使用するには、v2.1.329 以降が必要です。[トレース](https://code.claude.com/docs/ja/monitoring-usage.md#traces-beta)は、どのバージョンでもオフのままにしてください
 * **インストール**: Claude Code の[ネイティブビルド](https://code.claude.com/docs/ja/setup.md)
 * **Windows**: [Git for Windows](https://git-scm.com/downloads/win) がインストールされていること
 
-また、API キーヘルパー、OpenTelemetry エクスポート、`DISABLE_TELEMETRY` など、一部の設定がオンになっている場合も Code Mode を開始できません。それぞれの対処方法については、[Code Mode が起動しない](#code-mode-doesnt-start)を参照してください。
+また、API キーヘルパーなど、一部の設定がオンになっている場合も Code Mode を開始できません。それぞれの対処方法については、[Code Mode が起動しない](#code-mode-doesnt-start)を参照してください。
 
 ## Code Mode を試す
 
@@ -141,6 +142,14 @@ Read every Markdown file in this project and list the links that point to local 
 ```
 
 Code Mode のセッション中のユーザーは、Claude Code を終了または再起動するまでそのセッションにとどまります。その後、ユーザーは Code Mode なしで起動し、`0` が設定されている間は Code Mode のセッションを再開できません。管理設定からユーザーに対して Code Mode をオンにすることはできません。
+
+### OpenTelemetry で Code Mode を監視する
+
+[OpenTelemetry イベント](https://code.claude.com/docs/ja/monitoring-usage.md#events)を収集している場合、バックエンドは Claude が書いたコード内のツール呼び出しについて、`Bash` などの各ツールの通常の名前で `tool_decision` イベントと `tool_result` イベントを受信します。これらの呼び出しに合わせてクエリと設定を更新してください。
+
+* **コードからの呼び出しを見つける**: `repl_` または `toolu_cc_` で始まる `tool_use_id` の値でフィルタリングします。コードを実行する `REPL` ツールには、どちらのプレフィックスも付かない独自のイベントがあります
+* **分類器の判定を読む**: auto モードでは、分類器による[コードのレビュー](#permission-checks)の対象となる呼び出しには `classifier_verdict` がありません。判定は、その呼び出しの `request_id` を持つ `REPL` ツールの `tool_decision` イベントで確認してください。複数見つかった場合、どのコードがその呼び出しを行ったかはイベントからはわかりません
+* **シークレットをバックエンドに送らない**: コードは、ファイル内のトークンなどの値を読み取り、それを別の呼び出しに渡すことができます。バックエンドがそれらの値を受信すべきでない場合は、`OTEL_LOG_TOOL_DETAILS` を設定しないでください
 
 ## 権限と長時間実行されるコード
 
@@ -228,7 +237,7 @@ Claude が応答中またはコードを待機中にコードを停止するに�
 
 ### フックでコードの出力をチェックする
 
-Claude が読み取る前にコードが返す内容をチェックまたは秘匿化するには、コードを実行するツールである `REPL` にマッチする [`PostToolUse` フック](https://code.claude.com/docs/ja/hooks#posttooluse)を書きます。同じフックは、[バックグラウンドのコード](#long-running-code)が完了したときと、コードがエラーをスローしたときにも実行されます。
+コードが返す内容をチェックまたは秘匿化するには、コードを実行するツールである `REPL` にマッチする [`PostToolUse` フック](https://code.claude.com/docs/ja/hooks#posttooluse)を書きます。同じフックは、[バックグラウンドのコード](#long-running-code)が完了したときと、コードがエラーをスローしたときにも実行されます。
 
 #### フックでコードの出力を読み取る
 
@@ -295,12 +304,14 @@ Claude が読み取る前にコードが返す内容をチェックまたは秘�
 | 理由に含まれる文字列 | 対処方法 |
 | :- | :- |
 | `it isn't open to your account in this version` または `it isn't open to your account yet` | バージョンが v2.1.323 より古い場合は、[更新](#try-code-mode)してください。それ以外の場合は、ネットワーク接続を確認して再度起動してください。理由が変わらない場合は、別の日に再試行してください |
+| `Anthropic has turned it off for now` | [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)するか、後で再度起動してください |
 | `it only works directly with the Anthropic API` または `it only works with the Anthropic API` | クラウドプロバイダー、ゲートウェイ、またはカスタムの `ANTHROPIC_BASE_URL` を経由してリクエストをルーティングする設定を削除してください |
 | `it doesn't work with an API key helper` | `apiKeyHelper`、`ANTHROPIC_AUTH_TOKEN`、および `ANTHROPIC_CUSTOM_HEADERS` 内の `Authorization` または `X-Api-Key` ヘッダーを削除してください。その後、サインインするか `ANTHROPIC_API_KEY` を設定してください |
 | `it only works with Opus 5.5, Sonnet 5.5 and later models` | [サポートされているモデル](#requirements)で起動してください（例: `--model opus`）。Haiku 5.5 と Fable 5.2 も動作します |
 | `it doesn't work in background jobs` | `--remote-control` なしでフォアグラウンドで起動してください。チームメイトの分割ペインに理由が表示される場合は、[in-process 表示モード](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)を使用して、チームメイトを Code Mode で実行してください |
-| `it needs settings that Claude Code downloads from Anthropic` | `DISABLE_TELEMETRY` など、[機能フラグの取得をオフにする](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)変数の設定を解除してください |
-| `OpenTelemetry is on` | [OpenTelemetry エクスポート](https://code.claude.com/docs/ja/monitoring-usage.md)なしで作業できる場合は、`CLAUDE_CODE_ENABLE_TELEMETRY` と `ENABLE_BETA_TRACING_DETAILED` の設定を解除してください |
+| `it needs settings that Claude Code downloads from Anthropic` | [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して、[テレメトリ設定の要件](#requirements)を満たしてください。現在のバージョンを使い続ける場合は、`DISABLE_TELEMETRY` など、[機能フラグの取得をオフにする](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)変数の設定を解除してください |
+| `OpenTelemetry tracing is on` | [トレース](https://code.claude.com/docs/ja/monitoring-usage.md#traces-beta)なしで作業できる場合は、`CLAUDE_CODE_ENHANCED_TELEMETRY_BETA`、`ENABLE_ENHANCED_TELEMETRY_BETA`、`ENABLE_BETA_TRACING_DETAILED` の設定を解除してください |
+| `OpenTelemetry is on` | イベントとメトリクスをオンのままにするには、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して、[テレメトリ設定の要件](#requirements)を満たしてください。現在のバージョンを使い続ける場合は、[OpenTelemetry エクスポート](https://code.claude.com/docs/ja/monitoring-usage.md)なしで作業できるなら、`CLAUDE_CODE_ENABLE_TELEMETRY` と `ENABLE_BETA_TRACING_DETAILED` の設定を解除してください |
 | `it doesn't yet work with the plugin` | セッションで `/plugin` を実行し、理由に名前が挙がっている各プラグインを無効にしてください。組織がプラグインをオンにしている場合は、管理者にオフにするよう依頼してください |
 | `it doesn't yet work with an installed mod` | ツール呼び出しをチェックする [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) をオフにしてください |
 | `it can't be used together with agent teams yet` | エージェントチームをオンのままにするには、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.326 以降にしてください。現在のバージョンを使い続ける場合は、`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` の設定を解除してください |

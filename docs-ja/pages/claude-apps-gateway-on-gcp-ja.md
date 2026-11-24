@@ -118,7 +118,7 @@ gcloud services vpc-peerings connect \
   --ranges="google-managed-services-${VPC}" --network="$VPC"
 
 gcloud sql instances create claude-gateway-db \
-  --database-version=POSTGRES_16 --tier=db-g1-small --region="$REGION" \
+  --database-version=POSTGRES_16 --edition=enterprise --tier=db-g1-small --region="$REGION" \
   --network="projects/${PROJECT_ID}/global/networks/${VPC}" --no-assign-ip
 gcloud sql databases create claude_gateway --instance=claude-gateway-db
 PGPASS="$(openssl rand -hex 24)"
@@ -270,6 +270,8 @@ upstreams:
 > kubectl annotate serviceaccount gateway -n claude-gateway \
 >   iam.gke.io/gcp-service-account="claude-gateway@${PROJECT_ID}.iam.gserviceaccount.com"
 > ```
+>
+> 内部 Ingress には、VPC 上の `$REGION` にあるプロキシ専用サブネットと、そのサブネットからゲートウェイ ポッドのポート `8080` へのトラフィックを許可するファイアウォール ルールが必要です。Google の[内部 Ingress ガイド](https://cloud.google.com/kubernetes-engine/docs/how-to/internal-load-balance-ingress)の説明に従って、両方を作成します。
 >
 > [Kubernetes デプロイメント](https://code.claude.com/docs/ja/claude-apps-gateway-deploy.md#kubernetes)で説明されているように、ゲートウェイを標準 Deployment、Service、および内部 Ingress（クラス `gce-internal`）としてデプロイします。以下を使用します。
 >

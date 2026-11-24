@@ -6,9 +6,9 @@
 
 > GitHub のプルリクエストで Code Review の指摘を読み、返信または却下し、`@claude review` でレビューをリクエストします。
 
-Code Review は、Claude 組織の Owner が一連の GitHub リポジトリに対してオンにするマネージドサービスです。オンにすると、Claude はそれらのリポジトリのプルリクエストをレビューし、指摘をインラインコメント、レビュー本文のサマリー、そして **Claude Code Review** という名前のチェックランとして投稿します。レビューがプルリクエストを承認したりブロックしたりすることはなく、チェックランが失敗として終了することもありません。
+Code Review は、Claude 組織の Owner が一連の GitHub リポジトリに対してオンにするマネージドサービスです。オンにすると、Claude はそれらのリポジトリのプルリクエストをレビューします。指摘は、インラインコメント、レビュー本文のサマリー、そして **Claude Code Review** という名前のチェックランとして投稿されます。Owner は、リポジトリごとに[レビューを実行するタイミング](https://code.claude.com/docs/ja/code-review-setup.md#set-when-reviews-run)と[レビューの詳細度](https://code.claude.com/docs/ja/code-review-setup.md#set-the-default-review-level)を制御します。
 
-Owner は、リポジトリごとに[レビューを実行するタイミング](https://code.claude.com/docs/ja/code-review-setup.md#set-when-reviews-run)と[レビューの詳細度](https://code.claude.com/docs/ja/code-review-setup.md#set-the-default-review-level)を制御します。
+レビューそれ自体がプルリクエストを承認したりブロックしたりすることはなく、チェックランが失敗として終了することもありません。リポジトリに [Claude Approvals](https://code.claude.com/docs/ja/approvals.md#keep-automatic-code-reviews) のポリシーファイルがある場合、ポリシーはレビューの結果を使って誰が承認する必要があるかを決定できます。また、どのプルリクエストが自動レビューを受けるかを変更することもできます。
 
 > [!NOTE]
 >
@@ -34,8 +34,8 @@ Claude は各指摘を 3 つの重大度レベルのいずれかでマークし�
 
 指摘を解消するには、そのスレッドを解決するか、修正をプッシュします。
 
-* **コードを変更せずに却下する**: GitHub 上で自分でスレッドを解決します。返信するだけでは指摘は却下されません。
-* **問題を修正する**: コードを変更してプッシュします。プルリクエストの次のレビューは、問題が修正されたと判断した場合に以前のスレッドを解決します。これは、そのレビューがプッシュで自動的に実行された場合でも、リクエストによって実行された場合でも同じです。
+* **コードを変更せずに却下する**: GitHub 上で自分でスレッドを解決します。返信するだけでは指摘は却下されません。プルリクエストに **Claude Approvals** チェックがある場合、そのチェックは[解決を反映しないことがあります](https://code.claude.com/docs/ja/approvals-troubleshooting.md#approvals-doesn’t-pass-after-you-resolve-a-review-thread)。
+* **問題を修正する**: コードを変更してプッシュします。プルリクエストの次のレビューは、問題が修正されたと判断した場合に以前のスレッドを解決します。これは、そのレビューがプッシュで自動的に実行された場合でも、リクエストによって実行された場合でも同じです。[PR Steward](https://code.claude.com/docs/ja/pr-steward.md#what-pr-steward-fixes) がプルリクエストで動作している場合は、Important の指摘に対して独自の修正をプッシュすることがあるため、作業を始める前にブランチをプルしてください。
 * **説明する、または反論する**: コメントに返信します。Claude はすぐには応答せず、返信によってレビューが開始されることもありません。プルリクエストの次のレビューが以前の指摘への返信を読み、スレッドを解決するか、フォローアップの返信を 1 件投稿することがあります。同じ種類の指摘が繰り返し出る場合は、メンテナーに [`REVIEW.md`](https://code.claude.com/docs/ja/code-review-customize#choose-what-to-write-in-review-md) へのルール追加を依頼してください。
 
 プッシュせずに次のレビューを実行するには、`@claude review` を[プルリクエストのトップレベルコメント](#comment-commands)として投稿します。
@@ -58,7 +58,7 @@ Claude は各指摘を 3 つの重大度レベルのいずれかでマークし�
 プッシュ後にチェックランのタイトルが次のいずれかになっている場合、Code Review は新しいレビューを開始せず、以前のレビューの結果を維持しています。
 
 * **Code review skipped — no new changes**: 以前のレビューの [Important](#severity-levels) の指摘で未解決のものは残っていないため、新しいレビューは不要です
-* **Code review not repeated — earlier findings still open**: 新しいレビューを開始するには、未解決の Important の指摘に対する修正をプッシュするか、[そのスレッドを解決](#respond-to-findings)してから再度プッシュします
+* **Code review not repeated — earlier findings still open**: 新しいレビューを開始するには、未解決の Important の指摘に対する修正をプッシュするか、[そのスレッドを解決](#respond-to-findings)してから再度プッシュします。Claude Approvals がスレッドを再オープンした場合、次のプッシュ後もこのタイトルのままになります。修正をプッシュするか、[解決が有効とみなされる](https://code.claude.com/docs/ja/approvals-policy.md#findings)ユーザーにスレッドの解決を依頼してから、再度プッシュしてください。
 
 github.com では、次の両方が成り立つ場合に Code Review が結果を維持することがあります。
 

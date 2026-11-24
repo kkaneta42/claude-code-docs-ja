@@ -84,7 +84,7 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 >
 > `bypassPermissions` モードでは、Claude Code は権限プロンプトをスキップします。これには [保護されたパス](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)（`.git` や `.claude` など）への書き込みも含まれます。[クロスセッションメッセージングセーフガード](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)は引き続き適用されます。このモードは、Claude Code が損害を引き起こせないコンテナや VM などの隔離された環境でのみ使用してください。
 
-`bypassPermissions` または `auto` モードが使用されるのを防ぐには、任意の[設定ファイル](https://code.claude.com/docs/ja/settings.md#where-settings-live)で `permissions.disableBypassPermissionsMode` または `permissions.disableAutoMode` を `"disable"` に設定してください。これらは、オーバーライドできない[管理設定](#managed-settings)で最も有用です。
+`bypassPermissions` または `auto` モードが使用されるのを防ぐには、[`permissions.disableBypassPermissionsMode`](https://code.claude.com/docs/ja/settings-reference#permissions-disablebypasspermissionsmode) または [`permissions.disableAutoMode`](https://code.claude.com/docs/ja/settings-reference#disableautomode) を `"disable"` に設定してください。これらは、オーバーライドできない[管理設定](#managed-settings)で最も有用です。
 
 権限プロンプトで待機することになる呼び出しを拒否し、無人のセッションが作業を続けられるようにするには、ユーザー設定または管理設定で [`permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/ja/settings-reference#permissions-denyinsteadofprompting) を `true` に設定してください。`dontAsk` はそれ自体が独立した権限モードですが、このキーは現在使用中の権限モードと組み合わせて機能します。
 

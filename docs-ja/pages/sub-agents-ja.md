@@ -624,9 +624,9 @@ Claude Code は、次の 2 種類のサーバーについては、エージェ�
 
   メインの会話が `bypassPermissions` の状態でサブエージェントが権限を求める場合は、そのツール呼び出しが[どのモードでも自動承認されない操作](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)のいずれかに該当するかどうかを確認してください。
 * メインの会話が `plan` モードの場合、サブエージェントが[エージェントチームのルール](https://code.claude.com/docs/ja/agent-teams.md#have-teammates-plan-before-implementing)の下で[エージェントチームのチームメイト](#subagent-names)として実行される場合を除き、設定した `permissionMode` にかかわらずサブエージェントは plan モードのままになります。`dontAsk` を設定した場合、サブエージェントはプロンプトも表示しません。plan モードで承認を求めることになる操作は、代わりに拒否されます。
-* メインの会話が `default` または `dontAsk` モードの場合、サブエージェントは設定した権限モードで実行されます。ただし、次の場合は代わりにメインの会話の権限モードを維持します。
+* メイン会話が `default` または `dontAsk` モードの場合、サブエージェントは設定した権限モードで実行されます。次のような場合には、代わりにメイン会話の権限モードが維持されます。
   * `bypassPermissions` を設定した場合。`bypassPermissions` の例外には Claude Code v2.1.267 以降が必要です。
-  * `auto` を設定したが、設定ファイルで [`disableAutoMode`](https://code.claude.com/docs/ja/settings-reference#disableautomode) が設定されている場合や、サブエージェントのモデルが auto モードをサポートしていない場合など、サブエージェントで [auto モードが利用できない](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)場合。
+  * `auto` を設定し、サブエージェントで [auto モードが利用できない](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)場合。たとえば、設定ファイルで [`disableAutoMode`](https://code.claude.com/docs/ja/settings-reference#disableautomode) が設定されている場合や、サブエージェントのモデルが auto モードをサポートしていない場合などです。
 
 `permissionMode` は次の値と、`default` のエイリアスとしての `manual` を受け付けます。
 
@@ -1150,7 +1150,7 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 
 #### サブエージェントを再開する
 
-サブエージェントを呼び出すたびに、以前のインスタンスを続行するのではなく、新しいインスタンスが作成されます。最初からやり直すのではなく、既存のサブエージェントの作業を続けるには、それを再開するよう Claude に依頼します。
+サブエージェントを呼び出すたびに、以前のインスタンスを続行するのではなく、新しいインスタンスが作成されます。既存のサブエージェントの作業を続けるには、それを再開するよう Claude に依頼します。
 
 再開されたサブエージェントは、以前のすべてのツール呼び出し、結果、推論を含む、完全な会話履歴を保持します。サブエージェントが[独自のバックグラウンドサブエージェント](#let-subagents-spawn-their-own-subagents)を生成していた場合、その履歴には、実行中にそれらが届けた結果も含まれます。v2.1.304 より前では、終了直後に Claude がメッセージを送ったり再開したりしたサブエージェントは、直近の作業を忘れてしまうことがありました。
 
@@ -1158,7 +1158,7 @@ Use the code-reviewer subagent to find performance issues, then use the optimize
 * 後で続ける作業には、`general-purpose` またはカスタムサブエージェントを使います。組み込みの Explore エージェントと Plan エージェントは、再開に使う ID を Claude に渡さずに終了することがあります。
 * サブエージェントが [`maxTurns`](#supported-frontmatter-fields) の上限で停止すると、Claude Code は返された出力を部分的なものとしてマークし、Claude はサブエージェントを再開して作業を続けさせることができます。
 
-Claude は、エージェントの ID または名前を `to` フィールドに指定して `SendMessage` ツールを使い、サブエージェントを再開します。`SendMessage` を使うのに[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)を有効にする必要はありません。有効化が必要なのは、`shutdown_request` や `plan_approval_response` などの構造化されたチームプロトコルメッセージだけです。サブエージェントやチームメイトに加えて、セッション間メッセージングが有効なセッションでは、Claude は同じツールを使って、このマシン上または[このマシンの外](https://code.claude.com/docs/ja/cross-session-messaging.md#message-sessions-on-other-machines)にある[ユーザーの他の Claude Code セッション](https://code.claude.com/docs/ja/cross-session-messaging.md)にメッセージを送ることができます。
+Claude は、エージェントの ID または名前を `to` フィールドに指定して `SendMessage` ツールを使い、サブエージェントを再開します。`SendMessage` を使うのに[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)を有効にする必要はありません。有効化が必要なのは、`shutdown_request` や `plan_approval_response` などの構造化されたチームプロトコルメッセージだけです。
 
 サブエージェントを再開するには、以前の作業を続けるよう Claude に依頼します。
 
@@ -1170,7 +1170,7 @@ Continue that code review and now analyze the authorization logic
 [Claude resumes the subagent with full context from previous conversation]
 ```
 
-Claude が `SendMessage` ツールで完了済みのサブエージェントにメッセージを送ると、そのサブエージェントは新たな `Agent` 呼び出しなしにバックグラウンドで再開します。Claude が `TaskStop` ツールで停止したサブエージェントについても、停止した実行が終了した後は同様です。再開された実行は、[サブエージェントが最初に実行されたときのツールセット](#run-subagents-in-foreground-or-background)を維持し、[元の実行がウォームアップしたプロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#subagents-and-the-cache)を引き続き読み取ることができます。
+Claude が `SendMessage` ツールで完了済みのサブエージェントにメッセージを送信すると、そのサブエージェントは新たな `Agent` 呼び出しなしにバックグラウンドで再開できます。Claude が `TaskStop` ツールで停止したサブエージェントについても、停止された実行が終了した後であれば同様です。再開された実行は、[サブエージェントが最初に実行されたときのツールセット](#run-subagents-in-foreground-or-background)を保持し、[元の実行がウォームアップしたプロンプトキャッシュ](https://code.claude.com/docs/ja/prompt-caching.md#subagents-and-the-cache)を引き続き読み取ることができます。
 
 `SendMessage` ツールを持つサブエージェントも、そのメッセージを送ることができます。インタラクティブセッションでは、再開されたエージェントは、メインの会話ではなく、自身を再開したサブエージェントに報告します。そのサブエージェントは、自身の作業を終える前にその結果を待ちます。サブエージェントが、自身の起動元など報告先のエージェントにメッセージを送った場合、Claude Code はそのエージェントの結果の送り先を変更せずに、そのエージェントを再開します。
 

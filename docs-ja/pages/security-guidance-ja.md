@@ -27,7 +27,7 @@ security guidance プラグインは、Claude が作業中に自身のコード�
 /plugin install security-guidance@claude-plugins-official
 ```
 
-`/plugin` はターミナル CLI でインタラクティブパネルを開きます。Claude が `/plugin` がこの環境では利用できないと報告した場合、別の方法でインストールしてください：
+`/plugin` はターミナル CLI でインタラクティブパネルを開きます。ターミナル以外では、別の方法でインストールしてください：
 
 * **Claude デスクトップアプリ、ローカルまたは SSH セッション**：[プラグインをインストールする](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)の **Desktop app** タブを使用します
 * **VS Code 拡張機能**：[**Manage plugins** ダイアログ](https://code.claude.com/docs/ja/vs-code.md#manage-plugins)からインストールします

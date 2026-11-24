@@ -369,7 +369,7 @@ Windows では、`${HOME}` の代わりに `${USERPROFILE}` など、Windows で
 [3 つのチェックすべて](#how-a-server-is-evaluated)をスキップするインプロセスの `type: "sdk"` サーバーに加えて、次の 3 つのグループのサーバーが許可リストのチェックをスキップします。
 
 * 組織自身のサーバー：すべての `managedMcpServers` エントリ、および `env` 以外の値で `${VAR}` 展開を使用していない `managed-mcp.json` エントリ。
-* 組み込みサーバー：Claude in Chrome、実行中の VS Code または JetBrains IDE で Claude Code が接続する `ide` サーバー、CLI 自身が設定するサーバーなど。
+* 一部の組み込みサーバー：実行中の VS Code または JetBrains IDE で Claude Code が接続する `ide` サーバーや、ターミナルセッションでの Claude in Chrome など。
 * [Claude Tag](https://code.claude.com/docs/ja/claude-tag.md) セッションの Slack ツール：スレッドを読み取り返信を投稿するために使用するサーバーは、許可リストのエントリなしで読み込まれます。
 
 コマンド、引数、URL、またはヘッダーで `${VAR}` 展開を使用する `managed-mcp.json` サーバーは、引き続きチェックされます。Claude Code は、ユーザー、プラグイン、または claude.ai が追加するすべてのサーバー、およびユーザーが `--mcp-config` で渡すすべてのサーバーもチェックします。チェック対象となる `managed-mcp.json` サーバーが変更されたバージョンや、サーバーの読み込みを防ぐ方法については、[許可リストと拒否リストが管理セットにどのように適用されるか](#how-allowlists-and-denylists-apply-to-the-managed-set)を参照してください。

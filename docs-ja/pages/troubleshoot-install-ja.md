@@ -274,7 +274,7 @@
 > ls -la ~/.local/bin/claude
 > ```
 >
-> ネイティブインストールは `~/.local/share/claude/versions/` へのシンボリックリンクを表示します。このパスで自分で作成したスクリプトまたはシンボリックリンクはカスタムランチャーであり、[自動更新はそのまま残します](https://code.claude.com/docs/ja/setup.md#auto-updates)。
+> ネイティブインストールは `~/.local/share/claude/versions/` へのシンボリックリンクを表示します。このパスに独自のランチャーを配置している場合は、[カスタムランチャー](https://code.claude.com/docs/ja/setup.md#custom-launchers)を参照してください。
 >
 > いずれかの `ls` コマンドが `No such file or directory` を出力する場合、それはエラーではありません。その場所に何もインストールされていないことを意味するため、次のチェックに進んでください。
 >

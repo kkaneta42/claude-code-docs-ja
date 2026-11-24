@@ -185,7 +185,7 @@ Claude for Teams および Enterprise プランでは、各メンバーの Claud
 * **支出をキャップ**: シート割り当てはデフォルトの上限です。メンバーがそれを超えて続行できるようにするには、[使用クレジット](https://support.claude.com/en/articles/12429409-extra-usage-for-paid-claude-plans) をオンにして、組織、グループ、または個別メンバーレベルで支出制限を設定します。
 * **ユーザーごとの数値を取得**: Enterprise プランでは、[Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics) は Claude Code を含む Claude サーフェス全体のユーザーごとの使用状況およびコストレポートを返します。Primary Owner は [claude.ai/analytics/api-keys](https://claude.ai/analytics/api-keys) で `read:analytics` スコープを持つキーを作成します。Teams プランでは、[支出レポート CSV](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans) をエクスポートします。これはユーザーごとおよびモデルごとのトークン使用量と推定支出をリストします。
 
-[Claude Enterprise 消費ガイド](https://support.claude.com/en/articles/14782391-claude-enterprise-consumption-guide) は管理者向けの計画リファレンスです。Claude チャット、Claude Code、および Cowork 全体で消費がどのように異なるかを説明し、予算編成のためのユーザーごとのドル開始点を提供します。コーディングシートのチャットシートより多くの予算を計上してください。各 Claude Code ターンはファイルコンテンツ、ツール呼び出し、および多段階推論を含むため、1 つのデバッグセッションはチャットの 1 日分以上を消費できます。
+[Claude Enterprise 消費ガイド](https://support.claude.com/en/articles/14782391-claude-enterprise-consumption-guide) は管理者向けの計画リファレンスです。Claude チャット、Claude Code、および Cowork 全体で消費がどのように異なるかを説明しています。チャットシートよりもコーディングシートに多くの予算を計上してください。各 Claude Code ターンはファイルコンテンツ、ツール呼び出し、および多段階推論を含むため、1 つのデバッグセッションがチャットの 1 日分以上を消費することがあります。
 
 ### Claude Console
 

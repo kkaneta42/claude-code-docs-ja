@@ -99,13 +99,13 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 **4. リポジトリを選択する**
 
-**Advanced settings** を展開します。**General** タブの **Repository** で、Claude が作業する 1 つ以上の GitHub リポジトリを選択します。
+**Trigger** の下にある **Repository** 行で、Claude が作業する 1 つ以上の GitHub リポジトリを選択します。この行がない場合は、**Advanced settings** を展開し、**General** タブで **Repository** を見つけてください。
 
 各リポジトリは実行の開始時にクローンされます。Claude は変更用に `claude/` プレフィックス付きのブランチを作成します。
 
 **5. 環境を選択する**
 
-リポジトリを選択すると、その下に **Cloud environment** が表示されます。タスク用の[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)を選択します。環境がすでに選択されている場合は、そのままにすることも、別の環境を選択することもできます。環境は、クラウドセッションがアクセスできるものを制御します。
+**Trigger** の下、そこにない場合は **Advanced settings > General** で **Cloud environment** を見つけ、タスク用の[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md)を選択します。環境がすでに選択されている場合は、そのままにすることも、別の環境を選択することもできます。環境は、クラウドセッションがアクセスできるものを制御します。
 
 * **Network access**: 各実行中に利用可能なインターネットアクセスのレベルを設定します
 * **Environment variables**: Claude が各実行中に使用できる値を提供します。これらは[環境を使用するすべてのユーザーに表示される](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)ため、Anthropic がホストする環境では、Claude が実行中に呼び出す API のキーは代わりに[ネットワークシークレット](https://code.claude.com/docs/ja/cloud-environments.md#add-network-secrets)として保存してください。そのセクションには、シークレットが付与されないリクエストも記載されています
@@ -121,7 +121,7 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 **7. コネクタを確認する**
 
-**Advanced settings** の **Connectors** タブに切り替えます。接続済みのすべての [MCP コネクタ](https://code.claude.com/docs/ja/mcp.md)がデフォルトで含まれています。タスクに不要なものは削除してください。Claude は、含まれているコネクタを書き込みも含めて実行中に使用できます。実行が停止して先にユーザーに確認を求める場合については、[実行中の権限プロンプト](#permission-prompts-during-a-run)を参照してください。
+**Advanced settings** を展開し、**Connectors** タブを開きます。接続済みのすべての [MCP コネクタ](https://code.claude.com/docs/ja/mcp.md)がデフォルトで含まれています。タスクに不要なものは削除してください。Claude は、含まれているコネクタを書き込みも含めて実行中に使用できます。実行が停止して先にユーザーに確認を求める場合については、[実行中の権限プロンプト](#permission-prompts-during-a-run)を参照してください。
 
 **8. タスクを作成する**
 
@@ -441,7 +441,7 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 **2. 環境セレクタを開く**
 
-**Advanced settings > General > Cloud environment** に移動します。**Advanced settings** が折りたたまれている場合は、先に展開してください。**Default** など、環境の名前が表示されているクラウドアイコンをクリックします。
+**Trigger** の下にある **Cloud environment** を見つけます。そこにない場合は、**Advanced settings > General** の下を確認してください。**Default** など、環境の名前が表示されているクラウドアイコンをクリックします。
 
 **3. 環境設定を開く**
 
@@ -479,7 +479,7 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 ## ルーティンという名前が残っている場所
 
-スケジュールタスクは以前ルーティンと呼ばれており、以下の場所では以前の名前が残っています。いずれも同じ機能を指します。
+スケジュールタスクは以前ルーティンと呼ばれており、以下の場所では以前の名前が残っています。
 
 * **アプリ**: 一部のアカウントでは、サイドバーの項目とページタイトルが **Routines**、ボタンが **New routine** と表示され、その他のラベルでも routine と表記されています。そこからタスクを作成するには、[フルページフォーム](#full-page-form)を参照してください。
 * **Web アドレス**: `claude.ai/code/routines`

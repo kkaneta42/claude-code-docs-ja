@@ -59,14 +59,14 @@ Claude は以下の場合でも完全な長さで記述します。
 
 ### Explanatory
 
-Explanatory スタイルでは、Claude は Default スタイルと同じ方法でタスクを実行し、立てた選択肢の理由についての短い説明を追加します。各説明はカンバセーションに表示され、それが関連するコードの前または後に、`Insight` というラベルの付いたブロックに表示されます。説明はファイルにコメントとして記述されません。
+Explanatory スタイルでは、Claude は Default スタイルと同じ方法でタスクを実行し、立てた選択肢の理由についての短い説明を追加します。各説明は会話に表示され、それが関連するコードの前または後に、`Insight` というラベルの付いたブロックに表示されます。
 
 `Insight` ブロックは、コードベースまたは Claude が記述したコードについて 2 ～ 3 つのポイントを含みます。例えば、API エンドポイントを追加した後のこのようなものです。
 
 ```text theme={null}
 ★ Insight ─────────────────────────────────────
-- このリポジトリのすべてのルートは withAuth ラッパーを通過するため、新しいエンドポイントは独自のミドルウェアなしでセッションチェックを取得します。
-- レート制限は limits.ts でルートごとに設定されるため、この変更はグローバルデフォルトではなく、そこにエントリを追加します。
+- Every route in this repo goes through the withAuth wrapper, so the new endpoint gets session checks without its own middleware.
+- Rate limits are set per route in limits.ts, which is why this change adds an entry there rather than a global default.
 ─────────────────────────────────────────────────
 ```
 
@@ -79,11 +79,11 @@ Claude は `TODO(human)` コメントでファイル内の場所をマークし�
 ```text theme={null}
 ● Learn by Doing
 
-Context: アップロードフォームが配置され、ファイルを受け入れる前に validateFile() を呼び出します。サイズとタイプのチェックは画像に対して機能しますが、switch ステートメントにはドキュメントの処理がまだありません。
+Context: The upload form is in place and calls validateFile() before accepting a file. Size and type checks work for images, but the switch statement has no handling for documents yet.
 
-Your Task: upload.js で、validateFile() 内の case "document" ブランチを実装します。TODO(human) を探します。
+Your Task: In upload.js, implement the case "document" branch inside validateFile(). Look for TODO(human).
 
-Guidance: ドキュメントのサイズ制限を決定し、ファイル拡張子が MIME タイプと一致する必要があるかどうかを決定します。{valid: boolean, error?: string} を返します。
+Guidance: Decide on a size limit for documents and whether the file extension has to match the MIME type. Return {valid: boolean, error?: string}.
 ```
 
 Claude はその後停止し、待機します。`TODO(human)` コメントでコードを記述し、完了したことを Claude に伝えます。Claude はユーザーのコードについて 1 つの `Insight` で応答し、タスクを続行します。
@@ -164,7 +164,7 @@ Use `flowchart TD` for control flow and `sequenceDiagram` for request paths. Kee
 | `name` | いいえ | 出力スタイルの名前。`/config` ピッカーに表示されます。デフォルト: ファイル名 |
 | `description` | いいえ | 出力スタイルの説明。`/config` ピッカーに表示されます |
 | `keep-coding-instructions` | いいえ | `true` に設定すると、完全なシステムプロンプトにのみ含まれる Claude Code の組み込みソフトウェアエンジニアリング指示のセクションを、スタイルと一緒に保持します。[出力スタイルの仕組み](#how-output-styles-work)を参照してください。デフォルト: `false` |
-| `force-for-plugin` | いいえ | プラグイン出力スタイルのみ。`true` に設定すると、プラグインが有効になるたびに、ユーザーが選択する必要なく、このスタイルを自動的に適用します。ユーザーの `outputStyle` 設定をオーバーライドします。複数の有効なプラグインがこれを設定する場合、Claude Code は最初に読み込まれたものを使用します。デフォルト: `false` |
+| `force-for-plugin` | いいえ | プラグイン出力スタイルのみ。`true` に設定すると、プラグインが有効になっているときは常にこのスタイルを自動的に適用します。ユーザーの `outputStyle` 設定を上書きします。複数の有効なプラグインがこれを設定する場合、Claude Code は最初に読み込まれたものを使用します。デフォルト: `false` |
 
 ## 出力スタイルと他の機能の選択
 

@@ -111,6 +111,8 @@ Chrome が実行されていない場合でも、Claude Code は通常どおり�
 >
 > Chrome をデフォルトで有効にすると、ブラウザツールとその指示が常にロードされるため、コンテキスト使用量が増加します。コンテキスト消費の増加に気付いた場合は、この設定をオフにして、必要なときにのみ接続してください。CLI では `--chrome` を使用し、VS Code ではプロンプトボックスに [`@browser`](https://code.claude.com/docs/ja/vs-code#automate-browser-tasks-with-chrome) と入力します。
 
+設定をオンのままにして 1 つの CLI セッションだけを Chrome なしで開始するには、ターミナルで [`claude --no-chrome`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を実行します。
+
 ### 起動時のダイアログに回答する
 
 `claude` の起動時に「Claude in Chrome extension detected」ダイアログが表示された場合、その回答によって [**デフォルトで有効** 設定](#enable-chrome-by-default)が変更されます。
@@ -126,7 +128,7 @@ Claude にサイト上での操作を許可するには、Claude Code から確�
 
 ### VS Code セッションでの権限プロンプト
 
-VS Code セッションでは、ブラウザアクションの前に Claude Code が確認する場合、プロンプトはチャットパネルにカードとして表示されます。アクションの対象が許可していないサイトである場合、カードにはそのサイトを許可するオプションも表示されます。
+VS Code セッションでは、ブラウザアクションの前に Claude Code が確認する場合、プロンプトはチャットパネルにカードとして表示されます。
 
 [デフォルトで有効](#enable-chrome-by-default)がオンになっているために開始時にブラウザに接続したセッションでは、Claude Code は Manual、Edit automatically、Auto、Bypass permissions の各モードで、許可していないサイトでのブラウザアクションの前に確認します。Auto モードと Bypass permissions モードでは、これはそのセッションで `@browser` と入力するまで適用されます。
 

@@ -2,7 +2,7 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Claude Desktop on Linux (beta)
+# Linux 上の Claude Desktop（ベータ版）
 
 > Ubuntu と Debian に Claude デスクトップアプリをインストールおよび更新する
 
@@ -10,7 +10,7 @@
 >
 > Claude デスクトップアプリの Linux サポートはベータ版です。
 
-Linux 上のデスクトップアプリは、macOS と Windows と同じ Chat、Cowork、Claude Code エクスペリエンスを提供します。並列セッション、ビジュアル diff レビュー、統合ターミナルとエディタ、ライブアプリプレビューが含まれます。機能リファレンスについては、[Claude Code Desktop を使用する](https://code.claude.com/docs/ja/desktop.md)を参照してください。
+Linux 上のデスクトップアプリでは、Chat、[Cowork](#cowork-requirements)、Claude Code を利用できます。デスクトップアプリの Claude Code には、並列セッション、ビジュアル差分レビュー、統合ターミナルとエディタ、ライブアプリプレビューが備わっています。機能リファレンスについては、[Claude Code Desktop を使用する](https://code.claude.com/docs/ja/desktop.md)を参照してください。
 
 ## 要件
 
@@ -165,6 +165,6 @@ Cowork でこれらのメッセージのいずれかが表示される場合は�
 * **Computer Use**: [アプリとスクリーン制御](https://code.claude.com/docs/ja/desktop.md#let-claude-use-your-computer)は Linux では利用できません。
 * **Dictation**: 音声入力は Linux デスクトップアプリでは利用できません。代わりに CLI で[音声ディクテーション](https://code.claude.com/docs/ja/voice-dictation.md)を使用してください。
 * **Quick Entry グローバルホットキー**: X11 で動作します。ネイティブ Wayland では、デスクトップ環境の GlobalShortcuts ポータルが必要です。
-* **Fedora と RHEL**: 現在、Debian ベースのディストリビューションのみがサポートされています。追加のディストリビューションのサポートは今後提供される予定です。
+* **Fedora と RHEL**: 現在、Debian ベースのディストリビューションのみがサポートされています。
 
 デスクトップアプリでまだ利用できない機能については、[CLI](https://code.claude.com/docs/ja/quickstart.md)は同じ Claude Code エンジンを実行し、より広い範囲の Linux ディストリビューションをサポートしています。[システム要件](https://code.claude.com/docs/ja/setup.md#system-requirements)を参照してください。

@@ -4,7 +4,7 @@
 
 # コマンド
 
-> Claude Code で利用可能なコマンドの完全なリファレンス。ビルトインコマンドとバンドルされたスキルを含みます。
+> Claude Code で利用可能なコマンドのリファレンス。組み込みコマンドとバンドルスキルを含みます。
 
 コマンドはセッション内から Claude Code を制御します。モデルの切り替え、権限の管理、コンテキストのクリア、ワークフローの実行など、様々な操作を素早く行うことができます。
 
@@ -140,6 +140,8 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/security-review` | 現在のブランチの変更をセキュリティ脆弱性について分析します。ブランチと origin のデフォルトブランチ間の差分をレビューし、インジェクション、認証の問題、データ公開などのリスクを特定します。`origin` リモートが必要です。レビューが `ambiguous argument` エラーで失敗した場合、[エラーリファレンス](https://code.claude.com/docs/ja/errors.md#security-review-fails-without-origin-head)を参照してください |
 | `/setup-bedrock` | インタラクティブなウィザードを通じて [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md) の認証、リージョン、モデルピンを設定します。`CLAUDE_CODE_USE_BEDROCK=1` が設定されるまで[コマンドメニューから非表示](#how-the-command-menu-matches-what-you-type)です。完全に入力してください。初めて Amazon Bedrock を使用するユーザーはログイン画面からこのウィザードにアクセスすることもできます |
 | `/setup-vertex` | インタラクティブなウィザードを通じて [Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md) の認証、プロジェクト、リージョン、モデルピンを設定します。`CLAUDE_CODE_USE_VERTEX=1` が設定されるまで[コマンドメニューから非表示](#how-the-command-menu-matches-what-you-type)です。完全に入力してください。初めて Google Cloud の Agent Platform を使用するユーザーはログイン画面からこのウィザードにアクセスすることもできます |
+| `/ship [level] [pr] [+bot]` | **[Skill](https://code.claude.com/docs/ja/skills.md#bundled-skills).** 作業をコミットしてプッシュし、ブランチにプルリクエストがない場合は GitHub プルリクエストを作成します。その後、変更をレビューします。続いて Claude はこのセッションでプルリクエストを監視し、レビューのフィードバックと失敗したチェックに対する修正をプッシュします。`/ship stop` で監視を終了します。[`/ship` でプルリクエストを準備する](https://code.claude.com/docs/ja/ship-command)を参照してください。コマンドが見つからない場合は、[トラブルシューティング](https://code.claude.com/docs/ja/ship-command-troubleshooting.md)を参照してください |
+| `/ship:review` | [`/code-review`](https://code.claude.com/docs/ja/code-review-local) のエイリアス |
 | `/simplify [target]` | **[Skill](https://code.claude.com/docs/ja/skills.md#bundled-skills).** 変更されたコードをクリーンアップの機会についてレビューし、修正を適用します。4 つのレビュー[エージェント](https://code.claude.com/docs/ja/sub-agents.md)が並列で実行され、既存のヘルパーの再利用、簡略化、効率、変更が適切な抽象化レベルにあるかどうかをカバーします。レビューは正確性バグを探しません。バグを見つけるには `/code-review` を使用してください。パスまたは PR リファレンスを渡して特定のターゲットをレビューします |
 | `/skill-doctor` | 各[スキル](https://code.claude.com/docs/ja/skills.md)がコンテキストでどれだけのコストを占めるか、およびどのくらいの頻度で使用されるかを表示して、[オフにするスキルを見つけ](https://code.claude.com/docs/ja/skills.md#find-unused-skills)られるようにします。Claude Code v2.1.252 以降と[フィーチャーフラグフェッチング](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)が必要です |
 | `/skills` | 利用可能な[スキル](https://code.claude.com/docs/ja/skills.md)を一覧表示します。入力して名前、説明、またはソースでリストをフィルタリングします。`t` を押してトークン数でソートし、`Space` または `Enter` を押して[Claude と `/` メニューに対するスキルの可視性を切り替え](https://code.claude.com/docs/ja/skills#override-skill-visibility-from-settings)、`Esc` を押して保存して閉じます。プラグインスキル、フロントマターで `disable-model-invocation: true` を設定しているスキル、または管理設定や `--settings` フラグに `skillOverrides` エントリがあるスキルは切り替えできません |
@@ -147,6 +149,7 @@ Claude が応答中にコマンドを送信した場合、Claude Code はそれ�
 | `/stats` | `/usage` のエイリアス。Stats タブで開きます |
 | `/status` | 設定インターフェイスを Status タブで開き、バージョン、モデル、アカウント、接続性を表示します。`Session kind` 行は、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)ではターミナルがアタッチされているかどうかに応じて `background job · attached` または `background job · unattended` と表示され、その他のセッションでは `interactive` と表示されます。Claude が応答している間も機能します |
 | `/statusline` | Claude Code の[ステータスライン](https://code.claude.com/docs/ja/statusline.md)を設定します。何をしたいかを説明するか、引数なしで実行してシェルプロンプトから自動設定します |
+| `/steward [pr] [+bot]` | **[Skill](https://code.claude.com/docs/ja/skills.md#bundled-skills).** 開いている GitHub プルリクエストをこのセッションで監視し、[`/ship`](https://code.claude.com/docs/ja/ship-command) が最初に実行するレビューを行わずに、レビューのフィードバックと失敗したチェックに対する修正をプッシュします。`/steward stop` で監視を終了します。[`/steward` を使用してレビューなしで監視する](https://code.claude.com/docs/ja/ship-command#start-a-watch-with-%2Fsteward)を参照してください。コマンドが見つからない場合は、[トラブルシューティング](https://code.claude.com/docs/ja/ship-command-troubleshooting.md)を参照してください。エイリアス：`/ship:steward` |
 | `/stickers` | Claude Code ステッカーの入手可否を確認します |
 | `/stop` | アタッチしている[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)、または[ピーク返信](https://code.claude.com/docs/ja/agent-view.md#peek-and-reply)として送信した先のセッションを停止します。トランスクリプトと worktree は保持されます。停止せずにデタッチするには、`/exit` を使用するか、`←` を押します |
 | `/subtask <task>` | [フォークされたサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)を生成します：完全な会話を継承し、ユーザーが作業を続けている間にタスクに取り組むバックグラウンドサブエージェントです。その結果は完了時にこの会話に戻ります。代わりに会話を別のバックグラウンドセッションにコピーするには、`/fork` を使用します。[agent view がオフ](https://code.claude.com/docs/ja/agent-view.md#turn-off-agent-view)になっている場合、`/subtask` は利用できず、代わりに `/fork` がフォークされたサブエージェントを生成します |

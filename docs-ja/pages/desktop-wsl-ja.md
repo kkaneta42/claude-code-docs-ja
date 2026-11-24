@@ -2,7 +2,7 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Claude Code Desktop in WSL
+# WSL での Claude Code Desktop
 
 > WSL 2 ディストリビューション内で Code セッションを実行する
 

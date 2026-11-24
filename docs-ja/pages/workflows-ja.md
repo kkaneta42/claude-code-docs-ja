@@ -122,7 +122,17 @@ Claude Code はあなたの入力でキーワードをハイライトし、Claud
 
 #### キーワードを無視するか、オフにする
 
-ワークフローを開始するつもりがなかった場合、macOS では `Option+W`、Windows と Linux では `Alt+W` を押してこのプロンプトのハイライトを無視するか、ハイライトされたキーワードの直後にカーソルがある状態でバックスペースを押します。キーワードがまったくトリガーされないようにするには、`/config` で Ultracode キーワードトリガーをオフにします。
+ワークフローをリクエストせずに `ultracode` という単語を使用するには、1 つのプロンプトでキーワードをスキップするか、すべてのプロンプトでキーワードをオフにします。
+
+* **1 つのプロンプト、入力中の場合**: 単語をバッククォートで囲みます。
+
+  たとえば、次のプロンプトはファイルを検索する通常のリクエストです。
+
+  ```text wrap theme={null}
+  find every file that mentions `ultracode`
+  ```
+* **1 つのプロンプト、ターミナルで既にハイライトされている場合**: 単語の直後で Backspace を押すか、`Alt+W` を押します。macOS では、このキーは [Option as Meta](https://code.claude.com/docs/ja/terminal-config.md#enable-option-key-shortcuts-on-macos) を有効にした状態での `Option+W` です。
+* **すべてのプロンプト**: `/config` で [**Ultracode keyword trigger**](https://code.claude.com/docs/ja/settings-reference.md#workflowkeywordtriggerenabled) をオフにします。
 
 #### キーワードが機能する場所
 
@@ -223,7 +233,7 @@ Claude Code は書き込み前に保存場所にシンボリックリンクが�
 Run /triage-issues on issues 1024, 1025, and 1030
 ```
 
-Claude はリストを構造化データとして渡すため、スクリプトは最初に解析することなく `args` に対して配列とオブジェクトメソッドを直接呼び出すことができます。`args` が省略された場合、グローバルはスクリプト内で `undefined` です。
+Claude はリストを構造化データとして渡すため、スクリプトは `args` に対して配列やオブジェクトのメソッドを直接呼び出せます。`args` が省略された場合、スクリプト内でこのグローバル変数は `undefined` になります。
 
 ## ワークフローの実行例プロンプト
 
@@ -279,7 +289,9 @@ use a workflow to find flaky tests in this repo: run the suite repeatedly, recor
 
 ### 保存されたスクリプトの外観
 
-[ワークフローを保存](#save-the-workflow-for-reuse)すると、`.claude/workflows/` のファイルは `meta` ブロックの後にサブエージェントをオーケストレーションするスクリプト本体を保持します。通常は編集する必要はありませんが、ここは小さいものの形なので、Claude が生成したものを認識できます。
+[ワークフローを保存](#save-the-workflow-for-reuse)すると、`.claude/workflows/` のファイルは `meta` ブロックの後にサブエージェントをオーケストレーションするスクリプト本体を保持します。
+
+Claude が生成したものを認識できるように、小さなスクリプトの形を以下に示します。
 
 ```javascript theme={null}
 export const meta = {

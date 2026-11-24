@@ -153,7 +153,7 @@ Claude Code は、macOS、Linux、Windows で次のいずれかを行ったと�
 * 対話的な `claude` セッションに、メッセージや `/help` など何かを送信する。セッションを開始しても何も送信しなければ、ハンドラーは登録されません。
 * [信頼](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)済みのフォルダーで、`claude agents` などを使用して [agent view](https://code.claude.com/docs/ja/agent-view.md) で Claude Code を起動する
 
-別のインストールコマンドを実行する必要はありません。登録はユーザーレベルの場所にのみ書き込みます。
+登録はユーザーレベルの場所にのみ書き込みます。
 
 | プラットフォーム | ハンドラーの場所 |
 | - | - |

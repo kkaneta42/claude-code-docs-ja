@@ -52,6 +52,8 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 * [クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（`/schedule`）
 * [Ultrareview](https://code.claude.com/docs/ja/ultrareview.md)
 * [Code Review](https://code.claude.com/docs/ja/code-review.md)：Team および Enterprise プラン
+* [PR Steward](https://code.claude.com/docs/ja/pr-steward.md)：Team および Enterprise プラン
+* [Claude Approvals](https://code.claude.com/docs/ja/approvals.md)：Team および Enterprise プラン
 * [Remote Control](https://code.claude.com/docs/ja/remote-control.md)
 * [Chrome 拡張機能](https://code.claude.com/docs/ja/chrome.md)
 * [コンピューター操作](https://code.claude.com/docs/ja/computer-use.md)：Pro、Max、Ultra プラン
@@ -347,6 +349,8 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 | [Computer use](https://code.claude.com/docs/ja/computer-use.md) | ✓ | ✓ | ✓ | ✗ | ✗ |
 | Dispatch（[Desktop](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)） | 新規ユーザーは利用不可 | 新規ユーザーは利用不可 | 新規ユーザーは利用不可 | ✗ | ✗ |
 | [Code Review](https://code.claude.com/docs/ja/code-review.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| [PR Steward](https://code.claude.com/docs/ja/pr-steward.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
+| [Claude Approvals](https://code.claude.com/docs/ja/approvals.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
 | [Artifacts](https://code.claude.com/docs/ja/artifacts.md) | ✓ | ✓ | ✓ | ✓ | ✓ |
 | [アナリティクスダッシュボードと貢献メトリクス](https://code.claude.com/docs/ja/analytics.md) | ✗ | ✗ | ✗ | ✓ | ✓ |
 | [Enterprise Analytics API](https://code.claude.com/docs/ja/analytics.md#access-data-programmatically) | ✗ | ✗ | ✗ | ✗ | ✓ |

@@ -53,7 +53,7 @@ GHES インスタンスの GitHub App ページから、Claude がアクセス�
 
 **5. Code Review を有効にする**
 
-[claude.ai/admin-settings/claude-code](https://claude.ai/admin-settings/claude-code) にアクセスし、GHES リポジトリの [Code Review](https://code.claude.com/docs/ja/code-review-setup.md) を github.com と同じ設定を使用して有効にします。
+[**組織設定 > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) にアクセスし、GHES リポジトリの [Code Review](https://code.claude.com/docs/ja/code-review-setup.md) を github.com と同じ設定を使用して有効にします。
 
 ### GitHub App 権限
 
@@ -91,7 +91,7 @@ Anthropic ホスト型セッションの場合、GHES インスタンスは Anth
 
 Claude Code は作業ディレクトリの git リモートから GHES ホスト名を自動的に検出します。
 
-通常通り GHES インスタンスからリポジトリをクローンします。`github.example.com` とリポジトリパスを GHES ホスト名とリポジトリに置き換えてください。
+GHES インスタンスからリポジトリをクローンします。`github.example.com` とリポジトリパスを GHES ホスト名とリポジトリに置き換えてください。
 
 ```bash theme={null}
 git clone git@github.example.com:platform/api-service.git

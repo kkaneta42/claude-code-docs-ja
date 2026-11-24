@@ -190,7 +190,7 @@ Enterprise プランでは、組織全体で 1 つの設定を使う代わりに
 
 ### 管理ソース間でのキーごとの例外
 
-以下のキーは、マージしないというルールの例外です。
+デフォルトでは、Claude Code はほとんどのキーを[1 つの管理ソース](#settings-precedence)から読み取ります。例外には以下が含まれます。
 
 * **ソース横断のロックキー**: サンドボックスの許可リストのロックなど、[管理設定のページに記載されている](https://code.claude.com/docs/ja/managed-settings.md#precedence-within-the-managed-tier)少数のキーです。管理者が制御するいずれかの管理ソースがこれらを設定していれば、Claude Code はそれを尊重します。ユーザーが書き込み可能な HKCU レジストリ層は対象外です。
 

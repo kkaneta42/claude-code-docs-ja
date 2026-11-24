@@ -213,9 +213,10 @@ Claude Code は、起動したディレクトリと、そこからリポジト�
 | 同じ名前がある場所 | 実行されるもの |
 | :- | :- |
 | エンタープライズ、個人、プロジェクトのうち 2 つ | 個人よりエンタープライズ、プロジェクトより個人が優先されます。`~/.claude/skills/` とプロジェクトの `.claude/skills/` の両方に `deploy` がある場合、`/deploy` は個人のものを実行します |
-| これらのいずれかの場所と[バンドルスキル](#bundled-skills) | ユーザーのスキルがバンドルされたコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクトの `code-review` スキルは `/code-review` を置き換え、バンドルされたエイリアス `/review` がユーザーのスキルを実行することはありません |
+| これらのいずれかの場所と、`ship`、`ship-local`、`steward` 以外の名前の[バンドルスキル](#bundled-skills) | ユーザーのスキルがバンドルされたコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクトの `code-review` スキルは `/code-review` を置き換え、バンドルされたエイリアス `/review` がユーザーのスキルを実行することはありません |
 | これらのいずれかの場所と[組み込みコマンド](https://code.claude.com/docs/ja/commands.md) | ローカルのターミナルセッションでは、ユーザーのスキルが組み込みコマンドを置き換えますが、そのエイリアスは置き換えません。プロジェクトの `usage` スキルは `/usage` を置き換え、組み込みのエイリアス `/cost` は引き続き組み込みコマンドを実行します |
 | スキルと `.claude/commands/` 内のファイル | スキル |
+| `ship`、`ship-local`、または `steward` という名前のユーザーのスキルまたはコマンド | `/ship` が利用できる場合は、バンドルされた `/ship` または `/steward`。Claude Code は[ユーザーのものを読み込みません](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#a-custom-%2Fship-or-%2Fsteward-command-stopped-loading) |
 | プロジェクトルートのスキルとネストされたスキル | 両方とも読み込まれます。[モノレポとサブディレクトリ](#discovery-from-parent-and-nested-directories)を参照してください |
 | エンタープライズ、個人、またはプロジェクトのスキルと、[プロジェクト外の追加ディレクトリ](#skills-from-additional-directories)内のスキル | エンタープライズ、個人、またはプロジェクトのスキル。追加ディレクトリのスキルはプレフィックス付きの名前で実行されます。[追加ディレクトリから同じ名前のスキルを実行する](#run-a-same-named-skill-from-an-added-directory)を参照してください |
 | プロジェクト外の 2 つの[追加ディレクトリ](#skills-from-additional-directories) | `--add-dir` または `/add-dir` の順序で先に追加したディレクトリのスキル。もう一方は[プレフィックス付きの名前](#run-a-same-named-skill-from-an-added-directory)で実行されます |
@@ -271,7 +272,9 @@ Claude Code は同期スキルをダウンロードするだけで、アップ�
 
 マシンでの同期を停止するには、ユーザー設定で [`syncClaudeAiSkills`](https://code.claude.com/docs/ja/settings-reference#syncclaudeaiskills) を `false` に設定します。Claude Code はダウンロードを停止し、次回起動時に、すでに同期したスキルを `~/.claude/skills/.trash/` に移動して読み込まなくなります。組織は、claude.ai で Skills をオフにすることで、全員の同期をオフにできます。Skills をオンにしたまま同期を停止するには、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で同じキーを設定できます。
 
-組織が claude.ai で Skills をオフにすると、Claude Code はダウンロード済みのスキルを削除し、それらは読み込まれなくなります。削除されたスキルは `~/.claude/skills/.trash/` に移動され、[保持期間によるクリーンアップ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)で削除されるまではファイルを復元できます。組織が Skills を再びオンにすると、Claude Code は次回の同期で、ユーザーが有効にしたスキルをダウンロードします。
+> [!NOTE]
+>
+> 組織が claude.ai で Skills をオフにすると、Claude Code はダウンロード済みのスキルを削除し、それらは読み込まれなくなります。削除されたスキルは `~/.claude/skills/.trash/` に移動され、Claude Code が[それらを削除する](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)まではファイルを復元できます。組織が Skills を再びオンにすると、Claude Code は次回の同期で、ユーザーが有効にしたスキルをダウンロードします。
 
 #### 同期スキルの名前が別のコマンドと一致する場合
 
@@ -319,7 +322,7 @@ Claude Code が同期スキルの本文をどう扱うかは、セッション�
 
 ### セッション中にスキルを編集する
 
-Claude Code は、[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)の場合を除き、スキルディレクトリのファイル変更を監視します。`~/.claude/skills/`、プロジェクトの `.claude/skills/`、または `--add-dir` ディレクトリ内の `.claude/skills/` でスキルを追加、編集、削除すると、Claude Code は再起動なしで、現在のセッション内で変更を反映します。
+Claude Code は、[bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)の場合を除き、スキルディレクトリのファイル変更を監視します。`~/.claude/skills/`、プロジェクトの `.claude/skills/`、または `--add-dir` ディレクトリ内の `.claude/skills/` でスキルを追加、編集、削除すると、Claude Code は現在のセッション内で変更を反映します。
 
 新しいスキルが表示されない場合は、[`/reload-skills`](https://code.claude.com/docs/ja/commands#all-commands) を実行してください。
 
@@ -1053,7 +1056,7 @@ This creates `codebase-map.html` in the current directory and opens it in your d
 * コードベースをファイルタイプ別（サイズ上位 8 つ）に分類する**棒グラフ**
 * ディレクトリを展開・折りたたんだり、色分けされたファイルタイプインジケーターを表示したりできる**折りたたみ可能なツリー**
 
-スクリプトは Python 3 を必要としますが、組み込みライブラリのみを使用するため、インストールするパッケージはありません。
+スクリプトは Python 3 を必要としますが、組み込みライブラリのみを使用します。
 
 ```python expandable theme={null}
 #!/usr/bin/env python3
@@ -1252,7 +1255,9 @@ Claude Code は `description` フィールドと `when_to_use` フィールド�
 
 v2.1.280 より前は、`~/.claude/skills/` に `manifest.json` という名前のファイルがあると、Claude Code はそのファイルがリストしたスキルフォルダを `~/.claude/skills/.trash/` の下のタイムスタンプ付きフォルダに移動し、それらのスキルは読み込まれなくなりました。
 
-スキルを復元するには、タイムスタンプ付きフォルダからそのフォルダを `~/.claude/skills/` に戻してください。これは [保持期間スイープ](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically) がゴミ箱エントリを削除する前に行ってください。デフォルトではゴミ箱に移動されてから 30 日後に削除されます。
+> [!TIP]
+>
+> スキルを復元するには、タイムスタンプ付きフォルダからそのフォルダを `~/.claude/skills/` に戻してください。これは Claude Code が[それを削除する](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)前に行ってください。
 
 ## 関連リソース
 

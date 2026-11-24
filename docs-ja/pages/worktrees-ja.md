@@ -145,7 +145,7 @@ and report the results.
 
 Claude Code は定期的なスイープを実行し、Claude がサブエージェントと[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#how-file-edits-are-isolated)用に作成した worktree のうち、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-reference#cleanupperioddays) 設定より古くなったものを、[保持スイープのルール](https://code.claude.com/docs/ja/claude-directory.md#cleaned-up-automatically)に従って削除します。
 
-`--worktree` セッションを[バックグラウンドに送る](https://code.claude.com/docs/ja/agent-view.md#send-the-session-to-the-background)と、その worktree はスイープで削除可能なバックグラウンドセッションの worktree になります。スイープは次の場合に worktree をそのまま残します。
+`--worktree` セッションを[バックグラウンドに送る](https://code.claude.com/docs/ja/agent-view.md#send-the-session-to-the-background)と、その worktree はスイープで削除可能なバックグラウンドセッションの worktree になります。スイープは次のような場合に worktree をそのまま残します。
 
 * worktree にまだ作業が含まれている: 変更されたファイルや追跡されていないファイル、またはプッシュされていないコミット。
 * worktree 内のチェックアウトされたサブモジュールに変更されたファイルや追跡されていないファイルがある、または Claude Code が worktree のサブモジュールを検査できない。このチェックには Claude Code v2.1.274 以降が必要です。
@@ -257,7 +257,7 @@ Claude Code はマージされたケースを git の状態のみから検出し
 worktree は独自のファイルとブランチを持ちますが、以下をメインチェックアウトと共有します。
 
 * **リポジトリの `.git` ディレクトリ**: worktree 内の git コマンドは、メインリポジトリの共有 `.git` ディレクトリに書き込みます。[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md#filesystem-isolation)が有効な場合、`git commit` などのコマンドは worktree のルートで実行されるセッションで動作します。`--worktree` はこのルートでセッションを開始します。デフォルトでは、[worktree のサブディレクトリで `claude` を実行すると、これらのコマンドは `index.lock` エラーで失敗します](https://code.claude.com/docs/ja/sandboxing#git-index-lock)。
-* **プラグイン**: メインチェックアウトから[プロジェクトスコープ](https://code.claude.com/docs/ja/plugins/loading.md#find-where-a-plugin-is-enabled)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれるため、worktree ごとに再インストールする必要はありません。
+* **プラグイン**: メインチェックアウトから[プロジェクトスコープ](https://code.claude.com/docs/ja/plugins/loading.md#find-where-a-plugin-is-enabled)でインストールされたプラグインは、同じリポジトリの worktree でも読み込まれます。
 * **権限の承認**: worktree セッションで Bash コマンドに対して「はい、今後は確認しない」を選択すると、ルールはメインチェックアウトの `.claude/settings.local.json` に保存されます。このルールはメインチェックアウトとリポジトリの他のすべての worktree に適用され、worktree の削除後も残ります。
 
   Windows や、Claude Code が[リポジトリルートを使用しない](https://code.claude.com/docs/ja/settings.md#where-claude-code-looks-for-each-file)その他のケースでは、ルールはその worktree に残ります。[承認が保存される場所](https://code.claude.com/docs/ja/permissions.md#permission-system)を参照してください。

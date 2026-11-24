@@ -38,7 +38,7 @@
 
 ## 必要なもの
 
-唯一のハード要件は、[`@modelcontextprotocol/sdk`](https://www.npmjs.com/package/@modelcontextprotocol/sdk) パッケージと Node.js 互換ランタイムです。[Bun](https://bun.sh)、[Node](https://nodejs.org)、[Deno](https://deno.com) すべて動作します。リサーチプレビューの事前構築プラグインは Bun を使用していますが、チャネルはそうである必要はありません。
+唯一のハード要件は、[`@modelcontextprotocol/sdk`](https://www.npmjs.com/package/@modelcontextprotocol/sdk) パッケージと Node.js 互換ランタイムです。[Bun](https://bun.sh)、[Node](https://nodejs.org)、[Deno](https://deno.com) すべて動作します。
 
 サーバーは以下を実行する必要があります：
 
@@ -255,7 +255,7 @@ Claude Code は通知を確認しません。`mcp.notification()` の `await` �
 
 ## 返信ツールを公開
 
-チャネルが双方向の場合、アラートフォワーダーではなくチャットブリッジのような場合、Claude がメッセージを返送するために呼び出せる標準 [MCP ツール](https://modelcontextprotocol.io/docs/concepts/tools)を公開します。ツール登録に関するチャネル固有のものはありません。返信ツールには 3 つのコンポーネントがあります：
+チャネルが双方向の場合、アラートフォワーダーではなくチャットブリッジのような場合、Claude がメッセージを返送するために呼び出せる標準 [MCP ツール](https://modelcontextprotocol.io/docs/concepts/tools)を公開します。返信ツールには 3 つのコンポーネントがあります：
 
 1. `Server` コンストラクタ機能に `tools: {}` エントリがあり、Claude Code がツールを検出できるようにする
 2. ツールのスキーマを定義し、送信ロジックを実装するツールハンドラー

@@ -185,6 +185,8 @@ IdP がリフレッシュトークンを発行する場合、Claude Code はセ�
 
 `severity` は大文字で表したログレベルで、`warn` は `WARNING` と書かれます。起動の失敗は `ERROR` の行になります。
 
+また、ゲートウェイは起動のたびに、ネットワーク構成にかかわらず、パブリックインターネットに公開しないよう注意を促す `WARNING` 行を 1 行書き出します。これを非表示にするには、ゲートウェイの環境で `CLAUDE_GATEWAY_LOG_LEVEL=error` を設定します。その場合、コレクターが受け取るのは運用ログの `ERROR` 行のみになります。
+
 同じく stderr に出力される監査イベントは変わりません。監査イベントには `ts` と `evt` が含まれ、`severity` は含まれません。
 
 ### ヘルスチェック
@@ -442,8 +444,8 @@ gateway の stderr には監査イベントストリームが含まれ、監査�
 | すべての Amazon Bedrock リクエストが 502 を返す。ログに `Could not load credentials from any providers` が表示される | EC2 では、IMDSv2 のデフォルトホップリミット 1 がコンテナ内からのインスタンスメタデータリクエストをブロックします。ブートと `/readyz` は AWS SDK がクライアント構築時ではなく最初のリクエストでインスタンス認証情報を解決するため、とにかく成功します | `aws ec2 modify-instance-metadata-options --instance-id <id> --http-put-response-hop-limit 2` でホップリミットを上げるか、起動テンプレートで設定してください。変更はインスタンス上のすべてのコンテナに適用されます。利用可能な場合は ECS タスクロールを優先してください。これは ECS コンテナ認証情報エンドポイントから認証情報を読み込み、変更を完全に回避します。または、変更を専用 gateway インスタンスに適用して露出を制限してください。 |
 | ログ: Google 認証情報ファイルのタイプが `external_account` であるアップストリームで、`upstream <name>: Google issued an access token that expires in <N>s` を含む警告が表示される | リクエストはそのアクセストークンの有効期限が切れるまで成功し、その後は、`credential_source` が指すトークンが先に更新されていない限り失敗する。 | プロセスがそのトークンをファイルに書き込んでいる場合は、古いトークンの有効期限が切れる 5 分以上前に新しいトークンを書き込むようにしてください |
 | ピークロード時に、レスポンスの開始が遅い、またはハングしているように見える、または upstream が健全な場合に 502 `all upstreams failed` で失敗する | レプリカは upstream に一度に送信するよりも多くのリクエストを開いているため、余分なリクエストは gateway 内で待機します。`provider: anthropic` upstream では、`timeouts.upstream_ttfb_ms` より長く待つリクエストはその upstream をあきらめ、後の upstream がそれを処理しない場合は 502 を生成します。ログは `client requests are open` を含む警告を表示します。 | レプリカを追加するか、各レプリカの制限を上げてください。[同時 upstream リクエスト](#concurrent-upstream-requests)を参照してください。 |
-| `provider: anthropic` 以外のアップストリームで、長い思考の間を含むターンが失敗する。ゲートウェイの前にあるプロキシが、約 12.5 分間開いたままのリクエストを 1 件記録し、その後 `504` エラーを連続して記録する | Claude Code は、最初のレスポンスイベントを配信した後はキープアライブの ping のみを運んでいたストリームを終了しました。リクエストをストリーミングなしで再送信しましたが、各応答にはプロキシのタイムアウトより長い時間がかかります。 | 開発者向けに `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を上げてください。[長い思考がプロキシのタイムアウトで終わる](#long-thinking-ends-in-proxy-timeouts)を参照してください。 |
-| `provider: anthropic` で、長い思考の間を含むターンが失敗する。プロキシが約 20 分間開いたままのリクエストを 1 件記録し、その後 `502` または `504` エラーを記録する | Claude Code は、最初のレスポンスイベントを配信した後はキープアライブの ping のみを運んでいたストリームを終了しました。リクエストをストリーミングなしで再送信しましたが、各応答には、ゲートウェイがアップストリームを待つ時間である `timeouts.upstream_ttfb_ms`、またはプロキシのタイムアウトより長い時間がかかります。 | 開発者向けに `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を上げてください。[Anthropic API アップストリームでの長い思考](#long-thinking-on-an-anthropic-api-upstream)を参照してください。 |
+| `provider: anthropic` 以外のアップストリームで、長い思考の間を含むターンが失敗する。ゲートウェイの前にあるプロキシが、それぞれ約 12.5 分間開いたままのリクエストを 1 件または 2 件記録し、その後 `504` エラーを連続して記録する | Claude Code は、最初のレスポンスイベントを配信した後はキープアライブの ping のみを運んでいたストリームを終了しました。リクエストをストリーミングなしで再送信しましたが、各応答にはプロキシのタイムアウトより長い時間がかかります。 | 開発者向けに `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を上げてください。[長い思考がプロキシのタイムアウトで終わる](#long-thinking-ends-in-proxy-timeouts)を参照してください。 |
+| `provider: anthropic` で、長い思考の間を含むターンが失敗する。プロキシが、それぞれ約 20 分間開いたままのリクエストを 1 件または 2 件記録し、その後 `502` または `504` エラーを記録する | Claude Code は、最初のレスポンスイベントを配信した後はキープアライブの ping のみを運んでいたストリームを終了しました。リクエストをストリーミングなしで再送信しました。各応答には、ゲートウェイの `timeouts.upstream_ttfb_ms` の待機時間、またはプロキシのタイムアウトより長い時間がかかります。 | 開発者向けに `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を上げてください。[Anthropic API アップストリームでの長い思考](#long-thinking-on-an-anthropic-api-upstream)を参照してください。 |
 | 開発者のリクエストが `API Error: 400 you aren't in a group that can use this gateway. Ask your administrator to add you to one` で失敗する | すべてのアップストリームに [`groups` リスト](https://code.claude.com/docs/ja/claude-apps-gateway-config#what-happens-when-a-developer-is-in-no-listed-group)があり、開発者のセッションにはリストされたグループのいずれも含まれていない。 | IdP で開発者をリストされたグループに追加するか、`groups` のないアップストリームを最後に記載して、それ以外の全員に対応させてください。gateway は開発者の次回のトークンリフレッシュ時にグループを再度読み取ります。IdP がグループを省略しており、その userinfo エンドポイントがグループを返す場合は、[`oidc.userinfo_fallback: true`](https://code.claude.com/docs/ja/claude-apps-gateway-config#oidc) を設定してください。 |
 | IdP エラー: unknown or unsupported scope | IdP が認識しないスコープを拒否する | `oidc.scopes` を IdP が受け入れるリストに正確に設定してください。`openid` を含める必要があります。デフォルトは `openid profile email offline_access` です。 |
 | `oidc.scopes` を設定した後、セッションが自動的に更新されない | `offline_access` が上書き設定から削除された | IdP がサポートしている場合は `offline_access` を戻してください。リフレッシュトークンがない場合、開発者は `session.ttl_hours` ごとにブラウザログインを再実行します。 |
@@ -484,10 +486,10 @@ groups クレームを削減する際は、以下の設定で指定したグル�
 
 アップストリームが `provider: anthropic` の場合は、代わりに [Anthropic API アップストリームでの長い思考](#long-thinking-on-an-anthropic-api-upstream)を参照してください。そちらでも `CLAUDE_STREAM_IDLE_TIMEOUT_MS` を上げますが、時間とエラーが異なります。
 
-長い思考の後にターンが失敗し、プロキシが約 12.5 分間開いたままのリクエストを 1 件記録し、その後 `504` エラーを連続して記録する場合は、ゲートウェイのポリシーで [`CLAUDE_STREAM_IDLE_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) を上げてください。例えば、プロキシのアイドルタイムアウトが 240 秒の場合、連続するのは 10 件のリクエストで、それぞれが 240 秒で切断されます。
+長い思考の後にターンが失敗し、プロキシが約 12.5 分間のリクエストを 1 件または 2 件記録し、その後 `504` エラーを連続して記録する場合は、ゲートウェイのポリシーで [`CLAUDE_STREAM_IDLE_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) を上げてください。
 
-* **最初のリクエスト**: 最初のレスポンスイベントである `message_start` を配信した後、Claude が思考している間は ping のみを運ぶストリームです。デフォルト設定では、Claude Code は約 12.5 分後にこのストリームを終了します。
-* **残りの 10 件**: 同じリクエストを[ストリーミングなしで](https://code.claude.com/docs/ja/errors.md#streaming-response-ended-before-any-complete-data-was-received)送信し、その後再試行したもので、デフォルトでは合計 10 回送信されます。これらには ping が届かないため、応答が遅いとプロキシのタイムアウトに達します。
+* **各長いリクエスト**: 最初のレスポンスイベントである `message_start` を配信した後、Claude が思考している間は ping のみを運ぶストリームです。デフォルト設定では、Claude Code は約 12.5 分後にこのストリームを終了します。
+* **`504` エラー**: Claude Code はリクエストを[ストリーミングなしで](https://code.claude.com/docs/ja/errors.md#streaming-response-ended-before-any-complete-data-was-received)再送信し、その後再試行します。これらのリクエストには ping が届かないため、応答が遅いとプロキシのタイムアウトに達します。例えば、プロキシのアイドルタイムアウトが 240 秒の場合、それぞれが 240 秒で終了します。
 
 この修正のためにプロキシのタイムアウトを延ばす必要はありません。プロキシのタイムアウトだけを上げた場合、ストリーミングなしのリクエストは、応答が Claude Code 自身の待機時間（デフォルトでは 300 秒）より長くかかった時点で依然として失敗します。
 
@@ -511,7 +513,7 @@ Error streaming, falling back to non-streaming mode: Stream idle timeout - no ch
 | `900000` | 約 22.5 分 |
 | `1800000` | 約 37.5 分 |
 
-ゲートウェイが ping を送り続けている間にアップストリームがハングした場合、開発者も Claude Code がストリームを諦めるまでそれだけの時間待つことになります。
+ゲートウェイが ping を送り続けている間にアップストリームがハングした場合、Claude Code がストリーミングを諦めるまでに、その長さのストリームが最大 2 つ発生することを想定してください。
 
 #### ポリシーで値を配信する
 
@@ -532,9 +534,9 @@ managed:
 
 ### Anthropic API アップストリームでの長い思考
 
-`provider: anthropic` がモデルの唯一のアップストリームで、プロキシが約 20 分間開いたままのリクエストを 1 件記録し、その後 `502` または `504` エラーを記録する場合は、ゲートウェイのポリシーで [`CLAUDE_STREAM_IDLE_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) を上げてください。
+`provider: anthropic` がモデルの唯一のアップストリームで、プロキシが約 20 分間のリクエストを 1 件または 2 件記録し、その後 `502` または `504` エラーを記録する場合は、ゲートウェイのポリシーで [`CLAUDE_STREAM_IDLE_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) を上げてください。
 
-* **長いリクエスト**: `message_start` を配信した後、Claude が思考している間は ping のみを運ぶストリームです。Claude Code はデフォルト設定では約 20 分後にこれを終了し、変数を上げるとそれより後に終了します。
+* **各長いリクエスト**: `message_start` を配信した後、Claude が思考している間は ping のみを運ぶストリームです。Claude Code はデフォルト設定では約 20 分後にこれを終了し、変数を上げるとそれより後に終了します。
 * **エラー**: その後 Claude Code が[ストリーミングなしで](https://code.claude.com/docs/ja/errors.md#streaming-response-ended-before-any-complete-data-was-received)送信するリクエストです。それぞれがゲートウェイからの `502` で失敗するか、プロキシのタイムアウトがゲートウェイの待機時間より短い場合はプロキシの `504` で失敗します。その待機時間は [`timeouts.upstream_ttfb_ms`](https://code.claude.com/docs/ja/claude-apps-gateway-config#http-tuning) ですが、この修正のために上げる必要はありません。
 
 原因を確認するには、[原因を確認する](#confirm-the-cause)を参照してください。

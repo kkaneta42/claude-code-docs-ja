@@ -2,7 +2,7 @@
 > Fetch the complete documentation index at: https://code.claude.com/docs/llms.txt
 > Use this file to discover all available pages before exploring further.
 
-# Desktop application
+# デスクトップアプリ
 
 > Claude Code Desktop をさらに活用する：Git 分離による並列セッション、ドラッグアンドドロップペインレイアウト、統合ターミナルとファイルエディタ、サイドチャット、コンピュータ使用、電話から Dispatch セッションを送信、ビジュアル diff レビュー、アプリプレビュー、PR 監視、コネクタ、エンタープライズ設定。
 
@@ -176,7 +176,7 @@ Browser ペインの [SSH および WSL セッションでの HTML プレビュ�
 
 Browser ペインはタブ付きブラウザなので、ドキュメント、issue トラッカー、または実行中のアプリの横に他のサイトを開くことができます。Browser を開くには、macOS で**Cmd+Shift+B**、Windows で**Ctrl+Shift+B**を押すか、[**Browser** を選択](#arrange-your-workspace)します。Google OAuth などのポップアップサインインフローを含め、ペイン内でサイトにサインインできます。
 
-チャットで外部リンクを初めてクリックすると、リンクを Browser ペインで開くかデフォルトのブラウザで開くかを尋ねるダイアログが表示されます。後で選択を変更するには、Browser ペインの **⋮** メニューにある **Open links in built-in browser** を使用します。macOS で **Cmd** キーを押しながらクリックするか、Windows で **Ctrl** キーを押しながらクリックすると、デフォルトのブラウザでリンクが直接開きます。
+チャットで外部リンクを初めてクリックすると、リンクを Browser ペインで開くかデフォルトのブラウザで開くかを尋ねるダイアログが表示されます。後で選択を変更するには、Browser ペインの **⋮** メニューにある **Open links in built-in browser** を使用します。見当たらない場合は、そのメニューで **More settings** を開きます。macOS で **Cmd** キーを押しながらクリックするか、Windows で **Ctrl** キーを押しながらクリックすると、デフォルトのブラウザでリンクが直接開きます。
 
 Claude は[アプリを検証](#preview-your-app)するために使用するのと同じツールを使用して外部ページを読み取り、対話できます。2 つの追加の安全チェックがあります：
 
@@ -216,7 +216,7 @@ Claude はコメントを読み取り、要求された変更を加えます。�
 
 ローカル、[SSH](#ssh-sessions)、および [WSL](https://code.claude.com/docs/ja/desktop-wsl.md) セッションでは、結果はファイルごとにグループ化された **Code review** カードとして表示されます。カードを使用して結果に対応します：
 
-* **Walk through in Changes** をクリックすると、差分ビューが開き、結果を 1 つずつ確認できます。現在の差分内の結果は該当する行に表示され、そこで **Fix this one** をクリックするか、結果を却下できます。
+* **Walk through in changes** をクリックすると、差分ビューが開き、結果を 1 つずつ確認できます。現在の差分内の結果は該当する行に表示され、そこで **Fix this one** をクリックするか、結果を却下できます。
 * **Apply fixes** をクリックすると、まだ未対応の結果を修正するよう Claude に依頼します。
 
 どのセッションでも、プロンプトボックスで Claude にレビュー結果の修正を依頼することもできます。`/code-review` が確認する内容と受け付ける引数については、[`/code-review` でローカルにレビューする](https://code.claude.com/docs/ja/code-review-local)を参照してください。
@@ -263,6 +263,8 @@ Code タブはペインを任意のレイアウトで配置できるように構
 #### セッション詳細パネルを表示または非表示にする
 
 パネルを表示または非表示にするには、セッションのタイトルバー、またはバーの\*\*⋮**メニューで、**Hide session rail**または**Show session rail**をクリックします。どちらの名前も表示されない場合は、タイトルバーの**Activity panel\*\*をクリックします。それでもパネルが表示されない場合は、[使用している Code タブのレイアウトを確認してください](#check-which-layout-you-have)。
+
+mod の[バックドロップ](https://code.claude.com/docs/ja/plugins/mods/interface.md#put-a-backdrop-behind-the-conversation)が表示されたときにパネルが消えた場合は、**Show session rail**または**Activity panel**をクリックして元に戻します。
 
 ### ペインを最小化する
 
@@ -628,7 +630,7 @@ Dispatch は、ターミナルから離れているときに Claude で作業す
 
 外部サービスの接続、再利用可能なワークフローの追加、Claude の動作のカスタマイズ、プレビューサーバーの設定を行えます。コネクタ、スキル、プラグインを一か所で管理するには、サイドバーの **Customize** または **Plugins** をクリックします。デスクトップアプリの [Cowork](https://claude.com/product/cowork) は、スキル、プラグイン、コネクタを CLI の `~/.claude` ディレクトリからではなく、claude.ai アカウントを通じて同期されるこの設定から取得します。
 
-Claude Code は、同じアカウントでサインインしたターミナルセッションでも、claude.ai アカウントで有効になっているスキルとプラグインを読み込みます。[claude.ai から同期されたスキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)および [claude.ai から同期されたプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)を参照してください。
+claude.ai アカウントで有効になっているスキルとプラグインが他にどこで読み込まれるかについては、[claude.ai から同期されたスキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)および [claude.ai から同期されたプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)を参照してください。
 
 ### 外部ツールを接続する
 
@@ -676,7 +678,7 @@ Claude の作業中でも、他のメッセージと同様にコマンドを送�
 
 > [!NOTE]
 >
-> プラグインブラウザはクラウドセッションでは利用できません。また、デスクトップアプリからユーザーアカウント用またはローカルのみとしてインストールしたプラグインも、クラウドセッションでは利用できません。[セットアップから引き継がれるもの](https://code.claude.com/docs/ja/cloud-environments.md#what-carries-over-from-your-setup)を参照してください。プラグインは WSL セッションでは利用できません。
+> コンピューターにユーザースコープまたはローカルスコープでインストールしたプラグインは、クラウドセッションでは利用できません。クラウドセッションで使用するには、[プラグインをインストールする](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)の **Cloud session** タブを参照してください。プラグインは WSL セッションでは利用できません。
 
 独自のプラグインの作成を含むプラグインの完全なリファレンスについては、[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)を参照してください。
 
@@ -706,7 +708,7 @@ Claude は開発サーバーのセットアップを自動的に検出し、セ�
 
 `autoVerify` が有効になっている場合、Claude はファイルを編集した後にコードの変更を自動的に検証します。応答を完了する前に、スクリーンショットを撮り、エラーをチェックし、変更が機能することを確認します。
 
-自動検証はデフォルトでオンになっています。プロジェクトごとに無効にするには、`.claude/launch.json` に `"autoVerify": false` を追加するか、Browser ペインの **⋮** メニューで **Auto-verify changes** をオフにします。
+自動検証はデフォルトでオンになっています。プロジェクトごとに無効にするには、`.claude/launch.json` に `"autoVerify": false` を追加するか、Browser ペインの **⋮** メニューで **Auto-verify changes** をオフにします。見つからない場合は、そのメニューで **More settings** を開きます。
 
 ```json theme={null}
 {
@@ -2093,7 +2095,7 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
 
 ローカルおよび SSH セッションでは、デスクトップアプリは各ユーザーの接続された claude.ai コネクタを Claude Code に直接配信します。MCP 設定または`managed-mcp.json`はこれらのコネクタに到達しません。使用する設定ソースまたはファイルの場所に関係なく。これらのセッションでコネクタのツールをブロックするには、組織の[コネクタツールコントロール](https://code.claude.com/docs/ja/mcp.md#organization-controls-on-connector-tools)を使用してください。[コネクタが Claude Code に到達する方法](https://code.claude.com/docs/ja/mcp.md#how-connectors-reach-claude-code)は、各種類のセッションでコネクタを管理する設定を示しています。
 
-`permissions.disableBypassPermissionsMode`と`disableAutoMode`はユーザーおよびプロジェクト設定でも機能しますが、管理設定に配置するとユーザーがそれらを上書きするのを防ぎます。
+ユーザーが`permissions.disableBypassPermissionsMode`または`disableAutoMode`を上書きできないようにするには、管理設定でそれを設定してください。
 
 管理ソースのみが設定できる権限、プラグイン、および配信キーについては、[管理設定のみが設定できるキー](https://code.claude.com/docs/ja/managed-settings.md#managed-only-settings)を参照してください。
 

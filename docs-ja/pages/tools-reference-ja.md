@@ -4,7 +4,7 @@
 
 # ツールリファレンス
 
-> Claude Code が使用できるツールの完全なリファレンス。権限要件とツール別の動作を含みます。
+> Claude Code が使用できるツールのリファレンス。権限要件とツール別の動作を含みます。
 
 Claude Code は、コードベースを理解および変更するのに役立つ組み込みツールのセットにアクセスできます。ツール名は、[権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)、[サブエージェントツールリスト](https://code.claude.com/docs/ja/sub-agents.md)、および[フック matcher](https://code.claude.com/docs/ja/hooks.md)で使用する正確な文字列です。
 

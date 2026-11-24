@@ -944,7 +944,7 @@ HTTP hooks は、チームの共有監査サービスなど、Web サーバー�
   * `agent`：60 秒。
   * [`SessionEnd`](https://code.claude.com/docs/ja/hooks#sessionend) フックは、タイプを問わず 1.5 秒の割り当て時間を共有します。設定でフックごとにより長い `timeout` を指定している場合、Claude Code は最大 60 秒までそれに合わせて割り当て時間を引き上げます。
 * `PostToolUse` フックは、ツールがすでに実行されているため、アクションを元に戻すことはできません。
-* [`PermissionRequest`](https://code.claude.com/docs/ja/hooks#permissionrequest) フックは、Claude Code がユーザーに権限を求めようとするとき、またはプロンプトを表示できない呼び出しをそのままでは自動的に拒否するときに発火します。`-p` フラグを使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)でも、[`dontAsk` モード](https://code.claude.com/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)以外では引き続き実行され、どのフックも判断せず、他に応答できるものもない呼び出しは拒否されます。
+* [`PermissionRequest`](https://code.claude.com/docs/ja/hooks#permissionrequest) フックは、Claude Code がユーザーに権限を求めようとするときに発火します。[権限ホスト](https://code.claude.com/docs/ja/headless.md#turn-off-permission-prompts-in-unattended-runs)のない [`-p` 実行](https://code.claude.com/docs/ja/headless)では、[`dontAsk` モード](https://code.claude.com/docs/ja/permission-modes#allow-only-pre-approved-tools-with-dontask-mode)以外において、ユーザーにプロンプトを表示するはずの呼び出しは、これらのフックのいずれかなど、何かが承認しない限り拒否されます。
 * `Stop` フックは、タスクの完了時だけでなく、Claude が応答を終えるたびに発火します。ユーザーによる中断では発火しません。API エラーの場合は代わりに [StopFailure](https://code.claude.com/docs/ja/hooks.md#stopfailure) が発火します。
 * 複数の `PreToolUse` フックがツールの入力を書き換えるために [`updatedInput`](https://code.claude.com/docs/ja/hooks#pretooluse) を返す場合、Claude Code は書き換えをマージせず、どの書き換えでツールが実行されるかも保証しません。同じツールの入力を複数のフックで書き換えることは避けてください。
 

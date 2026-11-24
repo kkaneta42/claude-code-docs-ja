@@ -281,6 +281,8 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 > [!NOTE]
 >
 > [プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)内のクラウドスレッドは、この表のリポジトリ設定のうち一部しか読み込みません。スレッドは `.mcp.json` サーバーや `.claude/settings.json` のフックと権限ルールなしで開始され、スキル、エージェント、コマンドをスキップする場合があります。[スレッドがリポジトリから取り込むもの](https://code.claude.com/docs/ja/claude-projects.md#what-threads-pick-up-from-your-repositories)を参照してください。
+>
+> [PR Steward](https://code.claude.com/docs/ja/pr-steward-pull-requests.md#save-pr-steward-instructions-for-everyone-in-a-repository) セッションと [Approvals 分類器の実行](https://code.claude.com/docs/ja/approvals-classifiers.md#what-a-classifier-run-can-read-and-change)も、読み込むのはその一部のみです。
 
 クラウドセッションはリポジトリの新しいクローンから開始されます。リポジトリにコミットしたものはすべて利用可能です。独自のマシンにのみインストールまたは構成したものはセッションでは利用できません。組織のポリシーは[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を通じて別途到着します。
 
@@ -295,7 +297,7 @@ Anthropic ホスト環境では、各セッションは独自のオペレーテ�
 | 組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md) | はい、[Claude Tag](https://claude.com/docs/claude-tag/overview) セッションを除く | セッション開始時に Anthropic のサーバーから取得されます。クラウドセッションで `availableModels` がどのように適用されるかについては、[Surface coverage](https://code.claude.com/docs/ja/model-config.md#surface-coverage) を参照してください。MDM または管理設定ファイルを通じてデバイスにデプロイされた設定は適用されません。セッションは Anthropic 管理 VM で実行されるためです。[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)では、セッションはランナーイメージの管理設定ファイルも読み取ります。[Claude Code が管理ソースを組み合わせる方法](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)に従います |
 | ユーザー `~/.claude/CLAUDE.md` | いいえ | マシンに存在し、リポジトリには存在しません。[リポジトリにコミットせずに個人設定を追加する](#add-personal-preferences-without-committing-to-the-repo)を参照してください |
 | ユーザー `~/.claude/skills/`、`~/.claude/agents/`、`~/.claude/commands/` | いいえ | マシンに存在し、リポジトリには存在しません。代わりにリポジトリの `.claude/` ディレクトリにコミットしてください。クラウドセッションは [claude.ai で有効にしたスキル](https://code.claude.com/docs/ja/skills.md#skills-in-cowork-and-cloud-sessions)を自動的に読み込みます |
-| ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` はマシンの `~/.claude/settings.json` に存在します |
+| ユーザー設定でのみ有効なプラグイン | いいえ | ユーザースコープの `enabledPlugins` はマシンの `~/.claude/settings.json` に存在します。使用するには、[プラグインをインストールする](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)の **Cloud session** タブを参照してください |
 | デフォルトのローカルスコープまたはユーザースコープで `claude mcp add` を使用して追加した MCP サーバー | いいえ | これらのスコープでは、コマンドはマシンの `~/.claude.json` に書き込みます。リポジトリの [`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-scope) に書き込むには、リポジトリのルートから `claude mcp add --scope project` を実行し、そのファイルをコミットしてください。1 つのリポジトリを持つセッションはそれを読み込みます |
 | リポジトリの `.claude/settings.json` `env` ブロック内のトランスポート変数（`NODE_EXTRA_CA_CERTS` や[mTLS クライアント証明書変数](https://code.claude.com/docs/ja/network-config.md#mtls-authentication)など） | いいえ | ホスティング環境がセッションの API 接続を管理するため、Claude Code はこれらのキーを無視し、セッションのデバッグログで無視された各キーを記録します |
 | Claude が呼び出すサービスの API キーとトークン | Anthropic ホスト環境では、[ネットワークシークレット](#add-network-secrets)として | キーを環境に一度追加すると、エージェントプロキシがリストしたホストへのリクエストにそれを添付します。エージェントプロキシが[添付できない](#requests-that-never-get-the-credential)キーは環境変数に留まります |

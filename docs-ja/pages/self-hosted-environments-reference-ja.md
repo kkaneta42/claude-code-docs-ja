@@ -4,7 +4,7 @@
 
 # セルフホスト環境リファレンス
 
-> セルフホストランナーとオーケストレーターの完全なリファレンス：CLI フラグ、環境変数、Prometheus メトリクス。
+> セルフホストランナーとオーケストレーターのリファレンス：CLI フラグ、環境変数、Prometheus メトリクス。
 
 > [!NOTE]
 >
@@ -12,7 +12,7 @@
 
 このページは、[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments) で実行する 2 つのプロセスのリファレンスです。ランナーはホスト上で Claude Code [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md) を実行し、オプションのオートスケーリングオーケストレーターはセッションがキューに入ると同時にランナーを起動します。それぞれ独自のフラグテーブルを持っています。どちらも Linux または macOS ホスト上で実行され、`/workspace` や `~/.claude` などのデフォルトを想定しています。インストール済みバージョンの権限あるリストについては、`claude self-hosted-runner --help` を実行してください。
 
-メトリクスシリーズと一部の API フィールドは、これらのページが環境と呼ぶものに対して `pool` を使用しています。どちらの用語も同じものを指しています。環境 ID は `pool_id` フィールドで、形式は `ccpool_...` です。これらのページが `pool` 識別子を示す場所では、環境を指しています。CLI フラグと環境変数では `environment` と表記されます。例えば `--environment-secret-file` のように。非推奨の `pool` 表記はまだ機能します。[`--environment-secret-file` 行](#runner-cli-flags) で説明されているとおりです。
+メトリクスシリーズと一部の API フィールドは、これらのページが環境と呼ぶものに対して今も `pool` を使用しています。環境 ID は `pool_id` フィールドで、形式は `ccpool_...` です。これらのページが `pool` 識別子を示す場所では、環境を指しています。CLI フラグと環境変数では `--environment-secret-file` のように `environment` と表記されます。非推奨の `pool` 表記も引き続き機能します。詳しくは [`--environment-secret-file` 行](#runner-cli-flags) で説明されているとおりです。
 
 ## ランナーの CLI フラグ
 

@@ -119,12 +119,12 @@ export CLAUDE_CODE_USE_VERTEX=1
 export CLOUD_ML_REGION=global
 export ANTHROPIC_VERTEX_PROJECT_ID=YOUR-PROJECT-ID
 
-# オプション：カスタムエンドポイントまたはゲートウェイ用に Agent Platform エンドポイント URL をオーバーライドする
+# オプション：カスタムエンドポイントまたはゲートウェイ用に Agent Platform エンドポイント URL を上書きする
 # export ANTHROPIC_VERTEX_BASE_URL=https://aiplatform.googleapis.com
 
-# CLOUD_ML_REGION=global の場合、グローバルエンドポイントをサポートしていないモデルのリージョンをオーバーライドする
-export VERTEX_REGION_CLAUDE_HAIKU_4_5=us-east5
-export VERTEX_REGION_CLAUDE_4_6_SONNET=europe-west1
+# CLOUD_ML_REGION=global の場合、グローバルエンドポイントをサポートしていないモデルのリージョンを上書きする
+# export VERTEX_REGION_CLAUDE_HAIKU_4_5=us-east5
+# export VERTEX_REGION_CLAUDE_4_6_SONNET=europe-west1
 ```
 
 ほとんどのモデルバージョンには、対応する `VERTEX_REGION_CLAUDE_*` 変数があります。完全なリストについては、[環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md#variables)を参照してください。どのモデルがグローバルエンドポイントをサポートしているか、または地域別のみをサポートしているかを確認するには、[Google Cloud の Agent Platform Model Garden](https://console.cloud.google.com/vertex-ai/model-garden)を確認してください。

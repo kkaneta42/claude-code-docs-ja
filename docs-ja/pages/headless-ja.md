@@ -341,7 +341,7 @@ claude -p "Apply the lint fixes" --permission-mode acceptEdits
 
 権限プロンプトに答えられる人がいない場合（例えば、スケジュール済みジョブ）は、`--permission-prompts none` を渡します。このフラグが最も重要になるのは、実行に権限ホストがある場合です。権限ホストとは、[`canUseTool` コールバック](https://code.claude.com/docs/ja/agent-sdk/user-input)を持つ Agent SDK アプリ、または [`--permission-prompt-tool`](https://code.claude.com/docs/ja/cli-reference#cli-flags) で渡す MCP ツールです。フラグも [`permissions.denyInsteadOfPrompting`](https://code.claude.com/docs/ja/settings-reference#permissions-denyinsteadofprompting) 設定もない場合、実行は各権限リクエストに対してそのホストが答えるのを待ちます。
 
-フラグを指定すると、実行はホストに問い合わせず、待機もしません。確認を求めることになるものはすべて、`PermissionRequest` フックが許可しない限り拒否され、Claude には誰もリクエストを承認できないため再試行しないよう伝えられ、実行は続行されます。ホストのない `-p` 実行では、これらのリクエストはいずれにしても拒否されますが、このフラグは Claude に再試行しないよう伝える役割も果たします。権限ルール、[`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest)、および設定した権限モードが引き続き最初にすべての呼び出しを判定し、Claude Code は他の何によっても解決されないリクエストのみを拒否します。
+フラグを指定すると、実行はホストに問い合わせず、待機もしません。確認を求めることになるものはすべて、`PermissionRequest` フックが許可しない限り拒否され、Claude には誰もリクエストを承認できないため再試行しないよう伝えられ、実行は続行されます。権限ルール、[`PermissionRequest` フック](https://code.claude.com/docs/ja/hooks#permissionrequest)、および設定した権限モードが引き続き最初にすべての呼び出しを判定し、Claude Code は他の何によっても解決されないリクエストのみを拒否します。
 
 > [!NOTE]
 >

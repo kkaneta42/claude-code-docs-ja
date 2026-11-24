@@ -118,8 +118,6 @@ GitHub 認証フローを完了し、分析に含める GitHub 組織を選択�
 
 比較前に、行は正規化されます。空白がトリミングされ、複数のスペースが折りたたまれ、引用符が標準化され、テキストが小文字に変換されます。
 
-Claude Code 支援行を含むマージされたプルリクエストは、GitHub で `claude-code-assisted` としてラベル付けされます。
-
 #### 時間ウィンドウ
 
 PR マージ日の 21 日前から 2 日後のセッションが属性マッチングの対象と見なされます。
@@ -173,8 +171,6 @@ PR マージ日の 21 日前から 2 日後のセッションが属性マッチ�
 #### プログラムでデータにアクセスする
 
 Enterprise プランでは、[Claude Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics) は、Claude Code を含む Claude サーフェス全体で、組織のユーザーごとのエンゲージメント、使用状況、コストレポートを返します。プライマリオーナーが [claude.ai/analytics/api-keys](https://claude.ai/analytics/api-keys) で `read:analytics` スコープを持つキーを作成します。API は Teams プランでは利用できません。
-
-GitHub を通じてこのデータをクエリするには、`claude-code-assisted` でラベル付けされた PR を検索します。
 
 ## API カスタマー向けの分析にアクセスする
 

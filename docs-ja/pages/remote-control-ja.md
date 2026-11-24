@@ -13,7 +13,7 @@ Remote Control は [claude.ai/code](https://claude.ai/code) または Claude ア
 * **ローカル環境全体をリモートで使用する**: ファイルシステム、[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)、ツール、プロジェクト設定がすべて利用可能なままです。また、`@` を入力するとローカルプロジェクトのファイルパスが自動補完されます。
 * **両方のサーフェスから同時に作業する**: 会話と [subagents](https://code.claude.com/docs/ja/sub-agents.md) および [dynamic workflows](https://code.claude.com/docs/ja/workflows.md) の進捗がすべての接続されたデバイス間で同期されるため、ターミナル、ブラウザ、電話から相互に交換可能にメッセージを送信できます。
 * **電話またはブラウザから画像とファイルを送信する**: Claude アプリまたは claude.ai/code に写真またはファイルを添付できます。キャプション付きまたはキャプションなしで添付できます。Claude は添付された写真をメッセージの一部として直接見ることができます。Claude Code は他のファイルをマシンにダウンロードし、`@` ファイル参照として Claude に渡します。
-* **中断に対応する**: ラップトップがスリープ状態になったり、ネットワークが切断されたりした場合、マシンがオンラインに戻ると、Claude Code は自動的に再接続されます。
+* **中断に対応する**: ラップトップがスリープ状態になったり、ネットワークが切断されたりした場合、マシンがオンラインに戻ると、Claude Code は自動的に再接続されます。ただし、[制限事項](#limitations)に記載されているケースを除きます。
 
 [Web 上の Claude Code](https://code.claude.com/docs/ja/claude-code-on-the-web.md) はクラウドインフラストラクチャで実行されるのに対し、Remote Control セッションはマシン上で直接実行され、ローカルファイルシステムと相互作用します。Web およびモバイルインターフェースは、そのローカルセッションへのウィンドウにすぎません。そのため、コンピュータはオンのままである必要があり、`claude` プロセスは実行され続ける必要があります。
 
@@ -66,7 +66,7 @@ Remote Control セッションは、CLI、[Claude Desktop アプリ](https://cod
 > | `--spawn <mode>` | サーバーがセッションを作成する方法です。 • `same-dir`（モードが保存されていない場合のデフォルト）：すべてのセッションが現在の作業ディレクトリを共有するため、同じファイルを編集すると競合する可能性があります。 • `worktree`：オンデマンドの各セッションが独自の [git worktree](https://code.claude.com/docs/ja/worktrees.md) を取得します。git リポジトリまたは [`WorktreeCreate` フック](https://code.claude.com/docs/ja/hooks#worktreecreate)が必要です。 • `session`：シングルセッションモード。ちょうど 1 つのセッションのみを提供し、追加の接続を拒否します。起動時にのみ設定できます。 実行中に `w` を押すと `same-dir` と `worktree` を切り替えられます。切り替えたモードは[このプロジェクトのデフォルト](#set-the-default-spawn-mode-for-a-project)になります。 |
 > | `--capacity <N>` | 同時セッションの最大数です。デフォルトは 32 です。`--spawn=session` とは併用できません。 |
 > | `--[no-]create-session-in-dir` | サーバー起動時に現在のディレクトリにセッションを 1 つ事前作成し、すぐに入力できるようにします。`worktree` モードでは、このセッションは現在のディレクトリに留まり、オンデマンドのセッションは分離された worktree を取得します。デフォルトでオンです。`--no-create-session-in-dir` を渡してセッションなしで起動した場合、Claude Code はサーバーを停止したときにそのセッションをアーカイブするため、[再開](#resume-sessions-after-stopping-the-server)できるものは残りません。 |
-> | `--permission-mode <mode>` | サーバーのセッションの開始時の[権限モード](https://code.claude.com/docs/ja/permission-modes.md)（`acceptEdits` など）を設定します。`manual` は `default` のエイリアスとして受け付けます。認識できないモードを指定すると、サーバーは起動時に停止し、有効なモードを一覧表示します。 |
+> | `--permission-mode <mode>` | 開始時の[権限モード](https://code.claude.com/docs/ja/permission-modes.md)（`acceptEdits` など）を設定します。`default` のエイリアスとして `manual` も指定できます。認識されないモードを指定すると、サーバーは起動時に停止し、有効なモードの一覧を表示します。 |
 > | `--settings <file>` | `claude --settings` と同じ[優先順位](https://code.claude.com/docs/ja/settings.md#settings-precedence)で、JSON 設定ファイルをサーバーのセッションに適用します。JSON 文字列ではなく、ファイルパスを指定してください。Claude Code v2.1.321 以降が必要です。 |
 > | `--chrome` / `--no-chrome` | サーバーが作成するセッションで [Chrome 統合](https://code.claude.com/docs/ja/chrome.md)をオンまたはオフにし、別のデバイスから作業している間に Claude がマシン上の Chrome を使用できるようにします。どちらのフラグも指定しない場合、サーバーが事前作成するセッションと、claude.ai/code または Claude アプリから自分で開始したセッションは、[Chrome をデフォルトで有効にした](https://code.claude.com/docs/ja/chrome.md#enable-chrome-by-default)場合でも Chrome がオフの状態で開始されます。サーバーが[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)のスレッドのために開始するセッションは、代わりにその設定に従います（`bypassPermissions` モードを除く）。Claude Code v2.1.273 以降が必要です。 |
 > | `-d`, `--debug[=<filter>]` | サーバーのデバッグログをオンにします。必要に応じてカテゴリでフィルタリングできます。フィルターは `--debug=api,hooks` のように `=` 形式でのみ渡します。Claude Code v2.1.282 以降が必要です。 |
@@ -178,7 +178,7 @@ Remote Control セッションがアクティブになったら、別のデバ�
 接続されたデバイスには、ターミナル内の会話がリアルタイムで表示されます。通常のメッセージ以外には、次のようなケースがあります。
 
 * **コンテキスト圧縮と `/clear`**：Claude Code が[会話を圧縮](https://code.claude.com/docs/ja/context-window.md#what-survives-compaction)している間、接続されたデバイスには進行状況が表示され、その後会話が圧縮された位置が表示されます。`/clear` を実行すると、接続されたデバイス上の会話もリセットされます。
-* **`/resume` または `/teleport` 後の切断**：接続されたセッションに[共有リンク](https://code.claude.com/docs/ja/claude-code-on-the-web.md#share-sessions)がある場合、または Claude Code が共有リンクの有無を確認できない場合、いずれかのコマンドで別の会話を開くと Remote Control は切断されます。切断しなければ、リンクを持つユーザーがその会話を見られることになるためです。新しい会話を接続するには、ターミナルで `/remote-control` を実行します。共有リンクの確認には Claude Code v2.1.324 以降が必要です。
+* **`/resume` または `/teleport` 後の切断**：接続されたセッションに[共有リンク](https://code.claude.com/docs/ja/share-sessions.md)がある場合、または Claude Code が共有リンクの有無を確認できない場合、いずれかのコマンドで別の会話を開くと Remote Control は切断されます。切断しなければ、リンクを持つユーザーがその会話を見られることになるためです。新しい会話を接続するには、ターミナルで `/remote-control` を実行します。共有リンクの確認には Claude Code v2.1.324 以降が必要です。
 * **`/resume` による会話の切り替え**：接続されたデバイスは切り替え先の会話のタイトルや過去の履歴を受け取りませんが、双方向の新しいメッセージはターミナルで開いている会話との間でやり取りされます。デバイスから元の会話で再び作業するには、ターミナルで `/resume` を実行して元の会話に切り替えます。
 * **`/teleport` によるセッションの取り込み**：`/teleport` で[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md#from-cloud-to-terminal)をターミナルに取り込むと、接続されたデバイスは取り込んだ会話の過去の履歴を受け取りません。双方向の新しいメッセージは、現在ターミナルで開いている取り込んだ会話との間でやり取りされます。
 * **自分の他のセッションからのメッセージ**：[セッション間メッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)を使用すると、同じ接続で異なるマシン上の自分のセッション間のメッセージもやり取りされます。
@@ -365,11 +365,11 @@ Claude Code は、お客様がターミナルに入力中または接続され�
 
 * **対話型プロセスごとに 1 つのリモートセッション**: サーバーモード以外では、各 Claude Code インスタンスは一度に 1 つのリモートセッションをサポートします。単一のプロセスから複数のセッションを同時に実行するには、[サーバーモード](#start-a-remote-control-session)を使用してください。
 * **ローカルプロセスを実行し続ける必要がある**: Remote Control はローカルプロセスとして実行されます。ターミナルを閉じる、マシン上でセッションを実行している Desktop アプリや VS Code を終了する、またはその他の方法で `claude` プロセスを停止すると、[再開する](#resume-sessions-after-stopping-the-server)までセッションはオフラインになります。リモートマシン上のターミナルから `claude` を実行する場合は、SSH から切断した後もセッションが実行され続けるように、`tmux` または `screen` の中で起動してください。
-* **サーバーモードでクラッシュしたセッション**: `claude remote-control` で提供されているセッションがクラッシュした場合は、接続済みのデバイスからそのセッションにメッセージを送信してください。Claude Code がそのセッションを再び提供します。サーバーを再起動する必要はありません。Claude Code v2.1.238 以降が必要です。
+* **サーバーモードでクラッシュしたセッション**: `claude remote-control` で提供されているセッションがクラッシュした場合は、接続済みのデバイスからそのセッションにメッセージを送信してください。Claude Code がそのセッションを再び提供します。Claude Code v2.1.238 以降が必要です。
 * **接続済みセッションでの HTTP 403 拒否**: 対話型セッションが接続されると、VPN やネットワークの変更後などに、マシンと Anthropic のサーバーの間にある何かが HTTP 403 で応答した場合、Claude Code は最大 3 分間再試行を続けます。拒否がそれより長く続くと Claude Code は切断し、その理由として拒否したもの（ネットワークエッジ、または自分のネットワーク上のプロキシ、VPN、ファイアウォール）が示されます。
 * **長時間のネットワーク障害**: マシンがスリープしていないのにネットワークに到達できない場合、次に行うことはモードによって異なります。
   * **サーバーモード**: Claude Code は約 10 分後に諦め、`claude remote-control` プロセスが終了します。サーバーを再起動するには、[サーバー停止後にセッションを再開する](#resume-sessions-after-stopping-the-server)を参照してください。
-  * **対話型セッション**: ローカルで作業を続けてください。Claude Code は障害が続く間再試行を続け、ネットワークが復旧すると自動的に再接続します。
+  * **対話型セッション**: ローカルで作業を続けてください。ターミナルに Remote Control の失敗が表示されるまで、Claude Code は再試行を続け、ネットワークが復旧すると自動的に再接続します。ターミナルに失敗が表示された場合は、ネットワークが復旧するまで待ってから、[失敗後に再接続する手順](#session-ended-elsewhere)に従ってください。
 * **ダウンロードされない添付ファイル**: スマートフォンやブラウザから添付したファイルをマシンにダウンロードできない場合でも、Claude はメッセージとダウンロードできたファイルを受け取ります。欠けているファイルの代わりに、Claude Code は `[1 of 3 attachments did not arrive]` のような注記をメッセージに追加します。
 * **プレゼンスハートビートの失敗**: 対話型セッションが `could not reach the Remote Control server for about 30 minutes` で切断された場合は、`/remote-control` を実行して再接続してください。
 * **転送されたダイアログの有効期限**: Claude Code は、権限プロンプトと `AskUserQuestion` の質問を、回答するまで開いたままにします。安全性による拒否の後に表示されるモデル選択プロンプトなど、別の種類のダイアログを Claude Code がリモートセッションに転送した場合は、デフォルトで 5 分間待機した後、ダイアログを閉じて、そのダイアログの何もしないデフォルトで続行します。期限を調整または無効にするには、[`dialogExpiry`](https://code.claude.com/docs/ja/settings-reference#dialogexpiry) を設定してください。Claude Code v2.1.224 以降が必要です。

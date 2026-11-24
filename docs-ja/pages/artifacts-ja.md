@@ -78,15 +78,13 @@ Claude が公開できないと応答した場合、またはリンクなしで�
 Claude にページを修正するよう依頼するか、長時間実行されるタスクが進行状況に応じて再度公開するようにします。Claude は基になるファイルを編集し、同じ URL に再度公開します。
 
 ```text wrap theme={null}
-概要チャートの下に地域別の内訳を追加して再度公開します。
+Add a per-region breakdown below the summary chart and republish.
 ```
-
-ページを開いているすべてのユーザーは、その場で更新を確認できます。公開するたびにバージョンになり、ページヘッダーの **Share** コントロールから、ビューアーに表示するバージョンを選択できます。
 
 別のセッションからアーティファクトを更新するには、Claude にその URL を指定するか、[`/artifacts`](#find-an-artifact-again) で添付します。どちらもない場合、新しいセッションは既存のアーティファクトを更新する代わりに、新しいアーティファクトを作成します。
 
 ```text wrap theme={null}
-https://claude.ai/code/artifact/5fbea6f3-... を本日の数値で更新します。
+Update https://claude.ai/code/artifact/5fbea6f3-... with today's numbers.
 ```
 
 ### ワンステップのアーティファクト更新をオフにする

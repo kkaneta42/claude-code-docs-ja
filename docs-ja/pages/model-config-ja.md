@@ -369,15 +369,15 @@ Claude Code がユーザーに代わって行うモデル変更も、同じ方�
 * **`model`**: セッション開始時の初期モデル選択を設定します
 * **`ANTHROPIC_DEFAULT_SONNET_MODEL`** / **`ANTHROPIC_DEFAULT_OPUS_MODEL`** / **`ANTHROPIC_DEFAULT_HAIKU_MODEL`** / **`ANTHROPIC_DEFAULT_FABLE_MODEL`**: `sonnet`、`opus`、`haiku`、`fable` エイリアスが何に解決されるか、および[アカウントタイプのデフォルト](#default-model-setting)がどのバージョンを使用するかを制御します
 
-この例では、ユーザーを Sonnet 4.5 で開始させ、ピッカーを Sonnet と Haiku に制限し、Default がティアのデフォルトではなく許可リスト上のモデルに解決されるようにします。
+この例では、ユーザーを Sonnet 5 で開始させ、ピッカーを Sonnet 5.x と Haiku に制限し、Default が許可リスト上のモデルに解決されるようにします。
 
 ```json theme={null}
 {
-  "model": "claude-sonnet-4-5",
-  "availableModels": ["claude-sonnet-4-5", "haiku"],
+  "model": "claude-sonnet-5",
+  "availableModels": ["claude-sonnet-5", "haiku"],
   "enforceAvailableModels": true,
   "env": {
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-5"
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5"
   }
 }
 ```
@@ -685,7 +685,7 @@ Claude Code はユーザー設定の [`modelSettings`](https://code.claude.com/d
 >
 > [Remote Control](https://code.claude.com/docs/ja/remote-control.md#what-connected-devices-see) で接続したスマートフォンやブラウザの effort コントロールから選んだレベルは、そのセッションにのみ適用されます。
 
-[`-p` 実行](https://code.claude.com/docs/ja/headless)で `/effort` を使ってレベルを設定した場合、Claude Code はそのセッションにのみ適用し、デフォルトとしては保存しません。
+[`-p` 実行](https://code.claude.com/docs/ja/headless)で `/effort` を使ってレベルを設定した場合、Claude Code はそのセッションにのみ適用します。
 
 `/effort` スライダーには **Ultracode** トグルもあります。Ultracode はモデルの effort レベルではなく Claude Code の設定です。オンにすると、Claude はセッションの effort レベルにかかわらず、本格的なタスクに対して[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)をオーケストレーションします。永続的に設定できる場所については、[`ultracode`](https://code.claude.com/docs/ja/settings-reference#ultracode) 設定を参照してください。
 

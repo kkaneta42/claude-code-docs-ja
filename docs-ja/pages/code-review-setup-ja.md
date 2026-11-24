@@ -6,9 +6,9 @@
 
 > Claude 組織で Code Review をオンにします。GitHub を接続し、Claude GitHub App をインストールし、リポジトリを選択して、レビューを実行するタイミングを設定します
 
-Claude 組織の Owner は、claude.ai の [**Admin settings > Claude Code**](https://claude.ai/admin-settings/claude-code#code-review) で Code Review をオンにします。レビューは Anthropic のインフラストラクチャ上で実行されるため、リポジトリにワークフローファイルを追加する必要はありません。
+Claude 組織の Owner は、claude.ai の [**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) で Code Review をオンにします。レビューは Anthropic のインフラストラクチャ上で実行されるため、リポジトリにワークフローファイルを追加する必要はありません。
 
-設定後は、各リポジトリでレビューの綿密さと実行タイミングを選択します。レビューレベルが高いほど、またレビューの実行頻度が高いほど費用は増えます。[Code Review のコスト](https://code.claude.com/docs/ja/code-review-costs.md#pricing)を参照してください。
+設定後は、Owner が各リポジトリでレビューの綿密さと実行タイミングを選択します。レビューレベルが高いほど、またレビューの実行頻度が高いほど費用は増えます。[Code Review のコスト](https://code.claude.com/docs/ja/code-review-costs.md#pricing)を参照してください。
 
 ## Code Review をオンにするために必要なもの
 
@@ -22,11 +22,11 @@ Claude 組織の Owner は、claude.ai の [**Admin settings > Claude Code**](ht
 
 ## Code Review をオンにする
 
-**1. Allow code review スイッチをクリックする**
+**1. Review の下のスイッチをオンにする**
 
-[**Admin settings > Claude Code**](https://claude.ai/admin-settings/claude-code#code-review) の **Code review** セクションに移動し、**Allow code review** スイッチをクリックします。
+[**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) に移動し、**Review** の下のスイッチをオンにします。**Turn on Code review** ダイアログで **Turn on** をクリックします。
 
-ダイアログが表示されずに Code Review がすぐにオンになった場合、組織ではすでに Claude GitHub App がリンクされているか、リポジトリが追加されています。[リポジトリをさらに追加する](#add-more-repositories)に進み、その後最後の手順に戻ってください。
+組織ですでに Claude GitHub App がリンクされているか、リポジトリが追加されている場合は、他のダイアログは表示されず、Code Review がオンになります。[リポジトリをさらに追加する](#add-more-repositories)に進み、その後最後の手順に戻ってください。
 
 **2. GitHub アカウントを接続する**
 
@@ -49,9 +49,11 @@ Claude 組織の Owner は、claude.ai の [**Admin settings > Claude Code**](ht
 
 レビュー対象にするリポジトリを選択し、それらを追加するボタンをクリックします。このボタンは、2 つ選択した場合は **Add 2 repositories** と表示されます。リポジトリを追加するには、接続した GitHub アカウントでそのリポジトリへの書き込みアクセス権が必要です。[リポジトリは後から追加](#add-more-repositories)することもできます。
 
-**5. Finish をクリックする**
+**5. Turn on をクリックする**
 
-続いて **Code review is set up** ダイアログが表示されます。**Finish** をクリックすると Code Review がオンになります。それ以外の方法でダイアログを閉じた場合、リポジトリは追加されたままですが **Allow code review** はオフのままになるため、スイッチからオンにします。
+**Choose what Claude does on these repositories** ダイアログでは、**Code review** を選択したままにします。**Steward** が選択されていて変更できる場合は、これらのリポジトリで [PR Steward](https://code.claude.com/docs/ja/pr-steward.md) も使用したい場合を除き、選択を解除します。その後 **Turn on** をクリックします。このクリックによって Code Review がオンになります。
+
+それ以外の方法でダイアログを閉じた場合、リポジトリは追加されたままで、何もオンになりません。その場合に Code Review をオンにするには、もう一度 **Review** の下のスイッチを使用します。
 
 各リポジトリは最初、プッシュのたびにレビューする設定になっており、レビューの実行回数が最も多くなります。実行回数を減らすには、[レビューを実行するタイミングを設定](#set-when-reviews-run)してください。
 
@@ -65,7 +67,7 @@ Claude 組織の Owner は、claude.ai の [**Admin settings > Claude Code**](ht
 
 ## 組織のデフォルトを設定する
 
-Owner は、レビューの綿密さと実行頻度を決定します。どちらも [**Admin settings > Claude Code**](https://claude.ai/admin-settings/claude-code#code-review) の **Code review** セクションにあります。
+Owner は、レビューの綿密さと実行頻度を決定します。どちらも [**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) で設定します。Claude 組織のデフォルトのレビューレベルと、各リポジトリまたは [GitHub 組織全体](#cover-a-whole-github-organization)でレビューを実行するタイミングです。
 
 ### デフォルトのレビューレベルを設定する
 
@@ -92,10 +94,15 @@ Owner は、レビューの綿密さと実行頻度を決定します。どち�
 
 Manual は、特定のプルリクエストだけをレビュー対象にしたいトラフィックの多いリポジトリや、準備が整ったプルリクエストだけをレビューしたい場合に便利です。各選択肢が費用に与える影響の比較については、[レビューの実行頻度](https://code.claude.com/docs/ja/code-review-costs.md#how-often-reviews-run)を参照してください。
 
-設定を変更するには、**Repositories** テーブルでリポジトリの行の **Edit** をクリックし、**Review runs** の選択肢を選びます。選択は選んだ時点で保存され、テーブルの **Review runs** 列には Once per PR、Every push、Manual のいずれかの短縮表記で表示されます。
+[**Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) ページで設定を変更するには、**Repositories** テーブルでリポジトリの行の **Edit** をクリックし、**Review runs** の選択肢を選びます。
+
+![リポジトリの Edit ダイアログで Review runs メニューを開いた状態。Once after PR creation、選択されている After every push、Manual (@claude review) が一覧表示されている。](https://mintcdn.com/claude-code/cMjxXVBUSLLh9iVu/images/code-review-setup-review-runs-light.png?fit=max\&auto=format\&n=cMjxXVBUSLLh9iVu\&q=85\&s=fe7c63cddcc105ddf7bab4e10e104ba7)
+
+選択は選んだ時点で保存されます。**Repositories** テーブルの **Code review** 列には、Once per PR、Every push、Manual のいずれかの短縮表記で表示されます。
 
 * **ドラフトとフォークからのプルリクエスト**：どの選択肢を選んでも、[自動レビューではどちらもスキップされます](https://code.claude.com/docs/ja/code-review-pull-requests.md#review-drafts-and-pull-requests-from-forks)
 * **新しいリポジトリ**：**Add a repository** ダイアログから追加したリポジトリは **After every push** から始まります。その GitHub 組織が[組織全体として対象](#cover-a-whole-github-organization)になっている場合は、代わりにその組織の行の設定が適用されます。
+* **[Claude Approvals](https://code.claude.com/docs/ja/approvals.md) のポリシーファイル**：ポリシーファイルがあるリポジトリでは、この設定では開始されないレビューが[開始される場合があり](https://code.claude.com/docs/ja/approvals-setup.md#what-approvals-costs)、[自動レビューが停止する場合があります](https://code.claude.com/docs/ja/approvals-policy.md#advisory)
 
 ### ヒントコメントのオン/オフを切り替える
 
@@ -124,10 +131,12 @@ Manual は、特定のプルリクエストだけをレビュー対象にした�
 
 ### リポジトリをさらに追加する
 
-設定後にリポジトリを追加するには、**Code review** セクションの **Repositories** テーブルの上にある **Add** をクリックします。**Add a repository** ダイアログが開きます。リポジトリを選択し、追加用のボタンをクリックします。このボタンは、2 つ選択した場合は **Add 2 repositories** と表示されます。
+設定後にリポジトリを追加するには、[**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) の **Repositories** テーブルの上にある **Add** をクリックします。**Add a repository** ダイアログが開きます。リポジトリを選択し、追加用のボタンをクリックします。このボタンは、2 つ選択した場合は **Add 2 repositories** と表示されます。
 
+* **先に Connect GitHub ダイアログが開く**：[GitHub アカウントを接続する](#turn-on-code-review)の手順に従ってください。この手順は **Add a repository** が開いた状態で終わります
 * **リポジトリが一覧に表示されない**：[A repository isn't listed in Add a repository](https://code.claude.com/docs/ja/code-review-troubleshooting.md#a-repository-isn’t-listed-in-add-a-repository) を参照してください。
 * **GitHub 組織内のすべてのリポジトリを対象にしたい**：リポジトリを 1 つずつ選択する代わりに、[組織全体を対象にします](#cover-a-whole-github-organization)
+* **組織で初めて追加するリポジトリである**：続いて **Choose what Claude does on these repositories** ダイアログが表示されます。[Turn on をクリックする](#turn-on-code-review)の手順と同様にチェックボックスを設定し、ダイアログのボタンをクリックします。このボタンは **Turn on** または **Done** と表示されます。いずれの場合も、その後 Code Review はオンになります。
 
 ### GitHub 組織全体を対象にする
 
@@ -148,12 +157,14 @@ GitHub 組織内のすべてのリポジトリで Code Review をオンにする
 
 ### Code Review をオフにする、またはリポジトリを削除する
 
-[**Admin settings > Claude Code**](https://claude.ai/admin-settings/claude-code#code-review) の **Code review** セクションで、停止したい対象に応じたコントロールを選択します。
+[**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-code#code-review) で、停止したい対象に応じたコントロールを選択します。
 
 * **1 つのリポジトリ（一覧には残す）**：その行の **Edit** をクリックし、**Code review** をオフにします。テーブルではリポジトリが Off と表示されます。
-* **1 つのリポジトリ（削除する）**：その行の **Edit** をクリックし、ダイアログ下部の **Remove repository** をクリックします。そのリポジトリでのレビューは停止し、別の Claude 組織がそのリポジトリを設定できるようになります。リポジトリの GitHub 組織が組織全体として対象になっている間は削除できないため、代わりに **Code review** スイッチをオフにしてください。
+* **1 つのリポジトリ（削除する）**：その行の **Edit** をクリックし、ダイアログ下部の **Remove repository** をクリックします。その後、別の Claude 組織がそのリポジトリを設定できるようになります。リポジトリの GitHub 組織が組織全体として対象になっている間は削除できないため、代わりに **Code review** スイッチをオフにしてください。
 * **GitHub 組織全体**：組織の行の **Edit** をクリックし、**Off** を選択します。これにより、その組織内で 1 つずつ追加したリポジトリもオフになります。
-* **すべて**：**Allow code review** をオフにします。どのリポジトリでも新しいレビューは開始されず、リポジトリの一覧は保持されるため、後で再びオンにできます。
+* **すべて**：**Review** の下にあるスイッチをオフにします。リポジトリの一覧は保持されるため、後でスイッチを再びオンにできます。
+
+リポジトリの **Code review** スイッチがオフの場合や、**Review** の下にあるスイッチがオフの場合でも、[Claude Approvals](https://code.claude.com/docs/ja/approvals-setup.md#what-approvals-costs) のポリシーによって課金対象のレビューが開始されることがあります。これを停止するには、ポリシーを変更するか、[Approvals をオフにします](https://code.claude.com/docs/ja/approvals-setup.md#turn-off-approvals)。これらのレビューには Code Review の支出上限が適用されます。
 
 ## 関連リソース
 

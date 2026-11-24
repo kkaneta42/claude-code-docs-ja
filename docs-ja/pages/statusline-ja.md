@@ -163,7 +163,19 @@ Claude Code は更新を 300ms でデバウンスするため、急速な変更�
 
 ### ターミナルに出力をサイズ調整する
 
-Claude Code はスクリプトの出力をキャプチャするため、ターミナルに直接接続しません。そのため、`tput cols` と言語レベルの幅検出はスクリプト内からターミナルサイズを読み取ることができません。代わりに `COLUMNS` および `LINES` 環境変数を読み取ってください。Claude Code はスクリプトを実行する前に、これらを現在のターミナルサイズに設定します。
+ステータスラインをターミナルに合わせるには、Claude Code がスクリプトに渡すサイズを読み取ります。Claude Code は幅を `COLUMNS` 環境変数に、高さを `LINES` に設定し、[スクリプトを実行する](#when-the-status-line-updates)たびに両方を更新します。`stty size` のようにターミナルに直接問い合わせる呼び出しは、スクリプトがターミナルに接続されていないため失敗することがあります。
+
+行が `…` で切り詰められないようにするには、行の幅をターミナルより少なくとも 4 列狭くしてください。この 4 列は、Claude Code が両側に追加する余白のためのスペースです。
+
+次の Bash の例では、出力の最大幅を計算します：
+
+```bash theme={null}
+max_width=$((COLUMNS - 4))
+```
+
+80 列のターミナルでは、`max_width` は 76 になります。[`padding`](#manually-configure-a-status-line) を設定している場合は、その値の 2 倍も `max_width` から差し引いてください。
+
+行の幅を測るときは、📁 のような絵文字を 2 列として数えてください。
 
 ## 利用可能なデータ
 
@@ -205,7 +217,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 | `agent.name` | `--agent` フラグで実行している場合、またはエージェント設定が構成されている場合のエージェント名 |
 | `pr.number`, `pr.url` | 現在のブランチのオープンなプルリクエスト。フッターの PR バッジを反映します。GitLab リモートを持つリポジトリでは、Claude Code は代わりにブランチのオープンな[マージリクエスト](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests)からこれらのフィールドを設定するため、`pr.number` はマージリクエスト番号になります。マージリクエストのデータには Claude Code v2.1.234 以降が必要です。git リポジトリ内にいない場合、プルリクエストまたはマージリクエストが見つかるまで、あるいはそれがマージまたはクローズされた後は存在しません |
 | `pr.review_state` | オープンな PR のレビューステータス：`approved`、`pending`、`changes_requested`、または `draft`。`pr` が存在する場合でも、独立して存在しないことがあります |
-| `pr.kind` | `pr` が [GitLab マージリクエスト](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests)を表す場合は `mr`。GitHub プルリクエストでは存在しないため、このフィールド以前に書かれたスクリプトも引き続き動作します。マージリクエストの場合、Claude Code は GitLab がマージ可能と報告したときに `review_state` を `approved` に、その他のオープン状態では `pending` に、ドラフトでは `draft` に設定します。Claude Code v2.1.234 以降が必要です |
+| `pr.kind` | `pr` が [GitLab マージリクエスト](https://code.claude.com/docs/ja/interactive-mode.md#gitlab-merge-requests)を表す場合は `mr`。GitHub プルリクエストでは存在しません。マージリクエストの場合、Claude Code は GitLab がマージ可能と報告したときに `review_state` を `approved` に、その他のオープン状態では `pending` に、ドラフトでは `draft` に設定します。Claude Code v2.1.234 以降が必要です |
 | `worktree.name` | アクティブな worktree の名前。セッションが [worktree セッション](https://code.claude.com/docs/ja/worktrees.md)にある間のみ存在します |
 | `worktree.path` | worktree ディレクトリへの絶対パス |
 | `worktree.branch` | worktree の Git ブランチ名（例：`"worktree-my-feature"`）。フックベースの worktree では存在しません |
@@ -367,7 +379,7 @@ Claude Code は、stdin 経由で以下の JSON フィールドをスクリプ�
 
 キャッシュフィールドの意味と課金方法については、[キャッシュパフォーマンスの確認](https://code.claude.com/docs/ja/prompt-caching.md#check-cache-performance)を参照してください。
 
-`used_percentage` フィールドは入力トークンのみから計算されます：`input_tokens + cache_creation_input_tokens + cache_read_input_tokens`。`output_tokens` は含まれません。
+`used_percentage` フィールドは入力トークンのみから計算されます：`input_tokens + cache_creation_input_tokens + cache_read_input_tokens`。
 
 `current_usage` からコンテキストの割合を手動で計算する場合は、`used_percentage` と一致させるために同じ入力のみの計算式を使用してください。
 
@@ -1165,4 +1177,4 @@ Claude Code は、スクリプトが終了コード 0 で終了した後にの�
 
 * MCP サーバーエラーおよび自動更新などのシステム通知は、行の右側に表示されます。コンテキスト低警告などの一時的な通知もこの領域を循環します。
 * 詳細モードを有効にすると、この領域にトークンカウンターが追加されます。これは最後の API レスポンスが報告したコンテキストのサイズを示すもので、[スピナーの横に表示されるターンごとのカウント](https://code.claude.com/docs/ja/costs.md#read-the-token-count-beside-the-spinner)ではありません
-* 狭いターミナルでは、これらの通知がステータスラインの出力を切り詰める可能性があります
+* 通知がステータスラインの横に収まらない場合、通知は下の行に移動します

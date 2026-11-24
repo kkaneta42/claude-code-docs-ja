@@ -8,7 +8,7 @@
 
 Code Review を使用すると、Claude が GitHub リポジトリのプルリクエストをレビューします。複数のエージェントが各変更を周囲のコードとあわせて読み込み、ロジックエラー、セキュリティ脆弱性、壊れたエッジケースなどの問題を探します。検証ステップでは、結果を報告する前にコードと照らし合わせて確認します。
 
-結果は該当する行へのインラインコメントとして届き、[重大度](https://code.claude.com/docs/ja/code-review-pull-requests.md#severity-levels)でランク付けされ、プルリクエストには概要とチェック実行が追加されます。レビューがプルリクエストを承認またはブロックすることはないため、マージの判断はチームに委ねられたままです。
+結果は該当する行へのインラインコメントとして届き、[重大度](https://code.claude.com/docs/ja/code-review-pull-requests.md#severity-levels)でランク付けされ、プルリクエストには概要とチェック実行が追加されます。レビュー自体がプルリクエストを承認またはブロックすることはありません。[Claude Approvals](https://code.claude.com/docs/ja/approvals.md) のポリシーファイルでレビュー結果を使用しているリポジトリでは、その結果が承認としてカウントされます。
 
 ![4 段階のレビューの図。GitHub 上のプルリクエストが、Anthropic インフラストラクチャ上で並行して探索する複数のエージェントに渡されます。検証ステップで偽陽性が除外され、残った結果は重複排除されて重大度でランク付けされ、レビューはインラインコメント、概要、チェック実行を GitHub に投稿します。](https://mintcdn.com/claude-code/gLJVaPQEgKC8ZyUD/images/code-review-pipeline.svg?fit=max\&auto=format\&n=gLJVaPQEgKC8ZyUD\&q=85\&s=0351c96df9efa3105172eb00a672f130)
 

@@ -547,7 +547,7 @@ Claude Code は [`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings-r
 
 ### 仕組み
 
-自動メモリがオンの間、`MEMORY.md` の最初の 200 行、または最初の 25KB のいずれか先に来る方が、セッション開始時に読み込まれます。そのしきい値を超えるコンテンツはセッション開始時に読み込まれません。Claude は詳細なメモを別のトピックファイルに移動することで、`MEMORY.md` を簡潔に保ちます。
+自動メモリがオンの間、`MEMORY.md` の最初の 200 行、または最初の 25KB のいずれか先に来る方が、セッション開始時に読み込まれます。Claude は詳細なメモを別のトピックファイルに移動することで、`MEMORY.md` を簡潔に保ちます。
 
 Claude が `MEMORY.md` に書き込んだ後、Claude Code はファイルを 200 行および 25KB の読み込み制限に対して測定します。ファイルが制限に近い場合、Claude Code は Claude に短縮するよう促します。エントリごとに 1 行を保持し、詳細をトピックファイルに移動し、古いエントリをマージまたは削除します。ファイルが制限を超えている場合、書き込みは成功しますが、Claude Code は[Claude にインデックスを書き直すよう指示するエラー](https://code.claude.com/docs/ja/errors.md#memory-index-is-over-its-read-limit)を返します。次の読み込み時に制限を超えるすべてが削除されるためです。
 

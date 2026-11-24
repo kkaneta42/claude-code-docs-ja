@@ -40,7 +40,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **macOS、Linux、WSL：**
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.sh | bash
 > ```
 >
@@ -48,13 +48,13 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 >
 > **Windows PowerShell：**
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > irm https://claude.ai/install.ps1 | iex
 > ```
 >
 > **Windows CMD：**
 >
-> ```batch theme={null}
+> ```batch theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd
 > ```
 >
@@ -72,7 +72,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] Homebrew
 >
-> ```bash theme={null}
+> ```bash theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > brew install --cask claude-code
 > ```
 >
@@ -84,7 +84,7 @@ Claude Code をインストールするには、ターミナルを開いてシ�
 
 > [tab] WinGet
 >
-> ```powershell theme={null}
+> ```powershell theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null} theme={null}
 > winget install Anthropic.ClaudeCode
 > ```
 >
@@ -177,19 +177,13 @@ Claude Code には、Pro、Max、Ultra、Team、Enterprise、または Console �
 
 ## Claude Code を更新
 
-ネイティブインストールは自動的にバックグラウンドで更新されます。[リリースチャネルを構成](#configure-release-channel)して、更新をすぐに受け取るか遅延安定スケジュールで受け取るかを制御することも、[自動更新を完全に無効にする](#disable-auto-updates)こともできます。Homebrew、WinGet、および[Linux パッケージマネージャー](#install-with-linux-package-managers)インストールは手動更新が必要です。
+ネイティブインストールは自動的にバックグラウンドで更新されます。[リリースチャネルを構成](#configure-release-channel)して、更新をすぐに受け取るか遅延安定スケジュールで受け取るかを制御することも、[自動更新を完全に無効にする](#disable-auto-updates)こともできます。Homebrew、WinGet、および[Linux パッケージマネージャー](#install-with-linux-package-managers)インストールはデフォルトでは手動更新が必要です。
 
 ### 自動更新
 
 Claude Code は起動時と実行中に定期的に更新をチェックします。更新はバックグラウンドでダウンロードおよびインストールされ、次に Claude Code を起動するときに有効になります。
 
 シェルで `claude doctor` を実行すると、Claude Code が記録した最後の更新試行の結果を確認できます。ネイティブインストールで失敗した試行が報告された場合の対処方法については、[セッションフッターの `Auto-update failed`](https://code.claude.com/docs/ja/troubleshoot-install#auto-update-failed)を参照してください。
-
-macOS と Linux では、ネイティブインストーラーは `~/.local/bin/claude` のランチャーを `~/.local/share/claude/versions/` へのシンボリックリンクとして管理します。そのランチャーを独自のスクリプトまたはシンボリックリンクに置き換えた場合、自動更新と `claude update` はそれをそのまま保持します。新しいバージョンは引き続き `versions/` ディレクトリの下にインストールされ、ランチャーはどのバージョンを実行するかを決定します。
-
-カスタムランチャーを使用する場合、Claude Code はランチャーがどのバージョンを必要とするかを判断できないため、インストール済みのすべてのバージョンをディスク上に保持します。`claude doctor` はネイティブインストーラーが作成しなかったランチャーを報告します。
-
-Claude Code にランチャーを再度管理させるには、`~/.local/bin/claude` を削除して `claude update` を実行します。
 
 npm グローバルインストールが npm グローバルディレクトリが書き込み可能でないため自動更新できない場合、Claude Code は起動時に 1 回限りの通知を表示し、`claude doctor` は利用可能な修正を一覧表示します。詳細については、[インストール中の権限エラー](https://code.claude.com/docs/ja/troubleshoot-install.md#permission-errors-during-installation)を参照してください。
 
@@ -204,6 +198,32 @@ npm グローバルインストールが npm グローバルディレクトリ�
 > **既知の問題**: Claude Code は、新しいバージョンがこれらのパッケージマネージャーで利用可能になる前に更新を通知する場合があります。アップグレードが失敗した場合は、しばらく待ってからもう一度試してください。
 >
 > Homebrew はアップグレード後、古いバージョンをディスク上に保持します。`brew cleanup` を定期的に実行してディスク容量を回収します。
+
+#### カスタムランチャー
+
+macOS と Linux では、ネイティブインストーラーは `~/.local/bin/claude` のランチャーを `~/.local/share/claude/versions/` へのシンボリックリンクとして管理します。これを独自のスクリプトに置き換えた場合、そのスクリプトは自動更新や `claude update` の後もそのまま残ります。新しいバージョンは引き続き `versions/` の下にインストールされますが、実行されるのはランチャーが起動するバージョンのままです。
+
+カスタムランチャーを使用する場合、Claude Code はランチャーがどのバージョンを必要とするかを判断できないため、インストール済みのすべてのバージョンをディスク上に保持します。`claude doctor` は、ランチャーが `was not created by the native installer` であると報告します。
+
+#### 管理対象のランチャーを復元
+
+Claude Code に `~/.local/bin/claude` を再度管理させるには、カスタムランチャーをインストール済みのバージョンへのシンボリックリンクに置き換えます。
+
+1. ランチャーを残しておきたい場合は、`~/.local/bin/claude` を別のフォルダーにコピーします。手順 3 で上書きされます。
+
+2. シェルで、インストール済みのバージョンを一覧表示します。
+
+   ```bash theme={null}
+   ls ~/.local/share/claude/versions/
+   ```
+
+3. シンボリックリンクを作成します。`VERSION` には、一覧にあるバージョン番号を使用します。
+
+   ```bash theme={null}
+   ln -sfn ~/.local/share/claude/versions/VERSION ~/.local/bin/claude
+   ```
+
+4. `claude doctor` を実行し、ランチャーに関する警告が表示されなくなったことを確認します。
 
 ### リリースチャネルを構成
 
@@ -481,7 +501,9 @@ npm インストールをアップグレードするには、`npm install -g @an
 * **古いバージョンは、どのマシンでも実行されている可能性がなくなってから削除する**: マシンは他のマシンで実行中のプロセスを確認できないため、削除前に実行中のプロセスを確認するだけでは不十分です。
 * **Claude Code 自体の更新をオフにする**: [`DISABLE_UPDATES`](https://code.claude.com/docs/ja/env-vars) を設定し、独自のツールで新しいバージョンをインストールします。そうしないと、あるマシンでの npm インストールの自動更新が同じインプレースアップグレードを実行し、他のマシン上のセッションが実行中のバイナリを削除してしまいます。ユーザーは引き続き `claude update` や `claude install` を実行できるため、`DISABLE_AUTOUPDATER` を設定するだけでは不十分です。[自動更新を無効にする](#disable-auto-updates)を参照してください。
 
-ネイティブインストーラーは `~/.local/share/claude/versions/` から古いバージョンを自動的に削除します。このディレクトリが共有ストレージ上にある場合、この点が問題になります。ランチャーが指しているバージョンと、同じマシン上のセッションが実行中のバージョンに加えて、最新の 2 つのバージョンを保持し、残りを削除します。削除されたバージョンを実行している別のマシン上のセッションは、そのバイナリを失います。[カスタムランチャー](#auto-updates)を使用する場合、Claude Code はインストールされたすべてのバージョンを保持し、クリーンアップはユーザーに任されます。
+ネイティブインストーラーは `~/.local/share/claude/versions/` から古いバージョンを自動的に削除します。このディレクトリが共有ストレージ上にある場合、この点が問題になります。ランチャーが指しているバージョンと、同じマシン上のセッションが実行中のバージョンに加えて、最新の 2 つのバージョンを保持し、残りを削除します。
+
+削除されたバージョンを実行している別のマシン上のセッションは、そのバイナリを失います。[カスタムランチャー](#custom-launchers)を使用する場合、Claude Code はインストールされたすべてのバージョンを保持し、クリーンアップはユーザーに任されます。
 
 ### バイナリ整合性とコード署名
 
@@ -562,7 +584,7 @@ Anthropic のキーがマニフェストに署名したことを確認するに�
 
 #### プラットフォームコード署名
 
-署名付きマニフェストに加えて、個別のバイナリはサポートされている場所でプラットフォーム固有のコード署名を実行します。
+署名付きマニフェストに加えて、個別のバイナリには、サポートされている場合はプラットフォーム固有のコード署名が付与されています。
 
 * **macOS**: "Anthropic PBC" によって署名され、Apple によって公証されています。`codesign --verify --verbose ./claude` で検証します。
 * **Windows**: "Anthropic, PBC" によって署名されています。`Get-AuthenticodeSignature .\claude.exe` で検証します。
