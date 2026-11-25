@@ -126,7 +126,7 @@ v2.1.217 より前では、すべての変数は独立してキーごとの設�
 | `OTEL_LOG_TOOL_DETAILS` | ツールイベントとトレーススパン属性におけるツールパラメーターと入力引数のログ記録を有効にします。対象は Bash コマンド、MCP サーバー名とツール名、スキル名、ユーザーが作成したワークフロー名、ツール入力です。また、`user_prompt` イベントでのカスタムコマンド、プラグインコマンド、MCP コマンドの名前と、[コストおよびトークンのカウンター](#cost-counter)での実際のエージェント名、スキル名、プラグイン名、MCP サーバー名とツール名も有効にします（デフォルト: 無効）。Claude Desktop の組み込みサーバーについては、Claude Desktop が所有するセッションでは、このフラグがオフでも `tool_decision`/`tool_result` で `mcp_server_name`/`mcp_tool_name` が出力されます。この例外には Claude Code v2.1.214 以降が必要です | 有効にするには `1` |
 | `OTEL_LOG_TOOL_CONTENT` | [`tool.output` スパンイベント](#tool-output-span-event)でのツールコンテンツのログ記録を有効にします（デフォルト: 無効）。スパン属性は[独自のゲート](#new-context-gates)のもとでツールコンテンツを保持します。[トレース](#traces-beta)が必要です。コンテンツはコンテンツ上限（デフォルトで 60 KB）で切り詰められます | 有効にするには `1` |
 | `OTEL_LOG_MANAGED_SETTINGS` | 秘匿化された管理設定と、秘匿化前の設定の SHA-256 ダイジェストを[管理設定の解決](#managed-settings-resolved-event)イベントに追加します（デフォルト: 無効）。プロジェクト設定またはローカル設定の値ではオンになりません。Claude Code v2.1.274 以降が必要です | 有効にするには `1` |
-| `OTEL_LOG_RAW_API_BODIES` | Anthropic Messages API のリクエストとレスポンスの完全な JSON を `api_request_body` / `api_response_body` ログイベントとして出力します（デフォルト: 無効）。ボディには会話履歴全体が含まれます。これを有効にすることは、`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_DETAILS`、`OTEL_LOG_TOOL_CONTENT` によって公開されるすべての内容への同意を意味します | コンテンツ上限（デフォルトで 60 KB）で切り詰められたインラインのボディには `1`、切り詰められていないボディをディスクに保存し、イベントに `body_ref` ポインターを含めるには `file:<dir>` |
+| `OTEL_LOG_RAW_API_BODIES` | Anthropic Messages API のリクエストとレスポンスの完全な JSON を `api_request_body` / `api_response_body` ログイベントとして出力します（デフォルト: 無効）。ボディには会話履歴全体が含まれる場合があります。これを有効にすることは、`OTEL_LOG_USER_PROMPTS`、`OTEL_LOG_TOOL_DETAILS`、`OTEL_LOG_TOOL_CONTENT` によって公開されるすべての内容への同意を意味します | コンテンツ上限（デフォルトで 60 KB）で切り詰められたインラインのボディには `1`、切り詰められていないボディをディスクに保存し、イベントに `body_ref` ポインターを含めるには `file:<dir>` |
 | `CLAUDE_CODE_OTEL_CONTENT_MAX_LENGTH` | コンテンツ上限: モデルの応答、ツールコンテンツ、システムプロンプト、生の API ボディなど、コンテンツを保持する属性の最大長（切り詰めマーカーを含む、UTF-16 コード単位、デフォルト: 61440、つまり 60 KB）。デフォルト値は属性値を 64 KB に制限するバックエンドに合わせたサイズです。バックエンドがより大きな値を受け付ける場合にのみ引き上げるか、テレメトリ量を削減するために引き下げてください。OpenTelemetry SDK の属性上限である `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` またはその logrecord 版や span 版のいずれかがより小さく設定されている場合、Claude Code はその小さい値で切り詰め、`[TRUNCATED ...]` マーカーが SDK の上限内に収まるようにします | `262144` |
 | `OTEL_RESOURCE_INCLUDE_HOST` | メトリクス、イベント、トレースのリソース属性にマシンの名前と ID を追加します（デフォルト: 無効）。[セッションが実行されたマシンを特定する](#identify-the-machine-a-session-ran-on)を参照してください。Claude Code v2.1.326 以降が必要です | 有効にするには `1` |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | メトリクスのテンポラリティ設定（デフォルト: `delta`）。バックエンドが累積テンポラリティを想定している場合は `cumulative` に設定します | `delta`, `cumulative` |
@@ -323,7 +323,7 @@ MCP ツール、WebFetch、WebSearch も、Claude Code v2.1.283 以降ではこ�
 Claude Code はツール呼び出しが正常に戻ったときにこのイベントを書き込むため、エラーを発生させた呼び出しは、ツールにかかわらず何も記録しません。正常に戻った呼び出しのうち、次の場合は `tool.output` イベントを記録しません。
 
 * Read、Edit、Write、Bash、WebFetch、WebSearch、MCP ツール以外のツールの呼び出し
-* ファイルのテキスト以外を返す Read（画像、PDF、内容が変更されていないファイルの再読み込みなど）
+* ファイルのテキスト以外を返す Read（画像や PDF など）
 * `OTEL_LOG_TOOL_DETAILS=1` も設定していない場合の Edit または Write の呼び出し
 * 待機中のメッセージが Claude に届くよう、実行中に Claude Code がバックグラウンドに移した WebFetch または WebSearch の呼び出し。後から届く結果も記録されません。Claude Code が呼び出しを移すタイミングについては、ターミナルの場合は[キューに入れた内容を Claude Code が送信するタイミング](https://code.claude.com/docs/ja/interactive-mode.md#when-claude-code-sends-what-you-queued)を、Agent SDK セッションの場合は [`priority` フィールド](https://code.claude.com/docs/ja/agent-sdk/typescript#sdkusermessage)を参照してください
 
@@ -801,7 +801,7 @@ Claude Code は、OpenTelemetry のログ/イベントを介して次のイベ�
 | - | - |
 | `prompt.id` | 単一のユーザープロンプトの処理中に生成されたすべてのイベントを関連付ける UUID v4 識別子 |
 | `event.sequence` | イベントを順序付けるための 0 から始まるカウンター。セッションごとではなく Claude Code プロセスごとにカウントされます |
-| `message.uuid` | セッションのトランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保存されたメッセージの UUID。`assistant_response`、`api_response_body`、および `user_prompt` に含まれます。ただし、0 個または複数のメッセージを生成する可能性があるコマンドのディスパッチには含まれません。`assistant_response` と `api_response_body` では、これは応答の最後のトランスクリプトエントリであり、次のターンの `parentUuid` がこれにつながります。`api_response_body` では Claude Code v2.1.274 以降が必要です |
+| `message.uuid` | セッションのトランスクリプト（`~/.claude/projects/*/*.jsonl` ファイル）に保存されたメッセージの UUID。`assistant_response`、`api_response_body`、および `user_prompt` に含まれます。ただし、0 個または複数のメッセージを生成しうるコマンドのディスパッチでは含まれません。`api_response_body` と、[`tool_use_id` のない](#assistant-response-event) `assistant_response` イベントでは、これは応答の最後のトランスクリプトエントリであり、次のターンの `parentUuid` はここから連鎖します。`api_response_body` では Claude Code v2.1.274 以降が必要です |
 | `request_id` | サーバーが割り当てた API リクエストの ID。`request-id` レスポンスヘッダーから読み取られます。例: `req_011...`。[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md) のように `request-id` ヘッダーのないレスポンスでは、代わりに `x-amzn-requestid` ヘッダーから値を取得します。レスポンスにいずれかのヘッダーが含まれる場合、`api_request`、`api_error`、`api_refusal`、`assistant_response`、`api_response_body`、[`tool_result`](#tool-result-event)、[`tool_decision`](#tool-decision-event) に含まれます。`llm_request` トレーススパンの同じ属性と一致します。`x-amzn-requestid` からの取得には Claude Code v2.1.282 以降が必要です |
 | `client_request_id` | `x-client-request-id` リクエストヘッダーとして送信される、クライアントが生成した UUID。ファーストパーティの API 接続では `api_request` と `api_error` に含まれます。サードパーティのプロバイダーバックエンドの場合、およびリクエストが非ストリーミングのフォールバックで再試行された場合は含まれません。リクエストとそのレスポンスを対応付け、サーバーの `request_id` が生成されなかったタイムアウトなどの失敗時にも利用できます。`llm_request` トレーススパンの同じ属性と一致します |
 
@@ -813,7 +813,7 @@ Claude Code は、OpenTelemetry のログ/イベントを介して次のイベ�
 
 * `user_prompt`、`assistant_response`、`api_response_body` の `message.uuid`
 * API イベントの `request_id`。トランスクリプトのアシスタントエントリには `requestId` として保存されます
-* `tool_result` イベントと `tool_decision` イベントの `tool_use_id`、および `safety_event` イベント（[ターンの終了](#safety-event)に関するものを除く）の `tool_use_id`
+* `tool_result` と `tool_decision` イベント、ツールで送信されたメッセージの [`assistant_response`](#assistant-response-event) イベント、および[ターン終了](#safety-event)に関するものを除く `safety_event` イベントの `tool_use_id`
 
 #### ユーザープロンプトイベント
 
@@ -836,7 +836,12 @@ Claude Code は、OpenTelemetry のログ/イベントを介して次のイベ�
 
 #### アシスタント応答イベント
 
-モデルからテキストコンテンツを返す各 API リクエストの後に記録されます。応答のテキストブロックのみが含まれ、思考ブロックとツール使用ブロックは除外されます。
+`assistant_response` イベントには、API 応答のテキスト、または Claude がツールを呼び出してユーザーに書いたメッセージのいずれかが含まれます。どちらであるかは `tool_use_id` 属性で判別できます。
+
+* **テキストの返信（`tool_use_id` なし）**: モデルからテキストコンテンツを返す各 API リクエストの後にログに記録されます。応答のテキストブロックのみが含まれ、思考ブロックとツール使用ブロックは除外されます。
+* **ツールで送信されたメッセージ（`tool_use_id` あり）**: `response` には、`SendUserMessage` または Cowork の `mcp__cowork__send_user_message` の呼び出しが成功した場合のメッセージテキストが含まれます。Claude Code は、[`PostToolUse`](https://code.claude.com/docs/ja/hooks#posttooluse) フックが実行される前にこのイベントをログに記録します。Claude Code v2.1.332 以降が必要です。
+
+`tool_use_id` 付きの `assistant_response` イベントは、`response` で説明しているように応答テキストを含めている場合にのみ受信されます。
 
 **イベント名**: `claude_code.assistant_response`
 
@@ -849,8 +854,9 @@ Claude Code は、OpenTelemetry のログ/イベントを介して次のイベ�
 * `response_length`: 応答テキストの長さ（文字数）
 * `response`: 応答テキスト。コンテンツの上限（デフォルトでは 60 KB）で切り詰められます。デフォルトでは `<REDACTED>` に秘匿化されます。含めるには `OTEL_LOG_ASSISTANT_RESPONSES=1` を設定してください。`OTEL_LOG_ASSISTANT_RESPONSES` が設定されていない場合は、代わりに `OTEL_LOG_USER_PROMPTS` によって制御されるため、プロンプトのログ記録をオンにしたまま応答を秘匿化しておくには `OTEL_LOG_ASSISTANT_RESPONSES=0` を設定してください
 * `model`: モデル識別子（例: "claude-sonnet-5"）
-* `request_id`: API リクエスト ID。[イベント相関属性](#event-correlation-attributes)で説明しています
-* `message.uuid`: 応答の最後のトランスクリプトエントリの UUID。API の応答はコンテンツブロックごとに 1 つのトランスクリプトエントリとして保存されます。これはその最後のエントリであり、次のターンの `parentUuid` がこれにつながります。
+* `request_id`: API リクエスト ID。[イベント相関属性](#event-correlation-attributes)で説明しています。`tool_use_id` のあるイベントでは、呼び出しを含んでいた API レスポンスの ID です。そのレスポンスにテキストも含まれる場合、両方の種類のイベントが同じ `request_id` を共有します
+* `tool_use_id`: ツールで送信されたメッセージのイベントにのみ含まれます。呼び出しの[ツール結果イベント](#tool-result-event)と同じ値です
+* `message.uuid`: トランスクリプトエントリの UUID。API 応答は、コンテンツブロックごとに 1 つのトランスクリプトエントリとして保存されます。テキストの返信の場合、これは最後のエントリであり、次のターンの `parentUuid` はここから連鎖します。`tool_use_id` のあるイベントの場合、これはツール呼び出しを保持するエントリです。
 * `query_source`: リクエストを発行したサブシステム。例: `"repl_main_thread"`、`"compact"`、またはサブエージェント名
 
 #### ツール結果イベント
@@ -1566,13 +1572,13 @@ Claude Code v2.1.274 以降が必要です。
 * `managed_settings.trigger`: セッション開始時のイベントの場合は `"startup"`、セッションの後半で管理設定またはポリシーヘルパーの状態が変化した場合は `"change"`、管理設定のポリシーがセッションを停止した場合は `"refused"`。Claude Code は、最後に送信したイベントと属性が異なる場合にのみ `change` イベントを送信します。設定値の変更は、`OTEL_LOG_MANAGED_SETTINGS` がオフの場合でもカウントされます
 * `error.type`: Claude Code がセッションを停止した理由。`refused` イベントにのみ存在します:
   * `"helper_failed"`: [ポリシーヘルパーの実行が失敗した](https://code.claude.com/docs/ja/settings-reference.md#helper-failures)
-  * `"policy_invalid"`: 管理設定に Claude Code の起動を妨げるエラーが含まれているか、管理ソースが読み取り拒否以外の理由で読み込みに失敗したため、Claude Code が組織のログインやプロバイダーの強制を確認できない
-  * `"provider_not_allowed"`: セッションが、管理設定の [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) リストで許可されていない API プロバイダーを使用しようとしたか、許可されていないホストにプロバイダーのトラフィックを送信しようとした。Claude Code v2.1.285 以降が必要です
+  * `"policy_invalid"`: 管理設定に Claude Code の起動を妨げるエラーが含まれている、または読み取りの拒否以外の理由で管理ソースの読み込みに失敗したため、Claude Code が組織ログインやプロバイダーの強制を確認できない
+  * `"provider_not_allowed"`: セッションが、管理された [`allowedProviders`](https://code.claude.com/docs/ja/settings-reference#allowedproviders) リストで許可されていない API プロバイダーを使用しようとした、またはプロバイダーのトラフィックを許可されていないホストに送信しようとした。Claude Code v2.1.285 以降が必要です
   * `"consent_rejected"`: ユーザーがサーバー管理設定の[セキュリティ承認ダイアログ](https://code.claude.com/docs/ja/server-managed-settings.md#security-approval-dialogs)を拒否した
   * `"force_refresh_failed"`: [`forceRemoteSettingsRefresh`](https://code.claude.com/docs/ja/settings-reference#forceremotesettingsrefresh) が必要とする設定の取得に失敗した
   * `"gateway_rejected"`: [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)が管理設定の読み込みに HTTP 403 で応答した
-  * `"version_below_minimum"`: このバージョンの Claude Code が [`requiredMinimumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredminimumversion) より低いか、[`requiredMaximumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredmaximumversion) より高い
-  * `"_OTHER"`: Claude apps ゲートウェイの管理設定の読み込みが別の理由で失敗した
+  * `"version_below_minimum"`: この Claude Code のバージョンが [`requiredMinimumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredminimumversion) より低い、または [`requiredMaximumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredmaximumversion) より高い
+  * `"_OTHER"`: 専用の値がない原因。たとえば、別の理由で失敗したゲートウェイ設定の読み込みなど
 * `managed_settings.sources`: 少なくとも 1 つの[ポリシーキー](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を提供するすべての管理ソース。優先度の高い順に並び、`first-wins` のもとでキーが有効にならないソースも含まれます。値は、`"remote"` のほか、MDM または OS レベルのポリシーの場合は `"plist"` または `"hklm"`、管理設定ファイルとドロップインの場合は `"file"`、[埋め込みホスト](https://code.claude.com/docs/ja/managed-settings.md#let-an-embedding-host-add-policy)が設定を提供する場合は `"parent"`、Claude Code が [Windows HKCU レジストリ値](https://code.claude.com/docs/ja/managed-settings.md#where-each-mechanism-stores-the-policy)を[読み取る](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)場合は `"hkcu"` です。制御キーのみを含むソースや、Claude Code が読み取れなかったソースは一覧に含まれません。文字列の配列として出力され、ポリシーキーを提供する管理ソースがない場合は空になります
 * `managed_settings.source_behavior`: Claude Code が読み取った [`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) の値。`"first-wins"` または `"merge"`。どのソースもこのキーを設定していない場合は `"first-wins"`
 * `managed_settings.helper.state`: 選択された MDM またはファイルソースが設定するポリシーヘルパーの状態:
@@ -1876,7 +1882,10 @@ Claude Code は生のイベントストリームのみを出力します。異�
   * [コストとトークンのカウンター](#cost-counter)、および `api_request`、`api_error`、`api_refusal` イベントは、その帰属属性に実際のエージェント名、スキル名、プラグイン名、MCP サーバー名とツール名を保持します
   * `claude_code.tool` スパンは、`file_path` などの入力から派生した属性を保持します。詳細なベータトレースでは、[`tool_input`](#new-context-gates) 属性も保持します
 * ツールのコンテンツは、デフォルトではトレーススパンに記録されません。これを含めるには、`OTEL_LOG_TOOL_CONTENT=1` を設定します。すると、`claude_code.tool` スパンは、生のファイル内容、Bash コマンドの出力、および MCP ツール、WebFetch、WebSearch が返す内容を含む [`tool.output` スパンイベント](#tool-output-span-event)を保持します。これらは属性ごとにコンテンツ制限（デフォルトは 60 KB）で切り詰められます。MCP ツール、WebFetch、WebSearch の結果には Claude Code v2.1.283 以降が必要です。ツールのコンテンツは、[スパンごとにゲートが異なる `new_context`](#new-context-gates) を通じてもスパンに含まれます。必要に応じてテレメトリバックエンドでこれらの属性をフィルタリングまたは編集するよう設定してください
-* 生の Anthropic Messages API のリクエストボディとレスポンスボディは、デフォルトではログに記録されません。これらを含めるには、シェル、ユーザー設定、または管理設定で `OTEL_LOG_RAW_API_BODIES` を設定します。[プロジェクト設定とローカル設定](https://code.claude.com/docs/ja/settings-reference.md#variables-claude-code-ignores-in-env)では無視されます。ボディには、システムプロンプト、これまでのすべてのユーザーとアシスタントのターン、ツール結果を含む会話履歴全体が含まれるため、これを有効にすることは、他の `OTEL_LOG_*` コンテンツフラグで明らかになるすべての内容に同意することを意味します。Claude Code は、他の設定にかかわらず、これらのボディから Claude の拡張思考の内容を常に編集して除去します。設定する値によって、Claude Code がボディを配信する方法が決まります。
+* 生の Anthropic Messages API のリクエストボディとレスポンスボディは、デフォルトではログに記録されません。これらを含めるには、シェル、ユーザー設定、または管理設定で `OTEL_LOG_RAW_API_BODIES` を設定します。[プロジェクト設定とローカル設定](https://code.claude.com/docs/ja/settings-reference.md#variables-claude-code-ignores-in-env)では無視されます。
+
+  ボディには、システムプロンプト、これまでのすべてのユーザーとアシスタントのターン、ツール結果を含む会話履歴全体が含まれる可能性があります。これを有効にすることは、他の `OTEL_LOG_*` コンテンツフラグで明らかになるすべての内容に同意することを意味します。Claude Code は、他の設定にかかわらず、これらのボディから Claude の拡張思考の内容を常に秘匿化します。設定する値によって、Claude Code がボディを配信する方法が決まります。
+
   * `=1` の場合、Claude Code は API 呼び出しごとに `api_request_body` および `api_response_body` ログイベントを出力します。イベントの `body` 属性は JSON シリアライズされたペイロードを保持し、コンテンツ制限（デフォルトは 60 KB）で切り詰められます
   * `=file:<dir>` の場合、Claude Code は切り詰められていないボディをそのディレクトリ配下の `.request.json` ファイルと `.response.json` ファイルに書き込み、イベントはインラインのボディの代わりに `body_ref` パスを保持します。このディレクトリは、テレメトリストリーム経由ではなく、ログコレクターまたはサイドカーで送信してください。
 

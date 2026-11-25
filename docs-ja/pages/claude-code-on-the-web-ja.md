@@ -236,7 +236,7 @@ Teleport には claude.ai のサブスクリプション認証が必要です。
 
 * **API キーまたは Console アカウントでサインインしている**: シェルで `claude auth login` を実行し、claude.ai でサインインしてください
 * **エラーにプロバイダー名が表示される**: クラウドセッションはサードパーティプロバイダー経由では利用できません。[エラー表](#errors-when-sending-to-a-cloud-session)を参照してください
-* **すでに claude.ai でサインインしている**: 組織がクラウドセッションを無効にしている可能性があります
+* **組織経由で claude.ai にサインインしている**: [クラウドセッションがオンになっているか](https://code.claude.com/docs/ja/errors.md#cloud-sessions-are-disabled-by-your-organizations-policy)を [Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) に確認してください
 
 ## セッションの操作
 
@@ -285,7 +285,7 @@ Claude Code はこれらの差分を raw git blob コンテンツから計算す
 
 * **`/model`、`/effort`、`/color`、`/rename`**：ターミナルピッカーまたはスライダーを開く代わりに、引数として値を渡します。例えば `/model sonnet` のように使用します。引数形式は各コマンドの[利用可能性に関する注記](https://code.claude.com/docs/ja/commands.md#all-commands)に従います。
 * **`/fast`**：アカウントで[利用可能な場合](https://code.claude.com/docs/ja/fast-mode.md#requirements)、セッションの[ファストモード](https://code.claude.com/docs/ja/fast-mode.md#use-fast-mode-in-cloud-sessions)を切り替えます。セッションの環境で Claude Code v2.1.271 以降が必要です。
-* **`/config`**：ブラウザの claude.ai/code では、値を設定する代わりに **Settings > Code** または **Settings > Claude Code** を開きます。クラウドセッションの設定を変更するには、環境に[環境変数](https://code.claude.com/docs/ja/cloud-environments.md#set-environment-variables)を設定します。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)のスレッド以外で 1 つのリポジトリを持つセッションでは、代わりにキーをそのリポジトリの `.claude/settings.json` にコミットします。[クラウドセッションの設定](https://code.claude.com/docs/ja/settings.md#settings-in-cloud-sessions)には各セッションが読み込むものが記載されています。
+* **`/config`**：ブラウザの claude.ai/code では、値を設定する代わりに **Settings > Code** を開きます。クラウドセッションの設定を変更するには、環境に[環境変数](https://code.claude.com/docs/ja/cloud-environments.md#set-environment-variables)を設定します。[プロジェクト](https://code.claude.com/docs/ja/claude-projects.md)のスレッド以外で 1 つのリポジトリを持つセッションでは、代わりにキーをそのリポジトリの `.claude/settings.json` にコミットします。[クラウドセッションの設定](https://code.claude.com/docs/ja/settings.md#settings-in-cloud-sessions)には各セッションが読み込むものが記載されています。
 
 [プロジェクトのスレッド](https://code.claude.com/docs/ja/claude-projects.md#choose-models-and-let-claude-manage-context)以外のクラウドセッションでのコンテキスト管理の場合：
 
@@ -467,8 +467,8 @@ Claude は PR を解決する際に GitHub のレビューコメントスレッ�
 
 [claude.ai/code](https://claude.ai/code) からセッションを再度開いて、新しい VM をプロビジョニングしてください。
 
-* **復元されるもの**: 会話履歴
-* **復元されないもの**: VM が回収されたときにまだ実行中または保留中だったバックグラウンド作業。以下が含まれます。
+* **復元されるもの**: 会話履歴と、コネクタ上でまだ実行中の [MCP タスク](https://code.claude.com/docs/ja/mcp.md#mcp-task-results-in-the-cloud)の追跡
+* **復元されないもの**: VM が回収されたときにまだ実行中または保留中だったその他のバックグラウンド作業。以下が含まれます。
   * **シェルコマンド**: Claude Code は、どのコマンドが停止したかを Claude に伝えます。まだ必要なコマンドを再実行するよう Claude に依頼してください。
   * **サブエージェント**: Claude Code は、どのサブエージェントが停止したか、そしてそのうちどれを最初からやり直す代わりに[再開](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)できるかを Claude に伝えます。作業を続けるよう Claude に依頼してください。
   * **セッションスコープのスケジュールタスク**: [セッション内でスケジュールした](https://code.claude.com/docs/ja/scheduled-tasks.md)タスクや、次の反復を待っている `/loop` は、再度開いたセッションには引き継がれません。タスクを再度スケジュールするよう Claude に依頼するか、`/loop` を再度実行してループを再開してください。

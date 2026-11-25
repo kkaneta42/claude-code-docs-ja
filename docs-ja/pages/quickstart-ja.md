@@ -21,7 +21,7 @@
 > 以下のケースについては、他のページで説明しています：
 >
 > * **ターミナルを使用したことがない場合**：[ターミナルガイド](https://code.claude.com/docs/ja/terminal-guide)から始めてください
-> * **ターミナル以外の場所で Claude Code を使用したい場合**：Claude Code は[ウェブ](https://claude.ai/code)、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)、[VS Code](https://code.claude.com/docs/ja/vs-code.md) および [JetBrains IDE](https://code.claude.com/docs/ja/jetbrains.md)、[Slack](https://code.claude.com/docs/ja/slack.md)、および [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) と [GitLab](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用した CI/CD でも利用できます。[すべてのインターフェース](https://code.claude.com/docs/ja/overview.md#use-claude-code-everywhere)を参照してください。
+> * **ターミナル以外の場所で Claude Code を使用したい場合**：Claude Code は[ウェブ](https://claude.ai/code)、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)、[VS Code](https://code.claude.com/docs/ja/vs-code.md) および [JetBrains IDE](https://code.claude.com/docs/ja/jetbrains.md)、および [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) と [GitLab](https://code.claude.com/docs/ja/gitlab-ci-cd.md) を使用した CI/CD でも利用できます。[すべてのインターフェース](https://code.claude.com/docs/ja/overview.md#use-claude-code-everywhere)を参照してください。
 
 ## ステップ 1：Claude Code をインストールする
 

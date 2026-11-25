@@ -561,10 +561,10 @@ upstreams:
 | `region` | はい | AWS リージョン。ゲートウェイはこれからエンドポイントを `https://bedrock-mantle.<region>.api.aws/anthropic` として導出します。 |
 | `models` | はい | AWS アカウントに Mantle で付与されているモデル。`claude-haiku-4-5` のように、クライアントが送信する名前で指定します。これらのモデルのみがこのアップストリームに送信され、その他のモデルはすべて次のアップストリームにスキップされます。 |
 | `auth` | いいえ | [Amazon Bedrock](#amazon-bedrock) アップストリームの `auth` ブロックと同じキーを、同じルールで受け付けます。 |
-| `assume_role` | いいえ | このアップストリームのリクエストが経由するロール。[`bedrock` アップストリームの場合](#bedrock-in-another-aws-account)と同じキーを持ち、[開発者ごとの帰属](#per-developer-aws-cost-attribution)用の `session_name` も含みます。ロールには Mantle の IAM アクションを付与してください。Claude Code v2.1.318 以降を実行しているゲートウェイが必要です。それより前のゲートウェイは、起動時に `Unrecognized key(s) in object: 'assume_role'` で終了します。 |
+| `assume_role` | いいえ | このアップストリームのリクエストが経由するロール。[`bedrock` アップストリームの場合](#bedrock-in-another-aws-account)と同じキーを受け付け、[開発者ごとの帰属](#per-developer-aws-cost-attribution)用の `session_name` も含まれます。Claude Code v2.1.318 以降を実行しているゲートウェイが必要です。それより前のゲートウェイは、起動時に `Unrecognized key(s) in object: 'assume_role'` で終了します。 |
 | `base_url` | いいえ | 導出されたエンドポイントを上書きします。末尾の `/anthropic` パスは残してください。 |
 
-アップストリームの AWS ID に、推論とトークンカウント用の Mantle 独自の IAM アクションを付与してください。これらは [Mantle エンドポイントを使用する](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)に記載されています。
+[Mantle の IAM アクション](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)は、`assume_role` を設定している場合はそのロールに、設定していない場合はアップストリームの AWS ID に付与してください。
 
 ゲートウェイが認識しない Mantle モデル ID の場合は、トップレベルの [`models:`](#models) ブロックに、`upstream_model` でこのアップストリームの名前をその ID にマッピングするエントリを追加します。その後、そのエントリの `id` をこのアップストリームの `models` フィールドにも追加してください。
 

@@ -39,26 +39,27 @@ Code Mode は、関連する多数のツール呼び出しを必要とするタ�
 
 Code Mode をオンにする前に、次の制限を受け入れられるか確認してください。
 
-* **再開**: Code Mode のセッションは、ターミナルで Code Mode をオンにした状態でのみ再開できます
+* **再開**: Code Mode のセッションは、Code Mode をオンにした状態でのみ再開できます。Claude のサブスクリプションまたは Console アカウントで Code Mode のセッションを実行した後は、Amazon Bedrock などのクラウドプロバイダーでそのセッションを再開することはできません
 * **auto モード**: auto モードの分類器は、[各ツール呼び出しではなくコードをレビューします](#permission-checks)
 * **長時間実行されるコード**: [コードをバックグラウンドで実行できる](#long-running-code)場合を除き、完了するまで待つ必要があり、コードは 10 分後に停止します
-* **フック**: `PreToolUse` フックが完了しない場合（タイムアウト後など）に、[ツール呼び出しが拒否される](#tool-call-refused-by-a-hook)ことがあります
+* **フック**: デフォルトでは、`PreToolUse` フックが完了しない場合は[ツール呼び出しが拒否される](#tool-call-refused-by-a-hook)こと、フックがそれ以外の形で失敗した場合は[呼び出しが実行される可能性がある](#tool-call-ran-after-a-hook-failed)ことを想定してください
 * **利用できない機能**: [Remote Control](https://code.claude.com/docs/ja/remote-control.md)、[Claude in Chrome](https://code.claude.com/docs/ja/chrome.md)、[computer use](https://code.claude.com/docs/ja/computer-use.md) は使用できません
 * **セッションの移動**: セッションを Desktop アプリに移動したり、[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)に変えたりすることはできず、`/fork` でバックグラウンドのコピーを開始することもできません
 
 ## 要件
 
 * **バージョン**: Claude Code v2.1.323 以降（どちらの[リリースチャネル](https://code.claude.com/docs/ja/setup.md#configure-release-channel)でも可）。古いバージョンでは、理由 `it isn't open to your account yet` の表示の有無にかかわらず、Code Mode なしで起動します
-* **アカウント**: Claude のサブスクリプションまたは Console アカウント。ゲートウェイ、Amazon Bedrock、Claude Platform on AWS、Google Cloud の Agent Platform、Microsoft Foundry、[Claude Models on Google Cloud (Anthropic managed)](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md) を経由して Code Mode を使うことはできません
+* **アカウントまたはプロバイダー**: Claude のサブスクリプション、Console アカウント、または Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などの[クラウドプロバイダー](https://code.claude.com/docs/ja/feature-availability.md#availability-by-model-provider)。クラウドプロバイダーを使用する場合は、v2.1.331 以降が必要です。[ゲートウェイ](https://code.claude.com/docs/ja/gateways.md)経由や Claude for Government で Code Mode を使うことはできません。[Enterprise Admin Console でのサインイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code)を使ってクラウドプロバイダーに接続する場合は、Agent Platform、または [Mantle エンドポイント](https://code.claude.com/docs/ja/amazon-bedrock.md#use-the-mantle-endpoint)を使用しない Amazon Bedrock が必要です
 * **組織**: 組織が [HIPAA 構成](https://code.claude.com/docs/ja/hipaa-setup.md)や[ゼロデータ保持](https://code.claude.com/docs/ja/zero-data-retention.md)を使用していないこと
-* **モデル**: Claude Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable 5.2
+* **モデル**: Claude Opus 5.5、Sonnet 5.5、Haiku 5.5、または Fable 5.2。デプロイ名またはアプリケーション推論プロファイルでモデルを選択する場合は、その名前がこれらのモデルのいずれかを指しているかどうかを、その名前の管理者に確認してください
 * **サーフェス**: ターミナルでの対話型の `claude` セッション。Code Mode は VS Code パネル、Desktop アプリ、クラウドセッションでは動作しません
 * **エージェントチーム**: [エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)をオンにした状態で Code Mode を使用するには、v2.1.326 以降が必要です。チームメイトは、デフォルトの[インプロセス表示モード](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)では Code Mode で実行され、分割ペインでは Code Mode なしで起動します
+* **mod**: ツール呼び出しをフックする [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) と組み合わせて Code Mode を使用するには、v2.1.327 以降が必要です。`stable` チャネルを使用していて、アップデートでそのバージョンに到達しない場合は、[`latest` に切り替えてください](https://code.claude.com/docs/ja/setup#configure-release-channel)
 * **テレメトリ設定**: [機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)をオフにした状態、または [OpenTelemetry](https://code.claude.com/docs/ja/monitoring-usage.md) のイベントとメトリクスをオンにした状態で Code Mode を使用するには、v2.1.329 以降が必要です。[トレース](https://code.claude.com/docs/ja/monitoring-usage.md#traces-beta)は、どのバージョンでもオフのままにしてください
 * **インストール**: Claude Code の[ネイティブビルド](https://code.claude.com/docs/ja/setup.md)
 * **Windows**: [Git for Windows](https://git-scm.com/downloads/win) がインストールされていること
 
-また、API キーヘルパーなど、一部の設定がオンになっている場合も Code Mode を開始できません。それぞれの対処方法については、[Code Mode が起動しない](#code-mode-doesnt-start)を参照してください。
+また、Anthropic への直接接続での API キーヘルパーなど、一部の設定がオンになっている場合も Code Mode を開始できません。それぞれの対処方法については、[Code Mode が起動しない](#code-mode-doesnt-start)を参照してください。
 
 ## Code Mode を試す
 
@@ -66,7 +67,7 @@ Code Mode をオンにして Claude にタスクを与え、Claude が書いた�
 
 **1. バージョンを確認する**
 
-`claude --version` を実行します。バージョンが v2.1.323 より古い場合は、`claude update` を実行します。`stable` チャネルを使用していて、更新しても v2.1.323 に達しない場合は、`stable` が追いつくのを待つか、[`latest` に切り替えてください](https://code.claude.com/docs/ja/setup#configure-release-channel)。
+`claude --version` を実行します。バージョンが[セットアップに必要なバージョン](#requirements)より古い場合は、`claude update` を実行します。`stable` チャネルを使用していて、更新してもそのバージョンに達しない場合は、`stable` が追いつくのを待つか、[`latest` に切り替えてください](https://code.claude.com/docs/ja/setup#configure-release-channel)。
 
 **2. Code Mode をオンにして Claude Code を起動する**
 
@@ -125,9 +126,17 @@ Read every Markdown file in this project and list the links that point to local 
 >
 > 後で Code Mode のセッションを再開するには、`claude --continue` または `claude --resume` を実行するときに `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE` を `1` に設定したままにしてください。Code Mode がオフの場合、Claude Code はセッションの再開を拒否します。Code Mode なしで開始したセッションは、変数が設定されていても Code Mode なしで再開されます。
 
+### サブエージェントで Code Mode を使う
+
+[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)に `tools` リストがある場合は、サブエージェントが Code Mode を使用するように、リストに [`REPL`](https://code.claude.com/docs/ja/tools-reference) を追加します。
+
+```yaml theme={null}
+tools: Read, Bash, REPL
+```
+
 ### Code Mode をオフにする
 
-シェルと `~/.claude/settings.json` から `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE` を削除し、新しいセッションを開始します。変数を残したまま、どちらかの場所でその値を `0` に変更することもできます。一方の場所に `0` があれば、もう一方で `1` を設定していても Code Mode はオフのままです。
+シェル、`~/.claude/settings.json`、およびすべての `--settings` ファイルから `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE` を削除し、新しいセッションを開始します。変数を残したまま、いずれかの場所でその値を `0` に変更することもできます。いずれか 1 か所に `0` があれば、別の場所で `1` を設定していても Code Mode はオフのままです。
 
 ### 組織で Code Mode をブロックする
 
@@ -140,6 +149,8 @@ Read every Markdown file in this project and list the links that point to local 
   }
 }
 ```
+
+ユーザーがクラウドプロバイダー経由で接続できる場合は、[MDM または管理設定ファイル](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を通じてこの設定を配布してください。シェルまたはユーザー設定で `CLAUDE_CODE_USE_BEDROCK` などのプロバイダー変数を設定したユーザーは、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)を受信せずに Code Mode を開始できます。
 
 Code Mode のセッション中のユーザーは、Claude Code を終了または再起動するまでそのセッションにとどまります。その後、ユーザーは Code Mode なしで起動し、`0` が設定されている間は Code Mode のセッションを再開できません。管理設定からユーザーに対して Code Mode をオンにすることはできません。
 
@@ -159,7 +170,7 @@ Code Mode のセッション中のユーザーは、Claude Code を終了また�
 
 auto モードと `bypassPermissions` モードでは、コードは権限プロンプトなしで最初から最後まで実行できます。ただし、[どのモードでも自動承認されないアクション](https://code.claude.com/docs/ja/permission-modes.md#actions-no-mode-auto-approves)など、一部の呼び出しでは引き続きプロンプトが表示されます。
 
-コード内の各ツール呼び出しは、`Bash` や [MCP ツールの名前](https://code.claude.com/docs/ja/permissions.md#mcp)などのツールの通常の名前で、`deny` と `ask` の[権限ルール](https://code.claude.com/docs/ja/permissions.md)および [`PreToolUse` フック](https://code.claude.com/docs/ja/hooks#pretooluse)を通過します。ルールとフックに加えて、auto モードでは分類器がコードをレビューし、確認を求めるモードではプロンプトに応答します。
+コード内のツール呼び出しを制御するには、`Bash` や [MCP ツールの名前](https://code.claude.com/docs/ja/permissions.md#mcp)などのツールの通常の名前で、`deny` と `ask` の[権限ルール](https://code.claude.com/docs/ja/permissions.md)および [`PreToolUse` フック](https://code.claude.com/docs/ja/hooks#pretooluse)を書きます。ルールとフックに加えて、auto モードでは分類器がコードをレビューし、確認を求めるモードではプロンプトに応答します。
 
 * **[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)**: 分類器は、各ツール呼び出しではなく、実行前の各コードをレビューします。検索出力から取得したパスなど、実行時に計算される値は分類器には見えないため、制御する必要がある呼び出しにはルールやフックを残しておいてください。それでも、分類器によるブロックが繰り返された後に自分で承認したコード内の呼び出しなど、[一部の呼び出しではプロンプトが表示される](#permission-prompt-with-a-countdown)ことがあります
 * **その他の[権限モード](https://code.claude.com/docs/ja/permission-modes.md)**: そのモードでプロンプトが表示されるツール呼び出しごとにプロンプトが表示されます
@@ -224,10 +235,10 @@ auto モードで承認すると、分類器がブロックしたはずの場合
 
 バックグラウンドでコードを実行するには、auto モードまたは `bypassPermissions` モードでセッションを開始します。それでも Claude が待機する場合は、現在のモードとセッションの開始方法を確認してください。
 
-* **別のモードに切り替えた場合**: 開始時のモードに戻るまで `Shift+Tab` を押します
-* **別のモードで開始した場合**: [auto モードが利用できる](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)場合は、終了してから、Code Mode をオンにした状態で `claude --continue --permission-mode auto` を実行します
-* **v2.1.328 より前のバージョンを使用していて、`claude --resume` のリストからセッションを選択した場合**: 終了して [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してから、Code Mode をオンにした状態で同じ `claude --resume` コマンドを実行します。現在のバージョンのままにするには、`--resume` を `--continue` に置き換えます
-* **`--tools` にツール名を渡した場合**: そのフラグなしで auto モードで再度起動します
+* **v2.1.328 より前のバージョンを使用していて、`claude --resume` のリストからセッションを選択した場合**: 終了して [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)してから、Code Mode をオンにした状態で同じ `claude --resume` コマンドを実行します。現在のバージョンのままにするには、`--resume` を `--continue` に置き換えます。更新後も Claude が待機する場合は、auto モードで新しいセッションを開始します
+* **`--tools` にツール名を渡した場合**: Code Mode をオンにし、そのフラグを付けずに、auto モードで新しいセッションを開始します
+* **セッションを最初に auto モードまたは `bypassPermissions` モードで開始した場合**: そのモードに戻るまで `Shift+Tab` を押します。それで解決しない場合は、終了してから、Code Mode をオンにした状態で `claude --continue --permission-mode auto` を実行します
+* **セッションを最初に別のモードで開始した場合**: [auto モードが利用できる](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)場合は、終了してから、Code Mode をオンにした状態で `claude --permission-mode auto` を実行して新しいセッションを開始します。v2.1.331 以降では、代わりに古いセッションを再開すると、Claude は待機し続けるものと考えてください
 
 ### 実行中のコードを停止する
 
@@ -259,7 +270,8 @@ Claude が応答中またはコードを待機中にコードを停止するに�
 
 * **テキストを変更する**: `result`、`stdout`、`stderr`、`error` を秘匿化します。`result` が存在しない場合や `null` の場合にも対応し、`error` はコードが失敗した場合または停止された場合にのみ存在すると想定してください
 * **形式を維持する**: `code`、`stdout`、`stderr` は文字列として返し、`error` は文字列として返すか省略します。この形式を崩すと、Claude は元の出力を受け取ります
-* **画像と PDF を削除する**: コピーに隠すべき `images` または `documents` がある場合は、そのフィールドを `[]` に設定します
+* **画像、PDF、ページエラーを削除する**: コピーに隠すべき `images`、`documents`、または `imagePagesFailed` がある場合は、そのフィールドを `[]` に設定します。`imagePagesFailed` フィールドには、表示できなかった PDF ページごとにファイルパスとエラーが記載されます
+* **長い出力へのパスを削除する**: v2.1.331 以降では、コピーから `uncutOutputNote` を省きます。このフィールドは、カットされていないテキストへのパスを Claude に渡します
 
 `notes.txt` の結果にあるデプロイトークンを隠すには、次の JSON を出力します。
 
@@ -305,17 +317,20 @@ Claude が応答中またはコードを待機中にコードを停止するに�
 | :- | :- |
 | `it isn't open to your account in this version` または `it isn't open to your account yet` | バージョンが v2.1.323 より古い場合は、[更新](#try-code-mode)してください。それ以外の場合は、ネットワーク接続を確認して再度起動してください。理由が変わらない場合は、別の日に再試行してください |
 | `Anthropic has turned it off for now` | [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)するか、後で再度起動してください |
-| `it only works directly with the Anthropic API` または `it only works with the Anthropic API` | クラウドプロバイダー、ゲートウェイ、またはカスタムの `ANTHROPIC_BASE_URL` を経由してリクエストをルーティングする設定を削除してください |
+| `it only works directly with the Anthropic API` または `it only works with the Anthropic API` | ゲートウェイを使用せずにクラウドプロバイダーを使用している場合は、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.331 以降にしてください。ゲートウェイを使用している場合は、次の行に従ってください |
+| `it isn't offered yet through a gateway or proxy` | 管理者が[ゲートウェイ](https://code.claude.com/docs/ja/gateways.md)を設定した場合、ゲートウェイが必要な場合、または Claude for Government を使用している場合は、[Code Mode をオフにして](#turn-off-code-mode)この行が表示されないようにしてください。それ以外の場合は、[ゲートウェイの設定](https://code.claude.com/docs/ja/llm-gateway-connect.md)とキーを削除し、直接接続してください。`HTTPS_PROXY` は残しておいてかまいません。Claude apps ゲートウェイにサインインした場合は、[ユーザー設定からそのエントリ](https://code.claude.com/docs/ja/claude-apps-gateway#set-the-gateway-url-in-user-settings)も削除して `/logout` を実行してください。これにより、保存された MCP サーバーのログインとプラグインのシークレットも削除されます |
+| `it isn't offered yet through a gateway or proxy`（[Enterprise Admin Console のサインイン](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code)を使用している場合） | `/status` を実行してください。`API provider` に `Microsoft Foundry` や `Amazon Bedrock (Mantle)` など、[要件](#requirements)で除外されているプロバイダーが表示される場合は、[Code Mode をオフにして](#turn-off-code-mode)この行が表示されないようにしてください。それ以外の場合は、前の行に従ってください |
 | `it doesn't work with an API key helper` | `apiKeyHelper`、`ANTHROPIC_AUTH_TOKEN`、および `ANTHROPIC_CUSTOM_HEADERS` 内の `Authorization` または `X-Api-Key` ヘッダーを削除してください。その後、サインインするか `ANTHROPIC_API_KEY` を設定してください |
-| `it only works with Opus 5.5, Sonnet 5.5 and later models` | [サポートされているモデル](#requirements)で起動してください（例: `--model opus`）。Haiku 5.5 と Fable 5.2 も動作します |
+| `it only works with Opus 5.5, Sonnet 5.5 and later models` | アカウントで使用できる[サポートされているモデル](#requirements)の完全な名前を指定してください（例: `--model claude-opus-5-5`）。Microsoft Foundry では、そのモデルのデプロイの名前を指定してください。`sonnet` などのエイリアスは、[一部のプロバイダーでは古いモデルを選択する](https://code.claude.com/docs/ja/model-config.md#model-aliases)ため避けてください |
 | `it doesn't work in background jobs` | `--remote-control` なしでフォアグラウンドで起動してください。チームメイトの分割ペインに理由が表示される場合は、[in-process 表示モード](https://code.claude.com/docs/ja/agent-teams.md#choose-a-display-mode)を使用して、チームメイトを Code Mode で実行してください |
 | `it needs settings that Claude Code downloads from Anthropic` | [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して、[テレメトリ設定の要件](#requirements)を満たしてください。現在のバージョンを使い続ける場合は、`DISABLE_TELEMETRY` など、[機能フラグの取得をオフにする](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)変数の設定を解除してください |
 | `OpenTelemetry tracing is on` | [トレース](https://code.claude.com/docs/ja/monitoring-usage.md#traces-beta)なしで作業できる場合は、`CLAUDE_CODE_ENHANCED_TELEMETRY_BETA`、`ENABLE_ENHANCED_TELEMETRY_BETA`、`ENABLE_BETA_TRACING_DETAILED` の設定を解除してください |
 | `OpenTelemetry is on` | イベントとメトリクスをオンのままにするには、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して、[テレメトリ設定の要件](#requirements)を満たしてください。現在のバージョンを使い続ける場合は、[OpenTelemetry エクスポート](https://code.claude.com/docs/ja/monitoring-usage.md)なしで作業できるなら、`CLAUDE_CODE_ENABLE_TELEMETRY` と `ENABLE_BETA_TRACING_DETAILED` の設定を解除してください |
-| `it doesn't yet work with the plugin` | セッションで `/plugin` を実行し、理由に名前が挙がっている各プラグインを無効にしてください。組織がプラグインをオンにしている場合は、管理者にオフにするよう依頼してください |
-| `it doesn't yet work with an installed mod` | ツール呼び出しをチェックする [mod](https://code.claude.com/docs/ja/plugins/mods/overview.md) をオフにしてください |
+| `it doesn't yet work with the plugin` | [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して、[mod の要件](#requirements)を満たしてください。現在のバージョンを使い続ける場合は、`/plugin` を実行し、理由に名前が挙がっている各プラグインを無効にしてください。組織がプラグインをオンにしている場合は、管理者にオフにするよう依頼してください |
+| `it doesn't yet work with an installed mod` | [Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して、[mod の要件](#requirements)を満たしてください。現在のバージョンを使い続ける場合は、`/plugin` を実行し、インストールした各 mod を無効にしてください |
 | `it can't be used together with agent teams yet` | エージェントチームをオンのままにするには、[Claude Code を更新](https://code.claude.com/docs/ja/setup.md#update-claude-code)して v2.1.326 以降にしてください。現在のバージョンを使い続ける場合は、`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` の設定を解除してください |
 | `this launch's tool options` | `--restricted` なしで起動し、`--tools` に `REPL` を追加して、`--disallowedTools` と `deny` ルールから `REPL` を削除してください |
+| `couldn't read your organization's settings or policy` | 再度起動してください。Enterprise Admin Console のサインインが終了した場合は、`claude auth login` を実行して組織を選択してください。理由が変わらず、ネットワークが `api.anthropic.com` をブロックしている場合は、そのホストを許可するよう管理者に依頼してください。そのサインインではなくクラウドプロバイダーを使用している場合は、代わりに `ANTHROPIC_API_KEY` の設定を解除して `claude auth logout` を実行することもできます。これにより、保存された MCP サーバーのログインとプラグインのシークレットも削除されます |
 | `couldn't save your answer` | `~/.claude.json` を書き込み可能にしてください |
 | `your organization's settings don't allow it` | [管理設定](#block-code-mode-for-your-organization)について管理者に問い合わせてください |
 
@@ -323,7 +338,9 @@ Code Mode に関する行が何も表示されない場合は、`claude --versio
 
 ### カウントダウン付きの権限プロンプト
 
-auto モードで、[分類器によるブロックが繰り返された](https://code.claude.com/docs/ja/permission-modes.md#when-auto-mode-falls-back)後にユーザー自身がコードを承認すると、そのコード内、およびまだ実行中の以前のコード内のツール呼び出しについて確認を求められることがあります。IDE が接続されていない場合、プロンプトにカウントダウンが表示されることがあります。
+auto モードで、[分類器によるブロックが繰り返された](https://code.claude.com/docs/ja/permission-modes.md#when-auto-mode-falls-back)後にユーザー自身がコードを承認すると、そのコード内、およびまだ実行中の以前のコード内のツール呼び出しについて確認を求められることがあります。[`ask` ルール](#approve-each-piece-of-code-first)または `REPL` に対する `PreToolUse` フックによってコードの承認を求められた後も、auto モードでは同様のことが起こります。
+
+IDE が接続されていない場合、プロンプトにカウントダウンが表示されることがあります。
 
 ```text theme={null}
 Claude Code will automatically block this request in 1:59, to avoid holding up an unattended session
@@ -337,13 +354,20 @@ v2.1.327 より前では、Claude が新しいコードを開始した後、分�
 
 Claude がツール呼び出しの拒否を報告した場合は、エラーテキストを尋ねてください。次のエラーは、[`PreToolUse` フック](https://code.claude.com/docs/ja/hooks#pretooluse)が判定を返さなかったことを意味します。
 
-* **`the hook did not finish`**: フックがタイムアウトしたか、エージェントフックが判定を返さずに終了しました。タイムアウトした場合は、フックの [`timeout`](https://code.claude.com/docs/ja/hooks#common-fields) を引き上げてください。判定を返さないエージェントフックの場合は、チェックを `command` フックに移動してください。このエラーは、コードからの呼び出し、および Claude がセッション内でコードを実行した後のその他のツール呼び出しで表示されることがあります
-* **`the hook failed`**: コードからの呼び出しで、フックが開始できなかった、強制終了された、126、127、または 128 を超えるコードで終了した、あるいは HTTP エラーや無効な出力を返しました。フックを修正してください。このエラーは v2.1.329 より前のバージョンで表示されることがあります。それ以降のバージョンではまれですが、原因の 1 つとして、Claude がコードを実行した後にセッション中に[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)がオフになることが挙げられます
+* **`the hook did not finish`**: フックがタイムアウトしたか、エージェントフックが判定を返さずに終了しました。フックの [`timeout`](https://code.claude.com/docs/ja/hooks#common-fields) を引き上げるか、`command` または `http` フックに [`"onFailure": "continue"`](#tool-call-ran-after-a-hook-failed) を設定してください。それでもエージェントフックでこのエラーが発生する場合は、チェックを `command` フックに移動してください。Claude がコードを実行した後は、コード外の呼び出しでもこのエラーが表示されることがあります
+* **`the hook failed`**: コードからの呼び出しでフックが失敗しました（例: フックが開始できなかった場合）。[デバッグログ](https://code.claude.com/docs/ja/hooks.md#debug-hooks)で失敗を見つけて修正してください。v2.1.329 より前のバージョンでは、このエラーが発生することが想定されます。それ以降のバージョンでは、セッション中に[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching)をオフにした後に表示されることがあります
 
-v2.1.329 以降では、`the hook did not finish` 以外のフックの失敗の後、コードからの呼び出しはデフォルトで実行されます。呼び出しを実行するかどうかを選択するには、`command` または `http` フックを使用し、そのフックに [`onFailure`](https://code.claude.com/docs/ja/hooks#block-the-action-when-a-hook-fails) を設定してください。
+### フックの失敗後にツール呼び出しが実行された
 
-* **タイムアウトまたは失敗の後に呼び出しを停止するには**: `"onFailure": "block"` を設定します。呼び出しを保護するフックではこれを設定してください
-* **タイムアウトまたは失敗の後に呼び出しを実行させるには**: `"onFailure": "continue"` を設定します
+`PreToolUse` フックが失敗したときにコードからの呼び出しを停止するには、`command` または `http` フックを使用し、[`"onFailure": "block"`](https://code.claude.com/docs/ja/hooks#block-the-action-when-a-hook-fails) を設定してください。複数の設定ファイルにそのフックがある場合は、それぞれで同じ `onFailure` 値を指定してください。
+
+v2.1.329 以降では、`command` および `http` フックについて次の結果になります。
+
+| `onFailure` | フックがタイムアウトした場合 | フックがその他の理由で失敗した場合（スクリプトが見つからないなど） |
+| :- | :- | :- |
+| 未設定 | 拒否 | 権限チェックに進む（[まれな例外あり](#tool-call-refused-by-a-hook)） |
+| `"block"` | 拒否 | 拒否 |
+| `"continue"` | 権限チェックに進む | 権限チェックに進む |
 
 ### フックによってコードの出力が保留された
 

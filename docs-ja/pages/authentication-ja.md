@@ -25,8 +25,8 @@ Claude Code は、セットアップに応じて複数の認証方法をサポ�
 
 * **Claude Pro、Max、または Ultra サブスクリプション**: claude.ai アカウントでログインします。[claude.com/pricing](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=authentication_pro_max) で購読してください。
 * **Claude for Teams または Enterprise**: チーム管理者が招待した claude.ai アカウントでログインします。
-* **Claude Console**: Console 認証情報でログインします。管理者が事前に[招待](#claude-console-authentication)している必要があります。[API キーを作成せずにサインイン](#sign-in-without-an-api-key)することも、API キーを作成することもできます。
-* **クラウドプロバイダー**: 組織が [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) を使用している場合は、`claude` を実行する前に必要な環境変数を設定します。ログインプロンプトで **3rd-party platform** を選択することもでき、これにより Bedrock と Agent Platform 向けのインタラクティブセットアップウィザードが起動します。
+* **Claude Console**: [Console 認証情報](#claude-console-authentication)でログインします。[API キーを作成](#sign-in-without-an-api-key)するかどうかにかかわらずサインインできます。
+* **クラウドプロバイダー**: [Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)、[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)、または [Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md) を使用する場合は、`claude` を実行する前に必要な環境変数を設定します。ログインプロンプトで **3rd-party platform** を選択することもでき、これにより Bedrock と Agent Platform 向けのインタラクティブセットアップウィザードが起動します。
 * **Cloud gateway**: 組織がセルフホストされた [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を実行している場合は、`/login` を通じて、または [VS Code から](https://code.claude.com/docs/ja/vs-code.md#sign-in-to-a-claude-apps-gateway)企業 SSO でサインインします。ゲートウェイが発行したトークンはセッションの唯一の認証情報です。
 * **Enterprise Admin Console**: Owner が組織のプロバイダーまたはゲートウェイに対して[このサインインを有効にしている](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#turn-on-sign-in-from-claude-code)場合は、シェルで `claude auth login` を実行し、ブラウザで組織を選択します。確認するには、ターミナルに `Signed in to the organization` と表示されているかを確認してください。必要な Claude Code のバージョンについては、[始める前に](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#before-you-start)を参照してください。
 

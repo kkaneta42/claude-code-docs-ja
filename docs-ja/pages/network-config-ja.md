@@ -85,7 +85,7 @@ export CLAUDE_CODE_CERT_STORE=system
 
 ## カスタム CA 証明書
 
-エンタープライズ環境でカスタム CA を使用している場合は、Claude Code をそれを直接信頼するように設定します。
+環境でカスタム CA を使用している場合は、Claude Code をそれを直接信頼するように設定します。
 
 ```bash theme={null}
 export NODE_EXTRA_CA_CERTS=/path/to/ca-cert.pem
@@ -242,7 +242,7 @@ Claude Code は以下の URL へのアクセスが必要です。プロキシ設
 | `storage.googleapis.com` | 2.1.116 より前のバージョンのネイティブインストーラーとネイティブ自動更新プログラム |
 | `registry.npmjs.org` | プラグインインストール（npm ソースプラグインパッケージの取得とプラグインの Node.js パッケージ依存関係のインストール）、`npx` で起動された MCP サーバー、および Claude Code 自体の npm と bun インストール用パッケージレジストリ |
 | `bridge.claudeusercontent.com` | [Chrome の Claude](https://code.claude.com/docs/ja/chrome.md) 拡張機能 WebSocket ブリッジ |
-| `*.frame.claudeusercontent.com` | [Artifact](https://code.claude.com/docs/ja/artifacts.md) コンテンツ読み取り。CLI は Claude がアーティファクトを開いたときにこのホストからアーティファクトのファイルを取得し、Artifact ツールがアカウントで[利用可能](https://code.claude.com/docs/ja/artifacts.md#availability)な場合のみです。ツールをオフにしてこの要件を削除するには、[`"enableArtifact": false`](https://code.claude.com/docs/ja/settings-reference#enableartifact) または [`CLAUDE_CODE_DISABLE_ARTIFACT=1`](https://code.claude.com/docs/ja/env-vars) を設定してください |
+| `*.frame.claudeusercontent.com` | [Artifact](https://code.claude.com/docs/ja/artifacts.md) コンテンツ読み取り。CLI は Claude がアーティファクトを開いたときに、このホストからアーティファクトのファイルを取得します。このホストが必要なのは、Artifact ツールがアカウントで[利用可能](https://code.claude.com/docs/ja/artifacts.md#availability)な場合のみです。ツールをオフにしてこの要件を削除するには、[`"enableArtifact": false`](https://code.claude.com/docs/ja/settings-reference#enableartifact) または [`CLAUDE_CODE_DISABLE_ARTIFACT=1`](https://code.claude.com/docs/ja/env-vars) を設定してください |
 | `github.com` | GitHub ホスト型[プラグインマーケットプレイス](https://code.claude.com/docs/ja/plugins/overview.md)とプラグインのクローン（公式 Anthropic マーケットプレイスを含む）。HTTPS または SSH 経由。GitHub `owner/repo` ソースを HTTPS のみでクローンするには、[`CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1`](https://code.claude.com/docs/ja/env-vars) を設定してください |
 | `raw.githubusercontent.com` | [`/release-notes`](https://code.claude.com/docs/ja/commands) のチェンジログフィード。対話型セッションでは、Claude Code はキャッシュされたチェンジログがまだ実行中のバージョンをカバーしていない場合（更新後の初回起動など）、スタートアップ時にバックグラウンドでそれを取得します。非対話型およびクラウドセッションは決してそれを取得しません |
 | `*-review.googlesource.com` | `googlesource.com` チェックアウトでの Gerrit 変更検索。Claude Desktop Code タブセッションが [信頼済み](https://code.claude.com/docs/ja/permissions.md#project-allow-rules-and-workspace-trust)チェックアウトで開始または再開され、その `origin` が `googlesource.com` ホストである場合、Claude Code はそのホストの `-review` サーバーに匿名で、HEAD の `Change-Id` に一致するオープン変更を 1 回（開始または再開ごと）要求します。他のセッションタイプはこの検索をスキップし、他の Gerrit ホストには接続されません。オプション：[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars) で無効化 |
@@ -253,7 +253,7 @@ Claude Code は以下の URL へのアクセスが必要です。プロキシ設
 
 npm または独自のバイナリ配布を通じて Claude Code をインストールする場合、エンドユーザーはネイティブインストーラーと自動更新プログラムの `downloads.claude.ai` の使用は不要ですが、npm と bun インストールは組織がミラーしない限り、パッケージレジストリ `registry.npmjs.org` が必要です。テーブル内の他の用途はインストール方法に関係なく適用されます。
 
-2 つの Datadog インテークホストはオプションの運用テレメトリのみを実行し、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars) を設定するとその両方が無効になります。サードパーティプロバイダーのセッションは、プラットフォームが [`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定し、テレメトリメトリクスがデフォルトでオンになっている場合でも、これらのホストに送信されません。Claude Code が送信するすべてのもの、およびホワイトリストを最終化する前にそれを無効にする方法については、[テレメトリサービス](https://code.claude.com/docs/ja/data-usage.md#telemetry-services)を参照してください。
+2 つの Datadog インテークホストはオプションの運用テレメトリのみを扱い、[`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC`](https://code.claude.com/docs/ja/env-vars) を設定するとその両方が無効になります。サードパーティプロバイダーのセッションは、プラットフォームが [`CLAUDE_CODE_PROVIDER_MANAGED_BY_HOST`](https://code.claude.com/docs/ja/env-vars) を設定し、テレメトリメトリクスがデフォルトでオンになっている場合でも、これらのホストに送信されません。Claude Code が送信するすべてのもの、およびホワイトリストを最終化する前にそれを無効にする方法については、[テレメトリサービス](https://code.claude.com/docs/ja/data-usage.md#telemetry-services)を参照してください。
 
 ### クラウドプロバイダーと LLM ゲートウェイのルーティング
 

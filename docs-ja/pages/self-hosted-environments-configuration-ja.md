@@ -788,19 +788,14 @@ fi
 # shellcheck disable=SC2086  # $base は "" または "FETCH_HEAD"。意図的なワード分割
 unpushed=$(git -C "$d" rev-list HEAD --not $base --remotes=origin --count 2>/dev/null) || unpushed=0
 if [ "$unpushed" -gt 0 ]; then
-  branch=$(git -C "$d" symbolic-ref --short -q HEAD)
-  if [ -n "$branch" ]; then
-    # $branch は攻撃者の影響を受けます。git-check-ref-format(1) は
-    # ref 名で `"` を許可します。`\` は禁止されています（ルール 10）
-    # が、安価な多層防御として同様にエスケープされます。
-    # JSON メタ文字をハンドビルドペイロードに補間する前にエスケープして、
-    # x","continue":false のようなブランチがハーネスが解析する
-    # フック出力 JSON にキーを注入できないようにします。
-    # $unpushed は安全です。上記の -gt ガードは平文整数以外を拒否します。
-    branch_esc=$(printf '%s' "$branch" | sed 's/\\/\\\\/g; s/"/\\"/g')
-    printf '{"decision":"block","reason":"There are %s unpushed commit(s) on branch '\''%s'\''. Please push these changes to the remote repository."}' "$unpushed" "$branch_esc"
-  else
+  # ブランチ名は信頼できるテキストではないため、メッセージには含めません。
+  # $unpushed は git rev-list によるカウント、または 0 です。
+  # -q を指定すると、symbolic-ref はデタッチされた HEAD で 1 を返して終了します。
+  git -C "$d" symbolic-ref -q HEAD >/dev/null 2>&1
+  if [ $? -eq 1 ]; then
     printf '{"decision":"block","reason":"There are %s unpushed commit(s) on a detached HEAD. Please create a branch and push it to the remote repository."}' "$unpushed"
+  else
+    printf '{"decision":"block","reason":"There are %s unpushed commit(s) on the branch checked out in the project directory. Please push these changes to the remote repository."}' "$unpushed"
   fi
   exit 0
 fi
@@ -830,14 +825,13 @@ Stop フックは、各サブモジュールがどのコミットにあるかを
 
 ### 以前のバージョンの Stop フックスクリプトを置き換える
 
-手元の `stop-hook-nudge.sh` で `GIT_OPTIONAL_LOCKS` を検索します。見つからない場合、それは以前のバージョンです。インストールしたすべての場所で[現在のスクリプト](#prompt-sessions-to-push-their-work)に置き換え、ランナーを再起動します。Stop フック設定はそのまま維持しますが、大規模なチェックアウトでは `timeout` を引き上げてください。
+手元の `stop-hook-nudge.sh` で `checked out in the project directory` というテキストを検索します。見つからない場合、それは以前のバージョンです。インストールしたすべての場所で今すぐ[現在のスクリプト](#prompt-sessions-to-push-their-work)に置き換え、ランナーを再起動します。Stop フック設定はそのまま維持しますが、大規模なチェックアウトでは `timeout` を引き上げてください。
 
-* **タイミング**：セッションで [Bash サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)をオンにして実行している場合は、今すぐ置き換えます。それ以外の場合は、次回のイメージビルドまたはランナーの再起動時に置き換えます。
-* **変更点**：サブモジュール内のコミットされていないファイルで Claude が促されることはなくなりました。`.gitmodules` で `ignore = all` が指定されたサブモジュール内の新しいコミットでは、促されるようになりました。
+スクリプトを置き換えると、プッシュされていないコミットに関するプロンプトにブランチ名が含まれなくなります。以前のバージョンがサブモジュール内のコミットされていないファイルについて Claude に促していた場合、そのプロンプトは表示されなくなります。現在のスクリプトがサブモジュールをどのように扱うかについては、[サブモジュールと Stop フック](#submodules-and-the-stop-hook)を参照してください。
 
 > [!WARNING]
 >
-> フックは Bash サンドボックスの外で実行されるため、現在のスクリプトの git 呼び出しは、チェックアウトの git 設定で指定されたプログラムを起動できる一部の git 機能をスキップします。すべてをスキップするわけではありません。サンドボックスだけに頼らず、[デプロイを強化する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)の説明に従ってセッションを分離してください。
+> フックは [Bash サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)の外で実行されるため、現在のスクリプトの git 呼び出しは、チェックアウトの git 設定で指定されたプログラムを起動できる一部の git 機能をスキップします。すべてをスキップするわけではありません。サンドボックスだけに頼らず、[デプロイを強化する](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#harden-your-deployment)の説明に従ってセッションを分離してください。
 
 ## 権限とツール承認
 

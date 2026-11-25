@@ -42,7 +42,7 @@ PR Steward は、失敗したチェック、マージコンフリクト、レビ
 
 ### PR Steward を停止または制限する
 
-1 つのプルリクエストで PR Steward を停止するには、`claude-pr-steward-watching` ラベルを削除するか、[`@claude stop` とコメントします](https://code.claude.com/docs/ja/pr-steward-pull-requests#start-or-stop-pr-steward-on-one-pull-request)。今後作成するプルリクエストで PR Steward をオフにしたり制限したりするには、**Settings > Code** または **Settings > Claude Code** の [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動します。
+1 つのプルリクエストで PR Steward を停止するには、`claude-pr-steward-watching` ラベルを削除するか、[`@claude stop` とコメントします](https://code.claude.com/docs/ja/pr-steward-pull-requests#start-or-stop-pr-steward-on-one-pull-request)。今後作成するプルリクエストで PR Steward をオフにしたり制限したりするには、claude.ai の **Settings > Code** にある [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動します。
 
 ## PR Steward がチームに適しているかを判断する
 

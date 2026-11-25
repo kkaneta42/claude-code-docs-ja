@@ -123,7 +123,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 >
 > 応答そのものに関すること（長さ、形式、Claude がどの程度説明するか、あるいはライティングアシスタントのような別の役割）で、後でオフに戻す可能性があるものであれば、**出力スタイルを使用します**。Claude Code には[組み込みスタイル](https://code.claude.com/docs/ja/output-styles.md#built-in-output-styles)が用意されており、独自のスタイルを作成することもできます。
 >
-> **両者は組み合わせられます。** どのスタイルを選んでも、CLAUDE.md は読み込まれたままです。Claude はどちらも指示として従うため、どちらも強制されるものではありません。毎回必ず実行する必要があることには、[フック](https://code.claude.com/docs/ja/hooks-guide.md)を使用してください。
+> **両者は組み合わせられます。** Claude はどちらも指示として従うため、どちらも強制されるものではありません。毎回必ず実行する必要があることには、[フック](https://code.claude.com/docs/ja/hooks-guide.md)を使用してください。
 
 > [tab] CLAUDE.md とルールとスキル
 >
@@ -252,7 +252,7 @@ Claude Code は、コードについて推論するモデルと、ファイル�
 
 > [tab] Skills
 >
-> スキルは Claude のツールキットの追加機能です。リファレンスマテリアル（API スタイルガイドなど）または `/<name>` でトリガーする呼び出し可能なワークフロー（`/deploy` など）です。Claude Code は `/code-review`、`/batch`、`/debug` などの[バンドルされたスキル](https://code.claude.com/docs/ja/commands.md) を備えており、すぐに機能します。独自のスキルを作成することもできます。
+> スキルは Claude のツールキットの追加機能です。リファレンスマテリアル（API スタイルガイドなど）または `/<name>` でトリガーする呼び出し可能なワークフロー（`/deploy` など）です。Claude Code には `/code-review`、`/batch`、`/debug` などの[バンドルスキル](https://code.claude.com/docs/ja/commands.md) が含まれています。独自のスキルを作成することもできます。
 >
 > **時期：** スキルの設定によって異なります。デフォルトでは、説明はセッション開始時にロードされ、完全なコンテンツは使用時にロードされます。ユーザーのみのスキル（`disable-model-invocation: true`）の場合、呼び出すまで何もロードされません。
 >

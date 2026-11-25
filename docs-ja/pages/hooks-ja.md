@@ -708,9 +708,9 @@ hooks:
 
 ユーザーまたは Claude がスキルを呼び出した後にスキルのフロントマターのフックが発火しない場合は、そのセッションで [`/hooks`](#the-%2Fhooks-menu) を実行します。それらのフックが一覧に表示される場合は、[フックが発火しない](https://code.claude.com/docs/ja/hooks-guide.md#hook-not-firing)を参照してください。いずれも表示されない場合、スキルがプラグイン専用ロックの対象になっているか、フックの上限を超えている可能性があり、そのスキルはフロントマターのフックを一切使わずに実行されます。それぞれのケースを確認してください。
 
-* **プラグイン専用ロック**: 組織の管理者は、[`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization-hooks) 管理設定を使用して、フックをプラグインと管理設定に限定できます。このロックの下でスキルがフロントマターのフックを保持できるのは、プラグインスキル、[バンドルスキル](https://code.claude.com/docs/ja/skills.md#bundled-skills)、または[管理設定ディレクトリ](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)内のスキルである場合のみです。ユーザー自身の設定ファイルのフックも実行されません。
-  * **確認**: Claude Code セッションで `/status` と入力します。[`Setting sources` 行](https://code.claude.com/docs/ja/settings#check-what-your-organization-enforces)に `Enterprise managed settings` が含まれている場合は、`strictPluginOnlyCustomization` がフックをロックしているかどうかを管理者に確認してください。
-  * **対処**: プラグインスキルはフロントマターのフックを保持するため、スキルを[プラグイン](https://code.claude.com/docs/ja/plugins/create.md#convert-an-existing-claude-setup)に移動します。そのプラグインを[マーケットプレイス](https://code.claude.com/docs/ja/plugins/create-marketplace.md#create-a-marketplace)に掲載し、そこからインストールします。Claude Code が [`is blocked by enterprise policy`](https://code.claude.com/docs/ja/plugins/troubleshooting#marketplace-source-is-blocked-by-enterprise-policy) でマーケットプレイスを拒否する場合は、そのマーケットプレイスを許可するよう管理者に依頼してください。
+* **プラグイン限定ロック**: 組織に所属している場合、管理者は [`strictPluginOnlyCustomization`](https://code.claude.com/docs/ja/settings-reference#strictpluginonlycustomization-hooks) 管理設定を使用して、フックをプラグインと管理設定に限定するロックをかけることができます。このロックの下でスキルのフロントマターのフックが維持されるのは、そのスキルがプラグインスキル、[バンドルスキル](https://code.claude.com/docs/ja/skills.md#bundled-skills)、または[管理設定ディレクトリ](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)内のスキルである場合に限られます。ユーザー自身の設定ファイル内のフックも実行されません。
+  * **確認方法**: Claude Code セッションで `/status` と入力します。[`Setting sources` 行](https://code.claude.com/docs/ja/settings#check-what-your-organization-enforces)に `Enterprise managed settings` が含まれている場合は、`strictPluginOnlyCustomization` がフックをロックしているかどうかを管理者に確認してください。
+  * **対処法**: プラグインスキルはフロントマターのフックを維持するため、スキルを[プラグイン](https://code.claude.com/docs/ja/plugins/create.md#convert-an-existing-claude-setup)に移動します。そのプラグインを[マーケットプレイス](https://code.claude.com/docs/ja/plugins/create-marketplace.md#create-a-marketplace)に登録し、そこからインストールします。Claude Code が [`is blocked by enterprise policy`](https://code.claude.com/docs/ja/plugins/troubleshooting#marketplace-source-is-blocked-by-enterprise-policy) でマーケットプレイスを拒否する場合は、そのマーケットプレイスを許可するよう管理者に依頼してください。
 * **フックの上限**: Claude Code v2.1.304 以降では、スキルのソースごとにセッション単位の上限があります。プロジェクト、個人のスキルフォルダー、各プラグインは、それぞれ別のソースとして数えられます。1 つのソースのスキルが登録できるフックは最大 1,024 個です。それらのフックの matcher の合計は最大 16,384 文字です。配下に複数のフックを持つ matcher は、フックごとに 1 回ずつ数えられます。
   * **確認**: デバッグログを有効にして、フックが発火しなかったセッションを再現します。
     1. シェルから `claude --debug` で新しいセッションを開始します。シェルからセッションを開始しない場合は、代わりに新しいセッションで最初に [`/debug`](https://code.claude.com/docs/ja/commands#all-commands) と入力します。
@@ -1229,8 +1229,6 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 * `PostToolUse`: `updatedToolOutput` はツールの結果を置き換えます。[Cowork](https://claude.com/docs/cowork/overview) のクラウドセッションでの制限も含め、[PostToolUse 決定制御](#posttooluse-decision-control)を参照してください
 * `UserPromptSubmit`: プロンプトを置き換えることはできません。`additionalContext` をそれと一緒に注入するだけです
 
-秘匿化や変換のユースケースの場合、アウトバウンド ツール入力は `PreToolUse` で、成功した呼び出しの結果は `PostToolUse` で傍受します。`PostToolUseFailure` は結果を書き換えられないため、失敗したコマンドの出力を秘匿化することはできません。
-
 各パターンの実行例を以下に示します。
 
 > [tab] トップレベル決定
@@ -1383,12 +1381,12 @@ SessionStart フックがインストールしたスキルを同じセッショ�
 #!/bin/bash
 
 git -C ~/.claude/skills/team-skills pull --quiet 2>/dev/null || \
-  git clone --quiet https://git.example.com/your-org/team-skills.git ~/.claude/skills/team-skills
+  git -c protocol.file.allow=never clone --quiet https://git.example.com/your-org/team-skills.git ~/.claude/skills/team-skills
 
 echo '{"hookSpecificOutput": {"hookEventName": "SessionStart", "reloadSkills": true}}'
 ```
 
-リポジトリの URL はプレースホルダーです。独自のスキルリポジトリに置き換えてください。
+リポジトリの URL はプレースホルダーです。スキルリポジトリの HTTPS または SSH の URL に置き換えてください。コマンドに `protocol.file.allow=never` が含まれているため、フォルダーのパスからクローンすることはできません。
 
 #### 環境変数を永続化する
 

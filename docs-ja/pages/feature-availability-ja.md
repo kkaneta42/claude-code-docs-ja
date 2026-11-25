@@ -47,7 +47,6 @@ Claude Code CLI とローカルで実行されるすべてのものは、すべ�
 次の機能には claude.ai アカウントでのサインインが必要で、Anthropic Console の API キーやサードパーティプロバイダーからは利用できません。
 
 * [クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)とモバイル版 Claude Code
-* [Slack での Claude Code](https://code.claude.com/docs/ja/slack.md)：Pro、Max、Ultra プラン
 * [Claude Code Desktop](https://code.claude.com/docs/ja/desktop.md)
 * [クラウドのスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（`/schedule`）
 * [Ultrareview](https://code.claude.com/docs/ja/ultrareview.md)
@@ -129,11 +128,11 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
       <td>[Code Mode](https://code.claude.com/docs/ja/code-mode.md)</td>
       <td>✓（実験的、[要件あり](https://code.claude.com/docs/ja/code-mode.md#requirements)）</td>
       <td>✓（実験的、[要件あり](https://code.claude.com/docs/ja/code-mode.md#requirements)）</td>
-      <td>✗</td>
-      <td>✗</td>
-      <td>✗</td>
-      <td>✗</td>
-      <td>✗</td>
+      <td>✓（実験的、[要件あり](https://code.claude.com/docs/ja/code-mode.md#requirements)）</td>
+      <td>✓（実験的、[要件あり](https://code.claude.com/docs/ja/code-mode.md#requirements)）</td>
+      <td>✓（実験的、[要件あり](https://code.claude.com/docs/ja/code-mode.md#requirements)）</td>
+      <td>✓（実験的、[要件あり](https://code.claude.com/docs/ja/code-mode.md#requirements)）</td>
+      <td>✓（実験的、[要件あり](https://code.claude.com/docs/ja/code-mode.md#requirements)）</td>
     </tr>
 
     <tr>
@@ -258,7 +257,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [tab] Amazon Bedrock
 >
-> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[Code Mode](https://code.claude.com/docs/ja/code-mode.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
 > **部分的なサポート：**
 >
@@ -271,7 +270,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [tab] Claude Platform on AWS
 >
-> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[Code Mode](https://code.claude.com/docs/ja/code-mode.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
 > **Amazon Bedrock では利用できないが、こちらでは利用可能：**[Web 検索](https://code.claude.com/docs/ja/tools-reference.md#websearch-tool-behavior)、および Claude Code v2.1.300 以降での [Advisor](https://code.claude.com/docs/ja/advisor.md)。
 >
@@ -283,7 +282,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [tab] Google Cloud（Anthropic 管理）
 >
-> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[Code Mode](https://code.claude.com/docs/ja/code-mode.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
 > \*\*Google Cloud（Google 管理）では利用できないが、こちらでは利用可能：\*\*Claude Code v2.1.300 以降での [Advisor](https://code.claude.com/docs/ja/advisor.md)。
 >
@@ -298,7 +297,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 >
 > Google Cloud の Agent Platform で Claude Code を使用するために `CLAUDE_CODE_USE_VERTEX` を設定している場合は、このプロバイダーを使用しています。
 >
-> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[Code Mode](https://code.claude.com/docs/ja/code-mode.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
 > **部分的なサポート：**
 >
@@ -313,7 +312,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 
 > [tab] Microsoft Foundry
 >
-> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md)、[Code Mode](https://code.claude.com/docs/ja/code-mode.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
+> \*\*利用不可：\*\*すべての [Claude サブスクリプションが必要な機能](#features-that-require-a-claude-subscription)に加え、[fast mode](https://code.claude.com/docs/ja/fast-mode.md)、[Advisor](https://code.claude.com/docs/ja/advisor.md)、[チャネル](https://code.claude.com/docs/ja/channels.md)、[GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md)、[分析ダッシュボード](https://code.claude.com/docs/ja/analytics.md)、[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)、[`/design-sync` および `/import` コマンド](https://code.claude.com/docs/ja/commands#all-commands)。
 >
 > **部分的なサポート：**
 >
@@ -346,6 +345,7 @@ Desktop は部分的な例外です。[ゲートウェイのルーティング�
 | [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) | ✓ | ✓ | ✓ | ✓ | ✓ |
 | [Remote Control](https://code.claude.com/docs/ja/remote-control.md) | ✓ | ✓ | ✓ | Admin-enabled | Admin-enabled |
 | [Channels](https://code.claude.com/docs/ja/channels.md) | ✓ | ✓ | ✓ | Admin-enabled | Admin-enabled |
+| [MCP サーバーからのスキル](https://code.claude.com/docs/ja/mcp.md#requirements-for-skills-from-mcp-servers) | ✓ | ✓ | ✓ | Admin-enabled | Admin-enabled |
 | [Computer use](https://code.claude.com/docs/ja/computer-use.md) | ✓ | ✓ | ✓ | ✗ | ✗ |
 | Dispatch（[Desktop](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch)） | 新規ユーザーは利用不可 | 新規ユーザーは利用不可 | 新規ユーザーは利用不可 | ✗ | ✗ |
 | [Code Review](https://code.claude.com/docs/ja/code-review.md) | ✗ | ✗ | ✗ | ✓ | ✓ |

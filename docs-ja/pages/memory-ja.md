@@ -4,7 +4,7 @@
 
 # Claude があなたのプロジェクトを記憶する方法
 
-> CLAUDE.md ファイルで Claude に永続的な指示を与え、自動メモリで Claude が自動的に学習を蓄積できるようにします。
+> CLAUDE.md または AGENTS.md ファイルで Claude に永続的な指示を与え、自動メモリで Claude が自動的に学習を蓄積できるようにします。
 
 Claude Code の各セッションは、新しいコンテキストウィンドウで始まります。CLAUDE.md ファイルと自動メモリが、セッション間で知識を保持します。
 
@@ -67,7 +67,7 @@ CLAUDE.md ファイルはいくつかの場所に配置でき、それぞれ異�
 
 ### プロジェクト CLAUDE.md をセットアップする
 
-プロジェクト CLAUDE.md は `./CLAUDE.md` または `./.claude/CLAUDE.md` に保存できます。このファイルを作成し、プロジェクトで作業する誰もが適用される指示を追加してください。ビルドおよびテストコマンド、コーディング標準、アーキテクチャの決定、命名規約、一般的なワークフローなどです。これらの指示はバージョン管理を通じてチームと共有されるため、個人的な設定ではなくプロジェクトレベルの標準に焦点を当ててください。
+プロジェクトの CLAUDE.md は、`./CLAUDE.md` または `./.claude/CLAUDE.md` のいずれかに保存できます。このファイルを作成し、プロジェクトに携わるすべての人に適用される指示を追加します。たとえば、ビルドコマンドとテストコマンド、コーディング規約、アーキテクチャ上の決定事項、命名規則、一般的なワークフローなどです。これらの指示はバージョン管理を通じて共有されるため、個人的な好みではなくプロジェクトレベルの標準に焦点を当ててください。
 
 ファイルがロードされたことを確認するには、セッションで [`/context all`](https://code.claude.com/docs/ja/commands#all-commands) を実行し、**Memory files** の下のリストを確認してください。[フルスクリーンモード](https://code.claude.com/docs/ja/fullscreen.md) では、`/context` だけを実行するとそのリストは折りたたまれます。
 
@@ -393,7 +393,7 @@ Claude が読み込むファイルを変更するには、Claude Code セッシ�
 | `claude-md-or-agents-md` | `CLAUDE.md` ファイル、またはワーキングディレクトリまたはその上位ディレクトリに `CLAUDE.md` または `CLAUDE.local.md` がない場合は `AGENTS.md` ファイル。これが既定値です |
 | `claude-md-and-agents-md` | `CLAUDE.md` と `AGENTS.md` ファイルを一緒に、各ディレクトリの `CLAUDE.md` ファイルを最初に、その後に `AGENTS.md` を読み込みます。Claude Code は既に読み込んだ `AGENTS.md` をスキップするため、`CLAUDE.md` がインポートまたはシンボリックリンクしているものは 2 回読み込まれません |
 | `claude-md` | `CLAUDE.md` ファイルのみ |
-| `managed-only` | 起動時に組織が管理する `CLAUDE.md` と [自動メモリ](#auto-memory) のみ。プロジェクト、ローカル、ユーザーの `CLAUDE.md` ファイル、`.claude/rules/` ファイル、およびすべての `AGENTS.md` は除外されます。サブディレクトリの `CLAUDE.md` と `.claude/rules/` ファイル、および [パススコープのルール](#path-specific-rules) は、引き続き必要に応じて読み込まれます |
+| `managed-only` | 起動時には、管理対象の `CLAUDE.md` と[自動メモリ](#auto-memory)のみを読み込みます。プロジェクト、ローカル、ユーザーの `CLAUDE.md` ファイル、`.claude/rules/` ファイル、およびすべての `AGENTS.md` は除外されます。サブディレクトリの `CLAUDE.md` と `.claude/rules/` ファイル、および[パススコープのルール](#path-specific-rules)は、引き続き必要に応じて読み込まれます |
 
 `/config` の代わりに設定ファイルで値を設定することもできます。`AGENTS.md` を読み込む組み込みプラグインの ID である `cc-plugin-agents-md@builtin` の下で、[`pluginConfigs`](https://code.claude.com/docs/ja/settings-reference#pluginconfigs) に追加してください。Claude Code はこのエントリを `~/.claude/settings.json`、`--settings` ファイル、または [管理設定](https://code.claude.com/docs/ja/managed-settings.md) から読み込み、プロジェクトおよびローカルの設定ファイルでは無視します。この例は Claude に両方のファイルを読み込ませます。
 

@@ -24,7 +24,7 @@ Approvals をオンにしていても、プルリクエストは作成者以外�
 * ボットを許可する [`from` リスト](https://code.claude.com/docs/ja/approvals-policy#people-lists)
 * マシンユーザー（スクリプトやエージェントが操作するユーザーアカウント）。これは[人としてカウントされる場合があります](https://code.claude.com/docs/ja/approvals-policy.md#whether-a-pull-request’s-author-counts)
 * プッシュ後もシートを維持する [`reuse`](https://code.claude.com/docs/ja/approvals-policy#reuse)
-* どのルールにも該当しないファイル。この場合、GitHub は neutral の結果を成功としてカウントします
+* どのルールもカバーしないファイル。この場合、GitHub は neutral の結果を成功としてカウントします
 * ルールの `if`、上書きの `if`、または `reuse` 内で[分類器](https://code.claude.com/docs/ja/approvals-classifiers.md)の回答を参照する条件。その回答は[プルリクエストのテキストによって誘導され得る](#classifier-answers-that-a-pull-request-can-steer)ものです
 
 デフォルトブランチへの直接プッシュにはチェックが行われません。GitHub でデフォルトブランチへのプルリクエストを必須にしてください。

@@ -15,7 +15,7 @@
 > * **ポーリングする代わりにイベントが発生したときに反応する**: [チャネル](https://code.claude.com/docs/ja/channels.md) を参照してください。CI はセッションに直接失敗をプッシュできます。
 > * **一定の間隔ではなく、条件を満たすまでターンごとにセッションを動作させ続ける**: [`/goal`](https://code.claude.com/docs/ja/goal) を参照してください。
 
-タスクはセッションスコープです。`--resume` または `--continue` で再開すると、Claude Code は [有効期限切れ](#seven-day-expiry) になっていないタスクを復元します。ただし、[制限事項](#limitations) に記載されているタスクは除きます。セッションとは独立して存続するスケジューリングについては、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) を作成するか、[Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md) をセットアップするか、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) を使用してください。
+タスクはセッションスコープです。`--resume` または `--continue` で再開すると、Claude Code は [有効期限切れ](#recurring-task-expiry) になっていないタスクを復元します。ただし、[制限事項](#limitations) に記載されているタスクは除きます。セッションとは独立して存続するスケジューリングについては、[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) を作成するか、[Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md) をセットアップするか、[GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) を使用してください。
 
 ## スケジューリングオプションを比較する
 
@@ -78,7 +78,7 @@ Claude Code は、定期的または 1 回限りの作業をスケジュール�
 
 [Monitor ツールが利用可能](https://code.claude.com/docs/ja/tools-reference.md#monitor-tool)なセッションでは、動的な `/loop` スケジュールをリクエストすると、Claude は Monitor ツールを直接使用する場合があります。Monitor はバックグラウンドスクリプトを実行し、各出力行をストリーミングバックします。これにより、ポーリングを完全に回避でき、プロンプトを間隔で再実行するよりも多くの場合、トークン効率が高く、応答性が高くなります。
 
-動的にスケジュールされたループは、他のタスクと同様に[スケジュールタスクリスト](#manage-scheduled-tasks)に表示されるため、同じ方法でリストまたはキャンセルできます。リストには保留中のウェイクアップが単発タスクとして表示されるため、`:00` または `:30` にスケジュールされたウェイクアップは[少し早く実行される](#when-a-one-shot-task-runs-early)場合があります。[7 日間の有効期限](#seven-day-expiry)もループに適用されます。
+動的にスケジュールされたループは[スケジュールタスクリスト](#manage-scheduled-tasks)に表示されるため、Claude にリストやキャンセルを依頼できます。リストには保留中のウェイクアップが単発タスクとして表示されるため、`:00` または `:30` にスケジュールされたウェイクアップは[少し早く実行される](#when-a-one-shot-task-runs-early)場合があります。ループは[開始から 30 日後に期限切れになります](#recurring-task-expiry)。
 
 > [!NOTE]
 >
@@ -127,7 +127,7 @@ quiet, say so in one line.
 ### ループを停止する
 
 * **[自分のペースで実行するループ](#let-claude-choose-the-interval)**: ループが次の反復を待機している間に、空のプロンプトで `Esc` を押すと停止します。Claude がアイドル状態のときは `Ctrl+C` で停止することもできます。ただし、[アタッチしたバックグラウンドセッション](#detach-without-stopping-a-loop)では除きます。`Pending wakeup cancelled` という通知により、ループが再度実行されないことを確認できます。
-* **[固定間隔のループ](#run-on-a-fixed-interval)**: `/loop 5m` などのループを停止するには、Claude にキャンセルを依頼します（例: `cancel the deploy check loop`）。`Esc` と `Ctrl+C` では、このループも、[Claude に直接依頼してスケジュールした](#manage-scheduled-tasks)タスクも停止しません。キャンセルしないループは [7 日が経過](#seven-day-expiry)すると終了します。
+* **[固定間隔のループ](#run-on-a-fixed-interval)**: `/loop 5m` などのループを停止するには、Claude にキャンセルを依頼します（例: `cancel the deploy check loop`）。`Esc` と `Ctrl+C` では、このループも、[Claude に直接依頼してスケジュールした](#manage-scheduled-tasks)タスクも停止しません。キャンセルしないループは[開始から 30 日後](#recurring-task-expiry)に終了します。
 
 [自分のペースモード](#let-claude-choose-the-interval)では、Claude はタスクが完了したら自分でループを終了することもできます。Claude は [`ScheduleWakeup` ツール](https://code.claude.com/docs/ja/tools-reference)を `stop: true` で呼び出し、保留中のウェイクアップを直ちにキャンセルします。
 
@@ -208,9 +208,11 @@ cancel the deploy check job
 
 `:00` または `:30` にスケジュールされた 1 回限りのタスクは、最大 90 秒早く実行されます。Claude Code はそれ以外の分にスケジュールされた 1 回限りのタスクの実行時刻はずらさないため、タイミングが重要な場合は、`0 9 * * *` ではなく `3 9 * * *` のように、毎時 0 分と 30 分を避けてスケジュールしてください。
 
-### 7 日間の有効期限
+### 定期的なタスクの有効期限
 
-定期的なタスクは作成後 7 日で自動的に期限切れになります。タスクは最後に 1 回実行され、その後自身を削除します。これにより、忘れられたループが実行できる期間が制限されます。定期的なタスクをより長く続ける必要がある場合は、期限切れになる前にキャンセルして再作成するか、永続的なスケジューリングのために[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)または [Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md)を使用してください。
+定期的なタスクは作成後 30 日で自動的に期限切れになります。タスクは最後に 1 回実行され、その後自身を削除します。これにより、忘れられたループが実行できる期間が制限されます。v2.1.330 より前は制限が 7 日間であり、それらのバージョンで `CronCreate` を使用して作成された定期的なタスクには、引き続きその制限が適用されます。
+
+定期的なタスクをより長く続ける必要がある場合は、期限切れになる前にキャンセルして再作成するか、永続的なスケジューリングのために[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)または [Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md)を使用してください。
 
 ## Cron 式リファレンス
 

@@ -66,11 +66,11 @@ Claude を開く最も簡単な方法は、**エディターツールバー**（
 
 ![エディターツールバーに Spark アイコンが表示されている VS Code エディター](https://mintcdn.com/claude-code/mfM-EyoZGnQv8JTc/images/vs-code-editor-icon.png?fit=max\&auto=format\&n=mfM-EyoZGnQv8JTc\&q=85\&s=eb4540325d94664c51776dbbfec4cf02)
 
-Claude Code を開くその他の方法:
+Claude Code を開くその他の方法：
 
-* **アクティビティバー**: 左サイドバーの Spark アイコンをクリックしてセッション一覧を開きます。任意のセッションをクリックすると[優先する場所](#extension-settings)で開くことができ、新しいセッションを開始することもできます。このアイコンはアクティビティバーに常に表示されています。
-* **コマンドパレット**: `Cmd+Shift+P`（Mac）または `Ctrl+Shift+P`（Windows/Linux）を押して「Claude Code」と入力し、「Open in New Tab」などのオプションを選択します
-* **ステータスバー**: ウィンドウの右下隅にある **✻ Claude Code** をクリックします。これはファイルを開いていないときでも機能します。
+* **Activity Bar**：左サイドバーの Spark アイコンをクリックすると、セッション一覧が開きます。任意のセッションをクリックすると[優先する場所](#extension-settings)で開きます。新しいセッションを開始することもできます。このアイコンは Activity Bar に常に表示されています。
+* **Command Palette**：`Cmd+Shift+P`（Mac）または `Ctrl+Shift+P`（Windows/Linux）を押し、「Claude Code」と入力して、「Open in New Tab」などのオプションを選択します
+* **Status Bar**：ウィンドウ右下の **✻ Claude Code** をクリックします。これはファイルを開いていなくても機能します。
 
 Claude パネルはドラッグして VS Code 内の任意の場所に移動できます。詳しくは[ワークフローをカスタマイズする](#customize-your-workflow)を参照してください。
 
@@ -688,6 +688,8 @@ VS Code では、デフォルトでほとんどのサブエージェントにこ
 | New Conversation | `Cmd+N`（Mac）/ `Ctrl+N`（Windows/Linux） | 新しい会話を開始します。Claude がフォーカスされており、`enableNewConversationShortcut` が `true` に設定されている必要があります |
 | Reopen Closed Session | `Cmd+Shift+T`（Mac）/ `Ctrl+Shift+T`（Windows/Linux） | 最後に閉じた Claude セッションタブを再度開きます。最後に閉じたタブが Claude セッションでなかった場合は、VS Code の通常の「閉じたエディターを再度開く」動作になります。`enableReopenClosedSessionShortcut` で無効にできます |
 | Insert @-Mention Reference | `Option+K`（Mac）/ `Alt+K`（Windows/Linux） | 現在のファイルと選択範囲への参照を挿入します（エディターがフォーカスされている必要があります） |
+| Add Cell to Chat | - | ノートブックのセル、そのテキスト出力またはエラー、およびノートブックへの @-メンションをプロンプトボックスに追加します。Claude Code v2.1.331 以降が必要です |
+| Resolve Merge Conflicts | - | コンフリクト解決のリクエストをプロンプトボックスに入力します。コンフリクトのあるファイルの **Editor Toolbar**、またはソース管理の **Merge Changes** にあるこのコマンドのボタンをクリックします。Claude Code v2.1.331 以降が必要です |
 | Accept Change at Cursor | - | [提案された編集を変更ごとにレビュー](#get-started)しているときに、カーソル位置の変更を承認します。Claude Code v2.1.275 以降が必要です |
 | Reject Change at Cursor | - | 提案された編集を変更ごとにレビューしているときに、カーソル位置の変更を元に戻します。Claude Code v2.1.275 以降が必要です |
 | Toggle Focus view | `Ctrl+Option+F`（Mac）/ `Ctrl+Alt+F`（Windows/Linux） | 会話内のツールのアクティビティを非表示または表示にします。Claude パネルまたはサイドバーが表示されている間に機能します。Windows/Linux では、フォーカスがデバッグコンソールまたはエクスプローラーなどの検索可能なリストにある間は、`Ctrl+Alt+F` を押すと代わりに VS Code の検索が開きます。エディターまたは Claude パネルにフォーカスしてから、もう一度押してください。Claude Code v2.1.221 以降が必要です |
@@ -771,6 +773,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 | `autosave` | `true` | Read、Edit、Write ツールが実行される前にファイルを自動保存します |
 | `attachOpenFile` | `true` | エディターで開いているファイルをメッセージに追加し、プロンプトボックスに表示します。オフにすると、ファイルはテキストを選択した場合にのみ、そのテキストと一緒に追加されます。Claude Code v2.1.271 以降が必要です |
 | `attachSelection` | `true` | エディターで選択したテキストをメッセージに追加し、プロンプトボックスに表示します。オフにしても、[選択範囲を @-メンションとして追加](#automatic-context-from-your-selection-and-open-file)することはできます。Claude Code v2.1.300 以降が必要です |
+| `showFixActions` | `true` | エディターのエラー、警告、失敗したテストに **Fix with Claude Code** を表示します。これを選択すると、修正リクエストがプロンプトボックスに入力されます。Claude Code v2.1.331 以降が必要です |
 | `useCtrlEnterToSend` | `false` | プロンプトの送信に Enter の代わりに Ctrl/Cmd+Enter を使用します |
 | `scrollToBottomOnSend` | `true` | メッセージを送信したときに会話を最下部までスクロールします。オフにすると、会話は表示していた位置のままになります。Claude Code v2.1.275 以降が必要です |
 | `pinPrompt` | `true` | Claude の応答をスクロールしている間、自分のメッセージを上部に固定したままにします。Claude Code v2.1.330 以降が必要です |
@@ -793,7 +796,7 @@ VS Code は `initialPermissionMode` をユーザー設定から読み取り、�
 
 ## サードパーティプロバイダーを使用する
 
-デフォルトでは、Claude Code は Anthropic の API に直接接続します。組織が Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用して Claude にアクセスしている場合は、代わりにそのプロバイダーを使用するように拡張機能を設定します。
+デフォルトでは、Claude Code は Anthropic の API に直接接続します。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry を使用して Claude にアクセスしている場合は、代わりにそのプロバイダーを使用するように拡張機能を設定します。
 
 **1. ログインプロンプトを無効にする**
 
@@ -996,6 +999,7 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 | `Could not locate the Claude CLI on PATH` | [Could not locate the Claude CLI on PATH](https://code.claude.com/docs/ja/errors.md#could-not-locate-the-claude-cli-on-path) |
 | `The connection to Claude Code ended before this message completed` | [The connection to Claude Code ended before this message completed](https://code.claude.com/docs/ja/errors.md#the-connection-to-claude-code-ended-before-this-message-completed) |
 | `The Claude Code program for this computer, the <build> build, could not be found` | [The Claude Code program for this computer could not be found](https://code.claude.com/docs/ja/errors.md#the-claude-code-program-for-this-computer-could-not-be-found) |
+| `Failed to set model: Settings file is not valid JSON` | [壊れた設定ファイルを修正する](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file) |
 | VS Code の統合ターミナルで `claude` が見つからない | [VS Code で CLI を実行する](#run-cli-in-vs-code) |
 
 ### 拡張機能をインストールできない
@@ -1008,13 +1012,13 @@ claude mcp add --transport http github https://api.githubcopilot.com/mcp/ \
 
 Spark アイコンは、ファイルを開いているときに **Editor Toolbar**（エディターの右上）に表示されます。表示されない場合は、次の手順を試してください。
 
-1. **ファイルを開く**: アイコンを表示するにはファイルを開いている必要があります。フォルダーを開いているだけでは不十分です。
+1. **ファイルを開く**: アイコンを表示するにはファイルを開いている必要があります。
 2. **VS Code のバージョンを確認する**: 1.94.0 以降が必要です。**Help > About** で確認してください
 3. **VS Code を再起動する**: コマンドパレットから「Developer: Reload Window」を実行します
 4. **競合する拡張機能を無効にする**: 他の AI 拡張機能（Cline、Continue など）を一時的に無効にします
 5. **ワークスペースの信頼を確認する**: 拡張機能は制限モードでは動作しません
 
-または、ウィンドウ右下の **Status Bar** にある **✻ Claude Code** をクリックします。この方法はファイルを開いていなくても機能します。**Command Palette**（`Cmd+Shift+P` / `Ctrl+Shift+P`）を使用して「Claude Code」と入力することもできます。
+または、ウィンドウ右下隅の **Status Bar** にある **✻ Claude Code** をクリックします。この方法はファイルを開いていなくても使えます。**Command Palette**（`Cmd+Shift+P` / `Ctrl+Shift+P`）を使用して「Claude Code」と入力することもできます。
 
 ### macOS で Cmd+Esc を押しても何も起こらない
 

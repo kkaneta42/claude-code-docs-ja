@@ -72,7 +72,7 @@ Claude に worktree で作業するよう依頼しても `EnterWorktree` や `Ex
 
 * **Claude Code が worktree 内で別のセッションを検出した場合**: 削除を選択しても、worktree とブランチは保持されます。`Worktree kept at` メッセージに従ってください
 * **worktree がクリーンな場合**: 名前のないセッションでは、Claude は worktree とそのブランチを自動的に削除します。[名前付き](https://code.claude.com/docs/ja/sessions.md#name-your-sessions)セッションでは最初にプロンプトが表示されるため、後で使用するために worktree を保持できます
-* **worktree に作業が含まれている場合**: Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。保持するとディレクトリとブランチが保存されます。後で戻るには、Claude Code が終了時に出力する `claude --worktree <name> --resume` コマンドを実行します。削除すると worktree ディレクトリとそのブランチが、その中のすべての作業とともに削除されます
+* **worktree に作業が含まれている場合**: Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。保持するとディレクトリとブランチが保存されるため、[後で戻る](#resume-a-worktree-session)ことができます。削除すると worktree ディレクトリとそのブランチが、その中のすべての作業とともに削除されます
 * **別のブランチがチェックアウトされている場合**: worktree が自身のブランチ以外のブランチ上にあり、そのブランチに worktree の開始コミット以降のコミットがある場合、Claude は worktree を保持するか削除するかを求めるプロンプトを表示します。どちらを選択しても、その別のブランチとそのコミットは保持されます。削除すると、worktree ディレクトリと、Claude が worktree とともに作成した worktree 自身のブランチが削除されます
 * **worktree の状態を検証できない場合**: Claude Code が worktree の変更をカウントできない、またはサブモジュールのチェックアウトを検査できない場合、worktree を自動的に削除するのではなくプロンプトを表示します。プロンプトには確認できなかった内容が示されます
 
@@ -81,6 +81,10 @@ Claude に worktree で作業するよう依頼しても `EnterWorktree` や `Ex
 Windows では、worktree を削除しても worktree 外のファイルは削除されません。worktree 内のフォルダーが NTFS ジャンクションやディレクトリのシンボリックリンクなど、別の場所へのリンクである場合、Claude Code はリンクのみを削除します。
 
 ## worktree セッションを再開する
+
+保持した worktree に戻るには、終了時に表示されたセッション ID を使用して、メインのチェックアウトから `claude --worktree <name> --resume <session-id>` を実行します。`<name>` には、`.claude/worktrees/` の下のフォルダ名を入力し、`+` はすべて `/` に置き換えてください。
+
+### `--worktree` なしで再開する
 
 worktree 内で[分離](#how-claude-code-enforces-isolation)された状態のまま、worktree を[終了](#clean-up-worktrees)せずに終わったセッションを再開すると、Claude Code はセッションをその worktree に戻し、分離された状態を維持します。これは対話的な再開、`-p` を使用した[非対話モード](https://code.claude.com/docs/ja/headless.md)での `--continue` と `--resume`、および Agent SDK に当てはまります。worktree 内に戻った後、[セッションにそのツールがある場合](#claude-has-no-enterworktree-tool)は、Claude は [`ExitWorktree`](https://code.claude.com/docs/ja/tools-reference) ツールで worktree を終了できます。
 
@@ -96,6 +100,8 @@ worktree 内で[分離](#how-claude-code-enforces-isolation)された状態の�
 > [!NOTE]
 >
 > v2.1.212 より前は、非対話的な再開は開始ディレクトリにとどまり、`ExitWorktree` は終了するアクティブな worktree セッションがないと報告していました。
+
+### トランスクリプトの場所
 
 Claude Code が git で作成した worktree に Claude が入るか出ると、トランスクリプトもそれに追従します。Claude Code は [`/cd`](https://code.claude.com/docs/ja/commands) と同じ方法で、セッションの新しい作業ディレクトリの下にセッションを記録するため、`/desktop` と `--resume` はそこでセッションを見つけます。終了すると同じ方法で元に戻ります。[`WorktreeCreate` フック](#non-git-version-control)によって作成された worktree は、トランスクリプトを起動ディレクトリに保持します。
 
@@ -135,7 +141,7 @@ Apply the requested refactor across every affected file, then run the tests
 and report the results.
 ```
 
-各サブエージェントは一時的な worktree を取得し、サブエージェントが変更なしで完了すると Claude Code がそれを自動的に削除します。変更を含む worktree は、[以下の定期スイープ](#clean-up-subagent-and-background-session-worktrees)が作業を失わずに削除できるようになるまでディスク上に残ります。[WorktreeCreate フック](https://code.claude.com/docs/ja/hooks.md#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](https://code.claude.com/docs/ja/hooks.md#worktreeremove) を参照してください。
+サブエージェントが完了したとき、git がその worktree に変更されたファイル、追跡されていないファイル、または新しいコミットを示している場合、Claude Code は worktree を保持します。それ以外の場合、Claude Code は worktree をすぐに削除できます。保持された worktree は、[定期スイープ](#clean-up-subagent-and-background-session-worktrees)が作業を失わずに削除できるようになるまでディスク上に残ります。[WorktreeCreate フック](https://code.claude.com/docs/ja/hooks.md#worktreecreate)が作成した worktree については、代わりに [WorktreeRemove](https://code.claude.com/docs/ja/hooks.md#worktreeremove) を参照してください。
 
 サブエージェントの worktree は `--worktree` と同じ[ベースブランチ](#choose-the-base-branch)を使用するため、`worktree.baseRef` が `"head"` に設定されていない限り、リポジトリのデフォルトブランチからブランチします。
 
@@ -151,13 +157,11 @@ Claude Code は定期的なスイープを実行し、Claude がサブエージ�
 * worktree 内のチェックアウトされたサブモジュールに変更されたファイルや追跡されていないファイルがある、または Claude Code が worktree のサブモジュールを検査できない。このチェックには Claude Code v2.1.274 以降が必要です。
 * [worktree の作成もブロックする 4 つのケース](#git-lfs-content-is-missing-from-a-worktree-claude-code-created)のいずれかに該当する: Claude Code がリポジトリ設定で定義されているフィルタードライバーを特定できない、またはそこにオフにできない設定項目が見つかった。
 * worktree が、バックグラウンドに送っていない `--worktree` セッションに属している（経過時間に関係なく）。
-* `git worktree add` で worktree を自分で作成した（その後その中で `--worktree <name>` セッションを実行し、そのセッションをバックグラウンドに送った場合でも）。
-
-Claude Code は git で作成するすべての worktree の git メタデータにマーカーを書き込み、スイープはマーカーのない worktree（[`WorktreeCreate` フック](#non-git-version-control)が作成した worktree を含む）を保持します。
+* `.claude/worktrees/` の外で `git worktree add` を使って worktree を自分で作成した。
 
 #### worktree のロックと手動削除
 
-エージェントの実行中、Claude Code は同時実行のクリーンアップで削除されないように、その worktree に `git worktree lock` をかけ、エージェントが完了するとロックを解放します。Claude Code は、バックグラウンドに送られたセッション用に作成した worktree にも、セッションの実行中に同じロックをかけるため、スイープはその worktree をそのまま残し、`git worktree remove` は削除を拒否します。
+Claude Code は、エージェント用に作成した worktree に `git worktree lock` をかけ、エージェントの最初の実行中、つまり[再開](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)される前に、同時実行のクリーンアップで削除されないようにします。Claude Code がバックグラウンドに送られたセッション用に作成した worktree にも、セッションの実行中は同じロックがかかるため、スイープはその worktree を保持し、`git worktree remove` は削除を拒否します。
 
 スイープは、プロセスが終了したセッションのために Claude Code が設定したロックも解放するため、強制終了されたバックグラウンドセッションが worktree を永続的にロックしたままにすることはありません。スイープは、`git worktree lock` で自分で設定したロックを解放することはありません。
 
@@ -200,11 +204,11 @@ Claude Code の worktree 作成のデフォルトは、ほとんどのセッシ�
 claude --worktree "#1234"
 ```
 
-Claude Code は URL から番号のみを読み取ります。常にリポジトリの `origin` リモートからフェッチし、`origin` のホストに応じてフェッチパスを選択します。
+Claude Code は渡された URL 内のホストとリポジトリを無視し、`origin` のホストに応じてフェッチパスを選択します。
 
 * **github.com**: `pull/<number>/head` をフェッチします
 * **gitlab.com**: `merge-requests/<number>/head` をフェッチします
-* **GitHub Enterprise、セルフマネージド GitLab、またはその他のホスト**: まず `pull/<number>/head` を試し、次に `merge-requests/<number>/head` を試します
+* **GitHub Enterprise、セルフマネージド GitLab、またはその他のホスト**: プルリクエスト URL には `pull/` を、マージリクエスト URL には `merge-requests/` を使用し、`#` 番号の場合は存在する方を使用します。両方が異なるコミットで存在する場合は、`Cannot use PR/MR #<number>` メッセージに従ってください。
 
 このフェッチはターミナルでの入力を待機しません。git または ssh がパスワード、鍵のパスフレーズ、または新しい SSH ホストの確認を求める場合、フェッチは代わりに失敗し、Claude Code は `Error creating worktree: Failed to fetch PR/MR #<number>` メッセージを表示して終了します。`ssh-agent` が保持している鍵は引き続き使用できるため、開始する前に鍵を `ssh-agent` に読み込み、`git fetch` を一度手動で実行して新しいホストを記録してください。
 

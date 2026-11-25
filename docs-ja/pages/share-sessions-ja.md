@@ -59,10 +59,7 @@ Max、Ultra、Pro プランでは、リンクを持ち claude.ai にサインイ
 * **公開範囲のオプション**：**Private** と **Public**
 * **リポジトリへのアクセス**：**Require repository access** はデフォルトでオフです。オンにすると、共有するクラウドセッションを、各セッションのプライベートリポジトリへのアクセス権を持つ受信者に限定できます。リポジトリへのアクセス権を持たないユーザーでも、Remote Control セッションのリンクは開ける場合があります。
 
-**Require repository access** をオンにする、または **Show your name** をオフにするには、claude.ai で Settings を開き、次の操作を行います。
-
-* **Settings メニューに Claude Code ではなく Code と表示される場合**：[**Privacy**](https://claude.ai/settings/data-privacy-controls) に移動します
-* **それ以外の場合**：[**Claude Code > Sharing settings**](https://claude.ai/settings/claude-code) に移動します
+**Require repository access** をオンにする、または **Show your name** をオフにするには、claude.ai で [**Settings > Privacy**](https://claude.ai/settings/data-privacy-controls) に移動し、**Shared Code sessions** の横にある **Manage** をクリックします。
 
 ## セッションの共有を停止する
 
@@ -95,12 +92,12 @@ Max、Ultra、Pro プランでは、リンクを持ち claude.ai にサインイ
 受信者がリンクを開けない場合は、次の原因を確認してください。
 
 * **公開範囲**：セッションが **Private** になっている、または受信者が claude.ai にサインインしていない、あるいは **Team** リンクで受信者が組織外のユーザーである。[リンクを開けるユーザー](#share-a-session)を確認してください。
-* **Free プラン**：受信者が Free アカウントでサインインしており、アップグレードページが表示される。[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)を利用できるアカウントでサインインするよう依頼してください。
 * **リポジトリへのアクセス**：リンクで[リポジトリへのアクセスが必要](#share-a-session)とされており、受信者の GitHub アカウントがそのリポジトリを読み取れない。読み取り可能な[アカウントを接続する](https://code.claude.com/docs/ja/web-quickstart.md#connect-github)よう依頼してください。
 * **アップロードされたコードまたは GitHub 以外のコード**：リンクでリポジトリへのアクセスが必要とされており、コードが[アップロードされた](https://code.claude.com/docs/ja/claude-code-on-the-web.md#send-local-repositories-without-github)ものであるか、GitLab や Bitbucket などの Git ホスト上にある。リポジトリが github.com 上にあり、アップロードされたものではないセッションから共有してください。
 * **無効なリンク**：共有リンクがブラウザーのアドレスと一致していない可能性があります。また、**Public** リンクは、共有を停止して再度共有すると変更されます。**Share** から現在のリンクをコピーして送信してください。
 * **組織の設定**：組織で [**Share cloud sessions** がオフになっている](#sharing-is-turned-off-for-your-organization)。Owner に依頼して、再度オンにしてもらってください。
 * **プランのアップグレード**：**Public** リンクを共有した後、プランを Team または Enterprise にアップグレードした。リンクには [Enterprise および Team アカウント](#share-from-an-enterprise-or-team-account)のルールが適用されます。
+* **プランのダウングレード**：**Public** リンクを共有した後、Free プランに移行した。Max、Ultra、または Pro プランに[アップグレード](https://claude.ai/upgrade)すると、追加の手順なしで同じリンクを開けるようになります。
 
 次の場合、リンクを復元することはできません。
 

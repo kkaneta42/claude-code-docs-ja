@@ -11,6 +11,15 @@
 View plans
 Contact sales
 
+このページでは、Claude Code CLI および IDE 拡張機能向けに Amazon Bedrock をセットアップする方法について説明します。
+
+> [!NOTE]
+>
+> Claude Desktop アプリの **Code** タブで Amazon Bedrock を使用するには、ユーザー自身または管理者がアプリを設定します。
+>
+> * **組織がアプリをインストールした場合**：管理者に [Amazon Bedrock 向けの設定](https://claude.com/docs/third-party/claude-desktop/bedrock)を依頼してください
+> * **ユーザー自身がアプリをインストールする場合**：[単一マシンのセットアップ手順](https://claude.com/docs/third-party/claude-desktop/installation#single-machine-setup)に従い、[Amazon Bedrock の接続値とモデル値](https://claude.com/docs/third-party/claude-desktop/bedrock#configure-the-app)を入力してください
+
 ## 前提条件
 
 Claude Code を Amazon Bedrock で設定する前に、以下を確認してください。

@@ -26,7 +26,7 @@ Approvals は、プッシュや承認などのイベントの後にプルリク�
 
 **Claude Approvals** チェックは、プルリクエストの承認ステータスをタイトル（チェック一覧で名前の横に表示されるテキスト）で示します。以下の表でチェックのタイトルを探し、その意味と次に行うことを確認してください。
 
-ここにないタイトルの場合は、**Claude Approvals** チェックのサマリーを開いてください。原因と次のステップが記載されています。ポリシーファイル `.claude/approvals.yml` を管理している人を確認するには、デフォルトブランチでそのファイルを最後に変更した人を確認してください。
+その他のタイトルの場合は、**Claude Approvals** チェックの概要を開いてください。原因と次の手順が記載されています。ポリシーファイル `.claude/approvals.yml` を管理しているユーザーを確認するには、デフォルトブランチでそのファイルを最後に変更したユーザーを確認してください。
 
 ### Approvals が人を待っている
 
@@ -40,20 +40,20 @@ Approvals は、プッシュや承認などのイベントの後にプルリク�
 
 ### Approvals が Code Review または分類器を待っている
 
-これらのタイトルの場合、Approvals は [Code Review](https://code.claude.com/docs/ja/code-review-pull-requests.md) または[分類器](https://code.claude.com/docs/ja/approvals-classifiers.md)からの回答を待っているか、回答を得られませんでした。
+これらのタイトルの場合、Approvals には [Code Review](https://code.claude.com/docs/ja/code-review-pull-requests.md) または[分類器](https://code.claude.com/docs/ja/approvals-classifiers.md)からの回答が必要です。
 
 | タイトル | 対応 |
 | :- | :- |
-| **Waiting for Code Review**、**Waiting for repo/change\_risk**、**Waiting for classifiers** | まだ何もする必要はありません |
-| **A classifier had no result**、**A classifier has not run**、または **repo/change\_risk has not run** のように「A classifier」の代わりに名前が入ったもの | [Claude Approvals チェックを再実行します](#comment-commands-for-approvals)。[実行で回答が得られなかった場合](https://code.claude.com/docs/ja/approvals-classifiers.md#what-a-rule-sees-when-a-classifier-run-gives-no-answer)を参照してください |
+| **Waiting for Code Review**、**Waiting for repo/change\_risk**、**Waiting for classifiers** | 結果を待ちます |
+| **A classifier had no result**、**A classifier has not run**、または **repo/change\_risk has not run** のように「A classifier」の代わりに名前が入ったもの | [Claude Approvals チェックを再実行します](#comment-commands-for-approvals)。[回答がない場合にルールが何を参照するか](https://code.claude.com/docs/ja/approvals-classifiers.md#what-a-rule-sees-when-a-classifier-run-gives-no-answer)を参照してください |
 
 ### ルールまたはポリシーファイルが原因で Approvals が成功しない
 
-これらのタイトルの場合、ルールがプルリクエストを保留しているか、変更されたファイルに適用されるルールがないか、ポリシーファイルを使用できません。
+これらのタイトルの場合、ルールがプルリクエストを保留しているか、ポリシーの修正が必要です。
 
 | タイトル | 対応 |
 | :- | :- |
-| **Held by Code Review's findings** | Code Review がプルリクエストに投稿した指摘事項を修正し、プッシュします。ポリシーの [`findings`](https://code.claude.com/docs/ja/approvals-policy#findings) リストにユーザーの名前がある場合は、指摘事項のスレッドを解決できます。解決した後も **Claude Approvals** チェックが成功しない場合は、修正をプッシュします |
+| **Held by Code Review's findings** | Code Review がプルリクエストに投稿した指摘事項を修正し、プッシュします。ポリシーの [`findings`](https://code.claude.com/docs/ja/approvals-policy#findings) リストにユーザーの名前がある場合は、指摘事項のスレッドを解決できます。解決した後も **Claude Approvals** チェックが保留されたままの場合は、修正をプッシュします |
 | **Held by** と引用符で囲まれたルールの目的、**Held by a policy rule** | チェックのサマリーに記載されたルールが何を必要としているかをポリシーファイルの管理者に確認し、修正をプッシュします |
 | **No rule applies to** と引用符で囲まれたファイル名、**No rule applies to a changed file** | ポリシーファイルの管理者に、そのファイルを対象とする `if` のないルールを依頼します。そのルールがマージされたら、チェックを再実行します |
 | **This change breaks a policy file**、**Default branch policy file cannot be used** | [ポリシーファイルを修正します](https://code.claude.com/docs/ja/approvals-troubleshooting.md#fix-a-policy-file-that-approvals-refuses) |
@@ -67,10 +67,10 @@ Approvals は、プッシュや承認などのイベントの後にプルリク�
 | タイトル | 対応 |
 | :- | :- |
 | **Passed; no approval from Claude** | GitHub が承認を必須としている場合は、人に依頼します |
-| **Nothing ran, not blocking: no file is covered** | 何もする必要はありません。プルリクエストで変更されるファイルを誰かがレビューすべき場合は、[ポリシーファイル](https://code.claude.com/docs/ja/approvals-policy.md)の管理者にそれらのファイルを対象に含めるよう依頼します |
+| **Nothing ran, not blocking: no file is covered** | プルリクエストで変更されるファイルを誰かがレビューすべき場合は、[ポリシーファイル](https://code.claude.com/docs/ja/approvals-policy.md)の管理者にそれらのファイルを対象に含めるよう依頼します |
 | **Observe mode ended: not evaluated yet** | コミットをプッシュするか、[Claude Approvals チェックを再実行します](#comment-commands-for-approvals)。成功した場合、自動マージが有効なプルリクエストやマージキューにあるプルリクエストはすぐにマージされることがあります |
 
-**Passed; no approval from Claude** の場合、次のようなケースでは Claude は承認を投稿しません。
+**Passed; no approval from Claude** が表示された場合は、次のような原因がないか確認してください。
 
 * ルールに `claude: comments` と記載されている
 * 変更されたファイルにルールがない、またはそのファイルが[シンボリックリンク、サブモジュールポインタ、または `.gitattributes` ファイル](https://code.claude.com/docs/ja/approvals-policy#protected-files)である
@@ -80,13 +80,13 @@ Approvals は、プッシュや承認などのイベントの後にプルリク�
 
 observe モードでは、**Claude Approvals** チェックは neutral（GitHub は成功として扱います）で終了し、タイトルは **(observe mode)** で始まります。
 
-次のようなケースでは、チェックは neutral になりません。
+次のようなケースでは、チェックが待機する、失敗する、保留される、または表示されないことがあります。
 
 | ケース | チェックの動作 |
 | :- | :- |
 | プルリクエストがポリシーファイルまたは分類器ファイルを変更する | 1 人（作成者でもよい）を待つことがあります。変更によってそれらのファイルのいずれかが壊れた場合は失敗します |
 | デフォルトブランチのポリシーファイルを使用できない | [ポリシーファイルを修正する](https://code.claude.com/docs/ja/approvals-troubleshooting.md#fix-a-policy-file-that-approvals-refuses)まで失敗します |
-| タイトルに Withheld と表示されている | Approvals が成功のチェックを保留しています。たとえば、別のオープンなプルリクエストが同じ最新コミットを持っている場合です。何で解除されるかはチェックのサマリーに記載されています |
+| タイトルに Withheld と表示される | Approvals が成功したチェックを保留しています。たとえば、別のオープンなプルリクエストに同じ最新コミットがある場合などです。解除する方法については、チェックの概要を確認してください |
 | プルリクエストがデフォルト以外のブランチを対象としている | チェックは表示されません。ただし、プルリクエストがポリシーファイルまたは分類器ファイルを変更する場合は除きます |
 
 ## Approvals のコメントコマンド
@@ -105,22 +105,22 @@ Approvals は、GitHub App のボットアカウントからの `@claude approva
 
 ## Claude、フォーク、外部コントリビューターからのプルリクエスト
 
-`claude[bot]` が作成したプルリクエストを Claude が承認するには、2 つ目の GitHub App が必要です。フォークからのプルリクエストや、書き込みアクセス権を持たない人からのプルリクエストには、メンテナーが必要になることがあります。
+`claude[bot]` が作成したプルリクエストを Claude が承認できるようにするには、2 つ目の GitHub App が必要です。フォークからのプルリクエストや、書き込みアクセス権を持たない人からのプルリクエストには、メンテナーが必要になる場合があります。
 
 ### Claude が作成するプルリクエスト
 
-GitHub では、プルリクエストを作成したアカウントがそのプルリクエストを承認することはできません。2 つ目のアプリがない場合、Claude は `claude[bot]` が作成したプルリクエストに承認を出さず、**Claude Approvals** チェックは **Passed; no approval from Claude** というタイトルで成功することがあります。
+2 つ目の GitHub App を追加するまでは、`claude[bot]` が作成したプルリクエストの **Claude Approvals** チェックは、**Passed; no approval from Claude** というタイトルで成功することがあります。
 
 それらのプルリクエストで Claude の承認を得るには、2 つ目のアプリを追加します。
 
 1. **インストールする**: GitHub 組織のオーナーに、リポジトリへの [Claude Approvals GitHub App](https://github.com/apps/claude-approvals/installations/new) のインストールを依頼します。
-2. **リンクする**: [アプリを Claude の組織にリンクします](https://claude.ai/settings/claude-approvals/github/finish)。これには、GitHub 組織のオーナーであり、かつ Claude 組織の Owner または Primary Owner である人が必要です。両方を満たす人がいない場合は、[Anthropic サポート](https://support.claude.com)にお問い合わせください。
+2. **リンクする**: GitHub 組織のオーナーであり、かつ Claude 組織の Owner または Primary Owner である人に、[アプリを Claude の組織にリンクする](https://claude.ai/settings/claude-approvals/github/finish)よう依頼します。その人がリンクできない場合は、[Anthropic サポート](https://support.claude.com)にお問い合わせください。
 
 その後、`claude[bot]` が作成したオープンなプルリクエストで[チェックを再実行します](#comment-commands-for-approvals)。[Claude GitHub App](https://github.com/apps/claude) が引き続きチェックを報告するため、必須チェックのソースはそのままにしておいてください。
 
 ### フォークおよび外部コントリビューターからのプルリクエスト
 
-Approvals は、フォークのコミットを書き込みアクセス権を持つ人がプッシュしたことを確認できません。フォークのプルリクエストでは、Approvals はメンテナー（書き込みアクセス権を持つ人）を待つことがあります。
+フォークのプルリクエストでは、Approvals はメンテナー（書き込みアクセス権を持つ人）を待つことがあります。
 
 * **メンテナーがコミットを保証するまで**: Code Review を含め、どの分類器の回答もカウントされません。ルールがいずれかの分類器に依存している場合、**Claude Approvals** チェックのタイトルが **No classifier result counts on this commit** になることがあります。
 * **コミットを保証するには**: observe モード以外で、書き込みアクセス権を持っている場合は、変更内容を読みます。次に、`@claude approvals rerun` に続けて最新コミットの完全な SHA を、コメントの唯一のテキストとしてコメントします。その後、そのコミットに対して分類器が実行できるようになります。SHA を指定しない場合、コマンドはコメントした時点で最新だったコミットを対象とすることがあります。

@@ -84,7 +84,7 @@
 
 ### ゼロからプロジェクトを開始する
 
-ゼロからプロジェクトを開始するとは、**New project** ダイアログを開き、作業の流れに名前を付け、オプションでゴールと作業対象のリポジトリおよびファイルを指定することを意味します。必須なのは名前だけなので、プロジェクトを最初に作成してから、作業が進むにつれて残りを入力できます。
+ゼロからプロジェクトを開始するとは、**New project** ダイアログを開き、作業の流れに名前を付け、オプションでゴールと作業対象のリポジトリおよびファイルを指定することを意味します。
 
 **1. Projects を開く**
 
@@ -270,7 +270,7 @@ Claude は**コンピューター上のフォルダーで作業することを C
 
 スレッドは[自動モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で実行されるため、Claude はそのフォルダー内のコマンドを実行し、毎回あなたに尋ねることなくファイルを編集します。自動モードがそのコンピューターの Claude Code で利用できないか、オフになっている場合、スレッドはそれなしで実行され、発生するすべての権限プロンプトは、[承認を待機しているスレッドのブロックを解除する](#unblock-a-thread-waiting-on-approval)が説明するように、スレッドであなたの答えを待ちます。
 
-別のモードでスレッドを実行するには、[`--settings`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) を付けて `claude remote-control` を開始します。そのうえで、そのファイルまたはそのコンピューターの設定にある [`permissions.defaultMode`](https://code.claude.com/docs/ja/permission-modes#start-in-a-different-mode) で別のモードを選択できます。
+別のモードでスレッドを実行するには、[`disableAutoMode`](https://code.claude.com/docs/ja/settings-reference#disableautomode) を `"disable"` に設定したファイルを指定し、[`--settings`](https://code.claude.com/docs/ja/remote-control#start-a-remote-control-session) を付けて `claude remote-control` を開始します。そのうえで、そのファイルまたはそのコンピューターの設定にある [`permissions.defaultMode`](https://code.claude.com/docs/ja/permission-modes#start-in-a-different-mode) で、`default`、`plan`、`dontAsk` などの別のモードを選択できます。
 
 スレッドが実行されている間、ヘッダーのラップトップアイコンはコンピューターが接続されているかどうかを示します。クリックしてスレッドが使用しているフォルダーを確認するか、接続をオフにします。そのコンピューターがスリープ状態の間、スレッドは一時停止し、デスクトップアプリまたは `claude remote-control` が終了すると停止します。
 

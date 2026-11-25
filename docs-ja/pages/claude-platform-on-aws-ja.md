@@ -64,7 +64,7 @@ Claude Code は、起動時に既存の AWS 認証情報を検証できない場
 ワークスペース API キーは長期間有効なシークレットで、フェデレーション AWS 認証情報を管理したくない場合に便利です。AWS Console の **Claude Platform on AWS → API keys** で生成し、`ANTHROPIC_AWS_API_KEY` として設定します。
 
 ```bash theme={null}
-export ANTHROPIC_AWS_API_KEY=sk-ant-xxxxx
+export ANTHROPIC_AWS_API_KEY=your-workspace-api-key
 ```
 
 キーは `x-api-key` として送信され、SigV4 よりも優先されるため、環境内の AWS 認証情報は無視されます。別の Claude Console 組織からの API キーはここでは機能しません。

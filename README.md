@@ -17,6 +17,328 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-11-25</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/admin-setup-ja.md                    |   6 +-
+ docs-ja/pages/advisor-ja.md                        |   4 +-
+ docs-ja/pages/agent-teams-ja.md                    |   2 +-
+ docs-ja/pages/agent-view-ja.md                     |  10 +-
+ docs-ja/pages/amazon-bedrock-ja.md                 |   9 +
+ docs-ja/pages/approvals-github-rules-ja.md         |   2 +-
+ docs-ja/pages/approvals-ja.md                      |   7 +-
+ docs-ja/pages/approvals-policy-ja.md               | 183 +++---
+ docs-ja/pages/approvals-pull-requests-ja.md        |  28 +-
+ docs-ja/pages/approvals-setup-ja.md                |  36 +-
+ docs-ja/pages/approvals-troubleshooting-ja.md      |  13 +-
+ docs-ja/pages/artifacts-ja.md                      |  32 +-
+ docs-ja/pages/authentication-ja.md                 |   4 +-
+ docs-ja/pages/best-practices-ja.md                 |   5 +-
+ docs-ja/pages/champion-kit-ja.md                   |   2 +-
+ docs-ja/pages/changelog.md                         | 153 +++++
+ docs-ja/pages/channels-ja.md                       |   2 +-
+ docs-ja/pages/checkpointing-ja.md                  |   2 +-
+ docs-ja/pages/claude-apps-gateway-config-ja.md     |   4 +-
+ docs-ja/pages/claude-apps-gateway-deploy-ja.md     |   1 +
+ docs-ja/pages/claude-code-on-the-web-ja.md         |   8 +-
+ docs-ja/pages/claude-directory-ja.md               |   6 +-
+ docs-ja/pages/claude-platform-on-aws-ja.md         |   2 +-
+ docs-ja/pages/claude-projects-ja.md                |   4 +-
+ docs-ja/pages/claude-security-ja.md                | 315 +++++++---
+ docs-ja/pages/cli-reference-ja.md                  |   2 +-
+ docs-ja/pages/cloud-environments-ja.md             |   2 +-
+ docs-ja/pages/code-mode-ja.md                      |  70 ++-
+ docs-ja/pages/code-review-ja.md                    |   4 +-
+ docs-ja/pages/code-review-local-ja.md              |   2 +-
+ docs-ja/pages/code-review-setup-ja.md              |   2 +-
+ docs-ja/pages/commands-ja.md                       |  11 +-
+ docs-ja/pages/desktop-ios-simulator-ja.md          |   2 +-
+ docs-ja/pages/desktop-ja.md                        |  32 +-
+ docs-ja/pages/desktop-quickstart-ja.md             |   6 +-
+ docs-ja/pages/env-vars-ja.md                       |  22 +-
+ docs-ja/pages/errors-ja.md                         |  78 ++-
+ docs-ja/pages/fast-mode-ja.md                      |   2 +-
+ docs-ja/pages/feature-availability-ja.md           |  22 +-
+ docs-ja/pages/features-overview-ja.md              |   4 +-
+ docs-ja/pages/google-vertex-ai-ja.md               |   9 +-
+ docs-ja/pages/headless-ja.md                       |   3 +-
+ docs-ja/pages/hooks-ja.md                          |  12 +-
+ docs-ja/pages/how-claude-code-works-ja.md          |   8 +-
+ docs-ja/pages/large-codebases-ja.md                |   2 +-
+ docs-ja/pages/llm-gateway-connect-ja.md            |   6 +-
+ docs-ja/pages/managed-settings-ja.md               |  12 +-
+ docs-ja/pages/mcp-ja.md                            | 680 +++++++++++++--------
+ docs-ja/pages/memory-ja.md                         |   6 +-
+ docs-ja/pages/microsoft-foundry-ja.md              |   9 +
+ docs-ja/pages/mobile-ja.md                         |   3 +-
+ docs-ja/pages/model-config-ja.md                   |   4 +-
+ docs-ja/pages/monitoring-usage-ja.md               |  33 +-
+ docs-ja/pages/network-config-ja.md                 |   6 +-
+ docs-ja/pages/overview-ja.md                       |   6 +-
+ docs-ja/pages/permission-modes-ja.md               |  12 +-
+ docs-ja/pages/permissions-ja.md                    |  14 +-
+ docs-ja/pages/platforms-ja.md                      |   5 +-
+ docs-ja/pages/plugin-evals-ja.md                   |  38 +-
+ docs-ja/pages/pr-steward-ja.md                     |   2 +-
+ docs-ja/pages/pr-steward-pull-requests-ja.md       |   6 +-
+ docs-ja/pages/pr-steward-setup-ja.md               |   6 +-
+ docs-ja/pages/pr-steward-troubleshooting-ja.md     |   3 +
+ docs-ja/pages/prompt-caching-ja.md                 |   6 +-
+ docs-ja/pages/quickstart-ja.md                     |   2 +-
+ docs-ja/pages/remote-control-ja.md                 |   3 +-
+ docs-ja/pages/routines-ja.md                       |  12 +-
+ docs-ja/pages/scheduled-tasks-ja.md                |  12 +-
+ .../self-hosted-environments-configuration-ja.md   |  26 +-
+ docs-ja/pages/server-managed-settings-ja.md        |   2 +-
+ docs-ja/pages/settings-ja.md                       |  24 +-
+ docs-ja/pages/settings-reference-ja.md             |  29 +-
+ docs-ja/pages/setup-ja.md                          |  12 +-
+ docs-ja/pages/share-sessions-ja.md                 |   7 +-
+ docs-ja/pages/ship-command-ja.md                   |  89 ++-
+ docs-ja/pages/ship-command-troubleshooting-ja.md   | 104 +++-
+ docs-ja/pages/skills-ja.md                         |  34 +-
+ docs-ja/pages/slack-ja.md                          | 247 +-------
+ docs-ja/pages/sub-agents-ja.md                     |  14 +-
+ docs-ja/pages/tools-reference-ja.md                |  65 +-
+ docs-ja/pages/troubleshoot-install-ja.md           |   9 +-
+ docs-ja/pages/vs-code-ja.md                        |  18 +-
+ docs-ja/pages/web-quickstart-ja.md                 |   2 +-
+ docs-ja/pages/workflows-ja.md                      |   2 +-
+ docs-ja/pages/worktrees-ja.md                      |  20 +-
+ 85 files changed, 1712 insertions(+), 1013 deletions(-)
+```
+
+<details>
+<summary>admin-setup-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/admin-setup-ja.md b/docs-ja/pages/admin-setup-ja.md
+index 2af11a9..1fcadfb 100644
+--- a/docs-ja/pages/admin-setup-ja.md
++++ b/docs-ja/pages/admin-setup-ja.md
+@@ -54,5 +54,5 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
+ Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイは、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
+ 
+-claude.ai の **Organization settings > Desktop 3P** でプロバイダーまたはゲートウェイを設定している場合は、Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)を参照してください。
++claude.ai の [**Organization settings > Desktop 3P**](https://claude.ai/admin-settings/desktop-deployment) でプロバイダーまたはゲートウェイを設定している場合は、Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)を参照してください。
+ 
+ 組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](https://code.claude.com/docs/ja/server-managed-settings.md) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を設定してください。
+@@ -159,5 +159,5 @@ Claude 組織にリンクできる github.com の組織と個人アカウント
+ **1. 組織を許可する**
+ 
+-Team または Enterprise プランの Owner として、ブラウザで [**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションを開き、**Choose organizations** をクリックします。承認する組織を表で選択し、**Allow** をクリックします。すでにリンクされている組織は自動的には許可されないため、それらも含めてください。
++Team または Enterprise プランでは、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) がこれを設定できます。ブラウザで [**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションを開き、**Choose organizations** をクリックします。承認する組織を表で選択し、**Allow** をクリックします。すでにリンクされている組織は自動的には許可されないため、それらも含めてください。
+ 
+ **2. その他のアカウントを名前で許可する**
+@@ -190,5 +190,5 @@ Team または Enterprise プランの Owner として、ブラウザで [**Orga
+ | Analytics dashboard | Teams / Enterprise でのリーダーボード付き採用度と貢献度メトリクス、Console でのユーザーごとの使用状況と支出メトリクス | Teams / Enterprise は [claude.ai/analytics](https://claude.ai/analytics/claude-code)、Console は [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | [Analytics](https://code.claude.com/docs/ja/analytics.md) |
+ | Programmatic reporting | API を通じたユーザーごとの使用状況とコストデータ | Enterprise 向け [Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics)、Console 向け [Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) | [Costs](https://code.claude.com/docs/ja/costs.md#manage-costs-for-your-organization) |
+-| Spend controls | 支出制限とレート制限 | Teams / Enterprise の組織設定、Console のワークスペース制限、サードパーティクラウドではクラウド予算管理またはユーザーごとの [支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md) を備えた [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) | [Costs](https://code.claude.com/docs/ja/costs.md#manage-costs-for-your-organization) |
++| Spend controls | 支出制限とレート制限 | Teams / Enterprise の [組織設定](https://claude.ai/admin-settings/usage)、Console のワークスペース制限、サードパーティクラウドではクラウド予算管理またはユーザーごとの [支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md) を備えた [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) | [Costs](https://code.claude.com/docs/ja/costs.md#manage-costs-for-your-organization) |
+ 
+ Teams および Enterprise では、ユーザーごとの使用状況と支出の数値は分析ダッシュボードではなく、組織の分析設定の [支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans) から取得されます。クラウドプロバイダーは AWS Cost Explorer、GCP Billing、または Azure Cost Management を通じて支出を公開します。Claude チャット、Claude Code、Cowork 全体にわたるエンタープライズ予算計画については、[Claude Enterprise 消費ガイド](https://support.claude.com/en/articles/14782391-claude-enterprise-consumption-guide) を参照してください。
+```
+
+</details>
+
+<details>
+<summary>advisor-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/advisor-ja.md b/docs-ja/pages/advisor-ja.md
+index 14c156c..3a7565f 100644
+--- a/docs-ja/pages/advisor-ja.md
++++ b/docs-ja/pages/advisor-ja.md
+@@ -51,5 +51,5 @@ advisor モデルは 3 つの方法で設定できます。
+ * `/advisor off` を実行してそれをオフにします。
+ 
+-Claude Code は、組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。
++Claude Code は、設定内の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。
+ 
+ Claude Code は、現在のメインモデルがサポートしていない advisor を引き続き保存します。その advisor は、[`/model`](https://code.claude.com/docs/ja/model-config#setting-your-model) で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えた後にアクティブになります。API がすでに現在の会話で保存済み advisor を拒否した場合、モデルを切り替えた後でも、`/clear` または `/compact` まで、それはオフのままです。
+@@ -79,5 +79,5 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ
+ * セッションのメインモデルが advisor をサポートしていない
+ * Haiku 4.5 などのリクエストされたモデルが advisor として機能できない
+-* 組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストがリクエストされたモデルを除外している
++* [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストがリクエストされたモデルを除外している
+ * Fable をリクエストし、アカウントがまだ[使用クレジット同意](#fable-advisor-and-usage-credits)を必要としている
+ 
+```
+
+</details>
+
+<details>
+<summary>agent-teams-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
+index 2744fb8..54721cb 100644
+--- a/docs-ja/pages/agent-teams-ja.md
++++ b/docs-ja/pages/agent-teams-ja.md
+@@ -171,5 +171,5 @@ v2.1.251 より前は、`CLAUDE_CODE_SUBAGENT_MODEL` がこの順序で最初に
+ > `teammateDefaultModel` は v2.1.234 で削除されました。Claude Code は残された値を無視します。代わりにプロンプトでモデルを指定してください。
+ 
+-Claude Code は、チームメンバーに対して選択したモデルを、組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストに対してチェックします。許可リストが値をブロックすると、Claude Code は別のモデルを代替します。
++Claude Code は、チームメンバーに対して選択したモデルを、[`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが存在する場合はそれに対してチェックします。許可リストが値をブロックすると、Claude Code は別のモデルを代替します。
+ 
+ * **`opus` などのファミリーエイリアス**：Anthropic API および AWS 上の Claude Platform では、Claude Code はチームメンバーを許可リストが許可するそのファミリーの最新バージョンで実行します。プロバイダー固有のモデル ID を持つプロバイダーでは、[代替が動作しない](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)場合、ブロックされたエイリアスは次の箇条書きに従って他のブロックされた値のようにフォールバックします。
+```
+
+</details>
+
+<details>
+<summary>agent-view-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
+index eb8b621..8a08bda 100644
+--- a/docs-ja/pages/agent-view-ja.md
++++ b/docs-ja/pages/agent-view-ja.md
+@@ -240,5 +240,5 @@ Completed
+ 選択した行で `Enter` または `→` を押してアタッチします。エージェントビューは完全なインタラクティブセッションに置き換えられます。アタッチすると、Claude は不在中に何が起こったかの短い要約を投稿します。
+ 
+-アタッチ中、セッションは他の Claude Code セッションと同様に動作します。[コマンド](https://code.claude.com/docs/ja/commands.md)、キーボードショートカット、機能はすべて動作しますが、以下の例外があります。
++アタッチ中は、[コマンド](https://code.claude.com/docs/ja/commands.md)、キーボードショートカット、機能はすべて動作しますが、以下の例外があります。[`/ship` または `/steward` のウォッチ](https://code.claude.com/docs/ja/ship-command-troubleshooting#a-session-setting-blocks-a-watch) は、バックグラウンドセッションでは開始されません。
+ 
+ アタッチ中は、ターミナルにいる人がダイアログを完了できるため、`/install-github-app` と [`/mcp`](https://code.claude.com/docs/ja/mcp) 設定リストは通常どおり機能します。誰もアタッチしていない場合、これらのコマンドはダイアログを開けないため、セッションはエージェントビューの `Needs input` の下に `open this session to manage MCP servers` のような行とともに表示され、トランスクリプトの返信にも同じ内容が示されます。続行するにはアタッチしてコマンドを再度実行します。アタッチすると入力が必要な行はクリアされます。`/mcp reconnect <server>`、`/mcp enable`、および `/mcp disable` は、どちらの場合もアタッチせずに機能します。
+@@ -446,4 +446,8 @@ Claude Code がセッションをバックグラウンドにすると（約 10 
+ `/background` またはそのエイリアス `/bg` を実行すると、現在の会話がバックグラウンドセッションに移動します。`/bg run the test suite and fix any failures` のようにプロンプトを渡すと、先にもう 1 つ指示を与えられます。`/bg` の実行時に Claude が応答中の場合、応答はバックグラウンドセッションで続行されます。
+ 
++> [!NOTE]
++>
++> [`/ship` または `/steward` の監視](https://code.claude.com/docs/ja/ship-command) が有効な間は、`/bg` はセッションをフォアグラウンドに残し、その理由を出力します。[監視中のメッセージ](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#messages-during-a-watch) を参照してください。
++
+ サブエージェントやワークフローなど、特定の種類のバックグラウンド作業が実行中にセッションを終了すると、`Background work is running` ダイアログが表示され、その作業が停止することを警告します。`Move to background and exit` を選択すると、`/background` と同じ方法でセッションをバックグラウンドに移動してシェルに戻ります。エージェントビューが [オフになっている](#turn-off-agent-view) 場合、このオプションは表示されません。
+ 
+@@ -846,5 +850,5 @@ Claude Code は、エージェントビューに一覧表示されるすべて
+ * **作業中、権限プロンプトやその他のダイアログで一時停止中、またはアタッチ中**：プロセスは実行を続けます。実行中のサブエージェント、ワークフロー、モニターは作業中とみなされ、`/loop` のウェイクアップなど保留中の[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)も同様です。
+ * **完了済み、または次のメッセージを待機中で、約 1 時間アタッチされていない**：スーパーバイザーはリソースを解放するためにプロセスを停止します。質問をしてターンを終えたセッションは、次のメッセージを待機中とみなされます。会話はディスク上に残り、次にアタッチまたは返信すると、セッションは中断したところから再開します。プロセスを実行し続けるには、`Ctrl+T` でセッションをピン留めします。
+-* **スーパーバイザーの実行中にセッションのプロセスが予期せず終了した**：スーパーバイザーがそのプロセスを再起動します。`←` または `/background` で自分でバックグラウンドに送ったセッションを、たとえば `kill` で終了した場合は、再起動されずに停止済みとしてマークされます。シャットダウンによって終了したセッションについては、[シャットダウン後にセッションが失敗または停止と表示される](#sessions-show-as-failed-after-shutdown)を参照してください。
++* **スーパーバイザーの実行中にセッションのプロセスが予期せず終了した**：スーパーバイザーはそのプロセスを再起動できます。`←` または `/background` で自分でバックグラウンドに送ったセッションを、たとえば `kill` で終了した場合は、再起動されずに停止済みとしてマークされます。セッションの行に `∙` と表示されている場合は、そのセッションを選択して `Enter` を押すとセッションを再起動できます。シャットダウンによって終了したセッションについては、[シャットダウン後にセッションが失敗または停止と表示される](#sessions-show-as-failed-after-shutdown)を参照してください。
+ * **自動更新の後**：スーパーバイザーは新しいバージョンで自身を再起動し、アイドル状態のセッションをバックグラウンドで移行します。作業中、ユーザーの応答待ち、またはアタッチ中のセッションは中断されません。
+ * **スーパーバイザー自体が停止した**（たとえば、そのプロセスが Claude Code の外部から終了された場合）：macOS と Linux では、約 1 分以内に新しいスーパーバイザーが接続しない限り、セッションは停止します。スーパーバイザーを起動するには、シェルで `claude agents` を実行します。その 1 分を過ぎた場合は、[スーパーバイザー停止後もセッションを実行し続ける](#keep-sessions-running-after-the-supervisor-stops)を参照してください。
+@@ -1053,4 +1057,6 @@ Agent view はリサーチプレビュー中に急速に進化しました。古
+ | バージョン | 変更 |
+ | - | - |
+```
+
+</details>
+
+<details>
+<summary>amazon-bedrock-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
+index 663cebf..4454fc2 100644
+--- a/docs-ja/pages/amazon-bedrock-ja.md
++++ b/docs-ja/pages/amazon-bedrock-ja.md
+@@ -12,4 +12,13 @@ View plans
+ Contact sales
+ 
++このページでは、Claude Code CLI および IDE 拡張機能向けに Amazon Bedrock をセットアップする方法について説明します。
++
++> [!NOTE]
++>
++> Claude Desktop アプリの **Code** タブで Amazon Bedrock を使用するには、ユーザー自身または管理者がアプリを設定します。
++>
++> * **組織がアプリをインストールした場合**：管理者に [Amazon Bedrock 向けの設定](https://claude.com/docs/third-party/claude-desktop/bedrock)を依頼してください
++> * **ユーザー自身がアプリをインストールする場合**：[単一マシンのセットアップ手順](https://claude.com/docs/third-party/claude-desktop/installation#single-machine-setup)に従い、[Amazon Bedrock の接続値とモデル値](https://claude.com/docs/third-party/claude-desktop/bedrock#configure-the-app)を入力してください
++
+ ## 前提条件
+ 
+```
+
+</details>
+
+<details>
+<summary>approvals-github-rules-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/approvals-github-rules-ja.md b/docs-ja/pages/approvals-github-rules-ja.md
+index 226788a..f76edbe 100644
+--- a/docs-ja/pages/approvals-github-rules-ja.md
++++ b/docs-ja/pages/approvals-github-rules-ja.md
+@@ -25,5 +25,5 @@ Approvals をオンにしていても、プルリクエストは作成者以外
+ * マシンユーザー（スクリプトやエージェントが操作するユーザーアカウント）。これは[人としてカウントされる場合があります](https://code.claude.com/docs/ja/approvals-policy.md#whether-a-pull-request’s-author-counts)
+ * プッシュ後もシートを維持する [`reuse`](https://code.claude.com/docs/ja/approvals-policy#reuse)
+-* どのルールにも該当しないファイル。この場合、GitHub は neutral の結果を成功としてカウントします
++* どのルールもカバーしないファイル。この場合、GitHub は neutral の結果を成功としてカウントします
+ * ルールの `if`、上書きの `if`、または `reuse` 内で[分類器](https://code.claude.com/docs/ja/approvals-classifiers.md)の回答を参照する条件。その回答は[プルリクエストのテキストによって誘導され得る](#classifier-answers-that-a-pull-request-can-steer)ものです
+ 
+```
+
+</details>
+
+<details>
+<summary>approvals-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/approvals-ja.md b/docs-ja/pages/approvals-ja.md
+index 151b9f0..6227c18 100644
+--- a/docs-ja/pages/approvals-ja.md
++++ b/docs-ja/pages/approvals-ja.md
+@@ -27,5 +27,10 @@ Approvals を使うと、変更を承認する必要がある人数を設定で
+ Approvals は、評価するプルリクエストに **Claude Approvals** という名前のチェックを追加します。チェックのタイトルには、まだ何が必要かが示されます（例：**Waiting on human review from any person (1/2)**）。タイトルが **(observe mode)** で始まる場合は、チェックの実行時にポリシーが適用されていなかったことを意味します。[observe モード](#set-up-claude-approvals)では、チェックはポリシーがどのように判定するかを示します。
+ 
+-Claude は理由を記載したコメントも投稿します。ポリシーが許可している場合、Claude は承認レビューを投稿できます。よく表示されるタイトルとそれぞれへの対処方法については、[承認ステータスと次に行うことを確認する](https://code.claude.com/docs/ja/approvals-pull-requests.md#find-your-approval-status-and-what-to-do-next)を参照してください。プルリクエストにチェックがない場合は、[Claude Approvals のチェックが表示されない](https://code.claude.com/docs/ja/approvals-troubleshooting.md#no-claude-approvals-check-appeared)を参照してください。
++Claude は理由を記載したコメントも投稿します。ポリシーが許可している場合、Claude は承認レビューを投稿できます。
++
++* **Claude GitHub App がチェックを報告する github.com のリポジトリの場合**：そのレビューは `claude[bot]` から投稿されます
++* **`claude[bot]` が作成したプルリクエストの場合**：[Claude Approvals GitHub App](https://code.claude.com/docs/ja/approvals-pull-requests.md#pull-requests-that-claude-opens) を追加すると、そのレビューは `claude-approvals[bot]` から投稿されます
++
++よく表示されるタイトルとそれぞれへの対処方法については、[承認ステータスと次に行うことを確認する](https://code.claude.com/docs/ja/approvals-pull-requests.md#find-your-approval-status-and-what-to-do-next)を参照してください。プルリクエストにチェックがない場合は、[Claude Approvals のチェックが表示されない](https://code.claude.com/docs/ja/approvals-troubleshooting.md#no-claude-approvals-check-appeared)を参照してください。
+ 
+ ## ポリシーの例
+```
+
+</details>
+
+<details>
+<summary>approvals-policy-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/approvals-policy-ja.md b/docs-ja/pages/approvals-policy-ja.md
+index b10b446..595ab1c 100644
+--- a/docs-ja/pages/approvals-policy-ja.md
++++ b/docs-ja/pages/approvals-policy-ja.md
+@@ -77,24 +77,29 @@ rules:
+ * **一部のカスタム分類器は `advisory` の下にのみ置く**: これは、[`tools`](https://code.claude.com/docs/ja/approvals-classifiers#tools) に `reviewers` または `labels` が含まれる分類器、または `merge` のない[入力](https://code.claude.com/docs/ja/approvals-classifiers.md#inputs)を持つ分類器です。`if` のない適用ルールに記載してください。ルールがその結果を読み取る場合、ディレクトリのポリシーファイル配下のプルリクエストでは、チェックに **Cannot evaluate: classifier outside advisory** と表示されることがあります
+ 
+-## トップレベルのキー
++## ファイル全体のルール
++
++ファイルのすべての部分で次のルールに従ってください。
+ 
+-Approvals は、不明なキーを含むファイルを拒否します。キーと、`observe` や `approves` などの固定語は小文字で記述してください。すべての purpose、パターン、条件、`"!"` 項目はダブルクォートで囲みます。
++* **キーと固定値**: キー、および `observe` や `approves` などの固定値は小文字で記述します。Approvals は未知のキーを含むファイルを拒否します
++* **目的、パターン、条件**: すべての目的、`paths` パターン、条件をダブルクォートで囲みます
++* **`!` 項目**: 条件の外にある各 `"!"` 項目はダブルクォートで囲みます。条件の中では、`!` 項目はシングルクォートで囲みます。Approvals はクォートされていない `!` 項目を含むファイルを拒否します
++* **YAML**: ファイルは 1 つの YAML ドキュメントにまとめてください。そうしないと Approvals はファイルを拒否します。インデントにはスペースを使います。アンカー、エイリアス、`!!` タグは少なくとも警告の対象になります
+ 
+-ファイルは 1 つの YAML ドキュメントにとどめ、各 `!` 項目をクォートし、インデントにはスペースを使用してください。そうしないと Approvals はファイルを拒否します。アンカー、エイリアス、`!!` タグは警告の対象になります。
++## トップレベルのキー
+ 
+-ファイルのトップレベルには次のキーを記述します。
++以下のキーはファイルのトップレベルに記述します。
+ 
+ | キー | 必須 | 値 | デフォルト | 説明 |
+ | :- | :- | :- | :- | :- |
+-| `version` | はい | `1` | | スキーマのバージョン。裸の数値で記述します |
++| `version` | はい | `1` | | スキーマのバージョン。引用符なしの数値で指定します |
+ | `rules` | はい | [ルール](#rule-keys)のリスト | | ルールの順序は関係ありません |
+-| `mode` | いいえ | `enforce`、`observe` | `enforce` | `observe` はルールによって何が決まるかを表示し、ファイル内のすべてのルールに適用されます。引き続き neutral にならないチェックや、他のブランチへのプルリクエストについては、[observe モードの Approvals](https://code.claude.com/docs/ja/approvals-pull-requests.md#approvals-in-observe-mode) を参照してください |
+```
+
+</details>
+
+*...以降省略*
+
+</details>
+
+
+<details>
 <summary>2026-11-24</summary>
 
 **変更ファイル:**
@@ -2586,280 +2908,6 @@ index 99b6943..6f15027 100644
 +* 名前のない worktree セッションを終了すると、中身が何もなければ Claude Code は [git で作成した worktree を削除します](https://code.claude.com/docs/ja/worktrees.md#clean-up-worktrees)。名前付きセッションや変更のあるセッションの場合は、どうするかを尋ねます。
  * サブエージェントの worktree は、サブエージェントが変更なしで終了すると消えます。
  * 残されたサブエージェントやバックグラウンドセッションの worktree は、`cleanupPeriodDays` より古くなり、作業を含んでいなければ一掃されます。
-```
-
-</details>
-
-<details>
-<summary>checkpointing-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/checkpointing-ja.md b/docs-ja/pages/checkpointing-ja.md
-index f61b283..320b4c0 100644
---- a/docs-ja/pages/checkpointing-ja.md
-+++ b/docs-ja/pages/checkpointing-ja.md
-@@ -7,5 +7,5 @@
- > Claude のエディット内容と会話を追跡、巻き戻し、要約してセッション状態を管理します。
- 
--Claude Code は、作業中に Claude が行ったファイルエディットを自動的に追跡し、変更をすばやく取り消したり、問題が発生した場合に以前の状態に巻き戻したりできます。
-+Claude Code は、作業中に Claude が行ったファイルエディットを自動的に追跡します。エディットを取り消すには、セッションで `/rewind` またはそのエイリアスである `/undo` を実行して、[巻き戻しメニュー](#rewind-and-summarize)を開きます。
- 
- ## チェックポイントの仕組み
-```
-
-</details>
-
-<details>
-<summary>chrome-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/chrome-ja.md b/docs-ja/pages/chrome-ja.md
-index 7d766ed..6fa7ae0 100644
---- a/docs-ja/pages/chrome-ja.md
-+++ b/docs-ja/pages/chrome-ja.md
-@@ -42,6 +42,4 @@ Claude Code を Chrome で使用する前に、以下が必要です。
- * 直接 Anthropic プラン（Pro、Max、Ultra、Team、または Enterprise）
- 
--HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
--
- Chrome 統合を使用するには、`/login` でサインインする必要もあります。API キーまたは [`claude setup-token`](https://code.claude.com/docs/ja/authentication#generate-a-long-lived-token) で発行した長期間有効なトークンで認証している場合、`--chrome` を渡しても Claude Code は Chrome 統合を無効のままにします。ブラウザ拡張機能はこれらの認証情報では認証できません。
- 
-@@ -50,4 +48,10 @@ Chrome 統合を使用するには、`/login` でサインインする必要も
- > Chrome 統合は Amazon Bedrock、Google Cloud の Agent Platform、Microsoft Foundry などのサードパーティプロバイダーを通じては利用できません。Claude にサードパーティプロバイダーを通じてのみアクセスする場合、この機能を使用するには別の claude.ai アカウントが必要です。
- 
-+### HIPAA またはゼロデータ保持が有効な場合の Chrome の利用可否
-+
-+HIPAA が有効になっている Enterprise 組織では、Claude in Chrome はデフォルトでオフになっており、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) が [**Organization settings > Claude in Chrome**](https://claude.ai/admin-settings/browser-extension) でオンにできます。Anthropic との事業提携契約（BAA）は、Claude in Chrome を通じてサードパーティのサイトに送信されるデータを対象としていません。対象サービス（Eligible Services）の一覧については、[実装ガイド](https://trust.anthropic.com/resources?s=l1wrssd9hsbi4gak0tp5a6\&name=%5Banthropic%5D-hipaa-ready-offering-implementation-guide)を参照してください。
-+
-+組織で Claude Code に対して[ゼロデータ保持（ZDR）](https://code.claude.com/docs/ja/zero-data-retention.md)が有効になっている場合、Claude Code では Claude in Chrome を利用できません。Owner が **Organization settings > Claude in Chrome** でオンにしていても、また `--chrome` を渡しても、オフのままになります。`/chrome` は `Claude in Chrome is disabled by your organization's policy` と表示します。組織が許可している場合は、Claude Code の外で引き続き拡張機能を使用できます。
-+
- ## CLI で開始する
- 
-```
-
-</details>
-
-<details>
-<summary>claude-apps-gateway-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-apps-gateway-config-ja.md b/docs-ja/pages/claude-apps-gateway-config-ja.md
-index 3259721..d3fe5ab 100644
---- a/docs-ja/pages/claude-apps-gateway-config-ja.md
-+++ b/docs-ja/pages/claude-apps-gateway-config-ja.md
-@@ -1348,5 +1348,5 @@ Claude Desktop をデプロイしない場合は、ポリシーから `desktop`
- ##### Code タブで `code` 設定を適用する
- 
--ポリシーが [`code`](#choose-cli-or-code) キーの下に持つ Claude Code 設定は、次のすべてが成り立つ場合に Claude Desktop の Code タブで適用されます。
-+[一部のプロバイダーとモデルの変数](https://code.claude.com/docs/ja/desktop.md#managed-settings) を除き、ポリシーが [`code`](#choose-cli-or-code) キーの下に持つ Claude Code の設定は、次のすべてが満たされる場合に Claude Desktop の Code タブで適用されます。
- 
- * ポリシーに `desktop` キーもあること（空の `desktop: {}` でもかまいません）
-```
-
-</details>
-
-<details>
-<summary>claude-directory-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/claude-directory-ja.md b/docs-ja/pages/claude-directory-ja.md
-index cf75f41..e347387 100644
---- a/docs-ja/pages/claude-directory-ja.md
-+++ b/docs-ja/pages/claude-directory-ja.md
-@@ -138,4 +138,5 @@ Claude Code は、[`cleanupPeriodDays`](https://code.claude.com/docs/ja/settings
- | `skills/.trash/`、`plugins/.trash/` | [スキル](https://code.claude.com/docs/ja/skills.md#how-synced-skills-behave)と [プラグイン](https://code.claude.com/docs/ja/plugins/loading.md#synced-plugins)。claude.ai 同期で削除されたもの。例えば、claude.ai でオフにした後、または同期を停止した後。ファイルはここに残るため、スイープが削除するまで復元できます |
- | `plugins/installed_plugins.set-aside.<date>.<hash>.json`、`plugins/installed_plugins.unreadable.<date>.<hash>.kept` | 日付付きコピー。Claude Code が [`installed_plugins.json`](https://code.claude.com/docs/ja/plugins/loading#find-plugins-on-disk) を書き直す前に作成します。削除したインストールレコード、および読み込めなかったファイルの内容 |
-+| `plugins/mcpb/` | プラグインが宣言する [MCP バンドル](https://code.claude.com/docs/ja/plugins/components.md#include-a-packaged-mcpb-server)から Claude Code が展開したファイル。バンドルの経過日数は、それを最後に使用したセッションから数えます |
- | `todos/`、`statsig/`、`logs/` | 古いバージョンのレガシーディレクトリ。現在は書き込まれていません。スイープはその内容を削除してから、空のディレクトリを削除します |
- 
-```
-
-</details>
-
-*...以降省略*
-
-</details>
-
-
-<details>
-<summary>2026-11-14</summary>
-
-**変更ファイル:**
-
-```
- docs-ja/pages/agent-teams-ja.md                    |  35 +++--
- docs-ja/pages/agent-view-ja.md                     |  75 +++++------
- docs-ja/pages/artifacts-ja.md                      |   4 +-
- docs-ja/pages/auto-mode-config-ja.md               |   6 +-
- docs-ja/pages/changelog.md                         | 142 +++++++++++++++++++++
- docs-ja/pages/claude-apps-gateway-config-ja.md     |  31 ++++-
- docs-ja/pages/claude-code-on-the-web-ja.md         |   4 +-
- docs-ja/pages/claude-projects-ja.md                |  12 +-
- docs-ja/pages/cli-reference-ja.md                  |   2 +-
- docs-ja/pages/commands-ja.md                       |   6 +-
- docs-ja/pages/desktop-ja.md                        |   7 +-
- docs-ja/pages/desktop-scheduled-tasks-ja.md        |   8 +-
- docs-ja/pages/env-vars-ja.md                       |  12 +-
- docs-ja/pages/errors-ja.md                         |   3 +-
- docs-ja/pages/feature-availability-ja.md           |  20 ++-
- docs-ja/pages/features-overview-ja.md              |   2 +-
- docs-ja/pages/github-actions-ja.md                 |   1 +
- docs-ja/pages/glossary-ja.md                       |   2 +-
- docs-ja/pages/hooks-guide-ja.md                    |   8 +-
- docs-ja/pages/hooks-ja.md                          |  17 ++-
- docs-ja/pages/keybindings-ja.md                    |   2 +-
- docs-ja/pages/llm-gateway-ja.md                    |   4 +
- docs-ja/pages/llm-gateway-protocol-ja.md           |   1 +
- docs-ja/pages/managed-mcp-ja.md                    |   5 +-
- docs-ja/pages/mcp-ja.md                            |   4 +-
- docs-ja/pages/model-config-ja.md                   |   4 +-
- docs-ja/pages/monitoring-usage-ja.md               |   4 +-
- docs-ja/pages/permission-modes-ja.md               |   3 +-
- docs-ja/pages/permissions-ja.md                    |   4 +-
- docs-ja/pages/remote-control-ja.md                 |   2 +-
- docs-ja/pages/sandbox-environments-ja.md           |   2 +-
- docs-ja/pages/sandboxing-ja.md                     |  11 +-
- docs-ja/pages/security-ja.md                       |   4 +-
- .../pages/self-hosted-environments-deploy-ja.md    |  12 +-
- docs-ja/pages/server-managed-settings-ja.md        |   8 +-
- docs-ja/pages/settings-reference-ja.md             |  65 ++++------
- docs-ja/pages/setup-ja.md                          |  33 +++--
- docs-ja/pages/skills-ja.md                         |  12 +-
- docs-ja/pages/statusline-ja.md                     |  40 ------
- docs-ja/pages/sub-agents-ja.md                     | 101 +++++++++------
- docs-ja/pages/third-party-integrations-ja.md       |   4 +
- docs-ja/pages/troubleshoot-install-ja.md           |   8 +-
- docs-ja/pages/vs-code-ja.md                        |  10 ++
- docs-ja/pages/workflows-ja.md                      |   2 +-
- docs-ja/pages/worktrees-ja.md                      |   5 +-
- 45 files changed, 470 insertions(+), 277 deletions(-)
-```
-
-**新規追加:**
-
-
-<details>
-<summary>agent-teams-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-teams-ja.md b/docs-ja/pages/agent-teams-ja.md
-index 89d3278..f004224 100644
---- a/docs-ja/pages/agent-teams-ja.md
-+++ b/docs-ja/pages/agent-teams-ja.md
-@@ -103,9 +103,18 @@ Claude は時々、チームを作成する代わりに [サブエージェン
- > `tmux` には特定のオペレーティングシステムでの既知の制限があり、従来は macOS で最も効果的に動作します。iTerm2 で `tmux -CC` を使用することが、`tmux` への推奨エントリーポイントです。
- 
--デフォルトは `"in-process"` です。`"auto"` を設定して、既に tmux セッション内で実行している場合または使用しているターミナルが iTerm2 で `it2` CLI がインストールされている場合は分割ペインを有効にし、それ以外の場合は in-process にフォールバックします。`"tmux"` 設定は分割ペインモードを有効にし、ターミナルに基づいて tmux または iTerm2 を使用するかどうかを自動検出します。
-+エージェントチームを[有効化](#enable-agent-teams)した状態で、次の手順に従って各チームメイトに専用のペインを割り当てます。
- 
--`"iterm2"` を設定して iTerm2 ネイティブ分割ペインを明示的に使用してください。このモードは [`it2` CLI](https://github.com/mkusaka/it2) が必要で、`it2` が見つからない場合はインストールコマンド付きでエラーを表示します。`it2` をインストールするか tmux に切り替えるオプションを提供するセットアッププロンプトは、ターミナルが iTerm2 で tmux がフォールバックとして利用可能な場合、`"auto"` または `"tmux"` の下に表示されます。
-+**1. tmux をインストールするか iTerm2 をセットアップする**
- 
--デフォルトをオーバーライドするには、`~/.claude/settings.json` で [`teammateMode`](https://code.claude.com/docs/ja/settings-reference#teammatemode) を設定してください。
-+分割ペインモードには、[tmux](https://github.com/tmux/tmux/wiki) または [`it2` CLI](https://github.com/mkusaka/it2) を備えた iTerm2 が必要です。Claude Code を実行する方をセットアップしてください。
-+
-+* **tmux**：システムのパッケージマネージャーを通じてインストールしてください。プラットフォーム固有の手順については、[tmux wiki](https://github.com/tmux/tmux/wiki/Installing) を参照してください。
-+* **iTerm2**：[`it2` CLI](https://github.com/mkusaka/it2) をインストールし、**iTerm2 > Settings > General > Magic > Enable Python API** で Python API を有効にしてください。
-+
-+**2. 分割ペインをオンにする**
-+
-+[`teammateMode`](https://code.claude.com/docs/ja/settings-reference#teammatemode) 設定を変更するまで、チームメイトは in-process で実行されます。
-+
-+`~/.claude/settings.json` で `"auto"` に設定してください。
- 
- ```json theme={null}
-@@ -115,4 +124,17 @@ Claude は時々、チームを作成する代わりに [サブエージェン
- ```
- 
-+`"auto"` では、tmux または iTerm2 内で Claude Code を実行するとチームメイトが分割ペインで開き、その他のターミナルでは in-process で実行されます。
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index d980ea1..2d95f35 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -9,5 +9,5 @@
- `claude agents` で開くエージェントビューは、すべてのバックグラウンドセッションの 1 つの画面です。実行中のもの、入力が必要なもの、完了したものが表示されます。新しいセッションをディスパッチし、トランスクリプトをスクロールする代わりに一目でセッションの状態を確認し、セッションが必要とするときだけ介入します。各バックグラウンドセッションは完全な Claude Code の会話であり、ターミナルが接続されていなくてもバックグラウンドで実行し続けるため、いつでも開いて、返信して、去ることができます。
- 
--![ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。](https://mintcdn.com/claude-code/HDAmBwgbrZVk0pOt/images/agent-view-light.png?fit=max\&auto=format\&n=HDAmBwgbrZVk0pOt\&q=85\&s=d6905012bee31f3e6b3920b09c05dd02)
-+![ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。](https://mintcdn.com/claude-code/v_J840yKc6uuKDX_/images/agent-view-light.png?fit=max\&auto=format\&n=v_J840yKc6uuKDX_\&q=85\&s=bd95fda83ea66ca8b2e0e7b68f8cb29e)
- 
- Claude が複数の独立したタスクに対して、あなたが毎ステップを監視することなく作業できる場合に、エージェントビューを使用します。バグ修正、プルリクエストレビュー、不安定なテストの調査を 3 つの行としてディスパッチし、別のウィンドウで作業を続け、行が入力が必要であることを示すか、結果が得られたときに確認します。
-@@ -145,5 +145,5 @@ Completed
- | :- | :- |
- | `✻` またはアニメーション `✽` | セッションプロセスが実行中であるか、セッションがユーザーの入力を必要としています |
--| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信またはアタッチすると、Claude は保存された会話からセッションを再起動します |
-+| `∙` | プロセスは終了しています。行のピーク表示は引き続き可能で、返信するか `Enter` を押すと、Claude は保存された会話からセッションを再起動します |
- | `✢` | イテレーション間でスリープしている [`/loop`](https://code.claude.com/docs/ja/scheduled-tasks) セッションです。行は実行回数とカウントダウンを表示します |
- 
-@@ -317,5 +317,5 @@ Claude Code がセッションをバックグラウンドにすると（約 10 
- * `Ctrl+X` を押してセッションを停止し、2 秒以内に `Ctrl+X` を再度押してリストから削除します。削除せずに確認を閉じるには `Esc` を押します。2 回目の押下は、たとえば [バックグラウンドサービスが応答していない](#agent-view-says-the-background-service-did-not-respond) ために停止の試みが失敗した場合でも、セッションを削除します。その場合、確認はさらに 2 秒間有効なままで、削除によってセッションのプロセス自体が終了されます
- 
--グループヘッダーで `Ctrl+X` を押すと、確認後、そのグループ内のすべてのセッションが削除されます。[セッションを削除するときに削除されるもの](#what-deleting-a-session-removes) で説明されている保持されるケースを除き、削除するとセッションはリストから削除されます。Claude がそのセッション用に作成した worktree は、削除方法と worktree の内容に応じて、削除、保持、またはそのまま残されます。会話のトランスクリプトはローカルマシンに残り、`claude --resume` から利用できます。
-+グループヘッダーで `Ctrl+X` を押すと、確認後、そのグループ内のすべてのセッションが削除されます。ただし、Claude Code が [削除を拒否する](#delete-a-session-after-claude-code-refuses) セッションは除きます。各セッションの worktree がどうなるかについては、[セッションを削除するときに削除されるもの](#what-deleting-a-session-removes) を参照してください。会話のトランスクリプトはローカルマシンに残り、`claude --resume` から利用できます。
- 
- 画面に収まらない完了したセッションは `… N more` 行に折りたたまれます。`Completed` グループはライブグループの後に残った縦のスペースを埋めます。短いターミナルではヘッダーが 1 行の概要に圧縮されるため、作業中または入力が必要なセッションは表示されたままになります。
-@@ -623,5 +623,5 @@ Claude が入った worktree でバックグラウンドセッションがコー
- #### セッションを削除すると何が削除されるか
- 
--セッションを削除するには、[エージェントビュー](#organize-the-list) で `Ctrl+X` を 2 回押すか、[`claude rm`](#manage-sessions-from-the-shell) を使用します。以下で保持されるケースを除き、セッションはリストから削除されます。そのトランスクリプトは `claude --resume` で利用できるようマシン上に残り、削除はスーパーバイザーの再起動後も維持されます。
-+セッションを削除するには、[エージェントビュー](#organize-the-list) で `Ctrl+X` を 2 回押すか、[`claude rm`](#manage-sessions-from-the-shell) を使用します。Claude Code が [削除を拒否した](#delete-a-session-after-claude-code-refuses) 場合を除き、セッションはリストから削除されます。そのトランスクリプトはマシン上に残り、`claude --resume` で利用できます。
-```
-
-</details>
-
-<details>
-<summary>artifacts-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/artifacts-ja.md b/docs-ja/pages/artifacts-ja.md
-index c8344e1..b2d142a 100644
---- a/docs-ja/pages/artifacts-ja.md
-+++ b/docs-ja/pages/artifacts-ja.md
-@@ -433,7 +433,7 @@ Team プランと Enterprise プランのオーナーは、[claude.ai 管理設
- アーティファクトが自動削除される前に保持される期間を設定するには、[**Organization settings > Data and privacy**](https://claude.ai/admin-settings/data-privacy-controls)に移動します。作成者にのみプライベートなアーティファクトと共有されたアーティファクトに対して、別々の保持期間を設定できます。
- 
--### 監査ログを確認する
-+### Compliance API でアーティファクトのアクティビティを監査する
- 
--アーティファクトの公開、共有、削除は、それぞれ組織の監査ログに `claude_artifact_*` イベントタイプの下に表示されます。これは claude.ai の会話で作成されたアーティファクトに使用されるのと同じファミリーです。
-+Enterprise プランでは、Compliance API の [Activity Feed](https://platform.claude.com/docs/en/manage-claude/compliance-activity-feed) をクエリして、誰がアーティファクトを公開、共有、または削除したかを確認できます。フィルタリングに使用するアクティビティタイプを見つけるには、[Activity Feed リファレンス](https://platform.claude.com/docs/en/api/compliance/activities/list)で `activity_types` を展開し、`artifact` を含む名前を探します。
- 
- ### ビューアドメインをホワイトリストに登録する
-```
-
-</details>
-
-<details>
-<summary>auto-mode-config-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/auto-mode-config-ja.md b/docs-ja/pages/auto-mode-config-ja.md
-index 4285381..c7ab6a8 100644
---- a/docs-ja/pages/auto-mode-config-ja.md
-+++ b/docs-ja/pages/auto-mode-config-ja.md
-@@ -223,4 +223,8 @@ Claude Code のプロンプトで `/auto-mode-setup` と入力すると `Unknown
- 各フィールドは散文説明の配列であり、自然言語ルールとして読み込まれます。分類器の前に実行されるツールパターンベースのハードブロックについては、[`permissions.deny`](https://code.claude.com/docs/ja/permissions) を使用します。
- 
-+> [!NOTE]
-+>
-+> [Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) セッションでは、分類器は Claude のコードをレビューする際に `hard_deny` と `soft_deny` を適用し、コードが行う個々のツール呼び出しには適用しません。`permissions.deny` ルールは個々の呼び出しに適用されます。
-+
- 分類器内では、優先順位は 4 つのレベルで機能します。
- 
-@@ -284,5 +288,5 @@ Claude Code は [管理設定](https://code.claude.com/docs/ja/server-managed-se
- デフォルトでは、狭い Bash および PowerShell の許可ルール（`Bash(npm test)` など）はオートモードで有効なままであり、Claude Code は分類器が実行される前にそれらを解決します。ただし、コマンドが [コマンドごとの許可ドメイン](https://code.claude.com/docs/ja/sandboxing.md#per-command-allowed-domains-in-auto-mode) を含む場合は除きます。Claude Code は、`Bash(*)` やワイルドカード化されたインタープリターなどの任意のコード実行を許可する広いルール、および [`Monitor`](https://code.claude.com/docs/ja/tools-reference#monitor-tool) という名前のすべてのルールを一時停止します。Monitor コマンドはシェルを通して実行されるためです。これは、狭いルールが、分類器が見ることなく、破壊的な引数（スクリプトパスやルールのプレフィックスが予想しなかったフラグなど）を通す可能性があることを意味します。
- 
--`autoMode.classifyAllShell` を `true` に設定して、オートモードがアクティブな間、すべての Bash および PowerShell の許可ルールを一時停止し、分類器が許可リストに関係なくすべてのシェルコマンドを評価するようにします。ただし、[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-paths) は除きます。
-+`autoMode.classifyAllShell` を `true` に設定すると、auto モードがアクティブな間、すべての Bash および PowerShell の許可ルールが一時停止され、分類器が許可リストに関係なくすべてのシェルコマンドを評価するようになります。ただし、[重要パスの削除](https://code.claude.com/docs/ja/permission-modes.md#critical-paths) は除きます。[Code Mode](https://code.claude.com/docs/ja/code-mode.md#permission-checks) セッションでは、この設定がオンの場合でも、分類器はコマンドを実行するコードをレビューします。
- 
- ```json theme={null}
 ```
 
 </details>

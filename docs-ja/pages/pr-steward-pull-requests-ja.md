@@ -101,7 +101,7 @@ PR Steward のデフォルトの指示は Claude への指示であるため、P
 
 ### すべてのプルリクエストで PR Steward をオフにする、または制限する
 
-claude.ai の **Settings > Code** または **Settings > Claude Code** にある [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動し、自分が作成するプルリクエストで PR Steward がどこまで作業するかを選択します。この設定を変更するには、[GitHub アカウントの接続](https://code.claude.com/docs/ja/web-quickstart.md#connect-github)が必要です。
+claude.ai の **Settings > Code** にある [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動し、自分が作成するプルリクエストで PR Steward がどこまで作業するかを選択します。この設定を変更するには、[GitHub アカウントの接続](https://code.claude.com/docs/ja/web-quickstart.md#connect-github)が必要です。
 
 | オプション | ユーザーのプルリクエストでの PR Steward の動作 |
 | :- | :- |
@@ -118,7 +118,7 @@ PR Steward はプルリクエストで開始するときにユーザーの設定
 
 自分が作成するすべてのプルリクエストについて PR Steward の作業対象を指定するには、設定のトグルを使用します。リポジトリの `.claude/skills/steward/SKILL.md` が異なる内容を指定している場合があるため、[どの指示が優先されるか](#which-pr-steward-instructions-take-priority)を確認してください。
 
-1. claude.ai の **Settings > Code** または **Settings > Claude Code** にある [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動します
+1. claude.ai の **Settings > Code** にある [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動します
 2. **How much should Steward do on its own?** で [**Customize**](#turn-off-or-limit-pr-steward-on-all-your-pull-requests) を選択します
 3. PR Steward にさせたくない項目ごとにトグルをオフにします。各トグルはオフにするまでオンのままです。
    * **Failing CI and merge conflicts**
@@ -141,7 +141,7 @@ PR Steward はプルリクエストで開始するときにユーザーの設定
 
 ### 自分が作成するすべてのプルリクエスト向けに PR Steward の指示を保存する
 
-自分が作成するすべてのプルリクエストで PR Steward に同じ指示を与えるには、claude.ai の **Settings > Code** または **Settings > Claude Code** にある [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動します。**My instructions for Steward** に最大 1,000 文字を入力します。
+自分が作成するすべてのプルリクエストで PR Steward に同じ指示を与えるには、claude.ai の **Settings > Code** にある [**PR Steward**](https://claude.ai/settings/claude-code#pr-steward) に移動します。**My instructions for Steward** に最大 1,000 文字を入力します。
 
 次の指示は、小さなコミットを求め、レビュアーへの返信をしないよう求めています。
 

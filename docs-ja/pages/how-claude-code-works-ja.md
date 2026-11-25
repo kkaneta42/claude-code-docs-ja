@@ -18,7 +18,7 @@ Claude にタスクを与えると、3 つのフェーズを通じて作業し�
 
 ループは、あなたが何を求めるかに応じて適応します。コードベースに関する質問は、コンテキスト収集だけで済むかもしれません。バグ修正は 3 つのフェーズすべてを繰り返し循環します。リファクタリングは広範な検証を伴うかもしれません。Claude は前のステップから学んだことに基づいて各ステップが何を必要とするかを判断し、数十のアクションを連鎖させ、途中で軌道修正します。
 
-あなたもこのループの一部です。任意の時点で中断して Claude を別の方向に導いたり、追加のコンテキストを提供したり、別のアプローチを試すよう求めたりできます。Claude は自律的に動作しますが、あなたの入力に対して応答性を保ちます。
+ユーザーもこのループの一部です。任意の時点で中断して Claude を別の方向に導いたり、追加のコンテキストを提供したり、別のアプローチを試すよう求めたりできます。
 
 agentic ループは 2 つのコンポーネントによって駆動されます。推論する [モデル](#models) と、アクションを実行する [ツール](#tools) です。Claude Code はモデルの周りのレイヤーで、ツールを提供し、モデルが見るコンテキストを管理します。この周囲のレイヤーが agentic ハーネスという用語が指すものです。
 
@@ -88,7 +88,7 @@ Claude Code は 3 つの環境で実行され、各環境はコード実行場�
 
 ### インターフェース
 
-Claude Code には、ターミナル、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)、[IDE 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[claude.ai/code](https://claude.ai/code)、[リモートコントロール](https://code.claude.com/docs/ja/remote-control.md)、[Slack](https://code.claude.com/docs/ja/slack.md)、[CI/CD パイプライン](https://code.claude.com/docs/ja/github-actions.md) を通じてアクセスできます。インターフェースは Claude の表示方法と相互作用方法を決定しますが、基盤となる agentic ループは同じです。完全なリストについては、[Claude Code をどこでも使用する](https://code.claude.com/docs/ja/overview.md#use-claude-code-everywhere) を参照してください。
+Claude Code には、ターミナル、[デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md)、[IDE 拡張機能](https://code.claude.com/docs/ja/vs-code.md)、[claude.ai/code](https://claude.ai/code)、[Remote Control](https://code.claude.com/docs/ja/remote-control.md)、[CI/CD パイプライン](https://code.claude.com/docs/ja/github-actions.md) を通じてアクセスできます。インターフェースは Claude の表示方法と相互作用方法を決定しますが、基盤となるエージェント型ループは同じです。一覧については、[Claude Code をどこでも使用する](https://code.claude.com/docs/ja/overview.md#use-claude-code-everywhere) を参照してください。
 
 ## セッションで作業する
 
@@ -131,7 +131,7 @@ Claude が `Co-Authored-By` トレーラーをコミットに追加するなど�
 
 #### コンテキストが満杯になったとき
 
-Claude Code は制限に近づくと、自動的にコンテキストを管理します。会話を要約に圧縮します。要約にはリクエストと主要なコードスニペットが保持されますが、会話の早い段階からの詳細な指示は失われる可能性があります。会話履歴に依存するのではなく、永続的なルールを CLAUDE.md に入れてください。
+Claude Code は制限に近づくと、自動的にコンテキストを管理します。会話を要約に圧縮します。要約にはリクエストと主要なコードスニペットが保持されますが、会話の早い段階からの詳細な指示は失われる可能性があります。永続的なルールを CLAUDE.md に入れてください。
 
 コンパクト化中に保持されるものを制御するには、CLAUDE.md に「Compact Instructions」セクションを追加するか、`/compact` をフォーカス付きで実行します（例：`/compact focus on the API changes`）。
 
@@ -208,7 +208,7 @@ That's not quite right. The issue is in the session handling.
 任意の時点で Claude をリダイレクトでき、最初からやり直す必要はありません。以下のいずれかを実行してください：
 
 * **`Esc` キーを押す**と Claude が直ちに停止します。実行中のツール呼び出しがキャンセルされ、Claude は次の指示を待ちます。メッセージがキューに入っている場合、Claude Code は[次にそれらを送信します](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)。
-* **修正を入力して `Enter` キーを押す**と Claude を停止せずに実行します。メッセージは入力ボックスの上にキューに入っているものとして表示されます。Claude がツール呼び出しを実行している場合、それらの呼び出しが完了するとすぐに、同じターン内でメッセージを読み取り、次のステップの前に調整します。[Claude が作業している間にメッセージをキューに入れる](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)は、他のキューに入っているエントリがいつ送信されるかについて説明しています。
+* **修正を入力して `Enter` キーを押す**と Claude を停止せずに実行します。メッセージは会話内でキューに入っているものとして表示されます。Claude がツール呼び出しを実行している場合、それらの呼び出しが完了するとすぐに、同じターン内でメッセージを読み取り、次のステップの前に調整します。[Claude が作業している間にメッセージをキューに入れる](https://code.claude.com/docs/ja/interactive-mode.md#queue-messages-while-claude-works)は、他のキューに入っているエントリがいつ送信されるかについて説明しています。
 
 ### 指示するのではなく委譲する
 

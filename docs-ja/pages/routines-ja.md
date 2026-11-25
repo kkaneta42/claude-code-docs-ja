@@ -41,7 +41,7 @@ Enterprise 組織が[カスタムロール](https://support.claude.com/en/articl
 
 * **バックログメンテナンス**: スケジュールトリガーが平日の毎晩リポジトリで実行され、課題トラッカーがコネクタとして追加されています。スケジュールタスクは前回の実行以降にオープンされた課題を読み取り、ラベルを付け、参照されているコード領域に基づいて担当者を割り当てます。その後 Slack に概要を投稿するため、チームは整理されたキューで 1 日を始められます。
 * **アラートトリアージ**: エラーのしきい値を超えたときに監視ツールがスケジュールタスクの API エンドポイントを呼び出し、アラート本文を `text` として渡します。タスクのプロンプトは fire ペイロード内のアラートを調査するよう Claude に指示しているため、Claude はスタックトレースを取得し、リポジトリの最近のコミットと照合します。その後、修正案とアラートへのリンクを含むドラフトプルリクエストを作成します。オンコール担当者は空のターミナルから始めるのではなく、PR をレビューします。
-* **独自のコードレビュー**: GitHub トリガーが `pull_request.opened` で実行されます。スケジュールタスクはチーム独自のレビューチェックリストを適用し、セキュリティ、パフォーマンス、スタイルの問題についてインラインコメントを残します。また概要コメントも追加するため、人間のレビュアーは機械的なチェックではなく設計に集中できます。
+* **独自のコードレビュー**：GitHub トリガーが `pull_request.opened` で実行されます。スケジュールタスクは独自のレビューチェックリストを適用し、セキュリティ、パフォーマンス、スタイルの問題についてインラインコメントを残します。また、サマリーコメントも追加するため、人間のレビュアーは機械的なチェックではなく設計に集中できます。
 * **デプロイ検証**: CD パイプラインが本番デプロイのたびにスケジュールタスクの API エンドポイントを呼び出します。タスクは新しいビルドに対してスモークチェックを実行し、エラーログをスキャンしてリグレッションを探し、デプロイウィンドウが閉じる前にリリースチャンネルに go または no-go を投稿します。
 * **ドキュメントのずれ**: スケジュールトリガーが毎週実行されます。スケジュールタスクは前回の実行以降にマージされた PR をスキャンし、変更された API を参照しているドキュメントを指摘して、編集者がレビューできるようドキュメントリポジトリに更新 PR を作成します。
 * **ライブラリの移植**: GitHub トリガーが `pull_request.closed` で実行され、1 つの SDK リポジトリのマージ済み PR に絞り込まれています。スケジュールタスクは変更を別の言語の対応する SDK に移植して対応する PR を作成するため、人間が各変更を再実装しなくても 2 つのライブラリの歩調がそろいます。
@@ -344,7 +344,7 @@ GitHub トリガーは、接続されたリポジトリで一致するイベン�
 * **Failed**: セッションが正常に終了しませんでした。たとえば、予期せず停止した、エラーで終了した、または実行の開始前にアーカイブされた場合です
 * **Cancelled**: 実行は失敗しておらず、そのセッションがアーカイブされました。成功した実行のセッションをアーカイブすると、その実行は **Cancelled** に変わります。タスク側で変更する必要はありません
 
-**History** に警告が表示される場合は、[「The last run」の警告](#the-last-run-didnt-start)を参照してください。
+**History** に警告が表示される場合は、[History の警告](#the-last-run-didnt-start)を参照してください。
 
 ### スケジュールタスクを編集して制御する
 
@@ -510,14 +510,14 @@ API トリガーや GitHub トリガーによって開始された実行を含�
 
 組織でクラウドのスケジュールタスクがオフになっており、これはローカルの設定から変更することはできません。[**Organization settings > Capabilities > Remote sessions**](https://claude.ai/admin-settings/capabilities) の **Scheduled tasks (Was Routines)** または **Routines** トグルをオンにできるかどうか、Team または Enterprise の Owner に問い合わせてください。
 
-### "The last run" の警告
+### History の下に表示される警告
 
-**History** の下にある警告が「The last run」で始まる場合は、最初の列でその警告を探し、その行に記載された対処を行ってください。警告は、以降の実行が開始されると消えます。
+**History** の下にある警告が「The last run」または「This didn't run」で始まる場合は、最初の列でその警告を探し、その行に記載された対処を行ってください。警告は、以降の実行が開始されると消えます。
 
 | 警告 | 対処方法 |
 | :- | :- |
-| "The last run didn't start because your organization had reached its limit on cloud sessions running at once." | タスクを変更する必要はありません。後で **Run now** をクリックするか、次回の実行を待ってください |
-| "The last run didn't start because its cloud environment couldn't be found or used." | タスクの詳細ページで、名前の横にあるメニューを開き、**Edit** を選択して、[クラウド環境セレクター](#environments-and-network-access)を探します。**Unavailable environment** と表示されている場合、その環境はアーカイブされたか、アカウントで利用できなくなっているため、そこで別の環境を選択して変更を保存してください。それ以外の場合は、詳細ページの **Run now** で再試行するか、セレクターで別の環境を選択して変更を保存してください |
+| "This didn't run" の後に実行時刻が続き、その後に "You were at the limit for tasks Claude can work on at the same time." または "Your organization was at its limit for tasks Claude can work on at the same time." が表示される | タスクを変更する必要はありません。後で **Run now** をクリックするか、次回の実行を待ってください |
+| "The last run didn't start because its environment couldn't be found or used." | タスクの詳細ページで、名前の横にあるメニューを開き、**Edit** を選択して、[クラウド環境セレクター](#environments-and-network-access)を探します。**Unavailable environment** と表示されている場合、その環境はアーカイブされたか、アカウントで利用できなくなっているため、そこで別の環境を選択して変更を保存してください。それ以外の場合は、詳細ページの **Run now** で再試行するか、セレクターで別の環境を選択して変更を保存してください |
 | "The last run was blocked because it couldn't access something it needs, or your organization's policy doesn't allow it." | [GitHub アクセス](#repositories-and-branch-permissions)がタスクのリポジトリを対象に含んでいることを確認してください。含まれている場合は、Claude 組織の [Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) に、ポリシーがタスクをブロックしていないか確認してください |
 | "The last run didn't start because of a problem that's usually temporary." | **Run now** をクリックして再試行するか、次回の実行を待ってください |
 | "The last run didn't start because its repository or branch wasn't available." | タスク内の各リポジトリに[実行の開始元となるブランチ](#repositories-and-branch-permissions)が存在することを GitHub で確認してください。また、[GitHub アクセス](#repositories-and-branch-permissions)が各リポジトリを対象に含んでいることを確認し、接続の有効期限が切れている場合は GitHub に再接続してください |

@@ -17,7 +17,7 @@
 | Key | Description | Topic | Scope |
 | :- | :- | :- | :- |
 | [`advisorModel`](#advisormodel) | Claude が [advisor ツール](https://code.claude.com/docs/ja/advisor.md)に問い合わせたときに応答するモデルを選択します | モデルと応答 | Any file |
-| [`agent`](#agent) | 名前付きの[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)として、そのプロンプト、ツール、モデルですべてのセッションを開始します | エージェント、セッション、worktree | Any file |
+| [`agent`](#agent) | 名前付きの[サブエージェント](https://code.claude.com/docs/ja/sub-agents.md)として、そのプロンプト、ツール、モデルでセッションを開始します | エージェント、セッション、worktree | Any file |
 | [`agentPushNotifEnabled`](#agentpushnotifenabled) | Claude が必要と判断したときに[スマートフォンへのプッシュ通知](https://code.claude.com/docs/ja/remote-control.md#mobile-push-notifications)を送信できるようにします | リモート、デスクトップ、通知 | Any file |
 | [`allowAllClaudeAiMcps`](#allowallclaudeaimcps) | デプロイされた [`managed-mcp.json`](https://code.claude.com/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json) と併せて、Claude Code が自ら取得する [claude.ai コネクタ](https://code.claude.com/docs/ja/mcp.md)を読み込みます | MCP | Managed |
 | [`allowClaudeInChromeWithManagedMcp`](#allowclaudeinchromewithmanagedmcp) | デプロイされた [`managed-mcp.json`](https://code.claude.com/docs/ja/managed-mcp#exclusive-control-with-managed-mcp-json) と併せて、組み込みの [Claude in Chrome](https://code.claude.com/docs/ja/chrome.md) サーバーを実行できるようにします | MCP | Managed |
@@ -83,6 +83,7 @@
 | [`disableCommandPluginSources`](#disablecommandpluginsources) | マーケットプレイスで宣言されたコマンドを実行してインストールする[プラグイン](https://code.claude.com/docs/ja/plugins/overview.md)をブロックします | プラグインとスキル | Managed |
 | [`disableDeepLinkRegistration`](#disabledeeplinkregistration) | Claude Code が [`claude-cli://` ハンドラー](https://code.claude.com/docs/ja/deep-links)を登録しないようにします | リモート、デスクトップ、通知 | Any file |
 | [`disableDesktopLocalSessions`](#disabledesktoplocalsessions) | デバイス上で実行される [Desktop の Code セッション](https://code.claude.com/docs/ja/desktop.md#local-sessions-on-managed-devices)をオフにし、他のホストへの SSH とクラウドのみを残します | リモート、デスクトップ、通知 | Managed |
+| [`disableDirectMcpSkills`](#disabledirectmcpskills) | 組織に対して、[コネクタ以外の MCP サーバーからのスキル](https://code.claude.com/docs/ja/mcp.md#turn-on-skills-for-an-organization)をオンまたはオフにします | MCP | Managed |
 | [`disabledMcpjsonServers`](#disabledmcpjsonservers) | プロジェクトの [`.mcp.json`](https://code.claude.com/docs/ja/mcp#project-scope) から特定のサーバーを拒否します | MCP | Any file |
 | [`disableMobileSimulatorTools`](#disablemobilesimulatortools) | [デスクトップ](https://code.claude.com/docs/ja/desktop.md)の iOS Simulator ペインで Claude のツールをブロックします | ツール | Managed |
 | [`disableRemoteControl`](#disableremotecontrol) | [Remote Control](https://code.claude.com/docs/ja/remote-control.md) を、起動可能なすべての場所でオフにします | リモート、デスクトップ、通知 | Any file |
@@ -2526,7 +2527,7 @@ Claude Code が[メモリ](https://code.claude.com/docs/ja/memory.md#exclude-spe
 }
 ```
 
-`-p` の実行や Agent SDK のセッションでは、Claude Code はこのキーを無視します。SDK では `enableFileCheckpointing` オプションでチェックポイント機能をオンにし、単純な `-p` の実行では `CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true` が必要です。[Agent SDK のファイルチェックポイント機能](https://code.claude.com/docs/ja/agent-sdk/file-checkpointing.md)を参照してください。
+`-p` の実行や Agent SDK のセッションでは、組織の[管理設定](https://code.claude.com/docs/ja/managed-settings.md)でこのキーが `false` に設定されている場合を除き、Claude Code はこのキーを無視します。管理設定で `false` に設定されている場合、チェックポイント機能はオフのままです。この例外には Claude Code v2.1.331 以降が必要です。その `false` がない場合は、SDK の `enableFileCheckpointing` オプション、または単純な `-p` の実行では `CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true` でチェックポイント機能をオンにしてください。[Agent SDK のファイルチェックポイント機能](https://code.claude.com/docs/ja/agent-sdk/file-checkpointing.md)を参照してください。
 
 ### `idleCompaction`
 
@@ -4181,6 +4182,8 @@ owner ワイルドカードの `github` エントリと、正規表現で照合�
 
 `skills` サーフェスをロックします。Claude Code は、`~/.claude/skills/` と `.claude/skills/` からのスキル、`~/.claude/commands/` と `.claude/commands/` からのカスタムコマンド、`--add-dir` ディレクトリ配下のスキルとコマンド、および claude.ai アカウントから同期されたスキルの読み込みを停止します。バンドルスキル、管理ポリシーディレクトリ内のスキル、および[スキルディレクトリプラグイン](https://code.claude.com/docs/ja/plugins/loading.md#skills-directory-plugins-blocked-by-managed-settings)以外のプラグインからのスキルは引き続き読み込みます。
 
+ロックがオンの場合、ユーザー、プロジェクト、`--mcp-config` が追加する [MCP サーバーからのスキル](https://code.claude.com/docs/ja/mcp.md#use-skills-from-mcp-servers)は読み込まれません。claude.ai コネクタからのスキルは引き続き読み込まれます。
+
 * **スコープ**: [`管理`](#scopes)
 * **型**: [`strictPluginOnlyCustomization`](#strictpluginonlycustomization) 配列内の文字列 `"skills"`
 * **デフォルト**: ロックされない
@@ -4539,6 +4542,28 @@ Claude Code が自身で取得する[claude.ai コネクタ](https://code.claude
 ```
 
 デニーリストは[`allowedMcpServers`](#allowedmcpservers)より優先されるため、両方のリストにあるサーバーはブロックされます。[ホワイトリストとデニーリストを使用したポリシーベースの制御](https://code.claude.com/docs/ja/managed-mcp.md#policy-based-control-with-allowlists-and-denylists)を参照してください。
+
+### `disableDirectMcpSkills`
+
+組織の [MCP サーバーからのスキル](https://code.claude.com/docs/ja/mcp.md#turn-on-skills-for-an-organization)をオンまたはオフにします。このキーは claude.ai コネクタを除くすべてのサーバーを対象とします。コネクタについては、代わりに Owner が [**Organization settings > Connectors**](https://claude.ai/admin-settings/connectors) の **Skills over MCP** スイッチを使用します。MCP サーバーからのスキルには Claude Code v2.1.331 以降が必要です。
+
+* **スコープ**: [`Managed`](#scopes)。複数の[管理ソース](https://code.claude.com/docs/ja/managed-settings.md#how-claude-code-combines-managed-sources)を使用する場合は、最も順位の高いソースで `false` を設定します。Claude Code は Windows HKCU レジストリ内の `false` を無視します
+* **タイプ**: ブール値
+  * `true`: Claude Code はこれらのサーバーからのスキルを一覧表示も読み込みもしません。サーバーのツールは維持され、claude.ai コネクタのスキルも維持されます
+  * `false`: Team および Enterprise プランでは、これらのスキルを許可します。`strictPluginOnlyCustomization` でロックアウトしたサーバーでは、また組織が[対象](https://code.claude.com/docs/ja/mcp.md#requirements-for-skills-from-mcp-servers)でない場合は、オフのままです。その他のプランでは、`false` は未設定と同じです
+* **デフォルト**: 未設定。`/login` で claude.ai にサインインする Team および Enterprise メンバーに対しては、これらのスキルはオフです。その他のサインイン方法については、[MCP スキルの利用可能性](https://code.claude.com/docs/ja/mcp.md#requirements-for-skills-from-mcp-servers)を参照してください
+
+この例は、Team および Enterprise メンバーに対してこれらのスキルを許可します。
+
+```json managed-settings.json theme={null}
+{
+  "disableDirectMcpSkills": false
+}
+```
+
+いずれかの[管理ソース](https://code.claude.com/docs/ja/managed-settings.md#keys-read-from-every-admin-source)が `true` を設定している場合、スキルはオフのままです。
+
+Anthropic はこれらのスキルをスキャンしません。これらのスキルには、[プロンプトインジェクション](https://code.claude.com/docs/ja/security.md#protect-against-prompt-injection)を介したものを含め、Claude に意図しないアクションを実行させる指示やコードが含まれている可能性があります。メンバーが追加するサーバーを信頼する場合にのみ、これを `false` に設定してください。
 
 ### `disableClaudeAiConnectors`
 

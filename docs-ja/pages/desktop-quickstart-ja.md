@@ -10,11 +10,11 @@
 
 Claude Code は、アプリのサイドバー上部にある **Code** タブにあります。このページでは、アプリのインストールと、そこで最初のセッションを開始する方法について説明します。Claude Code には [Pro、Max、Ultra、Team、または Enterprise サブスクリプション](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=desktop_quickstart_pricing)が必要です。
 
-> [card] [macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)
+> [card] [macOS 用にダウンロード](https://claude.ai/claude-code/desktop-download?platform=mac\&utm_source=claude_code\&utm_medium=docs)
 >
 > Intel と Apple Silicon 向けのユニバーサルビルド
 
-> [card] [Windows 用にダウンロード](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)
+> [card] [Windows 用にダウンロード](https://claude.ai/claude-code/desktop-download?platform=win-x64\&utm_source=claude_code\&utm_medium=docs)
 >
 > x64 プロセッサ向け
 
@@ -22,7 +22,7 @@ Claude Code は、アプリのサイドバー上部にある **Code** タブに�
 >
 > Ubuntu と Debian 向けの apt または .deb
 
-Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)をダウンロードしてください。Linux では apt でインストールします。[Claude Desktop on Linux](https://code.claude.com/docs/ja/desktop-linux.md)を参照してください。
+Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/claude-code/desktop-download?platform=win-arm64\&utm_source=claude_code\&utm_medium=docs)をダウンロードしてください。Linux では apt でインストールします。[Claude Desktop on Linux](https://code.claude.com/docs/ja/desktop-linux.md)を参照してください。
 
 > [!NOTE]
 >

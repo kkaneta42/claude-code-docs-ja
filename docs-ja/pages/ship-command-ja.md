@@ -47,18 +47,18 @@
 次のツールをインストールまたは更新します。
 
 * Claude Code v2.1.330 以降。`/ship` が見つからない場合は、[セッションで /ship が使用できない](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#%2Fship-isn’t-available-in-your-session)を参照してください
-* [GitHub CLI](https://cli.github.com) 2.63 以降（`gh auth login` でサインイン済みであること）。古いバージョンでは、Claude は修正をプッシュできません
-* 新しいコミットをブランチにマージするための git 2.38 以降。古い git では、Claude はそれらのマージをユーザーに任せます
+* GitHub 上のリポジトリの場合は、[GitHub CLI](https://cli.github.com) 2.63 以降（`gh auth login` でサインイン済みであること）。古いバージョンでは、ウォッチは開始されません。v2.1.331 より前では、ウォッチは開始されますが、Claude は修正をプッシュできません
+* 新しいコミットをブランチにマージするための git 2.38 以降。古い git では、Claude はそれらのマージをユーザーに任せ、[別のホスト上](#watch-a-branch-on-another-host)ではウォッチは開始されません
 
 次に、変更とセッションを準備します。
 
-* **完成した変更（`/ship` の場合）**: GitHub 上のリポジトリのローカルクローンに用意します。未コミットでも、デフォルトブランチ以外のブランチにコミット済みでも、自分の開いているプルリクエストにすでに含まれていてもかまいません。リポジトリが GitHub 以外でホストされている場合、`/ship` はプルリクエストを開かず、Claude が変更をレビューします
+* **完成した変更（`/ship` の場合）**: GitHub 上のリポジトリのローカルクローンに用意します。未コミットでも、デフォルトブランチ以外のブランチにコミット済みでも、自分の開いているプルリクエストにすでに含まれていてもかまいません。リポジトリが GitHub 以外でホストされている場合、`/ship` はプルリクエストを開きません。Claude は変更をレビューし、その後[ブランチをウォッチ](#watch-a-branch-on-another-host)できます。v2.1.331 より前では、そこでウォッチは開始されません
 * **プルリクエストに含めたいファイルのみ（`/ship` の場合）**: `/ship` は、新規ファイルを含め、未コミットの変更をすべてコミットできます。シェルで `git status` を実行します。プルリクエストに含めたくない新規ファイルはそれぞれ削除するか、`git stash push -u -- <file>` で stash します
 * **それらのファイルにシークレットが含まれていないこと（`/ship` の場合）**: `/ship` は `.env` などのファイル名でシークレットを探すため、ファイルの中身は自分で確認してください。`Read(./notes.txt)` などの拒否ルールでは、ファイルをコミットから除外できません
-* **GitHub 上の開いているプルリクエスト（`/steward` の場合）**: 自分のプルリクエストであり、そのブランチがローカルクローンでチェックアウトされている必要があります
-* **権限モード**: Claude に無人でプルリクエストの作業をさせたい場合は、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を選択します。その他のほとんどの権限モードでは、Claude はプロンプトごとに待機します。`bypassPermissions` モードでは、ウォッチは開始されません
+* **GitHub 上の開いているプルリクエスト（`/steward` の場合）**: 自分のプルリクエストであり、そのブランチがローカルクローンでチェックアウトされている必要があります。GitHub 以外のホストについては、[別のホスト上のブランチをウォッチする](#watch-a-branch-on-another-host)を参照してください
+* **権限モード**: Claude に無人でプルリクエストの作業をさせたい場合は、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)を選択します。[Manual モードと `acceptEdits` モード](https://code.claude.com/docs/ja/permission-modes#available-modes)では、Claude はプロンプトごとに待機します。`bypassPermissions` モードでは、ウォッチは開始されません。v2.1.331 以降では、plan モードで `/ship` は開始されません
 
-ネイティブ Windows では、[ウォッチは開始されません](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#cases-where-no-watch-can-start)。
+ネイティブ Windows では、[ウォッチは開始されません](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#cases-where-no-watch-can-start)。[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)でも、[ウォッチは開始されません](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#a-session-setting-blocks-a-watch)。v2.1.331 より前では、そこでウォッチを開始できます。
 
 > [!WARNING]
 >
@@ -82,11 +82,13 @@ Claude と一緒に変更を行った場合は、同じセッションを使用�
 
 フォークではない github.com 上のリポジトリでは、`/ship` はレビューの前に、未コミットの変更をコミットし、ブランチをプッシュし、プルリクエストを開くことができます。デフォルトブランチ上では、新しいブランチにコミットし、チェックアウトをそのブランチに切り替えます。作業がすでに別のブランチにコミットされている場合、`/ship` はそのブランチをプッシュしてプルリクエストを開きます。
 
-次の場合、`/ship` は未コミットの変更をコミットしません。当てはまる最初のケースに従ってください。
+次の場合、`/ship` は異なる動作をします。当てはまる最初のケースに従ってください。
 
-* **ブランチにプルリクエストがすでに開いている**: プルリクエストに含めたいものは自分でコミットしてプッシュします
-* **リポジトリが公開されている**: デフォルトブランチ以外のブランチにいて、そのブランチ独自のコミットがある場合、`/ship` はそれらをプッシュし、未コミットの変更を含めずにプルリクエストを開きます。それ以外の場合は、デフォルトブランチ以外のブランチに作業をコミットしてから、もう一度 `/ship` を実行します
+* **ブランチに他の人のプルリクエストが開いている**: `/ship` は作業をコミットもプッシュもせず、ウォッチも開始されません
 * **未コミットのファイルの名前がシークレットを示唆している（`.env` など）**: 公開されていないリポジトリでは、`/ship` は何もコミットもプッシュもしません。[/ship が何もコミットまたはプッシュしなかった](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#%2Fship-committed-or-pushed-nothing)を参照してください
+* **ブランチに自分のプルリクエストがすでに開いている**: `/ship` は未コミットの変更をコミットし、それらと未プッシュのコミットをそのプルリクエストにプッシュできます。公開リポジトリの場合や自動マージが有効になっている場合など、[一部のケース](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#your-pull-request-is-already-open)では、変更をコミットしません。その後ウォッチが開始されると、未プッシュのコミットは [Claude の次のプッシュで一緒にプッシュされる場合があります](#keep-working-while-a-watch-runs)。v2.1.331 より前では、この場合 `/ship` はコミットもプッシュもしません
+* **リポジトリが公開されている**: `/ship` は未コミットの変更をコミットしません。デフォルトブランチ以外のブランチにいて、そのブランチ独自のコミットがある場合、`/ship` はそれらをプッシュし、未コミットの変更を含めずにプルリクエストを開きます。それ以外の場合は、デフォルトブランチ以外のブランチに作業をコミットしてから、もう一度 `/ship` を実行します
+* **コミットがデフォルトブランチ上にあり、未コミットのものがない**: 公開されていないリポジトリでは、`/ship` はそれらのコミット用に新しいブランチを作成し、そのブランチをプッシュし、プルリクエストを開き、チェックアウトを新しいブランチに切り替えます。v2.1.331 より前では、`/ship` は何もプッシュしないため、コミットをデフォルトブランチ以外のブランチに移してから、もう一度 `/ship` を実行します
 
 次のいずれかが必要な場合は、自分でプルリクエストを開いてから `/ship` を実行します。
 
@@ -105,9 +107,9 @@ Claude と一緒に変更を行った場合は、同じセッションを使用�
 
 ## ウォッチ中に Claude が行うこと
 
-ウォッチとは、`/ship` のレビュー後、または `/steward` と入力したときに始まる、プルリクエストに対する Claude の継続的な作業です。Claude はユーザーの `gh` と `git` のサインインを使用するため、GitHub 上での Claude の作業はユーザーの名前で表示されます。
+ウォッチとは、`/ship` のレビュー後、または `/steward` と入力したときに始まる、プルリクエストに対する Claude の継続的な作業です。GitHub 以外のホストについては、[別のホストでブランチをウォッチする](#watch-a-branch-on-another-host)を参照してください。Claude はユーザーの `gh` と `git` のサインインを使用するため、GitHub 上での Claude の作業はユーザーの名前で表示されます。
 
-auto モードでは、Claude は確認せずに次のアクションを実行します。
+GitHub のプルリクエストでは、auto モードの Claude は確認せずに次のアクションを実行します。
 
 * 問題であると判断したレビューの指摘事項に対応する
 * レビューをまとめたコメントを 1 件投稿できる
@@ -116,13 +118,52 @@ auto モードでは、Claude は確認せずに次のアクションを実行�
 * 失敗したチェックに対応し、失敗したチェックを再実行する
 * レビューコメントに返答し、スレッドを解決し、レビューを再リクエストする
 
-Claude は、ユーザー自身と書き込みアクセス権を持つ人からのコメントを読みます。github.com では、Claude のボットからのコメントも読みます。Claude に別のボットのコメントを読ませるには、`/steward +my-lint-bot` のように、`/steward +` に続けてボットの名前を入力します。
+GitHub では、Claude はユーザー自身と書き込みアクセス権を持つ人からのコメントを読みます。github.com では、Claude のボットからのコメントも読みます。Claude に別のボットのコメントを読ませるには、`/steward +my-lint-bot` のように、`/steward +` に続けてボットの名前を入力します。
 
 チェックが通り、コメントへの返答が済むと、Claude はセッション内でその旨を伝えます。プルリクエストは自分でマージしてください。何がマージできるかは、ユーザーの権限とリポジトリのブランチルールによって異なります。[ウォッチがマージにつながる場合](#when-a-watch-can-lead-to-a-merge)を参照してください。
 
+### 別のホストでブランチをウォッチする
+
+GitLab、Bitbucket、Azure DevOps など GitHub 以外のホストでは、Claude は最大 7 日間ブランチをウォッチできます。ウォッチには git 2.38 以降が必要で、GitHub CLI がなくても動作します。`/ship` と `/steward` は、開始時に何もコミット、プッシュ、オープンしません。v2.1.331 より前では、`/ship` はそこで変更をレビューし、ウォッチは開始されません。
+
+まず変更をコミットしてから、シェルでアップストリームを設定してブランチをプッシュします。
+
+```bash theme={null}
+git push -u origin <branch>
+```
+
+gitlab.com、bitbucket.org、dev.azure.com では、次にマージリクエストまたはプルリクエストを作成します。これにより、Claude Code は[git のサインインを使ってそのチェックとコメントを読む](#checks-and-comments-on-gitlab-bitbucket-and-azure-devops)ことができます。その後、Claude Code のプロンプトで `/ship` と入力するか、先にレビューを行わないウォッチの場合は `/steward` と入力します。
+
+git のサインインを使って、Claude は auto モードで確認せずに次のようなアクションを実行できます。
+
+* ベースブランチをユーザーのブランチにマージしてコンフリクトを解決する
+* ユーザーのブランチへの他の人のプッシュをマージする
+* ブランチにコミットをプッシュする
+
+そこでは、ウォッチは Claude にコメントへの返信、チェックの再実行、CI ログの読み取りを行うコマンドを与えません。そこで Claude が何を行ってよいかを確認するには、ウォッチの実行中にプロンプトで `/ship terms` と入力します。
+
+#### GitLab、Bitbucket、Azure DevOps でのチェックとコメント
+
+ターミナルセッションでは、Claude Code は、オープン中のマージリクエストまたはプルリクエスト、そのチェック、そのコメントなどの詳細を読み取ることができます。そのために、Claude Code は、ブランチのプッシュ先のリモートに対して git が保持しているサインインを git に要求します。そのサインインは `GET` リクエストで gitlab.com、bitbucket.org、または dev.azure.com の API に送信されます。事前にユーザーに確認されることはありません。
+
+最初の読み取りの前に、次のような行が表示されます。最初の読み取りは、`/ship` または `/steward` を実行した直後に行われることがあります。
+
+```text theme={null}
+Claude Code is about to read gitlab.com's web API with the sign-in that git keeps for it. It only reads.
+```
+
+ホストを読み取るウォッチは、終了するまでこれらの読み取りを繰り返します。これらが自分のチェックアウトに該当するかどうかを確認するには、シェルで `git remote -v` を実行します。これらの読み取りが行われるのは、ブランチのプッシュ先のリモートの `(fetch)` 行に、これらのホストのいずれかの `https` アドレスが表示されている場合のみです。
+
+これを防ぐには、`/ship` または `/steward` を実行する前に、リモートを SSH に切り替えるか、設定でホストを拒否します。ウォッチが実行中の場合は、先に `/ship stop` と入力してください。
+
+* ブランチのプッシュ先のリモートが SSH 経由でフェッチするようにします。たとえば、シェルで `git remote set-url origin git@gitlab.com:<group>/<project>.git` を、`origin` をそのリモートの名前に置き換えて実行します。その後、`git remote -v` の `(fetch)` 行に `https` アドレスが表示されないことを確認します
+* ホストを [`sandbox.network.deniedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-denieddomains) に追加します。`about to read` の通知は引き続き表示されますが、Claude Code は git にサインインを要求せず、Web API も呼び出しません。Claude Code が[サンドボックス](https://code.claude.com/docs/ja/sandboxing.md)の外で実行するウォッチ自体の git コマンドは、引き続き git のサインインを使ってホストに接続します。サンドボックスがオンの場合、Claude はそのホストからのフェッチやそのホストへのプッシュもできません
+
+ウォッチの開始時に、ホストがサインインを拒否したり、そのブランチに対するユーザーのオープン中のマージリクエストやプルリクエストが表示されなかったりすることがあります。その場合、ウォッチは git のみで続行でき、開始時の行には `Claude can't see checks or comments on gitlab.com, so watch those yourself` が含まれます。マージリクエストまたはプルリクエストをマージせずにクローズした場合、そのウォッチは続行されるため、`/ship stop` と入力してください。
+
 ### ウォッチの実行中に作業を続ける
 
-ウォッチの実行中は、セッションを開いたまま[フォアグラウンド](https://code.claude.com/docs/ja/agent-view.md#send-the-session-to-the-background)に保ち、コンピューターをスリープさせず、プルリクエストのブランチをチェックアウトしたままにしてください。Claude はユーザーと同じチェックアウト内のファイルを編集します。
+ウォッチの実行中は、セッションを開いたままにし、コンピューターをスリープさせず、プルリクエストのブランチをチェックアウトしたままにしてください。v2.1.331 より前では、セッションを[フォアグラウンド](https://code.claude.com/docs/ja/agent-view.md#send-the-session-to-the-background)に保つ必要もあります。Claude はユーザーと同じチェックアウト内のファイルを編集します。
 
 * **次の変更を始めるには**: リポジトリの 2 つ目のクローンなど別のフォルダーで作業し、そこで別の Claude Code セッションを開きます
 * **自分のコミットをプッシュするには**: `git push origin <branch>` のように、リモートとブランチを指定します。`git push -u` や `git branch -u` などで git の設定を変更すると、ウォッチは終了します
@@ -161,23 +202,24 @@ Claude Code のプロンプトで `/tasks` と入力します。レビューが�
 
 ### ウォッチが終了する条件
 
-ウォッチが終了したら、`Stopped watching pull request` で始まる行を探します。[ウォッチが停止した](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#a-watch-stopped)に、その行が示す理由の一覧があります。
+ウォッチが終了したら、`Stopped watching` で始まる行を探します。[ウォッチが停止した](https://code.claude.com/docs/ja/ship-command-troubleshooting.md#a-watch-stopped)に、その行が示す理由の一覧があります。
 
 次のような場合にウォッチは終了します。
 
 | 場所 | ウォッチを終了させるもの |
 | :- | :- |
-| プルリクエスト上 | マージまたはクローズされた、[PR Steward](https://code.claude.com/docs/ja/pr-steward.md) がラベルを付けた、または 7 日が経過した |
+| GitHub のプルリクエスト上 | マージまたはクローズされた、[PR Steward](https://code.claude.com/docs/ja/pr-steward.md) がラベルを付けた、または 7 日が経過した |
+| その他のホスト上 | ブランチがリモートから削除された、またはベースに対して追加する内容がなくなった、または 7 日が経過した。Claude Code がマージリクエストまたはプルリクエストを読み取れる場合は、それがマージまたはクローズされたときにもウォッチが終了する。それ以外の場合、マージせずにクローズしても、[ウォッチが継続することがある](#checks-and-comments-on-gitlab-bitbucket-and-azure-devops) |
 | キーボード | プロンプトで、または Claude の作業中に `Esc` または `Ctrl+C` を押した。1 回押すだけで、確認なしにウォッチが終了することがある |
 | チェックアウト内 | 別のブランチをチェックアウトした、または git の設定を変更した |
-| セッション内 | セッションが終了した、セッションをバックグラウンドに送った、別のウォッチまたはタスク付きの `/loop` を開始した、または `/clear`、`/resume`、`/branch` を実行した |
+| セッション内 | セッションが終了した、別のウォッチまたはタスク付きの `/loop` を開始した、`/clear`、`/resume`、`/branch` を実行した、または Claude が次にプルリクエストを確認するときにセッションが plan モードになっていた。v2.1.331 より前では、ウォッチは plan モードでも継続し、セッションをバックグラウンドに送ると終了する |
 | 失敗後 | エラー、拒否したプロンプト、または使用制限により早期に終了することがある |
 
 ### ウォッチを停止または再開する
 
 ウォッチを終了するには、ウォッチを実行しているセッションの Claude Code プロンプトで `/ship stop` と入力します。入力時に Claude が作業中の場合、ウォッチは現在のターンが終わった時点で終了するため、そのターンで Claude がプッシュまたは投稿したものはプルリクエストに反映されます。ターンも停止するには、`Esc` を押します。
 
-ウォッチを再開するには、[`/steward`](#start-a-watch-with-%2Fsteward) と入力します。
+ウォッチを再開するには、[`/steward`](#start-a-watch-with-%2Fsteward) と入力します。GitHub 以外のホストでは、`/steward origin/main` のように、指定したベースを追加します。
 
 ## ウォッチを実行する場所を決める
 
@@ -211,9 +253,9 @@ Claude がユーザーからのメッセージなしで動作する場合、Clau
 
 | ケース | 何が起こるか |
 | :- | :- |
-| プルリクエストで自動マージがオンになっている | チェックとレビューの条件が満たされると、GitHub がマージします。修正のプッシュなど、ウォッチ中の Claude の動作がそのきっかけになることがあります。オフにするには、シェルで `gh pr merge --disable-auto <number>` を実行します |
+| プルリクエストで自動マージがオンになっている | チェックとレビューの条件が満たされると、ホストがマージします。修正のプッシュなど、ウォッチ中の Claude の動作がそのきっかけになることがあります。GitHub でオフにするには、シェルで `gh pr merge --disable-auto <number>` を実行します |
 | ターミナルセッションで、Claude がアイドル状態のときにメッセージを入力した | Claude がメッセージに応答している間、[Claude Code の制限](#what-claude-code-blocks-during-a-watch)はオフになります。その間に届いたバックグラウンドタスクの結果を Claude が処理している間もオフになります。その場合、auto モードでは Claude がマージを許可される可能性があります |
-| ターミナルで開始したセッションを、レビュー中またはウォッチ中に、たとえば `←` を押してバックグラウンドに送った | ウォッチは終了します。進行中の作業は、そこでこれらの制限なしに続行される可能性があります。その作業を終了するには、[そのセッションを停止](https://code.claude.com/docs/ja/agent-view.md#manage-sessions-from-the-shell)します |
+| v2.1.331 より前のバージョンで、ターミナルで開始したセッションを、レビュー中またはウォッチ中に、たとえば `←` を押してバックグラウンドに送った | ウォッチは終了します。進行中の作業は、そこでこれらの制限なしに続行される可能性があります。その作業を終了するには、[そのセッションを停止](https://code.claude.com/docs/ja/agent-view.md#manage-sessions-from-the-shell)します |
 
 ### /ship と /steward に適用される権限ルールとフック
 
@@ -244,6 +286,8 @@ Claude Code は、`/ship` 自身のコミット、プッシュ、プルリクエ
 }
 ```
 
+[`CLAUDE_CODE_DISABLE_SHIP`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定することもできます（たとえば管理設定の `env` の下で設定します）。Claude Code v2.1.331 以降が必要です。
+
 `/ship` 自身のプッシュを止めるには、`Bash(git push *)` などの[拒否ルール](https://code.claude.com/docs/ja/permissions.md#manage-permissions)を管理設定に追加します。このルールがあると、ウォッチは開始されません。
 
 ## /ship と /steward の引数
@@ -253,10 +297,11 @@ Claude Code のプロンプトで、`/ship` または `/steward` の後に引数
 | 入力する値 | コマンド | 動作 |
 | :- | :- | :- |
 | `low`、`medium`、`high`、`xhigh`、または `max` | `/ship` | その effort レベルでのレビューを求めます。デフォルトは `high` です |
-| `41`、またはプルリクエストの URL | `/ship`、`/steward` | そのプルリクエストを対象に作業します。ウォッチの場合、自分のプルリクエストであり、そのブランチがチェックアウトされている必要があります |
-| `+botname` | `/ship`、`/steward` | そのボットのコメントも読みます。ウォッチを再開するときにも、繰り返し指定してください |
+| `41`、またはプルリクエストの URL | `/ship`、`/steward` | GitHub では、そのプルリクエストを対象に作業します。ウォッチの場合、自分のプルリクエストであり、そのブランチがチェックアウトされている必要があります |
+| `+botname` | `/ship`、`/steward` | GitHub では、そのボットのコメントも読みます。ウォッチを再開するときにも、繰り返し指定してください |
+| `origin/main`、または別のリモートとブランチ | `/ship`、`/steward` | [GitHub 以外のホスト](#watch-a-branch-on-another-host)で、変更のマージ先となるブランチを指定します。Claude Code v2.1.331 以降が必要です |
 | `stop` | `/ship`、`/steward` | ウォッチを終了します |
-| `terms` | `/ship`、`/steward` | ウォッチ中に Claude が行えることと、それを制限するものを表示します |
+| `terms` | `/ship`、`/steward` | ウォッチ中に Claude が行えることと、それを制限するものを表示します。[別のホスト](#watch-a-branch-on-another-host)では、ウォッチの実行中に入力してください |
 
 ## 関連リソース
 

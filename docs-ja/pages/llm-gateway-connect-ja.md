@@ -162,7 +162,7 @@ Claude Code が実行されるすべての場所で設定を適用し、[バッ�
 
 ## 各サーフェスを設定する
 
-CLI は上記の環境変数と設定ファイルを読み取ります。他のサーフェスは VS Code 拡張機能、デスクトップアプリ、GitHub Actions、Agent SDK、Slack やウェブなどのクラウドサーフェスです。以下のセクションは、これらの設定が各サーフェスに到達するかどうかをカバーしています。
+CLI は上記の環境変数と設定ファイルを読み取ります。他のサーフェスは VS Code 拡張機能、デスクトップアプリ、GitHub Actions、Agent SDK、Claude Tag やウェブなどのクラウドサーフェスです。以下のセクションは、これらの設定が各サーフェスに到達するかどうかをカバーしています。
 
 ### VS Code 拡張機能
 
@@ -255,9 +255,9 @@ options = ClaudeAgentOptions(
 )
 ```
 
-### Slack、クラウドセッション、Remote Control
+### クラウドセッション、Claude Tag、Remote Control
 
-[Slack の Claude Code](https://code.claude.com/docs/ja/slack.md) と[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)は、ゲートウェイのデプロイには含まれません。クラウドセッションの環境設定で設定されたゲートウェイ変数は適用されません。トラフィックがゲートウェイに留まる必要がある場合、これらのユーザーに対してこれらのサーフェスを有効にしないでください。
+[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)と [Claude Tag](https://claude.com/docs/claude-tag/overview) は、ゲートウェイのデプロイには含まれません。トラフィックがゲートウェイに留まる必要がある場合は、これらのサーフェスをオフにしてください。
 
 [Remote Control](https://code.claude.com/docs/ja/remote-control.md) と[音声ディクテーション](https://code.claude.com/docs/ja/voice-dictation.md)は両方とも claude.ai ID に依存します。Remote Control はライブセッションをアカウントとペアリングし、音声ディクテーションは claude.ai トランスクリプションエンドポイントに到達します。`ANTHROPIC_API_KEY`、`ANTHROPIC_AUTH_TOKEN`、または `apiKeyHelper` がアクティブな間は利用できません。Remote Control は `ANTHROPIC_BASE_URL` が Anthropic 以外のホストを指している場合も無効になるため、claude.ai でサインインするだけでは十分ではありません。
 

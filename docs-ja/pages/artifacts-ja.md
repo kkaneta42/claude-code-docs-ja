@@ -43,7 +43,7 @@ Make an artifact that walks through this PR with the diff annotated inline.
 Build a dashboard artifact of last week's deploy failures by service and keep it updated as you investigate.
 ```
 
-場所を指定しない限り、Claude はページを HTML または Markdown ファイルとしてプロジェクト外の一時ディレクトリに書き込み、公開します。アーティファクトは[共有](#share-an-artifact)するまで、ユーザー本人だけが見られるプライベートな状態のままです。
+アーティファクトは[共有](#share-an-artifact)するまで、ユーザー本人だけが見られるプライベートな状態のままです。
 
 最初の公開後、Claude は URL を出力し、ブラウザで新しいページが開きます。
 
@@ -58,7 +58,9 @@ Claude が公開できないと応答した場合、またはリンクなしで�
 
 ### 公開前に Claude Code が確認する場合
 
-入力したプロンプトに応じて Claude が公開する新しいアーティファクトは、権限プロンプトや分類器のレビューなしで処理されます。以下の場合、Claude Code はまず確認を求めるか、[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では分類器に公開をレビューさせます。
+入力したプロンプトに応じて Claude が公開する新しいアーティファクトは、権限プロンプトや分類器のレビューなしで処理される場合があります。
+
+`bypassPermissions` モード以外では、次のような場合に公開にはユーザーの承認が必要になります（[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)では分類器のレビューが必要になります）。
 
 | 条件 | Claude Code の動作 |
 | :- | :- |
@@ -66,16 +68,16 @@ Claude が公開できないと応答した場合、またはリンクなしで�
 | 公開が、[コネクタ呼び出し](#pull-live-data-with-mcp-connectors)や[ファイルダウンロード](#offer-a-file-download)など、ページのランタイム機能を宣言している | その公開の前に確認する |
 | アーティファクトを公開共有している | 変更前に会話ごとに少なくとも 1 回確認し、アーティファクトへのコメントに返信する前にも毎回確認する |
 | 入力したプロンプトではなく、セッション内で実行された[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)によって開始されたターンで Claude が公開する | 各アーティファクトの最初の公開前に確認する |
-| Claude がユーザーの承認なしではファイルを読み取れない | 公開前に確認する。`Artifact` ツールの許可ルールがあっても、このプロンプトはスキップされない |
+| Claude がユーザーの承認なしでは読み取れないファイルから公開する | 公開前に確認するか、そのファイルを拒否する。`Artifact` ツールの許可ルールは承認とはみなされない |
 | [Manual](https://code.claude.com/docs/ja/permission-modes.md) モードまたは `acceptEdits` モードで、Claude がユーザーの承認なしでは編集できないアーティファクトのファイル（Manual モードでのプロジェクトファイルなど）に小さな変更を加える | 変更を公開する前に確認する。ファイルの編集にはユーザーの承認が必要なため、`Artifact` ツールが許可ルールの対象になっていても確認される |
 
-[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のファイルをユーザーの承認なしで Claude が読み取れるようにするには、起動時に [`--add-dir`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を使用するか、セッション中に `/add-dir` を使用して、そのフォルダを作業ディレクトリとして追加します。Claude は、これらのディレクトリ内のファイルと、ページを書き込む一時ディレクトリ内のファイルを、確認なしですでに読み取ります。
+[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)外のファイルをユーザーの承認なしで Claude が読み取れるようにするには、起動時に [`--add-dir`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を使用するか、セッション中に `/add-dir` を使用して、そのフォルダを作業ディレクトリとして追加します。
 
 公開のプロンプトに `Also makes 1 edit to that file on disk.` のような文が含まれている場合、Claude はアーティファクトのファイルの変更と公開を 1 つのステップで行います。プロンプトを承認すると、Claude Code はページを公開してから、変更をファイルに書き込みます。
 
 ## アーティファクトを更新する
 
-Claude にページを修正するよう依頼するか、長時間実行されるタスクが進行状況に応じて再度公開するようにします。Claude は基になるファイルを編集し、同じ URL に再度公開します。
+Claude にページを修正するよう依頼するか、長時間実行されるタスクが進行状況に応じて再度公開するようにします。Claude は同じ URL に再度公開します。
 
 ```text wrap theme={null}
 Add a per-region breakdown below the summary chart and republish.
@@ -150,12 +152,12 @@ Claude がページの古いコピーを保持している間にエディター�
 
 誰かがアーティファクトを共有した場合、Claude にそれを読ませることができます。Claude にその URL を提供するか、[`/artifacts`](#find-an-artifact-again) から添付してください。
 
-Claude は他の人が書いたページを、[WebFetch](https://code.claude.com/docs/ja/tools-reference.md#webfetch-tool-behavior) でウェブページを読む方法と同じように読みます。つまり、生のページではなく、質問した内容の要約を取得し、その要約はページに書き込まれた指示を報告しますが、それらを実行する代わりに報告するのです。Claude Code はまた、ページの完全なソースをローカルファイルに保存します。Claude は、アーティファクトを [エディター](#let-someone-edit-with-you) として再発行する場合など、正確なコンテンツが必要な場合にそのファイルを開くことができます。
+Claude Code はページの完全なソースをローカルファイルに保存でき、Claude はそのファイルを開くことができます。
 
-次の場合、Claude Code は、権限モードやルールによって求められるプロンプトに加えて、Claude がアーティファクトを読む前にユーザーの承認を求めます。
+次の場合、Claude Code は、権限モードやルールによって求められるプロンプトに加えて、[Artifact ツール](https://code.claude.com/docs/ja/tools-reference.md)がアーティファクトを読む前にユーザーの承認を求めることがあります。
 
 * **ネットワークアクセスのないクラウドセッション**：[クラウド環境](https://code.claude.com/docs/ja/cloud-environments.md#access-levels) の場合、**None** レベルがこれに該当します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では代わりに分類器が承認できますが、[Cowork](https://claude.com/product/cowork) セッションでは、承認できるのはユーザー本人だけです。
-* **別の組織の公開アーティファクト**：Claude Code は auto モードであっても、まずユーザーに確認します。`bypassPermissions` モードなど、Claude Code がユーザーに確認できない場合、Claude はそのアーティファクトを読むことができません。Claude がこれらのアーティファクトを読めるのは、[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) がオンになっている間だけです。
+* **別の組織の公開アーティファクト**：このツールは auto モードであっても、まずユーザーに確認します。`bypassPermissions` モードなど、Claude Code がユーザーに確認できない場合、このツールはこの会話でユーザーが承認していないアーティファクトを読むことができません。このツールがこれらのアーティファクトを読めるのは、[機能フラグの取得](https://code.claude.com/docs/ja/env-vars.md#features-that-need-feature-flag-fetching) がオンになっている間だけです。
 * **所有者またはネットワーク設定が未確認**：Claude Code がアーティファクトの作成者を確認できない場合、またはクラウドセッションのネットワーク設定を確認できない場合は確認を求めます。ユーザーの承認はその 1 回のリクエストにのみ適用されます。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode) では、ユーザーに確認する代わりに、分類器が読み取りを承認またはブロックできます。
 * **plan モード**：[plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode) では、Claude Code は、組織内の他の人が作成したアーティファクトを Artifact ツールが読む前に確認を求めます。
 
@@ -165,7 +167,7 @@ Claude が WebFetch でアーティファクトを読む場合も、WebFetch 自
 
 組織内でアーティファクトを共有すると、共有相手はページにコメントを残すことができ、Claude がそのコメントを読んで返信することができます。Claude Code v2.1.221 以降が必要です。Claude がコメントを読む場合は 2 つあります。
 
-* **Claude に読むよう依頼する場合**：Claude にアーティファクトの URL を提供し、コメントを求めます。Claude は各スレッドをリストアップし、アーティファクトを編集できるユーザーが送信したコメントをマークします。
+* **Claude に読むよう依頼する場合**：Claude にアーティファクトの URL を提供し、コメントを求めます。
 * **アーティファクトを編集できるユーザーが Claude にコメントを送信する場合**：ページのスレッドで、**Send to Claude** でコメントを送信するか、その中で `@claude` にメンションします。どちらの方法でも、スレッドが有効になります。
 
 Claude は有効になったスレッドにのみ返信または解決できます。その他のスレッドは、ユーザーがページで解決するまで開いたままになります。ビューアーは、各返信が Claude から送信されたものとして表示されます（あなた経由で）。
@@ -188,7 +190,7 @@ Claude Code v2.1.228 以降が必要です。
 
 [権限モード](https://code.claude.com/docs/ja/permission-modes.md)によって、送信されたコメントが到着したときに Claude が何をするかが決まります。
 
-* **Claude が自動で返信する**：権限モードで Claude が確認を求めずに返信を投稿できる場合、Claude はスレッドを読んで返信します。`Auto-replied to comment thread on Artifact: <name>` が表示されます。
+* **Claude が自動で返信する**: Claude が確認なしで返信を投稿できる権限モードを使用している場合、Claude はスレッドを読んで返信します。`Auto-replied to comment thread on Artifact: <name>` のような通知が表示されます。
 * **Claude がユーザーを待つ**：plan モード外で、返信の投稿に[ユーザーの承認が必要な場合](#when-claude-code-asks-before-publishing)、`Comments are waiting on Artifact: <name>` が表示されます。その後、Claude はスレッドを読む承認を求め、返信を投稿する承認を再度求めます。
 * **Claude がプランモードで一時停止する**：`Comments are waiting on Artifact: <name>` が表示され、Claude はプランモードを終了して読んで返信するよう求めるまで返信しません。
 
@@ -202,9 +204,7 @@ Claude は、1 時間以内にそのアーティファクトで 60 件の送信�
 * **`/tasks` でタスクを停止する**：Claude はそのアーティファクトへの返信を停止し、そこで返信を再開するよう求めるまで停止したままになります。アーティファクトを再度公開しても返信は再開されず、セッションを再開しても停止は適用されたままになります。
 * **3 秒以内に `Ctrl+X Ctrl+K` を 2 回押す**：[すべての実行中のバックグラウンドサブエージェントを停止](https://code.claude.com/docs/ja/interactive-mode.md#general-controls)するコードは、セッションの残りの間、Claude がすべてのアーティファクトに返信するのも停止します。Claude に返信を再開するよう求めても、この停止は元に戻りません。
 
-Claude Code が自動で開始した監視は、アーティファクトで数時間アクティビティがない状態が続くと終了することがあります。`Stopped watching Artifact: <name> (idle)` が表示されます。監視を再開するには、アーティファクトを再度公開するか、Claude に監視するよう依頼してください。`(idle)` の代わりに `(made room for a newer watch)` が表示される場合は、セッションが監視の上限である 25 件に達しています。その監視を再開するには、再度公開してください。
-
-コメントを配信するサービスが利用できなくなるか、応答を停止した場合、Claude Code はしばらく再接続を試み、その後、セッションが監視していた各アーティファクトの監視を停止します。
+`Stopped watching Artifact: <name>` に続けて `(idle)`、`(connection lost)`、または `(made room for a newer watch)` が表示された場合は、監視を再開するために、アーティファクトを再度公開するよう Claude に依頼してください。Claude Code が自動で開始した監視は、数時間アクティビティがない状態が続くと終了することがあります。
 
 ## MCP コネクタでライブデータを取得する
 
@@ -328,7 +328,7 @@ claude.ai アカウント上の[アーティファクトテンプレート](http
 Claude Code からテンプレートを使用するには、次のものが必要です。
 
 * [アーティファクトが利用可能](#availability)なセッション
-* Team プランと Enterprise プランでは、組織でそのテンプレートがオンになっていること。オフになっている場合は、claude.ai の **Organization settings > Artifacts** で[テンプレートをオンにする](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans#h_6e06d8f1a8)よう Owner に依頼してください。
+* Team プランと Enterprise プランでは、組織でそのテンプレートがオンになっていること。オフになっている場合は、claude.ai の [**Organization settings > Artifacts**](https://claude.ai/admin-settings/artifacts) で[テンプレートをオンにする](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans#h_6e06d8f1a8)よう Owner に依頼してください。
 * カスタムロールを使用する Enterprise プランでは、[そのテンプレートを含む](https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans#h_d830917488)ロール
 * Docs テンプレートと Sheets テンプレートの場合は、[Claude Docs コネクタ](#write-a-document-with-claude-docs)。Claude は両方のコンテンツを作成する際にこのコネクタを使用します。[コネクタをオフにした](https://code.claude.com/docs/ja/mcp.md#disable-claude-ai-connectors)場合は、先にオンに戻してください。
 * Design テンプレートを [`/design` コマンド](#draft-a-design-canvas)で開始する場合は、Claude Code v2.1.265 以降
@@ -355,7 +355,7 @@ README などのコードベースに属するドキュメントはファイル�
 
 ## ページの制約
 
-各アーティファクトは 1 つの自己完結したページです。Claude Code は公開するファイルを HTML ドキュメントシェルでラップし、厳密なコンテンツセキュリティポリシー（CSP）の下で提供します。これはページが実行できることを形作ります。
+各アーティファクトは、ページが実行できることを制限する厳密なコンテンツセキュリティポリシー（CSP）の下で提供されます。
 
 | 制約 | 効果 |
 | :- | :- |
@@ -386,7 +386,7 @@ Artifacts には以下のすべての条件が必要です。いずれかが満�
 
 Artifacts が組織に対して許可されているかどうかは、Claude Code が `api.anthropic.com` から読み込む組織のポリシーから決まります。Claude Code がポリシーを読み込めない場合、Artifacts は利用できません。リクエストすると、Claude がその理由を説明します。
 
-プロキシ、VPN、またはウェブフィルターが関係している場合は、IT 管理者に `api.anthropic.com` を許可するよう依頼してください。Claude Code はバックグラウンドで再試行を続け、ポリシーが読み込まれて許可されると、Artifacts が利用可能になります。
+プロキシ、VPN、またはウェブフィルターが関係している場合は、それを運用している担当者に `api.anthropic.com` を通過させるよう依頼してください。Claude Code はバックグラウンドで再試行を続け、ポリシーが読み込まれて許可されると、Artifacts が利用可能になります。
 
 ## アーティファクトを無効にする
 

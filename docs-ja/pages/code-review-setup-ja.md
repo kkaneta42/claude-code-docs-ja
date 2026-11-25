@@ -117,7 +117,7 @@ Manual は、特定のプルリクエストだけをレビュー対象にした�
 
 ### 開発者が変更できること
 
-レビューレベル、**Review runs** 設定、レビュー対象のリポジトリを変更したい場合、開発者は Owner に依頼します。Owner ロールを持たない開発者でも、GitHub から次の操作を行えます。
+開発者は、レビューレベル、**Review runs** 設定、またはレビュー対象のリポジトリを変更する場合は Owner に依頼します。Owner ロールがなくても、GitHub から次の操作を行えます:
 
 * **レビューをリクエストする**：プルリクエストに [`@claude review`](https://code.claude.com/docs/ja/code-review-pull-requests#comment-commands) とコメントします。リポジトリへの書き込みアクセス権が必要で、自動レビューではスキップされる[ドラフトとフォークからのプルリクエスト](https://code.claude.com/docs/ja/code-review-pull-requests.md#review-drafts-and-pull-requests-from-forks)でも機能します。
 * **1 つのプルリクエストをプッシュごとのレビューに登録する**：Manual に設定されたリポジトリなどで、[ドラフトでもフォークからのものでもない](https://code.claude.com/docs/ja/code-review-pull-requests.md#review-drafts-and-pull-requests-from-forks)プルリクエストに `@claude review always` とコメントします

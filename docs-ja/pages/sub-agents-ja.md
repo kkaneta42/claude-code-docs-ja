@@ -310,7 +310,7 @@ Bash コマンドについては、Claude Code はコマンド自体も 2 つの
 | `background` | いいえ | `true` に設定すると、Claude が待機を求めた場合でもこのサブエージェントをバックグラウンドに維持します。デフォルトでは、Claude がメインの会話から生成するカスタムサブエージェントはすでに[バックグラウンドで開始します](#run-subagents-in-foreground-or-background) |
 | `omitClaudeMd` | いいえ | `true` に設定すると、このサブエージェントは[初期コンテキスト](#what-loads-at-startup)にユーザー、プロジェクト、ローカルの CLAUDE.md ファイルを含めずに開始します。[管理ポリシーファイル](https://code.claude.com/docs/ja/memory.md#how-claude-md-files-load)は引き続き読み込まれますが、[管理サブエージェント](#choose-the-subagent-scope)の場合は除きます。必要なものをすべて委任プロンプトから受け取るサブエージェントに使用します。エージェントが `--agent` または `agent` 設定によってメインセッションのエージェントとして実行される場合は無視されます。Claude Code v2.1.271 以降が必要です |
 | `effort` | いいえ | このサブエージェントがアクティブなときの effort レベル。セッションの effort レベルを上書きしますが、[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数は上書きしません。オプション: `low`、`medium`、`high`、`xhigh`、`max`。利用可能なレベルはモデルによって異なります。[effort レベルを選択する](#choose-an-effort-level)を参照してください |
-| `isolation` | いいえ | `worktree` に設定すると、サブエージェントを一時的な [git worktree](https://code.claude.com/docs/ja/worktrees.md) で実行し、リポジトリの分離されたコピーを与えます。このコピーは、デフォルトでは親セッションの `HEAD` ではなく[デフォルトブランチ](https://code.claude.com/docs/ja/worktrees.md#choose-the-base-branch)から分岐します。サブエージェントが変更を加えなかった場合、worktree は自動的にクリーンアップされます |
+| `isolation` | いいえ | `worktree` に設定すると、サブエージェントを一時的な [git worktree](https://code.claude.com/docs/ja/worktrees.md) で実行し、リポジトリの分離されたコピーを与えます。このコピーは、デフォルトでは親セッションの `HEAD` ではなく[デフォルトブランチ](https://code.claude.com/docs/ja/worktrees.md#choose-the-base-branch)から分岐します。サブエージェントが変更を加えなかった場合、Claude Code は [worktree を削除できます](https://code.claude.com/docs/ja/worktrees.md#isolate-subagents-with-worktrees) |
 | `color` | いいえ | タスクリストとトランスクリプトにおけるサブエージェントの表示カラー。`red`、`blue`、`green`、`yellow`、`purple`、`orange`、`pink`、`cyan` を指定できます |
 | `initialPrompt` | いいえ | このエージェントがメインセッションのエージェントとして（`--agent` または `agent` 設定によって）実行される場合に、最初のユーザーターンとして自動送信されます。[コマンド](https://code.claude.com/docs/ja/commands.md)と[スキル](https://code.claude.com/docs/ja/skills.md)は処理されます。ユーザーが指定したプロンプトの前に付加されます。[プラグインサブエージェント](#choose-the-subagent-scope)では無視されます |
 | `experimental` | いいえ | 実験的なオプションのマップ。`cacheTtl` キーを `5m` または `1h` に設定すると、このサブエージェントのリクエストの[プロンプトキャッシュの有効期間](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself)を選択できます。これは[キャッシュ有効期間の優先順位](https://code.claude.com/docs/ja/prompt-caching.md#choose-the-ttl-yourself)におけるフロントマターの位置で適用されます。Claude Code はそれ以外の値を無視し、Claude のサブスクリプションが使用クレジットを使用している間は `1h` を無視し、このフィールドをサブエージェントファイルからのみ読み取ります。Claude Code v2.1.248 以降が必要です |
@@ -410,7 +410,7 @@ Claude がエイリアスを渡した場合、サブエージェントは[再開
 
 #### 許可リストがサブエージェントのモデルをブロックする場合
 
-組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが、[`web-fetch`](https://code.claude.com/docs/ja/tools-reference#which-model-the-web-fetch-subagent-runs-on) 以外のサブエージェントに設定されたモデルをブロックしている場合、サブエージェントは次のうち最初に該当するもので実行されます。
+設定の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが、[`web-fetch`](https://code.claude.com/docs/ja/tools-reference#which-model-the-web-fetch-subagent-runs-on) 以外のサブエージェントに設定されたモデルをブロックしている場合、サブエージェントは次のうち最初に該当するもので実行されます。
 
 1. ブロックされたファミリーエイリアスの場合、[この代替をサポートするプロバイダー](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)では、そのファミリーで許可されている最新バージョン
 2. `CLAUDE_CODE_SUBAGENT_MODEL` を設定している場合はそのモデル（これと同じルールが適用されます）
@@ -458,7 +458,7 @@ macOS、Linux、WSL では、[Glob ツールの動作](https://code.claude.com/d
 * `WaitForMcpServers`
 * `Workflow`
 
-2 つ目のフィルターは、バックグラウンドで実行されるサブエージェントに適用されます。`Agent` と `ExitPlanMode` は、サブエージェントがどこで実行されても 1 つ目のフィルターの条件に従います。バックグラウンドのサブエージェントはすべての MCP ツールを保持し、[`SubagentHandback`](https://code.claude.com/docs/ja/tools-reference) を通じて報告する場合はそのツールも保持します。さらに、`Read`、`Grep`、`Glob`、`LSP`、`Bash`、`PowerShell`、`Edit`、`Write`、`NotebookEdit`、`WebFetch`、`WebSearch`、`TodoWrite`、`Skill`、`ToolSearch`、`EnterWorktree`、`ExitWorktree`、`Monitor`、`TaskStop`、`SendMessage`、`Artifact`、`ListPlugins`、`ListSkills`、`SearchPlugins`、`SearchSkills` も保持します。
+2 つ目のフィルターは、バックグラウンドで実行されるサブエージェントに適用されます。`Agent` と `ExitPlanMode` は、サブエージェントがどこで実行されても 1 つ目のフィルターの条件に従います。バックグラウンドのサブエージェントはすべての MCP ツールを保持し、[`SubagentHandback`](https://code.claude.com/docs/ja/tools-reference) を通じて報告する場合はそのツールも保持します。さらに、`Read`、`Grep`、`Glob`、`LSP`、`Bash`、`PowerShell`、`Edit`、`Write`、`NotebookEdit`、`WebFetch`、`WebSearch`、`TodoWrite`、`Skill`、`ToolSearch`、`EnterWorktree`、`ExitWorktree`、`Monitor`、`TaskStop`、`SendMessage`、`Artifact`、`ListPlugins`、`ListSkills`、`SearchPlugins`、`SearchSkills`、`REPL` も保持します。
 
 バックグラウンドのサブエージェントでは、それ以外の組み込みツールに依存しないでください。Claude Code は、継承されたものか `tools` フィールドに列挙されたものかにかかわらず、その大半を削除します。この削除によって `tools` リストが[何にも解決されなくなる](https://code.claude.com/docs/ja/errors.md#agent-would-be-spawned-with-zero-tools)場合を除き、エラーは報告されません。
 
@@ -555,7 +555,7 @@ tools: Agent, Read, Bash
 
 #### MCP サーバーをサブエージェントにスコープする
 
-`mcpServers` フィールドを使用すると、メインの会話では利用できない [MCP](https://code.claude.com/docs/ja/mcp.md) サーバーへのアクセスをサブエージェントに与えられます。ここで定義したインラインサーバーは、[エージェントファイルのフォルダに対する信頼ルール](#inline-server-trust)に従って、サブエージェントの開始時に接続され、終了時に切断されます。文字列による参照は、親セッションの接続を共有します。
+`mcpServers` フィールドを使用すると、メインの会話では利用できない [MCP](https://code.claude.com/docs/ja/mcp.md) サーバーへのアクセスをサブエージェントに与えられます。ここで定義したインラインサーバーは、[エージェントファイルのフォルダに対する信頼ルール](#inline-server-trust)に従ってサブエージェントの開始時に接続され、それらを使用する最後のエージェントが終了したときに切断されます。文字列による参照は、親セッションの接続を共有します。
 
 > [!NOTE]
 >
@@ -927,7 +927,7 @@ claude --agent my-plugin:security-reviewer
 
 プラグインがエージェントを `agents/` ディレクトリのサブフォルダーに配置している場合は、スコープ付きの名前にサブフォルダーを含めます（例: `claude --agent my-plugin:review:security`）。
 
-プロジェクト内のすべてのセッションでデフォルトにするには、`.claude/settings.json` で `agent` を設定します。
+プロジェクト内のセッションでサブエージェントをデフォルトにするには、`.claude/settings.json` で `agent` を設定します。
 
 ```json theme={null}
 {
@@ -1182,7 +1182,9 @@ Claude が `SendMessage` ツールで完了済みのサブエージェントに�
 
 `SendMessage` は、名前が会話の前の時点で到達したのと同じエージェントを引き続き指しているかどうかを確認します。名前を再利用して再生成されたバックグラウンドエージェントなど、より新しいエージェントがその名前を取得している場合、Claude Code は誤ったエージェントに届けるのではなく送信を拒否し、エラーにはその名前が現在どのエージェントに到達するかが示されるため、Claude は宛先を変更できます。以前のエージェントがまだ実行中の場合にそのエージェントに到達するには、Claude はそのエージェントを生成したときに受け取ったエージェント ID で宛先を指定します。この確認は現在の会話に限定され、`/clear` でリセットされます。
 
-サブエージェントは、自身を起動したエージェントからのメッセージを、タスク途中の軌道修正を含む通常のタスク指示として扱い、自身の権限設定の範囲内でそれに従って行動します。誰がメッセージを送ったかにかかわらず、2 つの制限が適用されます。どのエージェントからのメッセージも、保留中の権限プロンプトに対するユーザーの承認とは見なされません。また、どのエージェントのメッセージも、サブエージェントの権限設定、`CLAUDE.md`、または設定を変更できません。承認を与えられるのは、権限システムまたはユーザー自身のメッセージだけです。
+> [!NOTE]
+>
+> サブエージェントは、自身を起動したエージェントからのメッセージを、タスク途中の軌道修正を含む通常のタスク指示として扱い、自身の権限設定の範囲内でそれに従って行動します。エージェントからのメッセージは、保留中の権限プロンプトに対するユーザーの承認とは見なされません。
 
 エージェント ID を明示的に参照したい場合は、Claude に尋ねることもできます。また、`~/.claude/projects/{project}/{sessionId}/subagents/` にあるトランスクリプトファイルで ID を確認することもできます。各トランスクリプトは `agent-{agentId}.jsonl` として保存されます。
 

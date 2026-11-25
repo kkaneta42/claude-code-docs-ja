@@ -50,7 +50,7 @@ advisor モデルは 3 つの方法で設定できます。
 * `/advisor opus` などのモデルを使用して `/advisor` を実行して、それを設定します。
 * `/advisor off` を実行してそれをオフにします。
 
-Claude Code は、組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。
+Claude Code は、設定内の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストが除外した保存済み advisor を呼び出しません。advisor を使用するには、`/advisor` で許可されたモデルを選択してください。
 
 Claude Code は、現在のメインモデルがサポートしていない advisor を引き続き保存します。その advisor は、[`/model`](https://code.claude.com/docs/ja/model-config#setting-your-model) で[互換性のあるメインモデル](#choose-an-advisor-model)に切り替えた後にアクティブになります。API がすでに現在の会話で保存済み advisor を拒否した場合、モデルを切り替えた後でも、`/clear` または `/compact` まで、それはオフのままです。
 
@@ -78,7 +78,7 @@ Claude Code はそのセッションの `advisorModel` 設定の代わりにフ�
 
 * セッションのメインモデルが advisor をサポートしていない
 * Haiku 4.5 などのリクエストされたモデルが advisor として機能できない
-* 組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストがリクエストされたモデルを除外している
+* [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストがリクエストされたモデルを除外している
 * Fable をリクエストし、アカウントがまだ[使用クレジット同意](#fable-advisor-and-usage-credits)を必要としている
 
 `--advisor` で[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)を開始し、これらのいずれかが当てはまる場合、Claude Code は終了する代わりに advisor なしでセッションを開始します。

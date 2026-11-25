@@ -172,7 +172,7 @@ Team または Enterprise プランで [組織管理者ロール](#requirements)
   * **保存された CLI デフォルト**: 環境が保存された [CLI デフォルト](#select-an-environment-from-the-cli) だった場合、リストに Anthropic ホスト型環境があれば、Claude Code はそこで CLI クラウドセッションを開始します。ない場合は、リスト内で [Remote Control ブリッジ環境](#the-default-environment) ではない最初の環境で開始します。
   * **明示的に設定されたもの**: [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md#environments-and-network-access) など、その環境を明示的に指定して設定されたものは、その環境で新しいセッションを開始できません。別の環境を指すようにしてください。
 
-Anthropic ホスト型環境が不要になったら、アーカイブしてください。環境のダイアログにも **クラウド環境** 管理ページにも、Anthropic ホスト型環境を削除するオプションはありません。環境が [自己ホスト型](https://code.claude.com/docs/ja/self-hosted-environments) の場合は、Owner が管理設定の **クラウド環境** ページから削除できます。自分が Owner でない場合は、Owner に削除を依頼してください。
+Anthropic ホスト型環境が不要になったら、アーカイブしてください。環境のダイアログにも **クラウド環境** 管理ページにも、Anthropic ホスト型環境を削除するオプションはありません。環境が [自己ホスト型](https://code.claude.com/docs/ja/self-hosted-environments) の場合は、Owner が管理設定の **クラウド環境** ページから削除できます。
 
 ### 組織共有環境
 

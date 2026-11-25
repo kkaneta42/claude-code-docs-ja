@@ -60,6 +60,8 @@
 | `Sign in again to take your previous account or API key off the config file.` | [認証](#sign-in-again-to-take-your-previous-account-or-api-key-off-the-config-file) |
 | `Your account or API key may still be in the config file. Run claude auth logout.` | [認証](#your-account-or-api-key-may-still-be-in-the-config-file) |
 | `Authentication required · Sign in again to continue` | [認証](#not-logged-in) |
+| `Sign in again to continue` の後に `For security, Claude Code needs a recent sign-in.` が続くもの | [ラッパーと IDE のエラー](#claude-code-needs-a-recent-sign-in) |
+| `Claude Code needs a recent sign-in. Signing in won’t stop sessions.` | [ラッパーと IDE のエラー](#claude-code-needs-a-recent-sign-in) |
 | `Could not resolve authentication method` | [認証](#could-not-resolve-authentication-method) |
 | `Invalid API key` | [認証](#invalid-api-key) |
 | `Your apiKeyHelper script is failing` | [認証](#your-apikeyhelper-script-is-failing) |
@@ -99,19 +101,22 @@
 | `Your account does not have access to Claude. Please login again or contact your administrator.` | [認証](#oauth-token-revoked-or-expired) |
 | `API Error: 401 Invalid authentication credentials` | [認証](#api-error-401-invalid-authentication-credentials) |
 | `Login expired · Please run /login` | [認証](#login-expired) |
+| クラウドセッションでの `Authentication error · This may be a temporary network issue` | メッセージを再送信してください。 |
+| エージェントビューでの `login required — run /login` | その後にこの表に記載されたメッセージが続く場合は、その行を参照してください。それ以外の場合は `/login` を実行してください。 |
 | `Warning: this sign-in` | [保存されたログインの終了日時を確認する](https://code.claude.com/docs/ja/authentication.md#check-when-a-stored-login-ends) |
 | `The browser can't return the sign-in to Claude Code automatically` | [認証](#couldnt-start-the-local-sign-in-listener) |
 | `Couldn't start the local listener that receives the browser sign-in. Try again.` | [認証](#couldnt-start-the-local-sign-in-listener) |
 | `Failed to start OAuth callback server` | [認証](#failed-to-start-oauth-callback-server) |
 | `Claude login not accepted · Run /login, then try again` | [認証](#claude-login-not-accepted) |
 | `Artifacts need a claude.ai login` | [認証](#artifacts-need-a-claude-ai-login) |
+| `Your authentication token belongs to organization` | [ログインを組織に制限する](https://code.claude.com/docs/ja/authentication.md#restrict-login-to-your-organization) |
 | `Not signed in to the Cloud gateway — run /login.` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
 | `Administrator policy requires a Cloud gateway sign-in on this machine` | [認証](#administrator-policy-requires-a-cloud-gateway-sign-in) |
 | `Managed settings on this machine configure a Cloud gateway sign-in; run interactive /login to authenticate.` | [`claude auth login`](https://code.claude.com/docs/ja/cli-reference#cli-commands) |
 | `You chose an organization that is managed in Anthropic's Enterprise Admin Console` | [Claude Code からのサインインを有効にする](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#turn-on-sign-in-from-claude-code) |
 | `The organization's settings won't apply on this computer` | [どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority) |
 | `no usable organization sign-in` / `no readable organization sign-in` | [サインインが終了したとき](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#when-a-sign-in-ends) |
-| `the session no longer runs under that sign-in` / `This Claude Code process ran under your organization` / `After a sign-in to your organization, only a new session sends requests` | [Claude Code にログインする](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) |
+| `the session no longer runs under that sign-in` / `This Claude Code process ran under your organization` / `After a sign-in to your organization, only a new session sends requests` / `Claude Code needs to restart to use it` | [Claude Code にログインする](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) |
 | `This conversation ran under organization` / `This conversation ran under more than one organization` | [Claude Code にログインする](https://code.claude.com/docs/ja/authentication.md#log-in-to-claude-code) |
 | `Claude Code could not read the managed settings that apply to this computer, which may require a sign-in to Anthropic` | [`enforceAnthropicSignIn`](https://code.claude.com/docs/ja/settings-reference#enforceanthropicsignin) |
 | `This computer's managed settings require a sign-in to Anthropic` / `This computer's settings require a sign-in to Anthropic that this app cannot use` | [サインインを必須にする](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#require-the-sign-in-with-managed-settings) |
@@ -330,6 +335,9 @@
 | `Failed to resume the conversation` | [コマンドラインエラー](#failed-to-resume-the-conversation) |
 | `No conversation found with session ID: <session-id>` | [コマンドラインエラー](#no-conversation-found-with-the-session-id) |
 | `Windows reported an error (EBADF) when Claude Code read this session's transcript file` | [コマンドラインエラー](#windows-reported-an-error-ebadf) |
+| `Failed to resolve base branch "HEAD"` / `Failed to resolve HEAD in <folder>` | [worktree で並列セッションを実行する](https://code.claude.com/docs/ja/common-workflows.md#run-parallel-sessions-with-worktrees) |
+| `points to a bare repository` | [worktree を手動で管理する](https://code.claude.com/docs/ja/worktrees.md#manage-worktrees-manually) |
+| `Cannot use PR/MR #<number>` | メッセージ内の修正方法に従います。 |
 | `Cannot switch renderers in this session` | [コマンドラインエラー](#cannot-switch-renderers-in-this-session) |
 | `Cannot switch renderers while work is running in the background` | [コマンドラインエラー](#cannot-switch-renderers-in-this-session) |
 | `Can't restart while work is running in the background` | [コマンドラインエラー](#cant-restart-while-work-is-running-or-remote-control-is-connected) |
@@ -346,10 +354,12 @@
 | `/feedback is disabled by your organization's policy`、または `/bug` や `/share` に対する同様のメッセージ | [コマンドラインエラー](#feedback-is-disabled-by-your-organizations-policy) |
 | `` `plugin eval` is currently in early access `` / `` `plugin eval` is currently unavailable `` | [プラグインエラー](#plugin-eval-is-currently-in-early-access) |
 | `credential store on this machine holds a symbolic link inside it` | [ツールを付与する](https://code.claude.com/docs/ja/plugin-evals.md#grant-tools) |
+| `claude plugin eval` からの `cannot be disallowed` | 組み込みツールの[正確な名前](https://code.claude.com/docs/ja/plugin-evals.md#disallow-tools)を使用し、[ターゲットを `--disallow-tools` の前に置いてください](https://code.claude.com/docs/ja/plugin-evals#choose-what-to-evaluate) |
 | `cannot be evaluated where sessions load it` | [eval でプラグインをテストする](https://code.claude.com/docs/ja/plugin-evals.md#cannot-be-evaluated-where-sessions-load-it) |
 | `Marketplace "<name>" is registered from an untrusted source` | [プラグインエラー](#marketplace-is-registered-from-an-untrusted-source) |
 | `Claude Code refuses the marketplace name "<name>"` | [プラグインエラー](#claude-code-refuses-the-marketplace-name) |
 | `Marketplace name impersonates an official Anthropic/Claude marketplace` | [プラグインエラー](#claude-code-refuses-the-marketplace-name) |
+| `Can't use the marketplace name "<name>"` | [予約名](https://code.claude.com/docs/ja/plugins/marketplace-reference.md#reserved-names) |
 | `Marketplace "<name>" is already added from a different source` | [プラグインエラー](#marketplace-is-already-added-from-a-different-source) |
 | `"<name>" is another spelling of "<reserved>", a reserved marketplace name` | [プラグインエラー](#marketplace-name-is-another-spelling-of-a-reserved-name) |
 | `Cannot add marketplace "<name>": Claude Code cannot install plugins from a marketplace with this name` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#cannot-install-plugins-from-a-marketplace-with-this-name) |
@@ -367,8 +377,12 @@
 | `does not load (...), so Claude Code ignores the whole file` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#does-not-load-so-claude-code-ignores-the-whole-file) |
 | `path escapes plugin directory` | [プラグインエラー](#path-escapes-plugin-directory) |
 | `path not read: <path> is absolute or has a ".." part` | [プラグインエラー](#server-file-path-not-read) |
+| `Plugin path not found: <path>` | セッションの開始時に指定したプラグインのパスを修正します。claude.ai から同期されたプラグインの場合は、Claude Code を再起動します。 |
+| `commands path not found: <path>` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#commands-path-not-found) |
 | `Plugin not loaded: its manifest <path> was not read` | [プラグインエラー](#plugin-not-loaded-its-manifest-was-not-read) |
 | `path couldn't be checked` / `path could not be checked` | [プラグインエラー](#path-could-not-be-checked) |
+| `Couldn't load hooks from <path>` / `Failed to load hooks from <path>` / `Hook load failed` | [プラグインのトラブルシューティング](https://code.claude.com/docs/ja/plugins/troubleshooting.md#failed-to-load-hooks-from-and-hooks-that-dont-fire) |
+| `hooks.json declares PreToolUse/PermissionRequest` | [プラグインのフックの例](https://code.claude.com/docs/ja/plugins/components.md#hooks)のように、イベントを `hooks` キーの下に置いてください。 |
 | `its marketplace entry path does not stay inside the marketplace directory` | [プラグインエラー](#marketplace-entry-path-does-not-stay-inside-the-marketplace-directory) |
 | `Plugin source path refused` | [プラグインエラー](#marketplace-entry-path-does-not-stay-inside-the-marketplace-directory) |
 | `Failed to load marketplace configuration` | [プラグインエラー](#failed-to-load-marketplace-configuration) |
@@ -382,10 +396,16 @@
 | `Skipping connection (recent failure cached; retries automatically in 15 min, or edit the plugin config to retry now)` | [プラグインエラー](#skipping-connection-recent-failure-cached) |
 | `is not added on this machine, so your organization's marketplace policy keeps its plugins off` | [マーケットプレイスを追加する](https://code.claude.com/docs/ja/plugins/install.md#add-a-marketplace) |
 | `A mod's http.fetch hook stopped this request` | [mod をオンまたはオフにする](https://code.claude.com/docs/ja/plugins/mods/overview.md#turn-mods-on-or-off) |
+| `hook was skipped. "<mod>" runs first and sent the event on past it.` | 引用符で示された mod をユーザー設定の [`prependPlugins`](https://code.claude.com/docs/ja/settings-reference#prependplugins) に記載している場合は、その mod を変更してください。それ以外の場合は、管理者に問い合わせてください。 |
+| `<file>: changed while it was read` | `claude plugin validate` がこれを出力した場合は、再実行してください。それ以外の場合は、セッションを再起動してください。 |
+| `installed mods are off for now` | [mod を読み込めるか確認する](https://code.claude.com/docs/ja/plugins/mods/troubleshoot.md#check-whether-mods-can-load) |
+| `the hooks worker was lost with <mod>'s <event> hook in flight` | メッセージに名前が示された mod を修正してください。原因の一つについては、[`it crashed the hooks worker`](https://code.claude.com/docs/ja/plugins/mods/troubleshoot#it-crashed-the-hooks-worker) を参照してください。 |
+| `dispatches in a row for fills by <mods>` | メッセージに名前が示された mod を、プロンプトボックスへの入力が連続 8 回以内になるよう変更してください。 |
 | `Error: No such tool available: <tool name>` | [ツールエラー](#no-such-tool-available) |
 | `MCP server "<name>" connection closed before the tool call was answered` | [ツールエラー](#connection-closed-before-the-tool-call-was-answered) |
 | `MCP server "<name>" is disabled — re-enable it via /mcp to use its tools` | [ツールエラー](#mcp-server-is-disabled) |
 | `MCP server "<name>" tool "<tool>" timed out after <N>s. The server asked the user a question, and no answer came before the time limit.` | [ツールエラー](#mcp-tool-call-timed-out-with-the-servers-question-unanswered) |
+| `The server's response is not a valid MCP response, so it was not read` | 再試行する前に、リクエストが実行されたかどうかを確認してください。このエラーを MCP サーバーの作成者に報告してください。 |
 | `Permission prompt tool returned an invalid result` | [ツールエラー](#permission-prompt-tool-returned-an-invalid-result) |
 | `would be spawned with zero tools — refusing` | [ツールエラー](#agent-would-be-spawned-with-zero-tools) |
 | `File is covered by a Read deny rule in your permission settings` | [ツールエラー](#file-is-covered-by-a-read-deny-rule) |
@@ -407,6 +427,7 @@
 | `Sandbox is required (sandbox.failIfUnavailable) and stopped being available in this session: <reason>` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#commands-refused-with-sandbox-is-required) |
 | `pkill: refusing to run` | [ツールエラー](#pkill-pattern-matches-the-claude-code-process) |
 | `Sandbox settings can't be changed here` / `Sandbox settings are overridden by a higher-priority configuration` | [サンドボックス化のトラブルシューティング](https://code.claude.com/docs/ja/sandboxing.md#sandbox-settings-overridden) |
+| `GH_HOST names a host other than github.com` / `GH_REPO names a host other than github.com` | `gh api --hostname ghe.example.com repos/my-org/my-repo/pulls` のように、`gh api` コマンドに `--hostname <host>` を渡すよう Claude に依頼します。`GH_REPO` の場合は、コマンドの `{owner}` と `{repo}` を実際の名前に置き換えるようにも Claude に依頼します。 |
 | `Failed to write to <name>'s inbox — nothing was sent` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |
 | `Failed to write the plan approval request to the lead's inbox — plan not submitted` | [ツールエラー](#failed-to-write-to-a-teammate-inbox) |
 | `Its agent definition was not restored: the folder its definition file came from is not trusted` | [ツールエラー](#teammate-agent-definition-not-restored) |
@@ -430,6 +451,7 @@
 | `Disk full: this computer's volume holding <dir> (Claude Code's temporary directory) has <n> MB free` / `Nearly out of inodes: this computer's volume holding <dir>` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `Disk full: a test write beside this command's output file` / `Disk quota used up: a test write beside this command's output file` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `The command was not started: this computer's disk is full (ENOSPC)` / `the user's disk quota is used up (EDQUOT)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
+| `The sandbox could not create <dir>, a folder it must protect from the command, because the temp disk is full` | 一時ディスクの空き容量を確保するか一時ディスクを修復してから、Claude にコマンドを再度実行させてください。 |
 | `Your disk quota is full on the filesystem with Claude Code's temp directory <dir> (EDQUOT)` / `The filesystem with Claude Code's temp directory <dir>, or your disk quota on it, is full (ENOSPC)` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `Command output was lost: the temp filesystem at <dir> is full` / `is out of inodes` | [ツールエラー](#disk-quota-or-temp-filesystem-is-full) |
 | `File is not valid UTF-8. It may use a legacy encoding such as Windows-1252, Shift-JIS or GBK, or be binary` | [ツールエラー](#file-is-not-valid-utf-8) |
@@ -482,12 +504,19 @@
 | `Subprocess initialization did not complete within 60000ms` | [ラッパーと IDE のエラー](#subprocess-initialization-did-not-complete-within-60000ms) |
 | `Claude Code did not finish starting` | [ラッパーと IDE のエラー](#subprocess-initialization-did-not-complete-within-60000ms) |
 | `The connection to Claude Code ended before this message completed` | [ラッパーと IDE のエラー](#the-connection-to-claude-code-ended-before-this-message-completed) |
+| `Dictation error: The speech service refused the connection` / `Dictation error: The connection to the speech service was lost` / `Dictation error: Couldn’t connect to the speech service`（VS Code） | コマンドパレットから **Claude Code: Show Logs** を実行し、`Speech-to-text` を検索してください。 |
+| `The last request was refused`（VS Code のサインイン画面） | **Cancel** を選択してから、会話のエラーをこの表で調べてください。 |
+| `Plan not copied: The new session starts without a plan file.`（VS Code） | プランが必要な場合は、新しいセッションで Claude にもう一度書くよう依頼してください。 |
+| `A message is still queued` / `A /clear is still queued`（VS Code でコードを巻き戻すとき） | Claude を停止してから、メッセージの残りの指示に従ってください。 |
+| `Couldn’t load the diff view or code colors`（VS Code） | 差分をクリックして再試行するか、ウィンドウを再読み込みしてください。 |
+| `Settings file is empty, and another program may still be writing it: <path>`（VS Code） | 1 分ほど待ってから再試行してください。メッセージが繰り返し表示される場合は、ファイルに `{}` を記述してください。 |
 | `Could not locate the Claude CLI on PATH` | [ラッパーと IDE のエラー](#could-not-locate-the-claude-cli-on-path) |
 | `Claude Code could not be started from <command>: it is the <system> build, and this computer needs the <build> build` | [`claudeCode.claudeProcessWrapper`](https://code.claude.com/docs/ja/vs-code#extension-settings) を設定している場合は、`<build>` 向けにビルドされたプログラムを指すように設定してください。それ以外の場合は、`<build>` 向けの VS Code 拡張機能パッケージをインストールしてください。 |
 | `The Claude Code program for this computer, the <build> build, could not be found` | [ラッパーと IDE のエラー](#the-claude-code-program-for-this-computer-could-not-be-found) |
 | `Restored the code, but skipped N files` | [巻き戻しの警告とエラー](#restored-the-code-but-skipped-files) |
 | `No files were restored: N files failed (backup missing, or the file could not be updated)` | [巻き戻しの警告とエラー](#no-files-were-restored) |
 | `Couldn't restore N files: the backup is missing or the file can't be written` | 失敗したファイルを書き込み可能にしてから、バージョン管理から復元してください。 |
+| `Kept N files created since then, because a restore failed` | チェックポイント以降に Claude が作成したファイルが不要な場合は、それらを削除してください。 |
 | `The file backups are still being copied. Nothing was changed. Try again in a moment.` | [`/rewind`](https://code.claude.com/docs/ja/checkpointing) で同じポイントをもう一度選択してください。[`/branch`](https://code.claude.com/docs/ja/sessions#branch-a-session) の直後にコードを復元すると、Claude Code がまだファイルバックアップを新しいセッションにコピーしている場合があります。 |
 | `Transcript writes are failing (...)` | [セッション保存の警告](#transcript-writes-are-failing) |
 | `Transcript saving is off — CLAUDE_CODE_SKIP_PROMPT_HISTORY is set` | [セッション保存の警告](#transcript-saving-is-off-skip-prompt-history) |
@@ -523,6 +552,7 @@
 | `Managed settings drop-in directory could not be read` | [設定の警告](#managed-settings-document-could-not-be-parsed) |
 | `Unable to read managed policy settings` | [設定の警告](#unable-to-read-managed-policy-settings) |
 | `Managed settings contain invalid entries, including PreToolUse/PermissionRequest hooks that are NOT loaded; fix or remove each entry:` | [設定の警告](#managed-settings-hooks-not-loaded) |
+| `-p` 実行での `did not load, so nothing in them is in effect` / `These settings entries were skipped` | [`-p` 実行での壊れた設定](https://code.claude.com/docs/ja/settings#broken-settings-in-a-p-run) |
 | `otelHeadersHelper failed; telemetry is not being exported. See /status: ...` | [設定の警告](#otelheadershelper-failed) |
 | `apply_flag_settings: nothing in this request was applied and earlier settings stay in force. Fix or remove these invalid settings and send it again` | [`applyFlagSettings()`](https://code.claude.com/docs/ja/agent-sdk/typescript#applyflagsettings) |
 | `Invalid JSON provided to --settings` / `Invalid JSON provided to the settings option` | [`--settings` フラグ](https://code.claude.com/docs/ja/cli-reference#cli-flags) または [`settings` オプション](https://code.claude.com/docs/ja/agent-sdk/typescript#options) |
@@ -531,6 +561,7 @@
 | `headersHelper not run — this workspace has no persisted trust` | [設定の警告](#headershelper-not-run) |
 | `Invalid permission rule "..." was skipped: Malformed Tool(content) rule` | [設定の警告](#malformed-tool-content-rule) |
 | `matches no tool · check for typos` / `matches no known tool — check for typos` | [設定の警告](#matches-no-tool) |
+| `lets <tool> run without asking only in the working directories` / `adds nothing to <tool>'s default` | [作業ディレクトリ外でファイルツールを許可する](https://code.claude.com/docs/ja/permissions.md#allow-a-file-tool-outside-the-working-directories) |
 | `... is not matched by file permission checks` | [設定の警告](#is-not-matched-by-file-permission-checks) |
 | `Write(<path>) never matches · use Edit(<path>)` / `Glob(<path>) never matches · use Read(<path>)` | [設定の警告](#is-not-matched-by-file-permission-checks) |
 | `... has a wildcard before the rest of the command` | [設定の警告](#has-a-wildcard-before-the-rest-of-the-command) |
@@ -615,8 +646,8 @@ v2.1.309 より前は、これらの接続ではバナーは 20 秒後に表示�
 
 | 変数 | デフォルト | 効果 |
 | :- | :- | :- |
-| [`CLAUDE_CODE_MAX_RETRIES`](https://code.claude.com/docs/ja/env-vars) | 10 | 再試行の回数。v2.1.186 以降では上限は 15 です。v2.1.199 以降では、`CLAUDE_CODE_RETRY_WATCHDOG` によってデフォルトが引き上げられ、上限が撤廃されます。スクリプトで障害をより早く表面化させるには、値を下げてください。 |
-| [`CLAUDE_CODE_RETRY_WATCHDOG`](https://code.claude.com/docs/ja/env-vars) | 未設定 | CI ジョブなどの無人セッションで `1` に設定すると、`429` および `529` の容量エラーを、`CLAUDE_CODE_MAX_RETRIES` 回の試行後に失敗させる代わりに無期限に再試行します。標準速度のリクエストが支出上限または使用クレジットの枯渇を報告する `429` を受け取った場合、スケジュールに従ってリセットされる[ゲートウェイの支出上限](#spend-limit-reached)によるものであっても、Claude Code は即座に失敗します。v2.1.239 より前は、ウォッチドッグはこれらを無期限に再試行していました。fast mode のリクエストについては、[Handle rate limits](https://code.claude.com/docs/ja/fast-mode.md#handle-rate-limits) を参照してください。v2.1.199 以降では、サーバーエラー、タイムアウト、切断された接続など、その他の一時的なエラーのデフォルトの再試行回数も 300 (約 3 時間分のバックオフ) に引き上げられ、`CLAUDE_CODE_MAX_RETRIES` を明示的に設定した場合の上限 15 も撤廃されます。 |
+| [`CLAUDE_CODE_MAX_RETRIES`](https://code.claude.com/docs/ja/env-vars) | 10 | 再試行の回数。上限は 15 です。スクリプトで障害をより早く表面化させるには、値を下げてください。v2.1.199 以降で `CLAUDE_CODE_RETRY_WATCHDOG` を設定している場合、上限は適用されず、容量エラー以外の一時的なエラーのデフォルトは 300 になります。 |
+| [`CLAUDE_CODE_RETRY_WATCHDOG`](https://code.claude.com/docs/ja/env-vars) | 未設定 | CI ジョブなどの無人セッションで `1` に設定すると、`429` および `529` の容量エラーを `CLAUDE_CODE_MAX_RETRIES` を超えて再試行し続けます。例外については、[再試行ウォッチドッグが再試行を停止する場合](#when-the-retry-watchdog-stops-retrying)を参照してください。fast mode のリクエストについては、[Handle rate limits](https://code.claude.com/docs/ja/fast-mode.md#handle-rate-limits) を参照してください。 |
 | [`CLAUDE_CODE_RETRY_WATCHDOG_MAX_WAIT_MS`](https://code.claude.com/docs/ja/env-vars) | 未設定 | `CLAUDE_CODE_RETRY_WATCHDOG` が設定されている場合に、各 API リクエストが `429` および `529` エラーの解消を待つのに費やす最大時間。単位はミリ秒です。未設定の場合、待機時間に制限はありません。Claude Code v2.1.295 以降が必要です。 |
 | `CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS` | 上限なし | `CLAUDE_CODE_RETRY_WATCHDOG` が設定されている場合に、1 つのリクエストがプランの[使用制限](#youve-hit-your-session-limit)（セッション制限や週間制限など）のリセットを待つ最長時間。単位はミリ秒です。リセットまでの時間がこの上限より長い場合、リクエストは即座に失敗します。ただし、使用クレジットに余裕がある場合、または API がそれを確認できなかった場合は除きます。それらの場合はリクエストが再試行され、成功する前に上限の時間を過ぎると失敗します。Claude Code v2.1.301 以降が必要です。 |
 | [`CLAUDE_CODE_RETRY_WATCHDOG_USAGE_LIMIT_RECHECK_MS`](https://code.claude.com/docs/ja/env-vars) | 未設定 | `CLAUDE_CODE_RETRY_WATCHDOG` が設定された状態でリクエストが[使用制限](#youve-hit-your-session-limit)のリセットを待っている間に、その制限がすでに解除されたかどうかを確認する間隔の最小値 (ミリ秒)。確認で制限の解除が判明した場合、リクエストは即座に送信されます。`60000` から `10800000` までの数字のみで指定してください。未設定の場合、またはその範囲外の場合は、確認は行われません。Claude Code がこれらの確認をスキップする場合については、[環境変数リファレンス](https://code.claude.com/docs/ja/env-vars.md)を参照してください。Claude Code v2.1.305 以降が必要です。 |
@@ -625,6 +656,16 @@ v2.1.309 より前は、これらの接続ではバナーは 20 秒後に表示�
 | [`API_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) | 600000 | 各リクエストの試行がレスポンスヘッダーを受信するまでの制限時間 (ミリ秒)。その後のストリーミングレスポンスの実行時間は制限しません。低速なネットワークやプロキシを使用する場合は値を引き上げてください。これがファーストバイトの期限の上限となる仕組みについては、[No response from API](#no-response-from-api) を参照してください。 |
 | [`CLAUDE_CODE_NONSTREAMING_TIMEOUT_RETRIES`](https://code.claude.com/docs/ja/env-vars) | 未設定 | タイムアウトした[非ストリーミングリクエスト](#streaming-response-ended-before-any-complete-data-was-received)の再送信回数の上限。上限に達すると、リクエストは失敗します。生成にタイムアウトより長い時間がかかる Claude の応答は、再送信のたびに再びタイムアウトするため、より早く失敗させるには `0` などの小さな値を設定してください。各試行のタイムアウトについては、[非ストリーミングの試行が待機する時間](#how-long-a-non-streaming-attempt-waits)を参照してください。Claude Code v2.1.285 以降が必要です。 |
 | [`CLAUDE_STREAM_FIRST_BYTE_TIMEOUT_MS`](https://code.claude.com/docs/ja/env-vars) | 未設定 | ストリーミングリクエストの最初のレスポンスバイトの期限 (ミリ秒)。Claude Code v2.1.242 以降が必要です。これが未設定の場合に Claude Code が期限をどのように決定するかについては、[No response from API](#no-response-from-api) を参照してください。 |
+
+#### 再試行ウォッチドッグが再試行を停止する場合
+
+`CLAUDE_CODE_RETRY_WATCHDOG` が設定されている場合、Claude Code は fast mode 以外のリクエストについて、次のようなレスポンスを受け取ると再試行を停止します。
+
+* **支出上限**: [使用クレジットの支出上限](#youve-hit-your-monthly-spend-limit)、またはスケジュールに従ってリセットされる[ゲートウェイの支出上限](#spend-limit-reached)による `429`。
+* **[使用クレジット](https://code.claude.com/docs/ja/costs.md#add-usage-credits-to-your-subscription)の枯渇**: `anthropic-ratelimit-unified-overage-status` ヘッダーも `anthropic-ratelimit-unified-representative-claim` ヘッダーも含まない、クレジット不足の `429`。
+* **再試行不可とマークされたもの**: [`x-should-retry: false`](https://code.claude.com/docs/ja/llm-gateway-protocol#response-headers) ヘッダーを含む `429` または `529`。API が使用クレジットを確認できなかった場合、Claude Code は引き続きリクエストを再試行します。
+
+支出上限と使用クレジットのケースには Claude Code v2.1.239 以降が必要です。`x-should-retry` のケースには v2.1.311 以降が必要です。
 
 #### 非ストリーミングの試行が待機する時間
 
@@ -3938,7 +3979,7 @@ build.sh --target�dist
 
 `more than 4,000,000 characters` を含むメッセージは、スキル、コマンド、または[プロンプトフックやエージェントフック](https://code.claude.com/docs/ja/hooks.md#prompt-and-agent-hook-fields)が実行されなかったことを意味します。長いテキストを引数として貼り付けた場合は、それをファイルに保存し、テキストが会話に残っているため `/clear` を実行してから、ファイルのパスを渡します。
 
-`PreToolUse` のプロンプトフックまたはエージェントフックが上限を超えている場合、Claude が直接行うツール呼び出しはブロックされません。そのような上限のない[コマンドフック](https://code.claude.com/docs/ja/hooks.md#command-hook-fields)を使用してください。Code Mode のコードからの呼び出しについては、[フックによって拒否されたツール呼び出し](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook)を参照してください。
+`PreToolUse` のプロンプトフックまたはエージェントフックが制限を超えている場合、Claude が直接行うツール呼び出しはブロックされません。そのような制限のない[コマンドフック](https://code.claude.com/docs/ja/hooks.md#command-hook-fields)を使用してください。Code Mode のコードからの呼び出しについては、[フックの失敗後にツール呼び出しが実行された](https://code.claude.com/docs/ja/code-mode.md#tool-call-ran-after-a-hook-failed)を参照してください。
 
 ### Input must be provided when using `--print`
 
@@ -4642,7 +4683,7 @@ Claude Code はプラグインパスが存在するかどうかをオペレー�
 * プラグインの[デフォルトコンポーネント位置](https://code.claude.com/docs/ja/plugins/manifest-reference.md#standard-layout)の 1 つ（`skills/` フォルダ、`monitors/monitors.json` ファイル、またはプラグインルートの [`SKILL.md`](https://code.claude.com/docs/ja/plugins/components#skills)）：プラグインの他のコンポーネントは引き続き読み込まれます
 * プラグイン自体のディレクトリ：そのプラグインから何も読み込まれません
 
-このエラーは、まったく存在しないパスに対しては表示されません。`/plugin` では、エラーはプラグインの下に表示され、パスとオペレーティングシステムが返したコードに名前を付けます：
+`/plugin` では、エラーにパスとオペレーティングシステムが返したコードが示されます：
 
 ```text theme={null}
 skills path couldn't be checked: /home/user/my-plugin/skills (ELOOP)
@@ -5955,6 +5996,31 @@ The connection to Claude Code ended before this message completed — it may not
 * メッセージを再度送信してください。次のメッセージは会話を再開する新しい `claude` プロセスを開始します。
 * 繰り返される場合は、同じプロジェクトのターミナルで `claude` を実行してください。プロセスを終了し続ける失敗は通常、そこで実際のエラーメッセージと共に再現されます。
 
+### Claude Code needs a recent sign-in
+
+Code タブのローカル、WSL、または SSH セッションで新たに保存されたサインインが必要で、最近サインインしていない場合、[Claude Desktop アプリ](https://code.claude.com/docs/ja/desktop.md) はこのメッセージを表示します。
+
+```text theme={null}
+For security, Claude Code needs a recent sign-in.
+```
+
+これらのセッションでは、シングルサインオン（SSO）の有無にかかわらず、各コンピューターのアカウントと組織ごとに最大で月に 1 回程度サインインを求められるのは通常のことです。
+
+**対応方法：**
+
+* カードの **Sign in again** をクリックしてから、サインインしてください
+* Code タブの上部のバナーに `Claude Code needs a recent sign-in. Signing in won’t stop sessions.` と表示されている場合は、バナーの **Sign in again** をクリックしてください
+* 同じコンピューターで同じアカウントと組織を使用しているにもかかわらず、これらのセッションで 3 週間以内に再度求められる場合は、Claude Desktop の[バージョンを確認](https://code.claude.com/docs/ja/desktop.md#check-your-version)してください。v5.11492.0 より古い場合は更新してください：
+  * **macOS**：**Claude > Check for Updates…** を選択します
+  * **Windows**：**Help > Check for Updates…** を選択するか、Microsoft Store からアプリをインストールした場合はそこから更新します
+  * **Linux**：[apt で更新](https://code.claude.com/docs/ja/desktop-linux.md#update)します
+  * **管理された更新**：組織が[自動更新をオフにしている](https://code.claude.com/docs/ja/desktop.md#device-management-policies)場合は、管理者に v5.11492.0 以降を依頼してください
+* v5.11492.0 以降でもこれが続く場合は、[サポートに連絡](https://code.claude.com/docs/ja/desktop.md#still-stuck)してください
+
+Remote Control セッションでこのカードが表示される場合は、[Trusted Devices](https://code.claude.com/docs/ja/remote-control.md#trusted-devices) を参照してください。この機能により、より最近のサインインが求められることがあります。
+
+Claude Desktop v5.11492.0 より前では、企業のプロキシまたはゲートウェイがバックグラウンドでの更新に JSON エラーで応答した場合、Code タブの保存済みサインインが失われることがありました。
+
 ## Rewind の警告とエラー
 
 これらのメッセージは、[`/rewind`](https://code.claude.com/docs/ja/checkpointing) コード復元から発生します。`Restored the code, but skipped N files` は Claude Code が一部のパスをスキップしたことを示す警告です。`No files were restored` は何も復元されなかったことを意味するエラーです。
@@ -5981,7 +6047,7 @@ Restored the code, but skipped 2 files: the tracked path is (or became) a link o
 
 ### No files were restored
 
-Claude Code は、[`/rewind`](https://code.claude.com/docs/ja/checkpointing) でコードを復元しようとしたときにそのチェックポイント内のファイルを復元できない場合、このメッセージを表示します。各ファイルについて、Claude Code が編集前に保存したバックアップが見つからないか、Claude Code がファイルに書き込みまたは削除できませんでした。
+[`/rewind`](https://code.claude.com/docs/ja/checkpointing) によるコード復元が少なくとも 1 つのファイルで失敗し、ファイルが 1 つも復元されなかった場合に、このメッセージが表示されます。
 
 ```text theme={null}
 Failed to restore the code:

@@ -11,9 +11,16 @@
 View plans
 Contact sales
 
+このページでは、Google Cloud プロジェクトを通じて Claude を使用する 2 つの方法のうちの 1 つである、Google が管理する Google Cloud の Agent Platform（旧 Vertex AI）について説明します。
+
 > [!NOTE]
 >
-> このページでは、Google Cloud プロジェクトを通じて Claude を使用する 2 つの方法のうちの 1 つである、Google が管理する Google Cloud の Agent Platform（旧 Vertex AI）について説明します。Claude Models on Google Cloud（Anthropic 管理）を使用している場合は、代わりに[その Claude Code セットアップページ](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)に従ってください。どちらを使用しているかを確認するには、[Which offering are you using?](https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/overview#which-offering-are-you-using) を参照してください。
+> 次の場合は、別のページを参照してください。
+>
+> * **Claude Models on Google Cloud（Anthropic 管理）**：[その Claude Code セットアップページ](https://code.claude.com/docs/ja/claude-models-on-google-cloud-anthropic-managed.md)に従ってください
+> * **どの Google Cloud サービスを使用しているかわからない場合**：[Which offering are you using?](https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/overview#which-offering-are-you-using) を参照してください
+> * **組織が Claude Desktop アプリをインストールした場合の Code タブ**：管理者に [Agent Platform 用にアプリを設定する](https://claude.com/docs/third-party/claude-desktop/vertex)よう依頼してください
+> * **Claude Desktop アプリを自分でインストールする場合の Code タブ**：[単一マシンのセットアップ手順](https://claude.com/docs/third-party/claude-desktop/installation#single-machine-setup)に従い、[Agent Platform の接続値とモデル値](https://claude.com/docs/third-party/claude-desktop/vertex#configure-the-app)を入力してください
 
 ## 前提条件
 

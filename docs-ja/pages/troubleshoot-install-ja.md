@@ -58,6 +58,7 @@
 | `unable to get local issuer certificate` | [企業の CA 証明書を設定する](#tls-or-ssl-connection-errors) |
 | `OAuth error`、`That doesn't look like the full code`、または `403 Forbidden` | [認証を修正する](#login-and-authentication) |
 | `Claude Code access has not been granted for this account` | [Claude Code を含むロールを取得する](#claude-code-access-has-not-been-granted-for-this-account) |
+| `That code wasn't accepted` | 再度サインインして、新しいコードを貼り付ける |
 | セットアップ中に `Unable to connect to Anthropic services` | エラーリファレンスの [Unable to connect to Anthropic services](https://code.claude.com/docs/ja/errors.md#unable-to-connect-to-anthropic-services) を参照してください |
 | `Could not load the default credentials` または `Could not load credentials from any providers` | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry の認証情報](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
 | `ChainedTokenCredential authentication failed` または `CredentialUnavailableError` | [Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry の認証情報](#bedrock-agent-platform-or-foundry-credentials-not-loading) |
@@ -67,7 +68,7 @@
 
 > [!TIP]
 >
-> ターミナルを一切使いたくない場合は、[Claude Code デスクトップアプリ](https://code.claude.com/docs/ja/desktop-quickstart.md)を使えば、グラフィカルインターフェースから Claude Code をインストールして使用できます。[macOS](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs) 版または [Windows](https://claude.com/download?utm_source=claude_code\&utm_medium=docs) 版をダウンロードすれば、コマンドラインでのセットアップなしでコーディングを始められます。Linux では、[Linux のインストール手順](https://code.claude.com/docs/ja/desktop-linux.md)に従って apt でアプリをインストールしてください。
+> ターミナルを一切使いたくない場合は、[Claude Code デスクトップアプリ](https://code.claude.com/docs/ja/desktop-quickstart.md)を使えば、グラフィカルインターフェースから Claude Code をインストールして使用できます。[macOS](https://claude.ai/claude-code/desktop-download?platform=mac\&utm_source=claude_code\&utm_medium=docs) 版または [Windows](https://claude.ai/claude-code/desktop-download?platform=win\&utm_source=claude_code\&utm_medium=docs) 版をダウンロードすれば、コマンドラインでのセットアップなしでコーディングを始められます。Linux では、[Linux のインストール手順](https://code.claude.com/docs/ja/desktop-linux.md)に従って apt でアプリをインストールしてください。
 
 ## 診断チェックを実行する
 
@@ -1244,7 +1245,11 @@ Keychain を再び書き込み可能にし、ログインを暗号化された K
 
 **1. Keychain アクセスを確認する**
 
-`claude doctor` を実行して Keychain アクセスを確認してください。Keychain が書き込みを拒否する場合、レポートは `macOS Keychain is not writable` で始まる警告をリストし、その後に推奨される修正を示します。レポートに Keychain 警告がリストされていない場合、Keychain は書き込み可能であり、最後のステップにスキップできます。
+Claude Code を実行しているシェルで `claude doctor` を実行し、`macOS Keychain is not writable` で始まる警告を探してください。レポートの内容によって次のステップが決まります：
+
+* **該当する警告がない場合**：最後のステップにスキップしてください
+* **修正内容に `Unlocking the Keychain won't help` と記載された警告がある場合**：その修正に従ってください。そのシェルがサンドボックス化されている場合は、ログインを戻すためにサンドボックスの外でこれらのステップを最初からやり直してください
+* **別の修正内容が記載された警告がある場合**：次のステップに進んでください
 
 **2. Keychain をロック解除する**
 

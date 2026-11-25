@@ -128,7 +128,7 @@ PR Steward を開始するタイミングを選択します。
 
 ### PR Steward の支出額を確認する
 
-マージされたプルリクエストあたりの平均を確認するには、リポジトリの **Edit** ダイアログを開きます。過去 30 日間の組織全体の合計を確認するには、[claude.ai/analytics/pr-steward](https://claude.ai/analytics/pr-steward) に移動します。
+リポジトリにおける PR Steward の推定支出額を確認するには、そのリポジトリの **Edit** ダイアログを開きます。過去 30 日間の組織全体の推定合計を確認するには、[claude.ai/analytics/pr-steward](https://claude.ai/analytics/pr-steward) に移動します。
 
 ### PR Steward の支出上限を設定する
 
@@ -147,11 +147,11 @@ PR Steward を開始するタイミングを選択します。
 
 セットアップスクリプト、環境変数、または異なるネットワークアクセスを追加するには、[組織共有環境](https://code.claude.com/docs/ja/cloud-environments.md#organization-shared-environments)を使用します。**Claude Ship** ページで、**Where it runs** の下にある **Default environment** を選択します。1 つのリポジトリでこれを上書きするには、**Edit** ダイアログで **Environment** の横にある **Change** をクリックします。
 
-どちらも設定されていない場合、PR Steward は組織の[デフォルト環境](https://code.claude.com/docs/ja/cloud-environments.md#the-default-environment)を使用できます。デフォルト環境もない場合は、セットアップスクリプトも環境変数もない Anthropic ホスト環境で実行されます。
+どちらも設定されていない場合、PR Steward は組織の[デフォルト環境](https://code.claude.com/docs/ja/cloud-environments.md#the-default-environment)を使用できます。そのデフォルト環境が[セルフホスト](#run-pr-steward-in-a-self-hosted-environment)の場合は、**Where it runs** でその環境または別の環境を PR Steward 用に選択してください。選択するまでは、プルリクエストに [PR Steward が開始されていないというコメント](https://code.claude.com/docs/ja/pr-steward-troubleshooting.md#pr-steward-posted-a-comment-that-says-why)が投稿されることがあります。組織にデフォルト環境がない場合、PR Steward はセットアップスクリプトも環境変数もない Anthropic ホスト環境で実行されます。
 
 ### セルフホスト環境で PR Steward を実行する
 
-PR Steward を実行する環境として、[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)を選択できます。[承認とマージに関する制限](https://code.claude.com/docs/ja/pr-steward-security.md#limits-on-approvals-and-merges)は、Anthropic ホストのセッションについてのみ記載されています。[Anthropic 管理の git](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用していないランナーでは、PR Steward はランナー自身の git 認証情報でプッシュします。
+PR Steward を実行する環境として、[セルフホスト環境](https://code.claude.com/docs/ja/self-hosted-environments)を選択できます。そのランナーには Claude Code v2.1.317 以降が必要です。[承認とマージに関する制限](https://code.claude.com/docs/ja/pr-steward-security.md#limits-on-approvals-and-merges)は、Anthropic ホストのセッションについてのみ記載されています。[Anthropic 管理の git](https://code.claude.com/docs/ja/self-hosted-environments-deploy.md#use-the-anthropic-git-proxy) を使用していないランナーでは、PR Steward はランナー自身の git 認証情報でプッシュします。
 
 > [!WARNING]
 >

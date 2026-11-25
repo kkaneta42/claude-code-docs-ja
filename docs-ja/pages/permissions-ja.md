@@ -106,6 +106,16 @@ Claude Code は、ツール呼び出しの承認方法を制御するいくつ�
 
 トランスクリプトと権限ダイアログに表示されるツールのラベルは、その正規名と異なる場合があります。たとえば、トランスクリプトで `Stop Task` というラベルが付いているツールの正規名は `TaskStop` です。権限ルールと [フック matcher](https://code.claude.com/docs/ja/hooks.md) はラベルにはマッチしないため、`Stop Task` として記述されたルールはマッチしません。拒否ルールと確認ルールの場合は、[スタートアップ警告](https://code.claude.com/docs/ja/errors.md#matches-no-tool)でその旨が通知されます。[ツール参照](https://code.claude.com/docs/ja/tools-reference.md) に記載されている正規名を使用してください。
 
+#### 作業ディレクトリ外でファイルツールを許可する
+
+`Edit(*)`、`Write(*)`、または `NotebookEdit(*)` の許可ルールでは、ツールは[作業ディレクトリ](#working-directories)内でのみ事前承認されます。作業ディレクトリ外のパスも事前承認するには、`Edit` や `Read` のように、対象とする各ツールの名前だけを記述します。[保護されたパス](https://code.claude.com/docs/ja/permission-modes.md#protected-paths)への書き込みや[ネットワークパス](#network-paths)からの読み取りなど、一部の呼び出しは引き続き事前承認されません。
+
+スタートアップ警告で `Read(*)` ルールについて `adds nothing to Read's default` と表示された場合は、そのルールを設定ファイルから削除できます。
+
+> [!WARNING]
+>
+> ツールを作業ディレクトリ内に限定する目的で、ファイルツールの `(*)` 許可ルールに頼らないでください。v2.1.317 より前のバージョンではこのルールはツール名のみの記述として扱われ、Anthropic が作業ディレクトリの制限をオフにした場合は、それ以降のバージョンでも同様に扱われる可能性があります。代わりに、[作業ディレクトリ外でのファイルツールの読み取りと書き込みをブロック](#block-file-tool-reads-and-writes-outside-the-working-directories)してください。
+
 ### 細かい制御のためにスペシファイアを使用する
 
 括弧内にスペシファイアを追加して、特定のツール使用をマッチさせます。
@@ -534,7 +544,7 @@ Claude Code v2.1.292 以降では、次のいずれの場合も確認はその�
 * **PreToolUse フック**: `"allow"` を返す[フック](#extend-permissions-with-hooks)は確認をスキップしません
 * **auto モード**: 確認はユーザーに届き、[分類器](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)は読み取りを判断しません
 
-`dontAsk` モードでは、Claude Code は確認を求める代わりに読み取りを拒否します。`bypassPermissions` モード、および[権限のバイパス](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode)が利用可能な plan モードの対話型ターミナルセッションでは、読み取りはこの確認なしで実行されます。
+`dontAsk` モードでは、Claude Code はプロンプトを表示する代わりに読み取りを拒否します。`bypassPermissions` モードでは、また [bypass permissions](https://code.claude.com/docs/ja/permission-modes.md#skip-all-checks-with-bypasspermissions-mode) が利用可能な plan モードの対話型ターミナルセッションでは、このプロンプトなしで読み取りを実行できます。
 
 この確認なしでネットワーク共有上のファイルを読み取るには、まず共有にローカルパスを割り当ててください。
 
@@ -564,7 +574,7 @@ WebFetch ルールは `domain:` プレフィックスを使用し、要求され
 | `WebFetch` | Claude は確認なしで取得します。サンドボックス化されたコマンドが到達できるホストは変わりません。 | Claude Code は `WebFetch` ツールを削除するため、Claude は一切取得できません。サンドボックス化されたコマンドが到達できるホストは変わりません。 |
 | `WebFetch(domain:*)` | Claude は確認なしで取得し、サンドボックス化されたコマンドは任意のホストに到達できます。 | Claude Code はツールを保持したまま各取得を拒否し、サンドボックス化されたコマンドはどのホストにも到達できません。 |
 
-2 つの形式は、Artifact ツールが claude.ai に公開するページである[アーティファクト](https://code.claude.com/docs/ja/artifacts.md)の読み取りについても異なります。単独の `WebFetch` 拒否ルールまたは確認ルールは、それらの読み取りには適用されません。`WebFetch(domain:claude.ai)` や `WebFetch(domain:*)` のように、`claude.ai` または `*.claudeusercontent.com` コンテンツホストをカバーする `domain:` ルールは、各読み取りを拒否するか、その前に確認を求めます。[`Artifact` ルール](https://code.claude.com/docs/ja/artifacts#disable-artifacts)も同じ動作をします。
+2 つの形式は、Artifact ツールが claude.ai に公開するページである[アーティファクト](https://code.claude.com/docs/ja/artifacts.md)の読み取りについても異なります。単独の `WebFetch` 拒否ルールまたは確認ルールは、Artifact ツールによる読み取りには適用されません。`WebFetch(domain:claude.ai)` や `WebFetch(domain:*)` のように、`claude.ai` または `*.claudeusercontent.com` コンテンツホストをカバーする `domain:` ルールは、各読み取りを拒否するか、その前に確認を求めます。
 
 ルールが読み取りをブロックすると、拒否メッセージにそのルールが表示されます。v2.1.268 より前では、単独の `WebFetch` 拒否ルールはすべてのアーティファクトの読み取りをブロックし、単独の確認ルールはそれぞれの読み取りの前に確認を求めていました。
 

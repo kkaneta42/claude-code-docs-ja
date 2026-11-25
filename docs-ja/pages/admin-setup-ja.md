@@ -53,7 +53,7 @@ Claude Code は複数の API プロバイダーのいずれかを通じて Claud
 
 Claude Code はスタートアップ時に server-managed 設定をフェッチし、セッション中は 1 時間ごとに更新します。デプロイするエンドポイントインフラストラクチャはありません。claude.ai 管理コンソール経由の配信には Claude for Teams または Enterprise プランが必要です。Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry でのデプロイは、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) を実行することで同じリモート配信を取得できます。または、ファイルベースまたは OS レベルのメカニズムのいずれかを代わりに使用してください。
 
-claude.ai の **Organization settings > Desktop 3P** でプロバイダーまたはゲートウェイを設定している場合は、Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)を参照してください。
+claude.ai の [**Organization settings > Desktop 3P**](https://claude.ai/admin-settings/desktop-deployment) でプロバイダーまたはゲートウェイを設定している場合は、Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)を参照してください。
 
 組織が複数のプロバイダーを混在させている場合、claude.ai ユーザー向けに [server-managed settings](https://code.claude.com/docs/ja/server-managed-settings.md) を設定し、他のユーザーがマネージドポリシーを受け取るように [ファイルベースまたは plist/registry フォールバック](https://code.claude.com/docs/ja/managed-settings.md#delivery-mechanisms)を設定してください。
 
@@ -158,7 +158,7 @@ Claude 組織にリンクできる github.com の組織と個人アカウント�
 
 **1. 組織を許可する**
 
-Team または Enterprise プランの Owner として、ブラウザで [**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションを開き、**Choose organizations** をクリックします。承認する組織を表で選択し、**Allow** をクリックします。すでにリンクされている組織は自動的には許可されないため、それらも含めてください。
+Team または Enterprise プランでは、[Owner](https://code.claude.com/docs/ja/server-managed-settings.md#access-control) がこれを設定できます。ブラウザで [**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) の GitHub セクションを開き、**Choose organizations** をクリックします。承認する組織を表で選択し、**Allow** をクリックします。すでにリンクされている組織は自動的には許可されないため、それらも含めてください。
 
 **2. その他のアカウントを名前で許可する**
 
@@ -189,7 +189,7 @@ Team または Enterprise プランの Owner として、ブラウザで [**Orga
 | Usage monitoring | セッション、ツール、トークンの OpenTelemetry エクスポート | すべてのプロバイダー | [Monitoring usage](https://code.claude.com/docs/ja/monitoring-usage.md) |
 | Analytics dashboard | Teams / Enterprise でのリーダーボード付き採用度と貢献度メトリクス、Console でのユーザーごとの使用状況と支出メトリクス | Teams / Enterprise は [claude.ai/analytics](https://claude.ai/analytics/claude-code)、Console は [platform.claude.com/claude-code](https://platform.claude.com/claude-code) | [Analytics](https://code.claude.com/docs/ja/analytics.md) |
 | Programmatic reporting | API を通じたユーザーごとの使用状況とコストデータ | Enterprise 向け [Enterprise Analytics API](https://platform.claude.com/docs/en/api/admin/analytics)、Console 向け [Claude Code Analytics API](https://platform.claude.com/docs/en/build-with-claude/claude-code-analytics-api) | [Costs](https://code.claude.com/docs/ja/costs.md#manage-costs-for-your-organization) |
-| Spend controls | 支出制限とレート制限 | Teams / Enterprise の組織設定、Console のワークスペース制限、サードパーティクラウドではクラウド予算管理またはユーザーごとの [支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md) を備えた [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) | [Costs](https://code.claude.com/docs/ja/costs.md#manage-costs-for-your-organization) |
+| Spend controls | 支出制限とレート制限 | Teams / Enterprise の [組織設定](https://claude.ai/admin-settings/usage)、Console のワークスペース制限、サードパーティクラウドではクラウド予算管理またはユーザーごとの [支出制限](https://code.claude.com/docs/ja/claude-apps-gateway-spend-limits.md) を備えた [Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) | [Costs](https://code.claude.com/docs/ja/costs.md#manage-costs-for-your-organization) |
 
 Teams および Enterprise では、ユーザーごとの使用状況と支出の数値は分析ダッシュボードではなく、組織の分析設定の [支出レポート](https://support.claude.com/en/articles/12883420-view-usage-analytics-for-team-and-enterprise-plans) から取得されます。クラウドプロバイダーは AWS Cost Explorer、GCP Billing、または Azure Cost Management を通じて支出を公開します。Claude チャット、Claude Code、Cowork 全体にわたるエンタープライズ予算計画については、[Claude Enterprise 消費ガイド](https://support.claude.com/en/articles/14782391-claude-enterprise-consumption-guide) を参照してください。
 

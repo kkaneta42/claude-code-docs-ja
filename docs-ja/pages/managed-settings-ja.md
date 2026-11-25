@@ -123,7 +123,7 @@ Claude Code は最初に `managed-settings.json` をマージし、次にディ�
 
 ## Claude Code が管理ソースを組み合わせる方法
 
-claude.ai の **Organization settings > Desktop 3P** でプロバイダーまたはゲートウェイを設定する場合は、まず Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)をお読みください。
+claude.ai の [**Organization settings > Desktop 3P**](https://claude.ai/admin-settings/desktop-deployment) でプロバイダーまたはゲートウェイを設定する場合は、まず Enterprise Admin Console ガイドの[どの設定が優先されるか](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code#which-settings-take-priority)をお読みください。
 
 組織が同じマシンに複数の管理ソースを配信する場合、[`managedSourcesBehavior`](https://code.claude.com/docs/ja/settings-reference#managedsourcesbehavior) キーによって、Claude Code がそれ以外のソースをどう扱うかが決まります。
 
@@ -177,6 +177,7 @@ WSL では `/etc/claude-code` もユーザーが書き込み可能です。Windo
 
   ロックがない場合、Claude Code は適用する管理ソースから `allowedMcpServers` を読み取るため、`"first-wins"` では選択されなかった管理ソースのリストは無視されます。Claude Code v2.1.273 以降が必要です
 * `deniedMcpServers` と [`disableClaudeAiConnectors`](https://code.claude.com/docs/ja/settings-reference#disableclaudeaiconnectors)：いずれかの管理ソースにあるエントリまたは `true` が適用されます。Claude Code v2.1.273 以降が必要です
+* [`disableDirectMcpSkills`](https://code.claude.com/docs/ja/settings-reference#disabledirectmcpskills)：いずれかの管理ソースで `true` が設定されていると、claude.ai コネクタ以外の MCP サーバーからのスキルがオフになります。これらをオンにするには、使用している最上位の管理ソースで `false` を設定します。Claude Code は HKCU レジストリにある `false` を無視します。MCP サーバーからのスキルには Claude Code v2.1.331 以降が必要です
 * サンドボックスのバイナリパス `sandbox.bwrapPath` と `sandbox.socatPath`
 * サンドボックスの `ripgrep` バイナリ、[`sandbox.ripgrep`](https://code.claude.com/docs/ja/settings-reference#sandbox-ripgrep)
 * `sandbox.filesystem.disabled` と `sandbox.network.strictAllowlist`
@@ -332,7 +333,7 @@ Claude Code は [`policyHelper`](https://code.claude.com/docs/ja/settings-refere
 * 空の管理対象設定ファイルは `{}` としてカウントされます。
 * ユーザー書き込み可能な HKCU レジストリ キーの不正形式の値は起動をブロックしません。Claude Code は代わりに `/status` と `claude doctor` で通知として報告します。
 
-管理対象設定ファイル、ドロップイン ファイル、`managed-settings.d/` ディレクトリ、MDM プロファイル、または HKLM レジストリ値が存在するが読み取ることができず、管理者ソースがポリシーを提供しない場合、何が起こるかは読み取りが失敗した理由によって異なります。
+管理対象設定ファイル、ドロップイン ファイル、`managed-settings.d/` ディレクトリ、または MDM プロファイルが存在するが読み取ることができず、管理者ソースがポリシーを提供しない場合、アクセスが拒否された場合を除き、セッションは終了します。
 
 * オペレーティング システムが読み取りを拒否した場合（root のみが読み取れるファイルなど）、すべてのセッションはそのソースのポリシーなしで起動します。`/status` と `claude doctor` は失敗を記録し、`-p` を使用した実行では stderr にも出力されます。
 * I/O エラーなど、その他の読み取り失敗の場合、すべてのセッションは起動時に[管理者に連絡するよう求めるメッセージ](https://code.claude.com/docs/ja/errors.md#unable-to-read-managed-policy-settings)を表示して終了します。
@@ -357,7 +358,7 @@ Claude Code は `permissions`、`autoMode`、`worktree`、および `attribution
 
 * `permissions.disableBypassPermissionsMode` などのブロック内のロックはその制限的な値として読み取られます。
 * 無効な `permissions.defaultMode` は `default` として読み取られます。
-* `permissions` 内の `deny` または `ask` リストを全く読み取ることができない場合、Claude Code は `allow` と `additionalDirectories` を保留するため、制限が横に書かれていない限りグラントは適用されません。レポートは各保留されたグラントと読み取ることができなかったリストを名前で示します。
+* `permissions` 内の `deny` または `ask` リストをまったく読み取れない間は、Claude Code は `allow` と `additionalDirectories` を保留します。これにより、許可が、その横に記述された制限を伴わずに適用されることはありません。レポートには、保留された各許可と、読み取れなかったリストが示されます。
 * `autoMode` では、読み取ることができない `soft_deny` または `hard_deny` リスト、または無効なエントリを失った場合、`allow` と `environment` を同じ方法で保留します。
 
 単一の制限的な値を持つキーの閉じた状態で失敗するルールとフィールドごとの修復には Claude Code v2.1.282 以降が必要です。
@@ -400,11 +401,11 @@ Claude Code は `permissions`、`autoMode`、`worktree`、および `attribution
 無効なフィールドに対して取得する警告は、フィールドを名前で示し、それに何が起こるかを示します。何が起こるかは、フィールドが何を制御するかによって異なります。
 
 * Boolean キーを引用符で囲まれた `"true"` または `"false"` に設定した場合、値はその Boolean としてカウントされます。警告の代わりに、`/status` は引用符を削除するよう求める通知を表示します。
-* `failIfUnavailable` が無効な場合、Claude Code は値をドロップするため、読み取り不可能な値はフリート全体でセッションの開始を停止しません。
+* `failIfUnavailable` が無効な場合、Claude Code は値を `true` として扱うのではなくドロップするため、読み取り不可能な値によってフリート全体でセッションの開始が妨げられることはありません。
 * Claude Code は他のすべての無効な Boolean を、値が修正されるまでサンドボックスを最も厳密に保つ値として扱います。`enabled` や `network.allowManagedDomainsOnly` など、サンドボックスまたはその制限の 1 つをオンにするキーは `true` としてカウントされます。`allowUnsandboxedCommands` など、それを緩和するキーは `false` としてカウントされます。
 * `credentials` 外のリスト（`excludedCommands` や `network.allowedDomains` など）では、Claude Code は無効なエントリをドロップし、リストの残りを保持します。配列ではないリスト、または有効なエントリがないリストは、まったく適用されません。
 * `network.deniedDomains` またはそのいずれかのエントリが無効な間、Claude Code は `network.allowedDomains` も保留するため、管理対象アローリストは拒否リストを修正するまで何も許可しません。
-* `filesystem.denyRead`、`filesystem.denyWrite`、またはそのいずれかのエントリが無効な間、Claude Code は `filesystem.allowRead` と `filesystem.allowWrite` の両方を保留するため、拒否リストを修正するまで何も許可しません。
+* `filesystem.denyRead`、`filesystem.denyWrite`、またはそのいずれかのエントリが無効な間は、拒否リストを修正するまで、Claude Code は `filesystem.allowRead` と `filesystem.allowWrite` の両方も保留します。
 
 ## マネージドソースのみが設定できるキー
 
@@ -424,6 +425,7 @@ Claude Code は以下のキーをマネージドソースからのみ読み込�
 | [`blockedMarketplaces`](https://code.claude.com/docs/ja/settings-reference#blockedmarketplaces) | マーケットプレイスソースのブロックリスト。ブロックされたソースはダウンロード前にチェックされるため、ファイルシステムに触れることはありません。[マネージドマーケットプレイス制限](https://code.claude.com/docs/ja/plugins/org.md#restrict-what-users-can-install)を参照してください |
 | [`channelsEnabled`](https://code.claude.com/docs/ja/settings-reference#channelsenabled) | 組織の[チャネル](https://code.claude.com/docs/ja/channels.md)を許可します。各プランのデフォルトについては[エンタープライズ制御](https://code.claude.com/docs/ja/channels.md#enterprise-controls)を参照してください |
 | [`disableCommandPluginSources`](https://code.claude.com/docs/ja/settings-reference#disablecommandpluginsources) | `true` の場合、[`command` プラグインソース](https://code.claude.com/docs/ja/plugins/marketplace-reference#command-plugin-source)を完全にブロックするため、マーケットプレイスで宣言されたコマンドは実行されません。また、マーケットプレイスの[`headersHelper` コマンド](https://code.claude.com/docs/ja/plugins/host-marketplace#authenticate-archive-downloads)もブロックします。ただし、管理設定自体が宣言するマーケットプレイスは除きます。設定されていない場合は、`allowManagedHooksOnly` に従います。Claude Code v2.1.229 以降が必要であり、`headersHelper` ブロックには v2.1.238 以降が必要です |
+| [`disableDirectMcpSkills`](https://code.claude.com/docs/ja/settings-reference#disabledirectmcpskills) | [claude.ai コネクタ以外の MCP サーバーからのスキル](https://code.claude.com/docs/ja/mcp.md#turn-on-skills-for-an-organization)を制御します。`false` に設定すると Team および Enterprise プランでこれらがオンになります。`true` に設定するとオフになります。MCP サーバーからのスキルには Claude Code v2.1.331 以降が必要です |
 | [`disableSideloadFlags`](https://code.claude.com/docs/ja/settings-reference#disablesideloadflags) | 起動時に `--plugin-dir`、`--plugin-url`、`--agents`、`--mcp-config` フラグを拒否します。クラウドセッションでは、Claude Code はセッションを開始し、サーバー配信の `--mcp-config` サーバーをドロップします。ただし、その[リファレンスエントリ](https://code.claude.com/docs/ja/settings-reference.md#disablesideloadflags)がリストする例外は除きます。Claude Code v2.1.193 以降が必要です |
 | [`forceRemoteSettingsRefresh`](https://code.claude.com/docs/ja/settings-reference#forceremotesettingsrefresh) | `true` の場合、リモート管理設定が新たに取得されるまで CLI 起動をブロックし、取得に失敗した場合は終了します。[フェイルクローズ実装](https://code.claude.com/docs/ja/server-managed-settings.md#enforce-fail-closed-startup)を参照してください |
 | [`managedMcpServers`](https://code.claude.com/docs/ja/settings-reference#managedmcpservers) | すべてのユーザーに自身のサーバーと一緒に提供されるリモート MCP サーバー。何かをロックダウンするのではなく、サーバーを提供します。[管理設定を通じてサーバーを提供する](https://code.claude.com/docs/ja/managed-mcp.md#provide-servers-through-managed-settings)を参照してください。Claude Code v2.1.259 以降が必要です |

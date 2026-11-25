@@ -12,7 +12,7 @@
 
 > [!NOTE]
 >
-> GitHub 上でリポジトリ内のすべてのプルリクエストを自動的にレビューするには、Owner が組織に対して有効にするマネージドサービスである [Code Review](https://code.claude.com/docs/ja/code-review.md) を参照してください。
+> GitHub 上でリポジトリ内のすべてのプルリクエストを自動的にレビューするには、Claude 組織の Owner が有効にするマネージドサービスである [Code Review](https://code.claude.com/docs/ja/code-review.md) を参照してください。
 
 `/review` は `/code-review` のエイリアスです。
 

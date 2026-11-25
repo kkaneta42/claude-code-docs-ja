@@ -258,7 +258,7 @@ Claude Code が同期するのは、claude.ai アカウントでサインイン�
 * `/login` で保存されたサインインを使用しないセッション。たとえば、API キーで認証するセッションや、`ANTHROPIC_AUTH_TOKEN`、`CLAUDE_CODE_OAUTH_TOKEN`、または `apiKeyHelper` スクリプトが認証情報を提供するセッション
 * 機能フラグを取得しないセッション。たとえば、Amazon Bedrock 上のセッションや、`CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` を設定したセッション
 * [bare モード](https://code.claude.com/docs/ja/headless.md#start-faster-with-bare-mode)のセッション、または `--safe-mode` で開始したセッション
-* 組織の管理設定が[スキルをプラグインソースに限定](https://code.claude.com/docs/ja/settings-reference.md#strictpluginonlycustomization-skills)しているセッション、または `user` を含まない [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) リストで開始したセッション
+* 管理設定で[スキルがプラグインソースに固定されている](https://code.claude.com/docs/ja/settings-reference.md#strictpluginonlycustomization-skills)セッション、または `user` を含まない [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) リストを指定して開始したセッション
 
 セッション中に `/login` でサインインした場合は、同期を開始するために Claude Code を再起動してください。
 
@@ -319,6 +319,19 @@ Claude Code が同期スキルの本文をどう扱うかは、セッション�
 * クラウドセッションでは、セッションが隔離されたコンテナで実行されるため、本文はローカルスキルと同じ動作を保ちます。
 * デスクトップ上の Cowork セッションでは、本文はローカルスキルと同じ動作を保ちます。ただし、そこで提供するすべてのスキルと同様に、Claude Code はすべての `!` コマンド行を [`disableSkillShellExecution` のプレースホルダー](#inject-dynamic-context)に置き換えます。
 * ターミナルまたは VS Code のセッションでは、Claude Code は [`!` コマンド](#inject-dynamic-context)を実行せず、`@` 参照が指すファイルを添付せず、`${CLAUDE_PROJECT_DIR}` と `${CLAUDE_SESSION_ID}` のプレースホルダーも置換しません。`@` 参照と両方のプレースホルダーはリテラルテキストとして Claude に届きます。`!` コマンド行もリテラルテキストとして、またはその設定がオンの場合は `disableSkillShellExecution` のプレースホルダーとして Claude に届きます。この扱いには Claude Code v2.1.228 以降が必要です。
+
+### MCP サーバーからのスキル
+
+[MCP サーバーはスキルを提供できます](https://code.claude.com/docs/ja/mcp.md#use-skills-from-mcp-servers)。これらを使用するには Claude Code v2.1.331 以降が必要です。Claude は、スキルのサポートファイルを [MCP リソース](https://code.claude.com/docs/ja/mcp.md#use-mcp-resources)としてサーバーから読み取ります。プロンプトとルールについては、[MCP スキルの承認](https://code.claude.com/docs/ja/mcp.md#approvals-for-mcp-skills)を参照してください。
+
+#### 適用されないスキル機能
+
+コンテンツはサーバーが提供するため、MCP スキルでは[ローカルスキル](#where-skills-live)の次の機能を使用できません。
+
+* **フロントマターのフィールド**：Claude Code は `allowed-tools`、`disallowed-tools`、`hooks`、`model`、`effort`、`context`、`agent`、`background`、`shell`、`paths`、`metadata` を無視します
+* **[`!` コマンド](#inject-dynamic-context)**：実行されません
+* **`@` 参照**：ファイルは添付されません
+* **`${CLAUDE_PROJECT_DIR}` と `${CLAUDE_SESSION_ID}`**：置換されません
 
 ### セッション中にスキルを編集する
 
@@ -412,7 +425,7 @@ Claude Code がフロントマターを読み取るのは、開始の `---` が�
 | `user-invocable` | いいえ | Claude だけがスキルを呼び出すべき場合は `false` に設定します。Claude Code は `/` メニューからスキルを非表示にし、`/name` と入力しても実行しません。ユーザーが直接呼び出すべきではない背景知識に使用します。デフォルト：`true`。 |
 | `allowed-tools` | いいえ | このスキルを呼び出したターンの間、Claude が権限を求めずに使用できるツール。この付与は次のメッセージを送信するとクリアされます。スペース区切りまたはカンマ区切りの文字列、あるいは YAML リストを受け付けます。[スキルのツールを事前承認する](#pre-approve-tools-for-a-skill)を参照してください。 |
 | `disallowed-tools` | いいえ | このスキルがアクティブな間、Claude が使用可能なツールから除外されるツール。バックグラウンドループにおける `AskUserQuestion` など、特定のツールを決して呼び出すべきではない自律型スキルに使用します。スペース区切りまたはカンマ区切りの文字列、あるいは YAML リストを受け付けます。この制限は次のメッセージを送信するとクリアされます。拒否ルールと同様に、他のツールが残っている間はこのフィールドで [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) を除外することはできません。 |
-| `model` | いいえ | このスキルがアクティブなときに使用するモデル。この上書きは現在のターンの残りの間に適用され、設定には保存されません。次のプロンプトを送信すると、セッションのモデルに戻ります。[`/model`](https://code.claude.com/docs/ja/model-config) と同じ値、またはアクティブなモデルを維持する `inherit` を受け付けます。組織の [`availableModels`](https://code.claude.com/docs/ja/model-config#restrict-model-selection) 許可リストで除外されている値は使用されず、セッションは現在のモデルを維持します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)、および[分類器がコマンドをレビューしている間の plan モード](https://code.claude.com/docs/ja/permission-modes.md#analyze-before-you-edit-with-plan-mode)では、auto モードがサポートしていないモデルも使用されず、セッションは現在のモデルを維持します。`context: fork` の場合、この値は代わりに[フォークされたサブエージェントのモデル](#run-skills-in-a-subagent)を設定し、除外された値は[サブエージェントのモデル上書きと同じルール](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)に従います。 |
+| `model` | いいえ | [`/name` でこのスキルを実行した](#where-you-write-the-skills-name)ときのターンのモデル。[`/model`](https://code.claude.com/docs/ja/model-config) の値、またはアクティブなモデルを使用する `inherit` を受け付けます。Claude がスキルを実行した場合、セッションは現在のモデルを維持します。[組織がその値をブロックしている](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)場合、[plan モードのアップグレード](https://code.claude.com/docs/ja/model-config.md#opusplan-model-setting)がアクティブな場合、または [auto モードの分類器がオン](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でその値をサポートしていない場合も同様です。`context: fork` の場合、この値はフォークされたサブエージェントの[呼び出しごとのモデル](https://code.claude.com/docs/ja/sub-agents.md#choose-a-model)になります。 |
 | `effort` | いいえ | 現在のターンの残りの間の [effort レベル](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)。セッションの effort レベルを上書きしますが、[`CLAUDE_CODE_EFFORT_LEVEL`](https://code.claude.com/docs/ja/env-vars#variables) 環境変数は上書きしません。`context: fork` の場合、この値は代わりにフォークされたサブエージェントの effort レベルを設定します。省略した場合、レベルは [effort の解決順序](https://code.claude.com/docs/ja/model-config.md#adjust-effort-level)によって決まります。別のモデルでのフォークについては、[サブエージェントとチームメイトの effort レベル](https://code.claude.com/docs/ja/model-config.md#effort-level-of-subagents-and-teammates)を参照してください。オプション：`low`、`medium`、`high`、`xhigh`、`max`。使用可能なレベルはモデルによって異なります。 |
 | `context` | いいえ | `fork` に設定すると、フォークされたサブエージェントコンテキストで実行されます。[サブエージェントでスキルを実行する](#run-skills-in-a-subagent)を参照してください。 |
 | `agent` | いいえ | `context: fork` が設定されている場合に使用するサブエージェントの種類。 |
@@ -675,9 +688,14 @@ Fix GitHub issue $ARGUMENTS following our coding standards.
 5. Create a commit
 ```
 
-`/fix-issue 123` を実行すると、Claude は「Fix GitHub issue 123 following our coding standards...」を受け取ります。
+`/fix-issue 123` を実行すると、Claude は `Fix GitHub issue 123 following our coding standards...` を受け取ります。
 
-引数を指定してスキルを呼び出したものの、スキルのコンテンツ内のどのプレースホルダーも引数を受け取らない場合、Claude Code はスキルコンテンツの末尾に `ARGUMENTS: <your input>` を追加し、Claude が入力内容を確認できるようにします。プレースホルダーとは、`$ARGUMENTS`、`$1` のようなインデックス形式、または名前付き引数のことです。その位置に引数がないインデックス付きプレースホルダーはリテラルテキストのまま残り、引数を受け取ったとはみなされません。名前付きプレースホルダーは空文字列に展開されるため、その位置に引数がない場合でも受け取ったとみなされます。
+引数を指定してスキルを呼び出したものの、スキルのコンテンツ内のどのプレースホルダーも引数を受け取らない場合、Claude Code はスキルコンテンツの末尾に `ARGUMENTS: <your input>` を追加し、Claude が入力内容を確認できるようにします。プレースホルダーとは、`$ARGUMENTS`、`$1` のようなインデックス形式、または名前付き引数のことです。
+
+その位置に引数がない場合、プレースホルダーが引数を受け取ったとみなされるのは、名前付きの場合のみです。
+
+* **`$1` などのインデックス付きプレースホルダー**：リテラルテキストのまま残ります
+* **`$issue` などの名前付きプレースホルダー**：空文字列に展開されます
 
 個々の引数に位置でアクセスするには、`$ARGUMENTS[N]` または短縮形の `$N` を使用します。
 
@@ -871,9 +889,11 @@ Research $ARGUMENTS thoroughly:
 
 ### Claude のスキルへのアクセスを制限する
 
-デフォルトでは、Claude は `disable-model-invocation: true` が設定されていないすべてのスキルを呼び出せます。[`allowed-tools`](#pre-approve-tools-for-a-skill) を定義するスキルは、そのスキルを呼び出したターンの間、使用ごとの承認なしでそれらのツールへのアクセスを Claude に付与します。この付与は、ユーザーが次のメッセージを送信するとクリアされます。その他すべてのツールについては、引き続き[権限設定](https://code.claude.com/docs/ja/permissions.md)が基本的な承認動作を制御します。`/init` や `/security-review` など、いくつかの組み込みコマンドも Skill ツールを通じて利用できます。`/compact` などのその他の組み込みコマンドは利用できません。
+デフォルトでは、Claude は `disable-model-invocation: true` が設定されていないすべてのスキルを呼び出せます。[`allowed-tools`](#pre-approve-tools-for-a-skill) を定義するスキルは、そのスキルを呼び出したターンの間、使用ごとの承認なしでそれらのツールへのアクセスを Claude に付与します。この付与は、ユーザーが次のメッセージを送信するとクリアされます。その他すべてのツールについては、引き続き[権限設定](https://code.claude.com/docs/ja/permissions.md)が基本的な承認動作を制御します。[MCP サーバーのスキル](#skills-from-mcp-servers)の場合、Claude に `allowed-tools` の付与は行われません。
 
-Claude が呼び出せるスキルを制御する方法は 3 つあります。
+`/init` や `/security-review` など、いくつかの組み込みコマンドも Skill ツールを通じて利用できます。`/compact` などのその他の組み込みコマンドは利用できません。
+
+Claude が呼び出すスキルは、次の方法で制御できます。
 
 **すべてのスキルを無効にする**には、`/permissions` で Skill ツールを拒否します。
 
@@ -912,6 +932,8 @@ Claude Code は、`allow` ルールをスキル自身の名前と Claude の呼�
 * `Skill(anthropic-skills:pdf)` は同期された `pdf` スキルを承認します
 * `Skill(anthropic-skills *)` はすべての同期されたスキルを承認します
 * `Skill(anthropic *)` は `anthropic-skills:pdf` を対象としません。名前空間外のプレフィックスは、その内部の名前に一致しないためです
+
+[MCP サーバーのスキル](#skills-from-mcp-servers)の場合は、代わりに[そのサーバーに対するルールを設定](https://code.claude.com/docs/ja/mcp.md#block-a-servers-skills-or-ask-first)してください。スキルの名前に対する `allow` ルールでそのプロンプトをスキップすることはできません。
 
 **個々のスキルを非表示にする**には、そのフロントマターに `disable-model-invocation: true` を追加します。これにより、スキルは Claude のコンテキストから完全に削除されます。
 

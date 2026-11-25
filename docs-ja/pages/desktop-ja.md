@@ -8,11 +8,11 @@
 
 Claude Desktop アプリでは、Claude Code は **Code** タブです。アプリにはチャットと [Cowork](https://claude.com/product/cowork) もあり、Cowork は Dispatch やより長いエージェント型の作業を担います。このページは Code タブのリファレンスです。
 
-> [card] [macOS 用にダウンロード](https://claude.ai/api/desktop/darwin/universal/dmg/latest/redirect?utm_source=claude_code\&utm_medium=docs)
+> [card] [macOS 用にダウンロード](https://claude.ai/claude-code/desktop-download?platform=mac\&utm_source=claude_code\&utm_medium=docs)
 >
 > Intel と Apple Silicon 向けのユニバーサルビルド
 
-> [card] [Windows 用にダウンロード](https://claude.ai/api/desktop/win32/x64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)
+> [card] [Windows 用にダウンロード](https://claude.ai/claude-code/desktop-download?platform=win-x64\&utm_source=claude_code\&utm_medium=docs)
 >
 > x64 プロセッサ向け
 
@@ -20,7 +20,7 @@ Claude Desktop アプリでは、Claude Code は **Code** タブです。アプ�
 >
 > Ubuntu と Debian 向けの apt または .deb
 
-Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/api/desktop/win32/arm64/setup/latest/redirect?utm_source=claude_code\&utm_medium=docs)をダウンロードしてください。Linux では apt でインストールします。[Claude Desktop on Linux](https://code.claude.com/docs/ja/desktop-linux.md)を参照してください。
+Windows ARM64 の場合は、[ARM64 インストーラー](https://claude.ai/claude-code/desktop-download?platform=win-arm64\&utm_source=claude_code\&utm_medium=docs)をダウンロードしてください。Linux では apt でインストールします。[Claude Desktop on Linux](https://code.claude.com/docs/ja/desktop-linux.md)を参照してください。
 
 インストール後、Claude を起動してサインインし、**Code** タブをクリックします。最初のセッションのウォークスルーについては、[はじめにガイド](https://code.claude.com/docs/ja/desktop-quickstart.md)を参照してください。
 
@@ -1782,7 +1782,7 @@ Windows では、`command` を、ドライブ文字から始まる `.exe`、`.cm
 パス内のスペース、入力、時間制限、プログラムが出力する内容については、[コマンドを記述する](#write-the-command)のルールに従ってください。その他のルールの代わりに、次のルールに従います。
 
 * **プログラム**: `\\server\share` のようなネットワークパス、`%USERPROFILE%` のような変数、ASCII 以外の文字を使用しないでください。パスにこれらのいずれかが含まれていると、エントリはグレー表示になります。ユーザーフォルダーの名前にそのような文字が含まれている場合は、プログラムをそのフォルダーの外に置いてください。
-* **引数**: 「コマンドを記述する」の「引数」のルールに従います。コマンドには `\` も含められますが、どの単語も `\` で終えることはできません。
+* **引数**：「コマンドを記述する」の引数のルールに従います。コマンドには `\` も含められますが、どの単語もそれで終わることはできません。
 * **スクリプト**: `.cmd` または `.bat` ファイルを使用します。Desktop はこれを `cmd.exe` 経由で実行します。引用符で囲んでいても、ファイルのパスに `&`、`^`、`;` を含めることはできません。自分で作成するファイルでは、引数を `%*` で読み取ってください。`%1` から `%9` は、引数を `,` と `=` で分割するためです。
 * **環境**: プログラムには、シェルプロファイルの環境変数ではなく、Desktop アプリの環境変数が渡されます。変数を変更した後は、Desktop を終了して再度開いてください。
 * **テスト**: Desktop が読み取る出力を確認するには、コマンドプロンプトでコマンドを実行します。`"C:\Program Files\Acme\acme-dev.exe" create < NUL > host.txt` のように、スペースを含むパスは二重引用符で囲み、入力なしには `NUL` を使用します。ファイルにはホストのみが含まれている必要があります。このテストでもマシンが作成されるため、後でツールを使って削除してください。
@@ -1897,11 +1897,11 @@ Desktop はこれらのホストに自動的に接続するため、コンピュ
 
 選択できないエントリーはグレー表示になります。ホバーすると理由が表示されます。
 
-* **エントリの誤り**: メッセージが示すフィールドまたはコマンドを修正します。`id` が使用中の場合は、エントリに別の `id` を付けます。Windows では、コマンドを[プログラムのフルパスで始める](#write-the-command-on-windows)必要があります。
+* **エントリの誤り**：メッセージに示されたフィールドまたはコマンドを修正します。`id` が使用中の場合は、エントリに別の ID を付けます。Windows では、コマンドは[プログラムのフルパスで始める](#write-the-command-on-windows)必要があります。
 * **壊れた設定ファイル**: 自分の設定ファイルが壊れている間、管理者のエントリーが、ファイル名を示すメッセージとともにグレー表示になることがあります。[ファイルを修正](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)してください。
 * **新しいホスト**: Desktop がホストを保存してから 1 分間、[**Create another**](#create-another-machine) はグレー表示になります。1 分経過後に選択してください。Claude Desktop v4.4212.0 より前では、**Replace Dev box's host** が 10 分間グレー表示になります。
 * **フックがオフまたは制限されている**: 自分のエントリーは、自分のフックが実行できる場合にのみ機能します。設定から `disableAllHooks` を削除するか、管理者に相談してください。
-* **設定がまだ読み込み中**: Desktop が組織の[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を読み込むまで（通常は起動から数秒）、すべてのエントリーはグレー表示になります。エントリーがグレー表示のままの場合は、claude.ai への接続を確認してください。
+* **設定がまだ読み込まれていない**：Desktop が[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)を読み込むまで、すべてのエントリはグレー表示になります。通常は起動後数秒です。エントリがグレー表示のままの場合は、claude.ai への接続を確認してください。
 
 #### チームの SSH 接続を事前設定する
 
@@ -2098,6 +2098,23 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
 ユーザーが`permissions.disableBypassPermissionsMode`または`disableAutoMode`を上書きできないようにするには、管理設定でそれを設定してください。
 
 管理ソースのみが設定できる権限、プラグイン、および配信キーについては、[管理設定のみが設定できるキー](https://code.claude.com/docs/ja/managed-settings.md#managed-only-settings)を参照してください。
+
+#### すべてのユーザーにスキルをデプロイする
+
+ローカルセッションと SSH セッションですべてのユーザーに同じスキルを提供するには、それらを[エンタープライズスキル](https://code.claude.com/docs/ja/skills.md#where-skills-live)としてデプロイします。エンタープライズスキルは、マシンに一度インストールすれば、そのマシンのすべてのユーザーが利用できます。セッションが実行されるマシンにインストールしてください：
+
+* **ローカルセッション**：各ユーザーのコンピューター
+* **SSH セッション**：各リモートホスト
+
+各スキルを、そのマシンのプラットフォームに対応するパスにインストールします：
+
+| プラットフォーム | パス |
+| :- | :- |
+| macOS | `/Library/Application Support/ClaudeCode/.claude/skills/<skill-name>/SKILL.md` |
+| Linux | `/etc/claude-code/.claude/skills/<skill-name>/SKILL.md` |
+| Windows | `C:\Program Files\ClaudeCode\.claude\skills\<skill-name>\SKILL.md` |
+
+スキルが読み込まれることを確認するには、[フロントマター](https://code.claude.com/docs/ja/skills.md#frontmatter-reference)で`name`と`description`のみを設定したスキルでテストします。新しいセッションを開始してメッセージを送信し、プロンプトボックスに`/`とスキル名の先頭の数文字を入力します。リストにそのスキルが表示されます。
 
 #### Code タブで動作が異なる Claude Code 設定
 
@@ -2320,6 +2337,7 @@ Desktop アプリは、`claude_desktop_config.json` から MCP サーバーを�
 * **Linux（ベータ）**：Linux デスクトップアプリではコンピューター使用はまだ利用できません。[Claude Desktop on Linux](https://code.claude.com/docs/ja/desktop-linux.md)を参照してください。
 * **インラインコード提案**：Desktop はオートコンプリートスタイルのコード補完を提供しません。会話型プロンプトと明示的なコード変更を通じて機能し、Claude の応答後に[次のプロンプトを提案](#accept-a-suggested-prompt)できます。
 * **エージェントチーム**：Claude がチームリーダーとして共有タスクリストからチームメイトにタスクを割り当てる調整されたチームは、[CLI](https://code.claude.com/docs/ja/agent-teams.md)で利用可能で、Desktop では利用できません。1 つのセッション内でマルチエージェント作業を行う場合は、Desktop で実行される[動的ワークフロー](https://code.claude.com/docs/ja/workflows.md)を使用します。Claude は[他のセッションに直接メッセージを送信して管理](#work-across-sessions)することもできます。
+* **Code Mode**：Desktop セッションは、設定でオンにしていても、実験的な [Code Mode](https://code.claude.com/docs/ja/code-mode.md) なしで開始されます。使用するには、ターミナルで CLI を実行してください。
 * **ターミナルダイアログコマンド**：ターミナルで対話的パネルを開く組み込みコマンドは、コードタブで異なる動作をします。[設定ファイル](https://code.claude.com/docs/ja/settings.md)を直接編集して権限ルールと設定を管理するか、スタンドアロン CLI からコマンドを実行します。
   * `/permissions` などの引数形式がないコマンドは、`isn't available in this environment` で応答します。
   * `/config` は **設定 > Code** または **設定 > Claude Code** を開きます。
@@ -2358,6 +2376,8 @@ Claude Desktop v4.29.0 以降で新しいバージョンをより早く入手す
 以前のレイアウトでは、プロンプトボックスの上で環境と、必要に応じてプロジェクトフォルダまたはリポジトリを選択し、その下の行で権限モードとモデルを選択します。以前のレイアウトには[セッション詳細パネル](#see-session-details)と[保存済みのローカル環境および SSH 環境](#create-a-saved-environment)がありません。
 
 ### Code タブの 403 またはエラー認証エラー
+
+`For security, Claude Code needs a recent sign-in.` と表示されるカードについては、[Claude Code needs a recent sign-in](https://code.claude.com/docs/ja/errors.md#claude-code-needs-a-recent-sign-in) を参照してください。
 
 Code タブを使用するときに`Error 403: Forbidden`またはその他の認証エラーが表示される場合：
 

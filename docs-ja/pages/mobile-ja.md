@@ -24,7 +24,7 @@ Claude アプリを [iOS](https://apps.apple.com/us/app/claude-by-anthropic/id64
 
 **2. サインイン**
 
-Claude Code に使用するのと同じ claude.ai アカウントと組織でサインインします。クラウドセッションとリモートコントロールには claude.ai アカウントが必要なため、Anthropic Console API キーまたは Amazon Bedrock などのサードパーティプロバイダーからはアクセスできません。
+Claude Code に使用するのと同じ claude.ai アカウントでサインインします。組織に所属している場合は、同じ組織でサインインします。クラウドセッションと Remote Control には claude.ai アカウントが必要なため、Anthropic Console API キーや Amazon Bedrock などのサードパーティプロバイダーからはアクセスできません。
 
 **3. Code タブを開く**
 
@@ -86,4 +86,3 @@ Dispatch は、生成した Code セッションが完了したときまたは�
 * [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md): 任意のデバイスからローカルセッションを続行します
 * [Dispatch からのセッション](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch): Dispatch タスクが Desktop アプリで Code セッションになる方法
 * [Channels](https://code.claude.com/docs/ja/channels.md): 作業がマシンで実行されている間に、Telegram、Discord、または iMessage を通じてスマートフォンから Claude に何かを尋ねます
-* [Slack の Claude Code](https://code.claude.com/docs/ja/slack.md): `@Claude` をメンションして Slack ワークスペースからコーディングタスクを委任します

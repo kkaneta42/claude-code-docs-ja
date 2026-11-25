@@ -48,6 +48,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `Read` | ファイルの内容を読み取ります。[Read ツールの動作](#read-tool-behavior)を参照してください | いいえ |
 | `ReadMcpResourceTool` | URI で特定の MCP リソースを読み取ります | いいえ |
 | `RemoteTrigger` | claude.ai で[クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md)（旧ルーティン）を作成、更新、実行、リストします。`/schedule` コマンドをサポートします。[`RemoteTrigger` 入力リファレンス](https://code.claude.com/docs/ja/agent-sdk/typescript#remotetrigger)は、すべてのアクションと、ツールを削除する組織ポリシーを文書化しています。クラウドスケジュールタスクは claude.ai に存在し、Pro、Max、Ultra、Team、または Enterprise プランが必要です。そのため、このツールは Amazon Bedrock、AWS 上の Claude Platform、Google Cloud の Agent Platform、または Microsoft Foundry からはアクセスできません | いいえ |
+| `REPL` | [Code Mode](https://code.claude.com/docs/ja/code-mode.md) で Claude が書いた JavaScript を実行します。Code Mode がオンの場合にのみ利用できます。そのコード内のツール呼び出しを Claude Code がどのようにチェックするかについては、[権限チェック](https://code.claude.com/docs/ja/code-mode.md#permission-checks)を参照してください | いいえ |
 | `ReportFindings` | コードレビューの検出結果を構造化リストとしてレポートします。検出結果ごとにファイル、概要、失敗シナリオがあり、Claude Code はテキストとして出力する代わりにレンダリングできます。Claude はアクティブなコードレビュー指示がこれを呼び出すように指示する場合に呼び出します。検出結果には、`correctness` や `test-coverage` などのオプションの `category` スラッグを含めることもでき、レンダリングされたリストのファイルの場所の横に表示されます | いいえ |
 | `ScheduleWakeup` | [自分のペースで進む `/loop`](https://code.claude.com/docs/ja/scheduled-tasks#let-claude-choose-the-interval) の次の反復をスケジュールし直します。Claude は各反復の終了時にこれを呼び出して、次の反復をいつ実行するかを 1 分後から 1 時間後の間で選択します。ユーザーが直接呼び出すことはありません。代わりにループを終了するには、Claude はこれを `stop: true` で呼び出します。これは保留中のウェイクアップをキャンセルします。保留中のウェイクアップは[Stop フックの入力](https://code.claude.com/docs/ja/hooks.md#stop-input)の `session_crons` に表示されます | いいえ |
 | `SearchPlugins` | claude.ai のプラグインカタログを検索します。`ListPlugins` と同じセッションで利用できます | いいえ |
@@ -56,7 +57,7 @@ Claude が使用できるツールと、いつ最初に確認するかを制御�
 | `SendMessage` | 別のエージェントにメッセージを送信します。[エージェントチーム](https://code.claude.com/docs/ja/agent-teams.md)チームメイト、[エージェント ID または名前で再開するサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#resume-subagents)、またはこのマシン上またはその外にある他の Claude Code セッションのいずれか。他のセッションへのメッセージングには Claude Code v2.1.224 以降が必要です。[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)は、Claude が到達できるセッション、[メッセージが到着したときの外観](https://code.claude.com/docs/ja/cross-session-messaging.md#what-a-message-looks-like)、および[別のセッションがアイドル状態になったときに Claude が通知を受け取る方法](https://code.claude.com/docs/ja/cross-session-messaging.md#get-a-notice-when-another-session-goes-idle)をカバーしています。Claude はオプションの `summary` 入力を含めることができます。通常は 5～10 語で、Claude Code は 1 行のプレビューとして表示します。Claude が[プレーンテキストメッセージ](https://code.claude.com/docs/ja/cross-session-messaging.md#limitations)で省略した場合、Claude Code はメッセージの最初の行を概要として使用します。Claude Code は 200 文字を超える概要を省略記号で切り詰めます | いいえ |
 | `SendUserFile` | セッションからファイルをオプションのキャプション付きでユーザーに送信します。生成されたレポート、図、スクリーンショット、または構築されたアーティファクトがトランスクリプトで言及されるだけでなく、デバイスに届くようにします。オプションの `display` 入力は表示方法を制御します。`render` はファイルをクライアントにインラインで開き、`attach` はダウンロードカードのみを表示し、設定されていない場合、クライアントはファイルタイプで決定します。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) クライアントが接続されている場合、または[クラウドセッション](https://code.claude.com/docs/ja/claude-code-on-the-web.md)で利用可能です。配信は Anthropic ホスト型インフラストラクチャを通じて実行されるため、このツールは Amazon Bedrock、Google Cloud の Agent Platform、または Microsoft Foundry では利用できません | いいえ |
 | `ShareOnboardingGuide` | `ONBOARDING.md` をアップロードし、チームメイトが Claude Code で開くことができる共有リンクを返します。ガイドが作成された後、`/team-onboarding` から呼び出されます。Team および Enterprise プランの claude.ai サブスクライバーが利用できます | はい |
-| `Skill` | メイン会話内で[スキル](https://code.claude.com/docs/ja/skills.md#control-who-invokes-a-skill)を実行します。`allowed-tools`、`disallowed-tools`、または `hooks` を設定するスキルではプロンプトを表示する場合があります | 一部のスキル |
+| `Skill` | メイン会話内で[スキル](https://code.claude.com/docs/ja/skills.md#control-who-invokes-a-skill)を実行します。`allowed-tools`、`disallowed-tools`、または `hooks` を設定するスキル、および[MCP サーバーからのスキル](https://code.claude.com/docs/ja/mcp.md#approvals-for-mcp-skills)ではプロンプトを表示する場合があります | 一部のスキル |
 | `SubagentHandback` | サブエージェントの最終レポートを、そのサブエージェントの結果を受け取る会話に配信します。[auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)でのみ提供され、Agent ツールがローカルで実行するサブエージェント（[フォーク](https://code.claude.com/docs/ja/sub-agents.md#fork-the-current-conversation)以外）に提供され、ターミナル CLI、IDE 拡張機能、クラウドセッション、および Agent SDK で利用可能です。分類器はレポートが配信される前にレビューします。Claude Code v2.1.271 以降が必要です | いいえ |
 | `SuggestPluginInstall` | 追加できる[推奨プラグインのカード](https://code.claude.com/docs/ja/claude-code-on-the-web.md#plugin-suggestions-in-the-conversation)を表示します。`ListPlugins` と同じセッションで利用できます | いいえ |
 | `SuggestSkills` | 追加できる claude.ai スキルのカードを表示します。`ListPlugins` と同じセッションで利用できます | いいえ |
@@ -150,10 +151,10 @@ Bash ツールは各コマンドを別々のプロセスで実行します。
 
 ### コマンド間で保持されるもの
 
-* Claude がメインセッションで `cd` を実行すると、新しい作業ディレクトリは、プロジェクトディレクトリ内に留まっている限り、または `--add-dir`、`/add-dir`、もしくは設定の `additionalDirectories` で追加した[追加の作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)内に留まっている限り、後続の Bash コマンドに引き継がれます。これには、後続のメッセージに応答して Claude が実行するコマンドが含まれます。
+* メインセッションでは、Claude の `cd` が後続の Bash コマンドに引き継がれるのは、終了コード 0 で終了したフォアグラウンドコマンドからのみです。また、そのコマンドはプロジェクトディレクトリ内、または `--add-dir`、`/add-dir`、もしくは設定の `additionalDirectories` で追加したものなどの[追加の作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)内で終了する必要があります。
+  * デフォルトでは、そのコマンドがこれらのディレクトリの外で終了した場合、Claude Code はプロジェクトディレクトリにリセットし、ツール結果に `Shell cwd was reset to <dir>` を追加します。
+  * この引き継ぎを無効にするには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1` を設定します。
   * サブエージェントセッションは作業ディレクトリの変更を引き継ぎません。
-  * `cd` がこれらのディレクトリの外に出た場合、Claude Code はプロジェクトディレクトリにリセットし、ツール結果に `Shell cwd was reset to <dir>` を追加します。
-  * この引き継ぎを無効にして、すべての Bash コマンドがプロジェクトディレクトリで開始されるようにするには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1` を設定します。
 * 環境変数は保持されません。1 つのコマンドで `export` しても、次のコマンドでは利用できません。
 * Claude Code は非対話シェルを起動し、Zsh の場合は `~/.zshrc`、Bash の場合は `~/.bashrc` をソースして、キャプチャしたエイリアス、関数、シェルオプションを Bash コマンドに適用します。
 
@@ -226,6 +227,7 @@ Claude Code はコマンドの出力をコマンド実行中に作業ファイ�
 バックグラウンドに移動されたコマンドの結果は、何が起こったかを示します。
 
 * タイムアウトが移動をトリガーする場合、結果は明示的に報告します。`Command did not complete within its 120s timeout and was moved to the background`。秒は適用されたタイムアウトに一致し、その後にタスク ID と出力が書き込まれているファイルのパスが続きます。
+* 対話セッションでは、[バックグラウンドサブエージェント](https://code.claude.com/docs/ja/sub-agents.md#run-subagents-in-foreground-or-background)のコマンドは、タイムアウトより前に 3 分経過した時点で移動することがあります。その場合、結果には `Command was moved to the background (ID: <id>) after running for 180s` が含まれます。
 * バックグラウンドに移動されるコマンド内の `cd`、`pushd`、`popd`、または `chdir` は決して引き継がれません。結果は `Session cwd remains <dir>; directory changes made by the backgrounded command do not apply to subsequent commands.` と述べているため、Claude は発生しなかったディレクトリ変更に対して行動しません。
 
 ### Linux と WSL のメモリ制限
@@ -510,9 +512,11 @@ Bash の拒否ルールと併せて PowerShell ツールをオンのままにす
 * 個別の[コマンドフック](https://code.claude.com/docs/ja/hooks.md#command-hook-fields)の `"shell": "powershell"`: そのフックを PowerShell で実行します。フックは PowerShell を直接起動するため、`CLAUDE_CODE_USE_POWERSHELL_TOOL` に関係なく機能します。
 * [スキルフロントマター](https://code.claude.com/docs/ja/skills.md#frontmatter-reference)の `shell: powershell`: `` !`command` `` ブロックを PowerShell で実行します。PowerShell ツールが有効になっている必要があります。
 
-PowerShell コマンドには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR` 環境変数を含め、Bash コマンドと[同じメインセッションの作業ディレクトリリセット動作](#what-persists-between-commands)が適用されます。
+### PowerShell コマンドにおける作業ディレクトリと変数
 
-PowerShell コマンドは、[PowerShell コマンドでの永続化された変数](https://code.claude.com/docs/ja/hooks.md#persisted-variables-in-powershell-commands)に記載されている条件のもとで、フックが `CLAUDE_ENV_FILE` を通じて永続化した変数も受け取ります。Claude Code v2.1.296 以降が必要です。
+デフォルトでは、メインセッションのフォアグラウンドの PowerShell コマンドが[作業ディレクトリ](https://code.claude.com/docs/ja/permissions.md#working-directories)の外で終了した場合、Claude Code はプロジェクトディレクトリにリセットします。コマンドごとにリセットするには、`CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR=1` を設定します。
+
+PowerShell コマンドは、[PowerShell コマンドでの永続化された変数](https://code.claude.com/docs/ja/hooks.md#persisted-variables-in-powershell-commands)に記載されている条件のもとで、フックが `CLAUDE_ENV_FILE` を通じて永続化した変数を受け取ります。Claude Code v2.1.296 以降が必要です。
 
 ### PowerShell での検索と `git diff` からの終了コード 1
 
@@ -688,11 +692,37 @@ Claude は WebFetch を使用して Web ページ上の情報を調べます。U
 | ドメインをブロックする | そのドメインの `WebFetch(domain:...)` ルールを `deny` に追加します |
 | ドメインに対してプロンプトを必須にする | そのドメインの `WebFetch(domain:...)` ルールを `ask` に追加します |
 | WebFetch をオフにする | `WebFetch` を `deny` に追加するか、[`CLAUDE_CODE_DISABLE_WEB_FETCH`](https://code.claude.com/docs/ja/env-vars#variables) を `1` に設定します |
-| 組織全体でこれらのいずれかを行う | ルールを[管理設定](https://code.claude.com/docs/ja/managed-settings.md)に配置します |
 
 サンドボックスの外では、Bash が許可されている場合、Claude は引き続き `curl`、`wget`、その他のツールを使用して任意の URL に到達できます。[ツール固有の権限ルール](https://code.claude.com/docs/ja/permissions.md#tool-specific-permission-rules)を参照してください。
 
-### フェッチでプロンプトが表示される、フェッチが失敗する、または WebFetch がない場合
+`WebFetch` ルールを組織に適用するには、ルールを[管理設定](https://code.claude.com/docs/ja/managed-settings.md)に配置します。
+
+### 予期しない WebFetch のプロンプトや拒否を解決する
+
+フェッチがブロックまたは拒否された場合、あるいは予期しない権限プロンプトが表示された場合やプロンプトがまったく表示されない場合は、最初の列で該当する現象を探してください。
+
+| 気づいた現象 | 対処方法 |
+| :- | :- |
+| 許可したドメインのフェッチが失敗する | URL は [WebFetch ドメイン安全性チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check)にも合格する必要があります。ただし、[`skipWebFetchPreflight`](https://code.claude.com/docs/ja/settings-reference#skipwebfetchpreflight) でチェックをオフにした場合を除きます。[WebFetch domain safety check failed](https://code.claude.com/docs/ja/errors.md#webfetch-domain-safety-check-failed) を参照してください。 |
+| auto モードでフェッチがブロックされ、プロンプトが表示されない | ドメインの許可ルールを追加します。分類器がフェッチをブロックした場合は、ターミナルで `/permissions` を開き、**Recently blocked** タブで[フェッチを承認](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)して、Claude が再試行できるようにすることもできます。 |
+| `claude -p` または Agent SDK でフェッチが拒否される | これらの実行は [Manual モードで開始し](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-non-interactive-run-starts-in)、承認が必要な呼び出しは拒否されます。許可ルールを追加するか、auto モードで開始します。 |
+| 自分の設定ファイルのルールが効果を持たない | 組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定している場合、Claude Code はそのルールを無視します。管理者に管理設定への追加を依頼してください。 |
+| サンドボックスの [`allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains) にドメインを追加した後もプロンプトが表示され続ける | WebFetch はそのリストを読み取らないため、WebFetch 許可ルールを追加します |
+| 許可していないドメインでプロンプトが表示されない | Claude Code は、事前承認済みドキュメンテーションドメインの組み込みセットに対して、また `auto` モードと `bypassPermissions` モードでは、プロンプトをスキップします。それでもプロンプトを必須にするには、そのドメインの `ask` ルールを追加します。サンドボックス化された Bash コマンドは事前承認セットを継承しません。 |
+| claude.ai のアーティファクトリンクで別のプロンプトが表示される | [共有されたアーティファクトを読む](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を参照してください |
+
+### 失敗した WebFetch リクエストを解決する
+
+Claude がページをフェッチできなかったと言う場合は、最初の列で何が起きたかを探してください。
+
+| 気づいた現象 | 対処方法 |
+| :- | :- |
+| クラウドセッションで、ネットワークがドメインをブロックしていると Claude が言う | クラウドセッションでは許可ルールだけでは不十分です。クラウド環境のネットワークアクセスにも[ドメインを追加](https://code.claude.com/docs/ja/cloud-environments.md#allow-specific-domains)します。 |
+| Claude がローカルサーバーやイントラネットサーバーをフェッチできない | WebFetch は [`localhost` を拒否し](https://code.claude.com/docs/ja/errors#webfetch-cannot-fetch-localhost)、ドットを含まないその他のホスト名も拒否します。Bash ツール経由で `curl` を使ってサーバーに到達するよう Claude に依頼します。 |
+| Claude がリダイレクトを報告し、そこで停止する | Claude に新しい URL をフェッチするよう依頼します。リダイレクトによって `www.` の追加または削除以上にホストが変わる場合、WebFetch は新しい URL を返し、ページのコンテンツは返しません。 |
+| ダウンロードが時間切れになったと Claude が言う | ダウンロードは 5 分経過すると失敗します。制限を変更するには、[`CLAUDE_CODE_WEBFETCH_DEADLINE_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。 |
+
+### ページの内容が欠けている、または古い問題を解決する
 
 Claude の返答では、Claude が質問しなかったページ上の内容が省かれることがあります。ターミナルでは、`Ctrl+O` を押すと、Claude が何を質問し、どのような回答を受け取ったかを確認できます。
 
@@ -701,18 +731,15 @@ Claude の返答では、Claude が質問しなかったページ上の内容が
 | ページにあるとわかっている内容について、ページに記載されていないと Claude が言う | Claude にページをもう一度フェッチするよう依頼し、何を探すべきかを伝えます。生のページを取得するには、Bash ツール経由で URL に対して `curl` を実行するよう依頼します。 |
 | Claude が長いページの末尾を省く、またはページの一部が読み取られなかったと言う | Claude にページの次の部分をフェッチするよう依頼します。これには Claude Code v2.1.290 以降が必要です。[`web-fetch` サブエージェント](#web-fetch-subagent)は約 48,000 文字までのページを全文読み取り、Claude が WebFetch を呼び出した場合、WebFetch は最初の 100,000 文字を読み取ります。 |
 | Claude が最近の変更前の状態でページを説明する | WebFetch はページのコピーを 15 分間再利用します。期間を変更するには、[`CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。 |
-| ダウンロードが時間切れになったと Claude が言う | ダウンロードは 5 分経過すると失敗します。制限を変更するには、[`CLAUDE_CODE_WEBFETCH_DEADLINE_MS`](https://code.claude.com/docs/ja/env-vars#variables) を設定します。 |
-| Claude がリダイレクトを報告し、そこで停止する | Claude に新しい URL をフェッチするよう依頼します。リダイレクトによって `www.` の追加または削除以上にホストが変わる場合、WebFetch は新しい URL を返し、ページのコンテンツは返しません。 |
-| Claude がローカルサーバーやイントラネットサーバーをフェッチできない | WebFetch は [`localhost` を拒否し](https://code.claude.com/docs/ja/errors#webfetch-cannot-fetch-localhost)、ドットを含まないその他のホスト名も拒否します。Bash ツール経由で `curl` を使ってサーバーに到達するよう Claude に依頼します。 |
-| クラウドセッションで、ネットワークがドメインをブロックしていると Claude が言う | クラウドセッションでは許可ルールだけでは不十分です。クラウド環境のネットワークアクセスにも[ドメインを追加](https://code.claude.com/docs/ja/cloud-environments.md#allow-specific-domains)します。 |
-| auto モードでフェッチがブロックされ、プロンプトが表示されない | ドメインの許可ルールを追加します。分類器がフェッチをブロックした場合は、ターミナルで `/permissions` を開き、**Recently blocked** タブで[フェッチを承認](https://code.claude.com/docs/ja/auto-mode-config.md#review-denials)して、Claude が再試行できるようにすることもできます。 |
-| `claude -p` または Agent SDK でフェッチが拒否される | これらの実行は [Manual モードで開始し](https://code.claude.com/docs/ja/permission-modes.md#which-mode-a-non-interactive-run-starts-in)、承認が必要な呼び出しは拒否されます。許可ルールを追加するか、auto モードで開始します。 |
-| 許可したドメインのフェッチが失敗する | URL は [WebFetch ドメイン安全性チェック](https://code.claude.com/docs/ja/data-usage.md#webfetch-domain-safety-check)にも合格する必要があります。ただし、[`skipWebFetchPreflight`](https://code.claude.com/docs/ja/settings-reference#skipwebfetchpreflight) でチェックをオフにした場合を除きます。[WebFetch domain safety check failed](https://code.claude.com/docs/ja/errors.md#webfetch-domain-safety-check-failed) を参照してください。 |
-| 自分の設定ファイルのルールが効果を持たない | 組織が [`allowManagedPermissionRulesOnly`](https://code.claude.com/docs/ja/settings-reference#allowmanagedpermissionrulesonly) を設定している場合、Claude Code はそのルールを無視します。管理者に管理設定への追加を依頼してください。 |
-| サンドボックスの [`allowedDomains`](https://code.claude.com/docs/ja/settings-reference#sandbox-network-alloweddomains) にドメインを追加した後もプロンプトが表示され続ける | WebFetch はそのリストを読み取らないため、WebFetch 許可ルールを追加します |
-| 許可していないドメインでプロンプトが表示されない | Claude Code は、事前承認済みドキュメンテーションドメインの組み込みセットに対して、また `auto` モードと `bypassPermissions` モードでは、プロンプトをスキップします。それでもプロンプトを必須にするには、そのドメインの `ask` ルールを追加します。サンドボックス化された Bash コマンドは事前承認セットを継承しません。 |
-| claude.ai のアーティファクトリンクで別のプロンプトが表示される | [共有されたアーティファクトを読む](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を参照してください |
-| Claude がどのページもフェッチできない | セッションで `/status` を実行します。`Organization configuration` 行に `HIPAA` が表示されている場合、WebFetch はオフです。[Claude Code で開発者に表示される内容](https://code.claude.com/docs/ja/hipaa-setup.md#what-developers-see-in-claude-code)を参照してください。`Organization policy` 行でポリシーが読み込まれなかったことが報告され、Web フェッチが名前で示されている場合は、その行に示されている修正に従ってください。WebFetch を許可するポリシーが読み込まれると、再起動なしで WebFetch が再び利用可能になります。 |
+
+### WebFetch が利用できない理由を調べる
+
+Claude がどのページもフェッチできない場合は、セッションで `/status` を実行し、`Organization configuration` 行と `Organization policy` 行を確認します。
+
+* **`Organization configuration` に `HIPAA` が表示されている**: WebFetch はオフです。[Claude Code で開発者に表示される内容](https://code.claude.com/docs/ja/hipaa-setup.md#what-developers-see-in-claude-code)を参照してください。
+* **`Organization policy` でポリシーが読み込まれなかったことが報告され、Web フェッチが名前で示されている**: その行に示されている修正に従ってください。WebFetch を許可するポリシーが読み込まれると、再起動なしで WebFetch が再び利用可能になります。
+
+`/status` にどちらも表示されない場合は、[設定ファイル](https://code.claude.com/docs/ja/settings.md#find-or-create-your-settings-files)の `deny` に `WebFetch` がないか、または `CLAUDE_CODE_DISABLE_WEB_FETCH` が `1` に設定されていないかを確認します。WebFetch を再びオンにするには、ルールを削除するか、変数の設定を解除して新しいセッションを開始します。[管理設定](https://code.claude.com/docs/ja/settings.md#check-what-your-organization-enforces)にあるルールについては、管理者に削除を依頼してください。
 
 ### web-fetch サブエージェント
 
@@ -739,7 +766,7 @@ Claude Code v2.1.287 以降で claude.ai アカウントでサインインして
 
 `WebFetch` [権限ルール](https://code.claude.com/docs/ja/permissions.md#webfetch)は `web-fetch` サブエージェントがフェッチするページに適用され、`WebFetch` に一致する `PreToolUse` および `PostToolUse` [フック](https://code.claude.com/docs/ja/hooks.md)も同様に適用されます。
 
-| 依存しているもの | サブエージェントの場合 | 対処方法 |
+| 現在の設定 | サブエージェントで変わること | 対処方法 |
 | :- | :- | :- |
 | フェッチするページに関する CLAUDE.md の指示 | サブエージェントは、組織の管理 CLAUDE.md を含め、CLAUDE.md ファイルなしで開始します | `WebFetch` 権限ルールでフェッチを制限します |
 | `SubagentStart` または `SubagentStop` フック | このサブエージェントでは、[管理設定](https://code.claude.com/docs/ja/managed-settings.md)で定義されたフックのみが実行されます | その他の設定ファイルでは、`WebFetch` に一致する `PreToolUse` または `PostToolUse` フックを使用します |

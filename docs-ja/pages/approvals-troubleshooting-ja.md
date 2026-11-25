@@ -34,7 +34,6 @@ Claude のコメントの文言を見つけ、その横にある対処を行い�
 | :- | :- |
 | Approvals "did not run on this change" | コメントの指示に従います。原因の 1 つは、ポリシーのルールが対象とするパスへ、またはそのパスからファイルを移動するプルリクエストです。その移動は 2 つのプルリクエストに分けて行います。1 つは新しい名前でファイルを追加し、もう 1 つは古いファイルを削除します |
 | "More than one Claude organization is connected to this GitHub account" | Approvals を実行する Claude 組織の Owner に、[**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-ship) でリポジトリの GitHub 組織の横にある **Connect** をクリックするよう依頼します。その後、コミットをプッシュします |
-| "Claude Approvals can't start in this repository yet" | 組織に利用可能な使用クレジットがないことを Owner に伝えます |
 
 ### Owner に Claude 組織の確認を依頼する
 
@@ -45,6 +44,12 @@ Owner に、Claude 組織について次の各項目を確認するよう依頼�
 | 組織が対象条件を満たしているか | [利用条件](https://code.claude.com/docs/ja/approvals.md#availability) |
 | [Claude GitHub App](https://github.com/apps/claude) がリポジトリにアクセスでき、リンクされているか | [**Organization settings > Git providers**](https://claude.ai/admin-settings/source-control) |
 | ここで Approvals がオフになっていないか | [**Organization settings > Claude Ship**](https://claude.ai/admin-settings/claude-ship) の **Approvals** 列と **Approve** 行 |
+
+### GitHub の IP 許可リストを確認する
+
+GitHub は、組織の IP 許可リストに含まれていないアドレスからの Approvals のリクエストを拒否するため、チェックもコメントも残らないことがあります。
+
+リポジトリの GitHub 組織または Enterprise のオーナーに、IP アドレスによるアクセス制限を行っているかどうかを確認します。制限している場合は、[GitHub の許可リストとファイアウォール](https://code.claude.com/docs/ja/network-config.md#github-allow-lists-and-firewalls)の説明に従って、Anthropic のすべての送信元アドレスを許可するようオーナーに依頼します。アドレスが許可されたら、プルリクエストにコミットをプッシュします。
 
 ## レビュースレッドを解決しても Approvals が合格しない
 
@@ -79,12 +84,16 @@ GitHub のマージボックスに表示されているルールを確認しま�
 | "no key of this name is read at this place" | キーのスペルと階層を、[トップレベルキー](https://code.claude.com/docs/ja/approvals-policy.md#top-level-keys)と[ルールキー](https://code.claude.com/docs/ja/approvals-policy.md#rule-keys)と照らし合わせて確認します |
 | "this names no fact and no usable classifier" | 名前を [facts](https://code.claude.com/docs/ja/approvals-policy.md#if) と照らし合わせて確認します。`repo/<name>` の場合は、ポリシーファイルと同じ場所またはその上位のディレクトリにある `.claude/classifiers/<name>/def.yml` が読み込まれることを確認します |
 | "a condition has no NOT" | 反対の演算子を記述します |
+| "a login goes in single quotes inside a condition" | その語がログイン名であれば、`"pr/opened_by = 'ana-acme'"` のようにシングルクォートで囲みます。ボットの場合は、`"pr/opened_by = bot:dependabot"` のように、`bot:` とその名前を引用符なしで記述します |
 | "no local has this name" | このファイルまたはその上位のポリシーファイルで local を定義します。ログイン名やチームは `@` を付けずに記述します |
 | "this is not YAML" | メッセージが示す行の付近で、閉じられていない引用符や括弧、またはタブがないか確認します。インデントにはスペースを使用します |
 
 ## 分類器が回答を返さない、またはその定義が拒否される
 
-各[分類器](https://code.claude.com/docs/ja/approvals-classifiers.md)の実行状態と回答がない理由を確認するには、プルリクエスト上の Claude のコメントにある **Classifier results** を開きます。実行が予算に達した場合は、プルリクエストを分割するか、[上限](https://code.claude.com/docs/ja/approvals-classifiers.md#budget)を下回っている `time` または `cost` を引き上げます。
+各[分類器](https://code.claude.com/docs/ja/approvals-classifiers.md)の実行状態と回答がない理由を確認するには、プルリクエスト上の Claude のコメントにある **Classifier results** を開きます。
+
+* **実行が予算に達した場合**：プルリクエストを分割するか、[上限](https://code.claude.com/docs/ja/approvals-classifiers.md#budget)を下回っている `time` または `cost` を引き上げます
+* **1 回の実行で処理できる量を超える読み取り対象があった場合**（大きな差分など）：より小さなプルリクエストを試します
 
 次に、**Claude Approvals** チェックのタイトルをここで探します。
 

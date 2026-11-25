@@ -310,7 +310,7 @@ claude --permission-mode plan
 
 計画の準備ができると、Claude はそれを提示し、どのように進めるかを尋ねます。そのプロンプトから次の選択肢を選べます。
 
-* **Yes, and use auto mode**: 承認して [auto モード](#eliminate-prompts-with-auto-mode)で開始します。組織が無効にしているなどの理由で auto モードが[セッションで利用できない](#eliminate-prompts-with-auto-mode)場合、この選択肢は **Yes, auto-accept edits** と表示されます。bypass permissions を有効にしてセッションを開始した場合は、代わりに **Yes, and switch to BYPASS PERMISSIONS (no further prompts) for this session** と表示されます。
+* **Yes, and use auto mode**: 承認して [auto モード](#eliminate-prompts-with-auto-mode)で開始します。auto モードが[セッションで利用できない](#eliminate-prompts-with-auto-mode)場合、この選択肢は **Yes, auto-accept edits** と表示されます。bypass permissions を有効にしてセッションを開始した場合は、代わりに **Yes, and switch to BYPASS PERMISSIONS (no further prompts) for this session** と表示されます。
 * **Yes, manually approve edits**: 承認し、各編集を個別にレビューします。
 * **No, keep planning**: plan モードにとどまり、変更してほしい内容を Claude に伝えます。
 
@@ -400,7 +400,7 @@ auto モードでは、Claude Code は独自の分類器リクエストを送信
 | Claude Sonnet 4.6 で実行されている | Sonnet 4.6 |
 | [`ANTHROPIC_DEFAULT_SONNET_MODEL`](https://code.claude.com/docs/ja/model-config#environment-variables) が設定されている | その値。ただし値が Claude Sonnet 5.5 または Claude Opus 5.5 の場合は Sonnet 5 |
 
-Sonnet 5 または `ANTHROPIC_DEFAULT_SONNET_MODEL` のモデルがプロバイダーから利用できない場合、または組織の[モデルポリシー](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)で除外されている場合、Claude Code はフォールバックモデルを使用します。これはセッションのモデルであり、[Fable セッション](https://code.claude.com/docs/ja/model-config.md#work-with-fable)では Opus モデルです。
+Sonnet 5 または `ANTHROPIC_DEFAULT_SONNET_MODEL` で指定したモデルがプロバイダーから利用できない場合、または[モデルポリシー](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)によって除外されている場合、Claude Code はフォールバックモデルを使用します。フォールバックモデルはセッションのモデルであり、[Fable セッション](https://code.claude.com/docs/ja/model-config.md#work-with-fable)では Opus モデルです。
 
 ### 分類器モデルを選択する
 
@@ -419,7 +419,7 @@ Claude Code v2.1.302 以降では、[`CLAUDE_CODE_AUTO_MODE_MODEL`](https://code
 | 状況 | 動作 | 対処方法 |
 | - | - | - |
 | [デバッグログ](#classifier-model-check)に Anthropic が設定した分類器モデルが報告されている | そのモデルがレビューします | 不要 |
-| Claude Opus 5、Sonnet 5.5、Opus 5.5、または組織の[モデルポリシー](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)で除外されているモデルを設定した | [デフォルトの分類器モデル](#default-classifier-model)がレビューします | 別のモデルを設定します |
+| Claude Opus 5、Sonnet 5.5、Opus 5.5、または[モデルポリシー](https://code.claude.com/docs/ja/model-config.md#restrict-model-selection)で除外されているモデルを設定した | [デフォルトの分類器モデル](#default-classifier-model)がレビューする | 別のモデルを設定する |
 | プロバイダーがそのモデルを提供できない | 分類器のチェックが失敗するため、Claude Code は[チェック対象の各アクションを拒否します](https://code.claude.com/docs/ja/errors.md#auto-mode-cannot-determine-the-safety-of-an-action) | プロバイダーが提供するモデルを設定するか、変数を削除します |
 | セッションで `/status` に [`Auto mode server`](#server-side-classifier-review) が `Enabled` と表示されている | 指定したモデルを使わずにサーバーがレビューします | 不要 |
 
@@ -679,7 +679,7 @@ claude --permission-mode dontAsk
 
 `bypassPermissions` モードは権限プロンプトとセーフティチェックを無効にするため、[保護されたパス](#protected-paths)への書き込みを含むツール呼び出しが即座に実行されます。
 
-`bypassPermissions` モードでも、[どのモードでも自動承認されないアクション](#actions-no-mode-auto-approves)はそれぞれ、プロンプトが表示されるか拒否されます。ただし、[危険な `rm` コマンドに対するプロンプトはオフにできます](#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode)。[別の組織の公開アーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取るにはユーザーの承認が必要ですが、このモードでは承認を求めないため、Claude はそれを読み取れません。[PowerShell の Remove-Item](#remove-item-in-powershell) の拒否もこのモードで適用されます。
+`bypassPermissions` モードでも、[どのモードでも自動承認されないアクション](#actions-no-mode-auto-approves)はそれぞれ、プロンプトが表示されるか拒否されます。ただし、[危険な `rm` コマンドに対するプロンプトはオフにできます](#turn-off-the-critical-path-removal-prompt-in-bypasspermissions-mode)。Artifact ツールは、この会話で承認していない[別の組織の公開アーティファクト](https://code.claude.com/docs/ja/artifacts.md#read-an-artifact-shared-with-you)を読み取れません。[PowerShell の Remove-Item](#remove-item-in-powershell) の拒否もこのモードで適用されます。
 
 このモードでは、および権限バイパスが利用可能なインタラクティブターミナルプランモードセッションでは、2 つの[クロスセッションメッセージング](https://code.claude.com/docs/ja/cross-session-messaging.md)セーフガードが引き続き適用されます。
 
@@ -704,7 +704,7 @@ claude --permission-mode bypassPermissions
 
 このモードを有効にして対話セッションを初めて開始すると、Claude Code は権限チェックなしで実行されたアクションの責任を受け入れるよう求める警告ダイアログを表示します。
 
-* **受け入れた場合**: Claude Code は `skipDangerousModePermissionPrompt` を `~/.claude/settings.json` の `true` に設定するため、後のセッションではダイアログをスキップします。ダイアログを再度表示するには、そのファイルからキーを削除するか、`false` に設定してください。[`skipDangerousModePermissionPrompt` リファレンス](https://code.claude.com/docs/ja/settings-reference#skipdangerousmodepermissionprompt)には、ユーザーまたは組織が設定できる他の設定ファイルが記載されています。
+* **受け入れた場合**: Claude Code は `~/.claude/settings.json` で `skipDangerousModePermissionPrompt` を `true` に設定するため、後のセッションではダイアログをスキップします。ダイアログを再度表示するには、そのファイルからキーを削除するか、`false` に設定してください。それでもダイアログが表示されない場合は、[`skipDangerousModePermissionPrompt` リファレンス](https://code.claude.com/docs/ja/settings-reference#skipdangerousmodepermissionprompt)に記載されている他の設定ファイルを確認してください。
 * **拒否した場合**: Claude Code は終了します。
 
 [`--setting-sources`](https://code.claude.com/docs/ja/cli-reference#cli-flags) を `user` なしで渡すと、以前に受け入れていてもダイアログが再び表示されることがあります。スキップするには、`--setting-sources user,project` のように `user` を追加してください。
@@ -760,7 +760,7 @@ Bypass permissions was requested at launch and ignored · if that was you, ~/.cl
 | モード | 保護されたパスへの書き込み |
 | :- | :- |
 | `default`、`acceptEdits` | プロンプト表示 |
-| `plan` | [bypass permissions](#skip-all-checks-with-bypasspermissions-mode)が利用可能なインタラクティブターミナルセッションで許可。そうでない場合、[auto モード](#eliminate-prompts-with-auto-mode)が計画中に利用可能な場合は分類器にルーティング。利用できない場合はプロンプト表示 |
+| `plan` | [bypass permissions](#skip-all-checks-with-bypasspermissions-mode) が利用可能な対話型ターミナルセッションでは許可できます。それ以外の場合、計画中に [auto モード](#eliminate-prompts-with-auto-mode) が利用可能であれば分類器に回され、利用できない場合はプロンプトが表示されます |
 | `auto` | 分類器にルーティングされ、分類器が判断 |
 | `dontAsk` | 拒否 |
 | `bypassPermissions` | 許可 |

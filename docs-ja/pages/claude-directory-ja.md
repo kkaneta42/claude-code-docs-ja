@@ -6,7 +6,7 @@
 
 > Claude Code が CLAUDE.md、settings.json、hooks、skills、commands、subagents、workflows、rules、auto memory を読み込む場所。プロジェクト内の .claude ディレクトリとホームディレクトリの ~/.claude を探索します。
 
-Claude Code は、プロジェクトディレクトリとホームディレクトリの `~/.claude` から、指示、設定、skills、subagents、メモリを読み込みます。プロジェクトファイルを git にコミットしてチームと共有します。`~/.claude` 内のファイルは、すべてのプロジェクトに適用される個人設定です。
+Claude Code は、プロジェクトディレクトリとホームディレクトリの `~/.claude` から、指示、設定、スキル、サブエージェント、メモリを読み込みます。プロジェクトファイルを共有するには git にコミットします。`~/.claude` 内のファイルは、すべてのプロジェクトに適用される個人設定です。
 
 Windows では、`~/.claude` は `%USERPROFILE%\.claude` に解決されます。[`CLAUDE_CONFIG_DIR`](https://code.claude.com/docs/ja/env-vars) を設定した場合、このページのすべての `~/.claude` パスはそのディレクトリの下に存在します。同じことが `.claude.json` にも当てはまります。このファイルは、設定しない場合は `~/.claude.json` に配置されます。
 
@@ -38,7 +38,7 @@ Configuration files
 
 **`.claude/`**
 
-プロジェクトの設定、ルール、スキル、サブエージェント、その他の設定です。git を使用している場合は、チームで共有できるようにこれらのファイルのほとんどをコミットし、`settings.local.json` などの個人用ファイルはコミットに含めないようにします。
+プロジェクトの設定、ルール、スキル、サブエージェント、その他の設定です。Git を使用している場合は、これらのファイルのほとんどをコミットして共有し、`settings.local.json` などの個人用ファイルはコミットに含めないようにしてください。
 
 **`.claude/settings.json`**
 
@@ -78,7 +78,7 @@ Claude Code が直接適用する設定です。権限は Claude が使用でき
 
 **When it loads**: ターミナルでの起動時に読み込まれるため、スタイルを追加または編集した後は Claude Code を再起動してください
 
-各 Markdown ファイルは、Claude の作業方法を調整する指示のセットである[出力スタイル](https://code.claude.com/docs/ja/output-styles.md#how-output-styles-work)を定義します。全員が使用するレビューモードのように、チームで共有するスタイルはここに配置します。スタイルの選択方法については [`~/.claude/output-styles/`](#ce-global-output-styles) を参照してください。
+各 Markdown ファイルは、Claude の作業方法を調整する指示のセットである[出力スタイル](https://code.claude.com/docs/ja/output-styles.md#how-output-styles-work)を定義します。レビューモードなどのスタイルをプロジェクトの全員と共有するには、ここにコミットします。スタイルの選択方法については [`~/.claude/output-styles/`](#ce-global-output-styles) を参照してください。
 
 **`.claude/agents/`**
 

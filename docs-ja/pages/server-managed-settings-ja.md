@@ -12,7 +12,7 @@
 >
 > サーバー管理設定は [Claude for Teams](https://claude.com/pricing?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_teams#team-&-enterprise) および [Claude for Enterprise](https://anthropic.com/contact-sales?utm_source=claude_code\&utm_medium=docs\&utm_content=server_settings_enterprise) の顧客向けに利用可能です。
 >
-> claude.ai の **Organization settings > Desktop 3P** でプロバイダーまたはゲートウェイを設定している場合は、代わりに [Enterprise Admin Console ガイド](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code)に従ってください。
+> claude.ai の [**Organization settings > Desktop 3P**](https://claude.ai/admin-settings/desktop-deployment) でプロバイダーまたはゲートウェイを設定している場合は、代わりに [Enterprise Admin Console ガイド](https://claude.com/docs/third-party/claude-desktop/admin-console-claude-code)に従ってください。
 
 ## 要件
 

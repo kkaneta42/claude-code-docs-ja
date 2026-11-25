@@ -208,7 +208,7 @@ Claude がリクエストを断った場合など、有効な構造化出力な�
 claude -p "Explain recursion" --output-format stream-json --verbose --include-partial-messages
 ```
 
-ストリームの最後の行は、最終応答テキスト、コスト、セッションメタデータを含む `result` メッセージです。
+各 [`result` メッセージ](https://code.claude.com/docs/ja/agent-sdk/typescript#sdkresultmessage)は `type` で見つけてください。タスク通知などのメッセージが結果の後に続き、別のターンを開始する場合があるためです。成功した `result` メッセージには、最終応答テキスト（ある場合）、累積のコスト合計、セッションメタデータが含まれます。
 
 コンシューマーがストリームをゆっくり読む場合、Claude Code はキューに入った出力が排出されるまで待機してから終了します。待機時間はまだキューに残っている量に応じて伸び、上限は 30 秒です。
 
@@ -377,6 +377,7 @@ claude -p "Look at my staged changes and create an appropriate commit" \
 > `-p` モードでは、コマンドのサポート状況が異なります。
 >
 > * ユーザーが呼び出す[スキル](https://code.claude.com/docs/ja/skills.md)とカスタムコマンドは機能します。プロンプト文字列に `/skill-name` を含めると、Claude Code は実行前にそれを展開します。
+> * [MCP サーバーのスキル](https://code.claude.com/docs/ja/mcp.md#requirements-for-skills-from-mcp-servers)はサポートされていません。
 > * ターミナルインターフェースでのみ動作する `/login` などの組み込みコマンドは利用できません。
 > * `/model`、`/effort`、`/fast`、`/color`、`/rename` は値を引数として受け付け（例：`/model sonnet`）、`/mcp` は引数なしでサーバーステータスのテキスト概要を出力します。これらの形式は各コマンドの[利用可能性に関する注記](https://code.claude.com/docs/ja/commands.md#all-commands)に従います。
 > * 設定を変更するには、`/config` に `key=value` を渡します（例：`/config verbose=true`）。

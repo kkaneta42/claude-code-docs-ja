@@ -26,7 +26,12 @@ Approvals を使うと、変更を承認する必要がある人数を設定で�
 
 Approvals は、評価するプルリクエストに **Claude Approvals** という名前のチェックを追加します。チェックのタイトルには、まだ何が必要かが示されます（例：**Waiting on human review from any person (1/2)**）。タイトルが **(observe mode)** で始まる場合は、チェックの実行時にポリシーが適用されていなかったことを意味します。[observe モード](#set-up-claude-approvals)では、チェックはポリシーがどのように判定するかを示します。
 
-Claude は理由を記載したコメントも投稿します。ポリシーが許可している場合、Claude は承認レビューを投稿できます。よく表示されるタイトルとそれぞれへの対処方法については、[承認ステータスと次に行うことを確認する](https://code.claude.com/docs/ja/approvals-pull-requests.md#find-your-approval-status-and-what-to-do-next)を参照してください。プルリクエストにチェックがない場合は、[Claude Approvals のチェックが表示されない](https://code.claude.com/docs/ja/approvals-troubleshooting.md#no-claude-approvals-check-appeared)を参照してください。
+Claude は理由を記載したコメントも投稿します。ポリシーが許可している場合、Claude は承認レビューを投稿できます。
+
+* **Claude GitHub App がチェックを報告する github.com のリポジトリの場合**：そのレビューは `claude[bot]` から投稿されます
+* **`claude[bot]` が作成したプルリクエストの場合**：[Claude Approvals GitHub App](https://code.claude.com/docs/ja/approvals-pull-requests.md#pull-requests-that-claude-opens) を追加すると、そのレビューは `claude-approvals[bot]` から投稿されます
+
+よく表示されるタイトルとそれぞれへの対処方法については、[承認ステータスと次に行うことを確認する](https://code.claude.com/docs/ja/approvals-pull-requests.md#find-your-approval-status-and-what-to-do-next)を参照してください。プルリクエストにチェックがない場合は、[Claude Approvals のチェックが表示されない](https://code.claude.com/docs/ja/approvals-troubleshooting.md#no-claude-approvals-check-appeared)を参照してください。
 
 ## ポリシーの例
 

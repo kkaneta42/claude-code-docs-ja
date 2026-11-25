@@ -88,7 +88,9 @@ v2.1.238 より前では、Claude Code はキャッシュ TTL をチェックせ
 
 Fable モデル、Opus 5.5、Sonnet 5.5、および Opus 5 の [自動モデルフォールバック](https://code.claude.com/docs/ja/model-config.md#automatic-model-fallback) もモデルスイッチです。安全分類器がフォールバックモデルを持つカテゴリーでリクエストを警告すると、Claude Code はそのモデルでリクエストを再実行し、セッションはそこで続行されます。
 
-スキルまたはコマンドのフロントマターがセッションの現在のモデル以外の [`model`](https://code.claude.com/docs/ja/skills#frontmatter-reference) を指定する場合、そのターンもモデルスイッチです。次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。セッションモデルは次のプロンプトで再開されます。`context: fork` スキルは、代わりに [フォークされたサブエージェントのモデル](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent) を設定します。
+#### モデルを設定するスキルとコマンド
+
+スキルまたはコマンドの [`model` の値が適用され](https://code.claude.com/docs/ja/skills#frontmatter-reference)、それがセッションの現在のモデルと異なる場合、そのターンはモデルスイッチです。次のリクエストはキャッシュヒットなしで会話履歴全体を読み込みます。セッションモデルは次のプロンプトで再開されます。`context: fork` を使用すると、この値は代わりに [独自のキャッシュ](#subagents-and-the-cache) を持つ [サブエージェント](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent) に渡されます。
 
 ### effort レベルの変更
 
@@ -240,7 +242,7 @@ v2.1.251 より前では、セッション中のスタイル切り替えはキ�
 
 ### スキルとコマンドを呼び出す
 
-[スキル](https://code.claude.com/docs/ja/skills.md)と[コマンド](https://code.claude.com/docs/ja/commands.md)は、呼び出しポイントでユーザーメッセージとして指示を挿入します。会話内の以前のものは何も変わりません。frontmatter で `model` という名前を付けたスキルまたはコマンドは、そのターンの[モデル切り替え](#switching-models)になる可能性があります。
+[スキル](https://code.claude.com/docs/ja/skills.md)と[コマンド](https://code.claude.com/docs/ja/commands.md)は、呼び出しポイントでユーザーメッセージとして指示を挿入します。会話内の以前のものは何も変わりません。[`model` の値が適用される](https://code.claude.com/docs/ja/skills#frontmatter-reference)スキルまたはコマンドは、そのターンの[モデル切り替え](#switching-models)になる可能性があります。
 
 ### `/recap` を実行する
 

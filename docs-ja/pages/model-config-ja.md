@@ -252,7 +252,7 @@ Claude Code が新しいセッションをこの変数のモデルで開始す�
 `/model` でモデルを選択したのに次のセッションが別のモデルで開始される場合、通常は次のような原因があります。
 
 * **1 つのセッションのみを対象に選択した。** ピッカーで `s` を押す、`--model` で起動する、非対話モードで `/model` を実行する、のいずれも現在のセッションにのみ適用され、保存されたデフォルトは変更されません。
-* **より優先順位の高いものがモデルを設定している。** プロジェクト設定や管理設定にある `model` の値、シェルの `ANTHROPIC_MODEL`、または管理者がユーザーの選択を上書きするように設定した[組織のデフォルト](#organization-default-model)は、新しいセッションを起動するたびに再適用されます。`/model` での選択は保存されていますが、優先順位で負けています。プロジェクト設定または管理設定がモデルを設定している場合、起動時のヘッダーにそのファイル名が表示されます。
+* **より優先順位の高いものがモデルを設定している。** プロジェクト設定や管理設定にある `model` の値、シェルの `ANTHROPIC_MODEL`、またはユーザーの選択を上書きするように設定された[組織のデフォルト](#organization-default-model)は、新しいセッションを起動するたびに再適用されます。`/model` での選択は保存されていますが、優先順位で負けています。プロジェクト設定または管理設定がモデルを設定している場合、起動時のヘッダーにそのファイル名が表示されます。
 * **Claude Code が選択を保存できなかった。** `/model` は `~/.claude/settings.json` に `model` を書き込みます。別のツールがそのファイルを生成している、または読み取り専用のコピーにリンクしているなどの理由でそのファイルに書き込めない場合、選択したモデルはそのセッションの間だけ有効で、次回の起動時には古い値が読み込まれます。ファイルを生成しているツールで `model` を設定するか、ファイルを書き込み可能にしてください。[Claude Code で行った変更が新しいセッションで失われる](https://code.claude.com/docs/ja/settings.md#a-change-you-made-in-claude-code-is-lost-in-new-sessions)を参照してください。
 * **セッションを再開した。** `claude --resume` または `--continue` で再開したセッションは、通常、現在のデフォルトではなく[使用していたモデルを維持](#which-model-a-resumed-session-uses)します。
 
@@ -742,7 +742,7 @@ Opus 5.5 は[デフォルトで `medium`](#adjust-effort-level) であり、Opus
 新しいターンを開始するときに単語が虹色にならない場合は、次のいずれかを試してください。
 
 * 引用符、括弧、パス、コマンドなどの外側に、`/` で始まらないプロンプト内で入力し直す
-* `CLAUDE_CODE_EFFORT_LEVEL` が `xhigh` 未満に設定されている場合は設定を解除する。または、自分の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を `xhigh` 以上に引き上げるか、組織の管理者に[組織の制限](#organization-effort-limits)を引き上げるよう依頼する
+* `CLAUDE_CODE_EFFORT_LEVEL` が `xhigh` 未満に設定されている場合は設定を解除するか、自分の [`maxEffortLevel`](https://code.claude.com/docs/ja/settings-reference#maxeffortlevel) を `xhigh` 以上に引き上げる。[effort 制限](#organization-effort-limits)がある組織に所属している場合は、組織の管理者に引き上げを依頼する
 * セッション内で `/model` を実行し、Opus 5.5、Sonnet 5.5、Haiku 5.5、Fable 5.2、Fable 5.1 のいずれかのモデルに切り替える。Amazon Bedrock、Google Cloud's Agent Platform、[Claude apps gateway](https://code.claude.com/docs/ja/claude-apps-gateway) 上など、この単語でターンを引き上げられない場合は、代わりに [effort レベルを設定](#set-the-effort-level)してください
 
 コンテキスト内の指示も含めてこのキーワードをオフにするには、シェルまたは[設定ファイル](https://code.claude.com/docs/ja/env-vars.md#in-settings-files)で `CLAUDE_CODE_DISABLE_ULTRATHINK` を `1` に設定します。Claude Code v2.1.316 以降が必要です。

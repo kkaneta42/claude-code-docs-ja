@@ -206,11 +206,11 @@ Claude Code を使用できるいくつかの方法を紹介します：
 >
 > セッションは単一のサーフェスに限定されません。コンテキストが変わるにつれて、環境間で作業を移動します：
 >
-> * デスクから離れて、電話または [リモートコントロール](https://code.claude.com/docs/ja/remote-control.md) を使用した任意のブラウザから作業を続けます
+> * デスクから離れて、[Remote Control](https://code.claude.com/docs/ja/remote-control.md) を使用して電話または任意のブラウザから作業を続けます
 > * [Dispatch](https://code.claude.com/docs/ja/desktop.md#sessions-from-dispatch) にメッセージを送信して、電話からタスクを送信し、作成されたデスクトップセッションを開きます
 > * [Web](https://code.claude.com/docs/ja/claude-code-on-the-web.md) または [Claude モバイルアプリ](https://code.claude.com/docs/ja/mobile.md) で長時間実行されるタスクを開始し、`claude --teleport` でターミナルにプルします。Teleport には claude.ai サブスクリプションが必要です。
 > * `/desktop` を実行して、現在のターミナルセッションを [デスクトップアプリ](https://code.claude.com/docs/ja/desktop.md) に続行し、差分を視覚的に確認できます。`/desktop` ハンドオフには claude.ai サブスクリプションが必要です。macOS と x64 Windows で利用可能です。
-> * チームチャットからタスクをルーティング：[Slack](https://code.claude.com/docs/ja/slack.md) で `@Claude` にメンションしてバグレポートを送信し、プルリクエストを取得します
+> * Team プランと Enterprise プランでは、チームチャットからタスクをルーティング：[Slack](https://claude.com/docs/claude-tag/overview) で `@Claude` にメンションしてバグレポートを送信し、プルリクエストを取得します
 
 ## Claude Code をどこでも使用する
 
@@ -226,7 +226,7 @@ Claude Code を使用できるいくつかの方法を紹介します：
 | 定期的なスケジュールで Claude を実行する | [クラウドスケジュールタスク](https://code.claude.com/docs/ja/routines.md) または [Desktop スケジュールタスク](https://code.claude.com/docs/ja/desktop-scheduled-tasks.md) |
 | PR レビューと問題トリアージを自動化する | [GitHub Actions](https://code.claude.com/docs/ja/github-actions.md) または [GitLab CI/CD](https://code.claude.com/docs/ja/gitlab-ci-cd.md) |
 | すべての PR で自動コードレビューを取得する | [GitHub Code Review](https://code.claude.com/docs/ja/code-review.md) |
-| Slack からプルリクエストへバグレポートをルーティングする | [Slack](https://code.claude.com/docs/ja/slack.md) |
+| Slack からプルリクエストへバグレポートをルーティングする | [Claude Tag](https://claude.com/docs/claude-tag/overview)（Team および Enterprise プラン） |
 | ライブ Web アプリケーションをデバッグする | [Chrome](https://code.claude.com/docs/ja/chrome.md) |
 | 独自のワークフロー用のカスタムエージェントを構築する | [Agent SDK](https://code.claude.com/docs/ja/agent-sdk/overview.md) |
 

@@ -199,7 +199,7 @@ input_match: '"skill"\s*:\s*"(?:[\w-]+:)?your-skill-name"'
 
 ### prompt.md で実行制限とツールを設定する
 
-`prompt.md` フロントマターでケースの `max_turns`、`timeout_seconds`、`model`、`tags`、および使用可能な `allowed_tools` を設定します。[prompt.md フロントマター](#prompt-md-fields) リファレンスはすべてのフィールドとそのデフォルトをリストします。
+`prompt.md` フロントマターでケースの `max_turns`、`timeout_seconds`、`model`、`tags`、`allowed_tools` を設定します。その他のフィールドとデフォルトについては、[prompt.md フロントマター](#prompt-md-fields) リファレンスを参照してください。
 
 Claude は本文を正確に作成したとおりに受け取ります。その中の `@path` メンションはファイル添付に展開されないため、Claude がファイルを読む必要がある場合は、`allowed_tools` でツールを付与します。
 
@@ -338,19 +338,25 @@ Created issue #4821: {{input.title}}
 
 `--case <glob>` を追加してケース名でフィルタリングし、`--tag <tag>` を使用して指定されたタグのいずれかを持つケースを保持します。
 
-ターゲットを `--tag`、`--allow-tools`、`--json` の前に配置します。最初の 2 つはリストを取り、`--json` はオプションのパスを取るため、それぞれは後に続くターゲットを独自の値として読み取ります。
+ターゲットを `--tag`、`--allow-tools`、`--disallow-tools`、`--json` の前に配置します。最初の 3 つはリストを取り、`--json` はオプションのパスを取るため、それぞれは後に続くターゲットを独自の値として読み取ります。
 
 ### ツールを付与する
 
 実行は権限を求めるために停止することはありません。付与しなかった許可が必要な組み込みツール（`Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` など）はセッションから削除されるため、Claude はそれらをまったく呼び出すことができません。
 
-実行は、ケースが `allowed_tools` にリストする読み取り専用ツール（`Read`、`Glob`、`Grep`、`NotebookRead`、`Skill`、`AskUserQuestion`、`Agent`、`TodoWrite`、およびタスクツール `TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate`、`TaskStop`）と、`--allow-tools` で付与するもののみを許可します。その付与は実行内のすべてのケースに適用されます。ケースが `Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` を使用できるようにするには、自分で付与します。
+実行は、ケースが `allowed_tools` にリストする読み取り専用ツール（`Read`、`Glob`、`Grep`、`NotebookRead`、`Skill`、`AskUserQuestion`、`Agent`、`TodoWrite`、およびタスクツール `TaskCreate`、`TaskGet`、`TaskList`、`TaskUpdate`、`TaskStop`）と、`--allow-tools` で付与するものを事前承認します。その付与は実行内のすべてのケースに適用されます。
+
+ケースが `Bash`、`Write`、`Edit`、`WebFetch`、`WebSearch` を使用できるようにするには、`--allow-tools` で付与します。
 
 ```bash theme={null}
 claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 ```
 
 ケースが付与しなかったツールを要求した場合、進捗出力は `not granted` としてリストします。[モックされた](#mock-mcp-servers) MCP サーバー上のツールは許可が不要です。実際のプラグイン MCP サーバー上のツールは、サーバーが開始されている必要があります（`--allow-real-servers` または `--mocks off` で）、および `--allow-tools "mcp__plugin_my-plugin_github__*"` などの名前による付与。プラグインの MCP ツールは `mcp__plugin_<plugin>_<server>__<tool>` という名前です。
+
+#### 別のパスからの読み取りを事前承認する
+
+`/data` などのフォルダ配下の読み取りを事前承認するには、先頭に `//` を付けた [`Read` ルール](https://code.claude.com/docs/ja/permissions#read-and-edit)を付与します（例：`--allow-tools "Read(//data/**)"`）。ネイティブ Windows では、`C:\data` に対する同じ付与は `Read(//c/data/**)` です。`Read`、`Glob`、`Grep` を単独で列挙しても、マシン上のすべてのパスが事前承認されるわけではありません。
 
 #### シェルの付与にはサンドボックスが必要
 
@@ -367,6 +373,20 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 
 その設定をマシンに対して変更できるかどうかを管理者に確認するか、その実行からシェルの付与を削除してください。
 
+### 実行から組み込みツールを削除する
+
+すべてのケースから組み込みツールを削除するには、その[正確な名前](https://code.claude.com/docs/ja/tools-reference.md)を `--disallow-tools` に渡します。1 つのケースに対しては、そのケースの [`disallowed_tools`](#prompt-md-fields) フィールドに名前を列挙します。Claude Code v2.1.299 以降が必要です。
+
+`allowed_tools` から `Agent` を省略するだけでは、Claude は引き続きそれを呼び出せます。
+
+すべてのケースから `Agent` と `TaskStop` を削除するには、シェルで次を実行します。
+
+```bash theme={null}
+claude plugin eval . --disallow-tools Agent TaskStop
+```
+
+出力には、`Removed from Claude's tools in every case` の後に両方のツールが表示されます。
+
 ### コマンドオプション
 
 この表は、実行数、モデル、スコアリング、コスト、ツール付与、モック、出力のオプションをカバーしています。`claude plugin eval --help` を実行して完全なリストを確認します。これには `--case`、`--tag`、`--eval-dir`、`--no-scaffold`、`--report`、`--verbose` も含まれます。
@@ -381,6 +401,7 @@ claude plugin eval . --allow-tools Write Edit "Bash(npm test *)"
 | `--threshold <0..1>` | `1.0` | ケースが with-arm スコアがこれ以上の場合に合格します。これ以下のケースはコマンドを終了 1 にします。 |
 | `--max-cost-usd <usd>` | 上限なし | 実行の定価コスト見積もりの上限（プラン使用量ではなく）。各実行開始前にチェックされます。使用後、さらに何も開始されません。既に開始された実行は完了するため、支出はそれらの実行の分だけ上限を超える可能性があります。未開始の実行が残っている場合、コマンドは部分的な結果で終了 2 になります。 |
 | `--allow-tools <tools...>` | なし | 読み取り専用セット以上のツールを付与します。[ツールを付与する](#grant-tools) を参照してください。 |
+| `--disallow-tools <tools...>` | なし | すべてのケースから組み込みツールを削除します。[実行から組み込みツールを削除する](#disallow-tools) を参照してください。 |
 | `--scaffold` | オフ | 各ケースの [`scaffold_script`](#add-setup-or-history-with-case-yaml) を実行します。 |
 | `--trust-plugin` | オフ | 自分で実行するコードとスイートを持つプラグインの最初の実行信頼プロンプトをスキップします。CI でジョブがプロンプトで拒否されたり待機したりしないようにそれを渡します。[実行がアクセスできるもの](#security) を参照してください。 |
 | `--mocks <mode>` | `record` | `record` は [モック](#mock-mcp-servers) から MCP ツール呼び出しに答え、プラグインの実際のサーバーを開始せず、再生用にエージェントモック回答を保存します。`off` はモックを無視し、プラグインの実際の MCP サーバーを開始します。 |
@@ -541,13 +562,16 @@ evals/
 | `model` | 子セッションのデフォルト | テスト対象のエージェント用モデル。`--model` で上書きされます |
 | `max_turns` | `10` | ターンキャップ。最大 200。これに達するとランエラーとして記録され、通常はスコアを低下させるため、寛容に設定してください |
 | `timeout_seconds` | `300` | 実行ごとの壁時間キャップ。最大 3600 |
-| `allowed_tools` | `[]` | ケースが必要とするツール。例えば `[Read, Glob, Grep, Skill]`。読み取り専用ツールはここにリストされると付与されます。その他については、[ツールを付与](#grant-tools)を参照してください |
+| `allowed_tools` | `[]` | ケースが必要とするツール。例えば `[Read, Glob, Grep, Skill]`。[ツールを付与](#grant-tools)を参照してください |
+| `disallowed_tools` | | [このケースから削除](#disallow-tools)する組み込みツールの正確な名前。例えば `[Agent, TaskStop]` |
 | `append_system_prompt` | | 子セッションのシステムプロンプトに追加されるテキスト |
 | `env` | `{}` | 子セッション用の追加環境変数。キーは `EVAL_[A-Z0-9_]*` にマッチする必要があります。その他のキーは実行を失敗させます。実行は、シェルからの許可リストのみを継承します。`PATH` とロケール、プロキシと証明書設定、モデルプロバイダーを選択・認証する変数、ほとんどの `ANTHROPIC_*` と `CLAUDE_CODE_*` 設定、および `EVAL_*` です。プラグインに他のもの（ツールチェーン設定など）を渡すには、`EVAL_*` 変数としてエクスポートしてください |
 
 ### case.yaml フィールド
 
-`case.yaml` は YAML でケースを説明する別の方法または補足です。他のファイルを指すフィールドを追加します。`schema_version: "1.1"` と `name` が必須です。`prompt.md` フィールドの `description`、`tags`、`plugins`、`runs`、`expected_outcome` はトップレベルに配置されます。`model`、`max_turns`、`timeout_seconds`、`allowed_tools`、`append_system_prompt`、`env` は `execution:` の下に配置されます。両方のファイルが存在する場合、`prompt.md` フロントマターは一致する `case.yaml` フィールドを上書きし、`prompt.md` 本文がプロンプトになり、`graders/*.md` は `case.yaml` にリストされたグレーダーの後に追加されます。
+`case.yaml` は YAML でケースを説明する別の方法または補足です。他のファイルを指すフィールドを追加します。`schema_version: "1.1"` と `name` が必須です。`prompt.md` フィールドの `description`、`tags`、`plugins`、`runs`、`expected_outcome` はトップレベルに配置されます。`model`、`max_turns`、`timeout_seconds`、`allowed_tools`、`disallowed_tools`、`append_system_prompt`、`env` は `execution:` の下に配置されます。
+
+両方のファイルが存在する場合、`prompt.md` フロントマターは一致する `case.yaml` フィールドを上書きします。ただし `disallowed_tools` は例外で、2 つのリストが結合されます。`prompt.md` 本文がプロンプトになり、`graders/*.md` は `case.yaml` にリストされたグレーダーの後に追加されます。
 
 これらのフィールドは `case.yaml` にのみ存在します。
 
@@ -681,7 +705,9 @@ Error: formatter@my-marketplace cannot be evaluated where sessions load it: no s
 
 エラーは予期されています。`Δ` はプラグインの実行をベースラインと比較するためです。JSON 結果では、ベースライン実行は `cases[].arms.without` の下にあります。
 
-プラグインが読み込まれた実行では、`allowed_tools` に `Agent` をリストするケースは、名前空間付きの名前でプラグインのエージェントの 1 つをディスパッチできます。たとえば、`my-plugin` という名前のプラグイン内の `code-reviewer` エージェントであれば `my-plugin:code-reviewer` です。ベースライン実行をスキップするには、`--ablation none` を渡してください。
+> [!NOTE]
+>
+> プラグインが読み込まれた実行では、Claude は名前空間付きの名前でプラグインのエージェントの 1 つをディスパッチできます。たとえば、`my-plugin` という名前のプラグイン内の `code-reviewer` エージェントであれば `my-plugin:code-reviewer` です。ベースライン実行をスキップするには、`--ablation none` を渡してください。
 
 ### 正しいファイルが生成されたにもかかわらず、すべてがゼロスコアになる
 
