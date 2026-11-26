@@ -309,6 +309,7 @@
 | `Shell command failed for pattern "..."`（`/security-review` または動的コンテキストを挿入するスキルから） | [コマンドラインエラー](#security-review-fails-without-origin-head) |
 | `Shell command permission check failed for pattern "..."`（動的コンテキストを挿入するスキルから） | [コマンドラインエラー](#security-review-fails-without-origin-head) |
 | ``Couldn't run `<command>` for <name>. A file named HEAD or .git in this folder or one above it may not be yours``（動的コンテキストを挿入するスキルから） | [挿入されたコマンドの権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands) |
+| `/security-review` または動的コンテキストを挿入するスキルからの `Not run in /<name>` / `Ran anyway in /<name>` / `[not run: blocked by hook` | [PreSkillShellCommand の決定制御](https://code.claude.com/docs/ja/hooks.md#preskillshellcommand-decision-control) |
 | ``Skill <name> requires bash (`shell: bash` in frontmatter) but Git Bash was not found`` | [コマンドラインエラー](#security-review-fails-without-origin-head) |
 | `No shell command in <name> was run, because the <tool> tool does not accept one of them` | [コマンドラインエラー](#no-shell-command-was-run) |
 | `This skill, command or hook and the arguments filled into it add up to more than 4,000,000 characters` | [コマンドラインエラー](#skill-command-or-hook-over-the-4000000-character-limit) |

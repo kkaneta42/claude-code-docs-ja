@@ -67,7 +67,7 @@ VS Code 拡張機能またはデスクトップアプリでは、[プラグイ�
 
 ### プラグインを更新する
 
-コマンドやオプションが動作しない場合は、プラグインのバージョンが 0.13.0 以降であることを[確認](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)してください。
+コマンドやオプションが動作しない場合は、プラグインのバージョンが 0.13.1 以降であることを[確認](https://code.claude.com/docs/ja/plugins/install.md#install-a-plugin)してください。
 
 プラグインを自分で更新するには、[プラグインを今すぐ更新する](https://code.claude.com/docs/ja/plugins/install.md#update-plugins-now)を参照してください。また、自動更新がオフになっている場合を除き、Claude Code は[プラグインを自動的に更新](https://code.claude.com/docs/ja/plugins/install.md#keep-plugins-updated)します。
 
@@ -290,11 +290,27 @@ Claude が草案を表示したら、次の手順を行います。
 
 このコマンドはプラグインに含まれています。`PATH` に追加するには、Claude Code で `/claude-security:install-cli` と入力し、表示される指示に従ってください。
 
-次に、リポジトリ内で実行します。システムで必要な場合は `--sudo` または `--no-sandbox` を付けてください。
+サンドボックス内でスキャンする場合は、コードを受け取るプロバイダーに対応する値を指定して `--provider` を追加します。
 
-* **コードベースをスキャンする**：`claude-security`
-* **このブランチの変更をスキャンする**：`claude-security --changes`
-* **フルスクリーン表示でスキャンする**：`claude-security --tui`（Node.js 18 以降が必要）
+* `anthropic`：有料プランまたは Anthropic API
+* `bedrock`：[Amazon Bedrock](https://code.claude.com/docs/ja/amazon-bedrock.md)
+* `vertex`：[Google Cloud の Agent Platform](https://code.claude.com/docs/ja/google-vertex-ai.md)（旧 Vertex AI）
+* `foundry`：[Microsoft Foundry](https://code.claude.com/docs/ja/microsoft-foundry.md)
+
+使用する値を確認するには、ターミナルで `claude` を実行し、[`/status`](https://code.claude.com/docs/ja/commands#all-commands) と入力して、`API provider` 行とベース URL 行を確認します。
+
+* **`API provider` 行**：`Amazon Bedrock`、`Google Vertex AI`、`Microsoft Foundry` のいずれかに対応する値を使用します。`Amazon Bedrock (Mantle)` など、それ以外のプロバイダーの場合は、[セッション内でスキャン](#scan-and-fix-your-codebase)してください。
+* **ベース URL 行**：URL も渡します。たとえば `Anthropic base URL` の場合は、`--provider anthropic --model-base-url https://models.example.com` を使用します。コマンドが URL を拒否した場合は、セッション内でスキャンしてください。
+* **どちらの行もない場合**：組織経由で Claude Code を使用している場合は、使用する値を管理者に確認してください。それ以外の場合は `anthropic` を使用します。
+
+ベース URL を渡すと、認証情報がそのホストに送信される可能性があります。`Anthropic base URL` の場合は、そのホストが発行した認証情報をエクスポートしてください。ベアラートークンの場合は `ANTHROPIC_AUTH_TOKEN`、API キーの場合は `ANTHROPIC_API_KEY` です。
+
+リポジトリ内で次のいずれかのコマンドを実行します。`<provider>` を自分の値に置き換え、必要に応じて `--model-base-url` または `--sudo` を付けてください。
+
+* **コードベースをスキャンする**：`claude-security --provider <provider>`
+* **このブランチの変更をスキャンする**：`claude-security --provider <provider> --changes`
+* **フルスクリーン表示でスキャンする**：`claude-security --provider <provider> --tui`（Node.js 18 以降が必要）
+* **Windows でスキャンする**：`--provider` と `--model-base-url` を `--no-sandbox` に置き換えます（例：`claude-security --no-sandbox --changes`）
 * **その他のオプションを一覧表示する**：`claude-security --help`
 
 このコマンドは [auto モード](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)で実行され、auto モードが利用できない場合は停止します。Claude Code のモデルが auto モードをサポートしていない場合は、`--model` でサポートしているモデルを指定してください。それ以外の原因の場合は、[セッション内でスキャン](#scan-and-fix-your-codebase)してください。

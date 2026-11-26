@@ -62,7 +62,7 @@ Claude が指示を無視したり、設定した機能が表示されない場�
 `/hooks` を実行して、現在のセッションに登録されているすべてのフックをイベント別にグループ化して一覧表示します。定義したフックが表示されない場合、Claude Code はそのフックを読み込んでいません。次の原因がないか確認してください：
 
 * フックがスタンドアロンファイルで定義されている。フックは[設定ファイル](https://code.claude.com/docs/ja/settings.md#settings-files)の `"hooks"` キーの下に置きます。
-* `matcher` の値が単一の文字列ではなく配列になっている。Claude Code は、対話型セッションの開始時と `claude doctor` で、そのエントリを無効な設定として一覧表示します。配列が `PreToolUse` または `PermissionRequest` の下にある場合、そのファイルの他のフックも一切読み込まれません。
+* `matcher` の値が単一の文字列ではなく配列になっている。Claude Code は、対話型セッションの開始時と `claude doctor` で、そのエントリを無効な設定として一覧表示します。配列が `PreToolUse`、`PermissionRequest`、または `PreSkillShellCommand` の下にある場合、そのファイルの他のフックも一切読み込まれません。
 * フックがスキルのフロントマターにあり、このセッションでユーザーも Claude もまだそのスキルを呼び出していない。スキルを呼び出すか Claude に呼び出しを依頼してから、`/hooks` を再度実行してください。それでもフックが表示されない場合は、[解析されなかったフロントマター](https://code.claude.com/docs/ja/skills.md#skill-not-triggering)や[スキルフックの制限](https://code.claude.com/docs/ja/hooks.md#limits-on-skill-hooks)のいずれかなど、他の原因がないか確認してください。
 
 フックが表示されても発火しない場合、通常の原因はマッチャーです。以下の間違いがないか確認してください：

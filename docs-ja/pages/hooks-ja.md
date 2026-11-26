@@ -24,7 +24,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 * ターンごとに 1 回：`UserPromptSubmit`、`Stop`、`StopFailure`
 * エージェント型ループ内のすべてのツール呼び出しで：`PreToolUse` と `PostToolUse`。ただし、[`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) の呼び出しは両方をスキップします
 
-![オプションの Setup から SessionStart に流れ込み、その後、UserPromptSubmit、スラッシュコマンド用の UserPromptExpansion、ネストされたエージェント型ループ（PreToolUse、PermissionRequest、PostToolUse、PostToolUseFailure、PostToolBatch、SubagentStart/Stop、TaskCreated、TaskCompleted）、Stop または StopFailure を含むターンごとのループ、その後 TeammateIdle、PreCompact、PostCompact、SessionEnd が続くことを示すフック ライフサイクル図。Elicitation と ElicitationResult は MCP ツール実行内にネストされ、PermissionDenied は auto モードでの拒否のための PermissionRequest からの副分岐、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged、DirectoryAdded はスタンドアロンの非同期イベント、PreModelSwitch は要求されたモデル切り替えの前に実行されるスタンドアロンの逐次イベント、PostModelSwitch はセッションのモデルが変更された後に実行されるスタンドアロンの非同期イベント、MessageDisplay はアシスタントのメッセージ テキストのストリーミング中に実行される表示専用イベントとして示されています](https://mintcdn.com/claude-code/x7pO8l4XcvAXCoVc/images/hooks-lifecycle.svg?fit=max\&auto=format\&n=x7pO8l4XcvAXCoVc\&q=85\&s=81b9256c1bbe8832553485f5d9e9c746)
+![オプションの Setup から SessionStart に流れ込み、その後、UserPromptSubmit、スラッシュコマンド用の UserPromptExpansion、ネストされたエージェント型ループ（PreToolUse、PermissionRequest、PostToolUse、PostToolUseFailure、PostToolBatch、SubagentStart/Stop、TaskCreated、TaskCompleted）、Stop または StopFailure を含むターンごとのループ、その後 TeammateIdle、PreCompact、PostCompact、SessionEnd が続くことを示すフック ライフサイクル図。Elicitation と ElicitationResult は MCP ツール実行内にネストされ、PermissionDenied は auto モードでの拒否のための PermissionRequest からの副分岐、WorktreeCreate、WorktreeRemove、Notification、ConfigChange、InstructionsLoaded、CwdChanged、FileChanged、DirectoryAdded はスタンドアロンの非同期イベント、PreSkillShellCommand は読み込み中のスキル内のシェル コマンドの前に実行されるスタンドアロンのブロッキング イベント、PreModelSwitch は要求されたモデル切り替えの前に実行されるスタンドアロンの逐次イベント、PostModelSwitch はセッションのモデルが変更された後に実行されるスタンドアロンの非同期イベント、MessageDisplay はアシスタントのメッセージ テキストのストリーミング中に実行される表示専用イベントとして示されています](https://mintcdn.com/claude-code/IWhl7FXSx6ARoVoo/images/hooks-lifecycle.svg?fit=max\&auto=format\&n=IWhl7FXSx6ARoVoo\&q=85\&s=a8adf56a3d13b8a8ba9c446bbd7171f8)
 
 以下の表は、各イベントがいつ発火するかをまとめています。[フック イベント](#hook-events)セクションでは、各イベントの完全な入力スキーマと決定制御オプションについて説明しています。
 
@@ -34,6 +34,7 @@ Claude Code は、セッション中の特定のポイントでフックを実�
 | `Setup` | `--init-only` で Claude Code を起動するとき、または `-p` モードで `--init` または `--maintenance` を使用するとき。CI またはスクリプトでの 1 回限りの準備用 |
 | `UserPromptSubmit` | プロンプトを送信するとき、Claude が処理する前。[Claude Code が独自に開始するターン](https://code.claude.com/docs/ja/hooks.md#userpromptsubmit)でも発火します |
 | `UserPromptExpansion` | ユーザーが入力したコマンドがプロンプトに展開されるとき、Claude に到達する前。展開をブロックできます |
+| `PreSkillShellCommand` | スキルの[挿入されたシェルコマンド](https://code.claude.com/docs/ja/skills.md#inject-dynamic-context)が実行される前。コマンドをブロックできます |
 | `PreToolUse` | ツール呼び出しが実行される前。ブロックできます |
 | `PermissionRequest` | ツール呼び出しが権限決定を必要とするとき |
 | `PermissionDenied` | オートモードがツール呼び出しを拒否するとき、分類器の判定がない拒否を含みます。JSON `hookSpecificOutput.retry: true` を使用して、モデルが拒否されたツール呼び出しを再試行できることを伝えます。Claude Code は分類器が判定を出さなかった場合、`retry` を無視します |
@@ -308,6 +309,7 @@ Claude Code は JSON 決定を読み取り、ツール呼び出しをブロッ�
 | `StopFailure` | エラー タイプ | `rate_limit`、`authentication_failed`、`oauth_org_not_allowed`、`account_on_hold`、`billing_error`、`invalid_request`、`model_not_found`、`server_error`、`max_output_tokens`、`cloud_credential_error`、`unknown` |
 | `InstructionsLoaded` | ロード理由 | `session_start`、`nested_traversal`、`path_glob_match`、`include`、`compact` |
 | `UserPromptExpansion` | コマンド名 | スキルまたはコマンド名 |
+| `PreSkillShellCommand` | コマンドを実行するツール | `Bash`、`PowerShell` |
 | `Elicitation` | MCP サーバー名 | 設定された MCP サーバー名 |
 | `ElicitationResult` | MCP サーバー名 | `Elicitation` と同じ値 |
 | `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`MessageDisplay` | matcher サポートなし | すべての出現で常に発火 |
@@ -421,7 +423,7 @@ Monitor コマンドに対して実行されるフックは、そのコマンド
 | フィールド | 必須 | 説明 |
 | :- | :- | :- |
 | `type` | はい | `"command"`、`"http"`、`"mcp_tool"`、`"prompt"`、または `"agent"` |
-| `if` | いいえ | このフックが実行されるタイミングをフィルタリングする[権限ルール構文](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)（`"Bash(git *)"` や `"Edit(*.ts)"` など）。ツール呼び出しがパターンにマッチする場合のみ、フック コマンドが実行されます。Bash パターンがサブコマンド、`$()`、バッククォートに対してどのように評価されるかについては、[Bash マッチング テーブル](#bash-if-matching)を参照してください。ツール イベントでのみ評価されます: `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`。他のイベントでは、`if` が設定されたフックは実行されません |
+| `if` | いいえ | このフックが実行されるタイミングをフィルタリングする[権限ルール構文](https://code.claude.com/docs/ja/permissions.md#permission-rule-syntax)（`"Bash(git *)"` や `"Edit(*.ts)"` など）。ツール呼び出しがパターンにマッチする場合のみ、フック コマンドが実行されます。Bash パターンがサブコマンド、`$()`、バッククォートに対してどのように評価されるかについては、[Bash マッチング テーブル](#bash-if-matching)を参照してください。`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`、`PreSkillShellCommand` でのみ評価されます。他のイベントでは、`if` が設定されたフックは実行されません |
 | `timeout` | いいえ | キャンセルまでの秒数。[`async: true`](#run-hooks-in-the-background) で実行するコマンドフックには、Claude Code はこれを適用しません。デフォルト: `command`、`http`、`mcp_tool` は 600、`prompt` は 30、`agent` は 60。Claude Code は、[`UserPromptSubmit`](#userpromptsubmit)、[`PreModelSwitch`](#premodelswitch)、[`PostModelSwitch`](#postmodelswitch) では `command`、`http`、`mcp_tool` のデフォルトを 30 に、[`MessageDisplay`](#messagedisplay) では 10 に下げます。[`SessionEnd`](#sessionend) フックは 1.5 秒の予算を共有します。設定でフックごとにより長い `timeout` を指定している場合、Claude Code は最大 60 秒までそれに合わせて予算を引き上げます |
 | `statusMessage` | いいえ | フックの実行中に表示されるカスタム スピナー メッセージ |
 | `once` | いいえ | `true` の場合、Claude Code は最初の実行が成功した後にフックを削除します。失敗した実行、終了コード 2 でブロックした実行、またはタイムアウトした実行ではフックがそのまま残るため、次にマッチするイベントで再び実行されます。[スキルのフロントマター](#hooks-in-skills-and-agents)で宣言されたフックでのみ有効です。設定ファイルとエージェントのフロントマターでは無視されます |
@@ -943,9 +945,9 @@ Agent SDK のコールバック フックについては、[コールバック�
 
 > [!NOTE]
 >
-> Git Bash のない Windows では、`onFailure` が未設定のシェル形式の `PreToolUse` または `PermissionRequest` コマンド フックが失敗した場合、代わりに[ツール呼び出しをブロック](#failed-hooks-on-windows-without-git-bash)することがあります。
+> Git Bash のない Windows では、`onFailure` が未設定のシェル形式の `PreToolUse`、`PermissionRequest`、または `PreSkillShellCommand` コマンド フックが失敗した場合、代わりに[アクションをブロック](#failed-hooks-on-windows-without-git-bash)することがあります。
 
-`.claude/settings.json` 内のこの `PreToolUse` フックは、各 Bash コマンドの前にプロジェクト スクリプトを実行し、スクリプトが失敗した場合はコマンドをブロックします。
+`.claude/settings.json` 内のこの `PreToolUse` フックは、各 Bash ツール呼び出しの前にプロジェクト スクリプトを実行し、スクリプトが失敗した場合はコマンドをブロックします。
 
 ```json theme={null}
 {
@@ -998,7 +1000,7 @@ Error: Cannot find module '/path/to/project/.claude/hooks/check-command.js'
 
 #### Git Bash のない Windows で失敗したフック
 
-ブロックされたツール呼び出しのエラーに次のテキストが含まれている場合、`PreToolUse` または `PermissionRequest` コマンド フックが失敗またはタイムアウトし、呼び出しをブロックしています。
+ブロックされたツール呼び出しまたは[注入されたコマンド](#preskillshellcommand)のエラーに次のテキストが含まれている場合、`PreToolUse`、`PermissionRequest`、または `PreSkillShellCommand` のコマンド フックが失敗またはタイムアウトし、それをブロックしています。
 
 ```text theme={null}
 blocking because Git Bash wasn't found, so only exit code 0 or 2 counts as this hook's verdict.
@@ -1037,6 +1039,7 @@ v2.1.309 より前は、メッセージは `blocking because Git Bash wasn't fou
 | `PermissionRequest` | いいえ | 決定としては読み取られません。代わりに [`decision` オブジェクト](#permissionrequest-decision-control)を通じて拒否してください |
 | `UserPromptSubmit` | はい | プロンプトをブロック。[ブロックされたプロンプトが残すもの](#what-a-blocked-prompt-leaves-behind)を参照してください |
 | `UserPromptExpansion` | はい | 拡張をブロック |
+| `PreSkillShellCommand` | はい | コマンドをブロックし、スキルはその出力なしで読み込まれる |
 | `Stop` | はい | Claude が停止するのを防ぎ、会話を続行 |
 | `SubagentStop` | はい | サブエージェントが停止するのを防止 |
 | `TeammateIdle` | はい | チームメイトがアイドル状態になるのを防止し、作業を続行させる |
@@ -1213,6 +1216,7 @@ Claude Code は注入されたテキストをセッション トランスクリ�
 | TaskCreated | 終了コードまたはトップレベル `decision` | 終了コード 2 または `decision: "block"` は[タスクをキャンセル](#taskcreated-decision-control)し、メッセージを Claude に返します。`continue: false` は無視されます |
 | PreToolUse | `hookSpecificOutput` | `permissionDecision`（allow/deny/ask/defer）、`permissionDecisionReason` |
 | PreModelSwitch | `hookSpecificOutput` またはトップレベル `decision` | `permissionDecision`（allow/deny/ask）、`permissionDecisionReason`。`decision: "block"` も[切り替えをキャンセル](#premodelswitch-decision-control)します |
+| PreSkillShellCommand | `hookSpecificOutput` またはトップレベル `decision` | `permissionDecision`、`permissionDecisionReason`。このフックは[ブロックのみ可能です](#preskillshellcommand-decision-control) |
 | PermissionRequest | `hookSpecificOutput` | `decision.behavior`（allow/deny） |
 | PermissionDenied | `hookSpecificOutput` | `retry: true` はモデルが拒否されたツール呼び出しを再試行できることを伝えます。Claude Code は[判定のない拒否](#permissiondenied-decision-control)ではこれを無視します |
 | WorktreeCreate | パス戻り値 | コマンド フックは stdout にパスを出力します。HTTP フックは `hookSpecificOutput.worktreePath` を返します。フック失敗またはパス欠落で作成が失敗 |
@@ -1652,6 +1656,79 @@ UserPromptSubmit フックは、セッションにカスタムタイトルがあ
 }
 ```
 
+### PreSkillShellCommand
+
+[注入されたコマンド](https://code.claude.com/docs/ja/skills.md#inject-dynamic-context)、つまりスキルや `/security-review` などのコマンドの読み込み中に実行されるシェルコマンドの前に実行されます。[PreToolUse](#pretooluse) フックは注入されたコマンドに対しては発火しません。PreToolUse で既に実行しているスクリプトでそれらをログに記録またはブロックするには、そのスクリプトをこのイベントにも追加してください。スキルのファイルでは、注入されたコマンドは `` !`<command>` `` または ` ```! ` ブロックとして記述されます。
+
+デスクトップアプリと VS Code 拡張機能を含め、Claude Code v2.1.332 以降が必要です。以前のバージョンはこのフックを呼び出さずに注入されたコマンドを実行するため、フックを追加する前にアップデートしてください。先に設定ファイルに追加した場合、v2.1.331 などの以前のバージョンでは、各対話型ターミナルセッションの開始時に[警告ダイアログ](https://code.claude.com/docs/ja/settings.md#fix-a-broken-settings-file)が表示されます：`Unknown hook event "PreSkillShellCommand" was ignored`。最小バージョンを強制するには、[`requiredMinimumVersion`](https://code.claude.com/docs/ja/settings-reference#requiredminimumversion) を参照してください。
+
+コマンドをブロックする必要があるフックでは、matcher、タイプ、場所、失敗時の処理を次のように設定します：
+
+* **Matcher**：[注入されたコマンドを実行する両方のツール](https://code.claude.com/docs/ja/skills.md#how-injected-commands-run)をカバーするために `Bash|PowerShell` を使用します。
+* **タイプ**：[非同期](#run-hooks-in-the-background)ではない `command`、`http`、または `mcp_tool` フックを使用します。非同期フックはブロックできないためです。このイベントに `prompt` または `agent` フックを設定した場合、Claude Code はそれを実行できず、そのフックにマッチする各コマンドをブロックします。
+* **場所**：管理設定などの[設定ファイル](#hook-locations)、またはプラグインでフックを定義します。スキルの注入されたコマンドは、セッション内での最初の読み込み時と、サブエージェント内での読み込み時には、そのスキル自身のフロントマターにあるフックなしで実行されます。[フォークされたスキル](https://code.claude.com/docs/ja/skills.md#run-skills-in-a-subagent)の注入されたコマンドは、スキル自身のフロントマターにあるフックもサブエージェントの定義にあるフックもなしで実行されます。
+* **失敗時**：フックが失敗またはタイムアウトしたときにコマンドが実行されないよう、[`onFailure: "block"`](#block-the-action-when-a-hook-fails) を設定します。
+
+[フックの解決方法](#how-a-hook-resolves)のブロック用スクリプトを再利用できます。
+
+macOS と Linux では、`.claude/settings.json` のこのエントリが [exec 形式](#exec-form-and-shell-form)でスクリプトを実行します：
+
+```json theme={null}
+{
+  "hooks": {
+    "PreSkillShellCommand": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          { "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-rm.sh", "args": [], "onFailure": "block" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Windows では、このエントリの `command` と `args` を、[フックの解決方法](#how-a-hook-resolves)の Windows タブにあるものに置き換えてください。
+
+この例を macOS または Linux でテストするには、`` !`echo 'rm -rf'` `` という 1 行だけを含む `.claude/skills/hook-test/SKILL.md` を作成します。この[読み取り専用コマンド](https://code.claude.com/docs/ja/permissions.md#read-only-commands)は承認を必要とせず、何も削除しません。ターミナルでセッションを開始し、`/hook-test` と入力します。`Not run in /hook-test: echo 'rm -rf' (blocked by hook: Destructive command blocked by hook)` と表示されます。
+
+#### PreSkillShellCommand フックに届くコマンド
+
+スクリプトは[注入されたコマンドに対する権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)の後に実行されるため、チェックを通過したコマンドを受け取ります。`bypassPermissions` モードでも実行されます。
+
+auto モードでは、本来承認が必要なコマンドはスキルの読み込み中には実行されません。Claude はその後ツール呼び出しとしてそのコマンドを実行できますが、その場合はこのイベントではなく `PreToolUse` が発火するため、スクリプトは両方のイベントに設定しておいてください。
+
+#### PreSkillShellCommand の入力
+
+`permission_mode` を含む[共通入力フィールド](#common-input-fields)に加えて、PreSkillShellCommand フックはこの表のフィールドを受け取ります：
+
+| フィールド | 説明 |
+| :- | :- |
+| `tool_name` | コマンドを実行するツール（`Bash` または `PowerShell`） |
+| `tool_input.command` | 実行されるとおりのシェルコマンド |
+| `tool_use_id` | このコマンドの ID。トランスクリプト内のどのツール呼び出しも指しません |
+| `command_name` | 読み込み中のスキルまたはコマンドの名前。たとえば `pr-summary`、プラグインのスキルの場合は `my-plugin:deploy` |
+| `command_source` | スキルまたはコマンドの出所。たとえば `userSettings`、`projectSettings`、`policySettings`、`plugin`、`builtin` |
+| `invoked_by` | スキル名を入力した場合、または Agent SDK アプリがそれを送信した場合は `"user"`、Claude または[セッションスコープのスケジュールタスク](https://code.claude.com/docs/ja/scheduled-tasks.md)がスキルを呼び出した場合は `"claude"`。それ以外（[スキルをプリロードする](https://code.claude.com/docs/ja/sub-agents.md#preload-skills-into-subagents)サブエージェントなど）の場合は `"other"`。 |
+
+#### PreSkillShellCommand の判定の制御
+
+注入されたコマンドをブロックするには、スクリプトを終了コード 2 で終了させるか、`permissionDecision: "deny"` を返します。するとスキルはそのコマンドを実行せずに読み込まれます。このフックからコマンドをブロックすることはできますが、承認したり変更したりすることはできません。
+
+JSON で応答する場合は、[PreToolUse の形式](#pretooluse-decision-control)を使用します。1 つのスクリプトを両方のイベントで使用するには、`hookEventName` を `PreToolUse` のままにします。このイベントでのみ実行するスクリプトでは、`hookEventName` を `PreSkillShellCommand` に設定できます。
+
+| フックの結果 | 何が起こるか |
+| :- | :- |
+| 判定なしの終了コード 0、または `permissionDecision: "allow"` | 他のフックがブロックする場合を除き、コマンドは実行されます |
+| 終了コード 2、`permissionDecision: "deny"`、またはトップレベルの `decision: "block"` | コマンドは実行されません。スキルは引き続き読み込まれ、Claude はコマンドの出力の代わりに `[not run: blocked by hook: <reason>]` を読み取ります。 |
+| `permissionDecision: "ask"` または `"defer"`、あるいは任意の `updatedInput` | Claude Code は `"deny"` と同じようにコマンドをブロックします |
+| `continue: false` | スキルの呼び出しが `Operation stopped by hook: <stopReason>` で失敗します。Claude Code は最初のコマンドを実行する前にフックの応答を収集するため、注入されたコマンドは 1 つも実行されません。 |
+| `command`、`http`、または `mcp_tool` フックが失敗した場合（たとえば JSON 出力なしで終了コード 1 で終了した場合）、またはタイムアウトした場合 | フックが[失敗時にアクションをブロックするフック](#block-the-action-when-a-hook-fails)である場合を除き、コマンドは実行されます。Claude がすでにコードを実行した [Code Mode](https://code.claude.com/docs/ja/code-mode.md#tool-call-refused-by-a-hook) セッションでは、タイムアウトはデフォルトでコマンドをブロックします。 |
+
+ターミナルでスキル名を入力した場合、`Not run in /<name>` 行はブロックされたコマンドを報告します。`Ran anyway in /<name>` 行は、フックが失敗またはタイムアウトした後に実行されたコマンドを報告します。
+
+ブロックの理由を示すには、終了コード 2 で終了する際に stderr に書き込みます。JSON では、`permissionDecisionReason` に入れるか、トップレベルの `decision` と並べて `reason` に入れます。[Remote Control](https://code.claude.com/docs/ja/remote-control.md) が接続されている間もフックはブロックを行いますが、ユーザーも Claude も理由を見ることはできません。理由は[デバッグログ](#debug-hooks)で確認してください。
+
 ### MessageDisplay
 
 アシスタントメッセージが画面にストリーミングされている間に実行されます。Claude Code はメッセージを段階的に表示します。新たに完成した行のバッチが描画可能になるたびに、フックはそれらの行を受け取って 1 回実行され、Claude Code はその位置にフックの置換テキストを描画します。長いメッセージでは複数回呼び出され、短いメッセージでは 1 回だけの場合もあります。
@@ -1789,7 +1866,9 @@ Claude がツールのパラメータを作成した後、ツール呼び出し�
 
 > [!WARNING]
 >
-> PreToolUse は Claude がツールを呼び出したときにのみ実行されます。デフォルトでは、[プロンプト内で `@` を使って参照した](https://code.claude.com/docs/ja/common-workflows#reference-files-and-directories)ファイルは、ツール呼び出しなしで追加されます。Claude Code はプロンプトの構築中にその内容を挿入するため、`Read` にマッチするフックを含め、PreToolUse フックは発火しません。PreToolUse は [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) に対しても発火しません。
+> PreToolUse は Claude がツールを呼び出したときに実行されます。[注入されたコマンド](https://code.claude.com/docs/ja/skills.md#inject-dynamic-context)、つまり[権限チェック](https://code.claude.com/docs/ja/skills.md#permission-checks-on-injected-commands)を通過してスキルの読み込み中に実行されるシェルコマンドに対しては発火しません。それらをログに記録またはブロックするには、[PreSkillShellCommand](#preskillshellcommand) フックを追加してください。
+>
+> デフォルトでは、[プロンプトで `@` を使って参照した](https://code.claude.com/docs/ja/common-workflows#reference-files-and-directories)ファイルは、ツール呼び出しなしで追加されます。Claude Code はプロンプトの構築中にその内容を挿入するため、`Read` にマッチするフックを含め、PreToolUse フックは発火しません。PreToolUse は [`EndConversation`](https://code.claude.com/docs/ja/tools-reference#endconversation-tool-behavior) に対しても発火しません。
 >
 > 特定のパスを `@` 参照からブロックしたり、挿入をオフにしたりできます：
 >
@@ -4030,6 +4109,7 @@ Claude Code は、どの `action` を返した場合でも、ElicitationResult �
 * `PostModelSwitch`
 * `PreCompact`
 * `PreModelSwitch`
+* `PreSkillShellCommand`
 * `SessionEnd`
 * `StopFailure`
 * `SubagentStart`

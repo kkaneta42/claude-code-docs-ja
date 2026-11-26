@@ -79,7 +79,7 @@ Turned on voice mode (hold). Hold space to record. Dictation language: en (/conf
 
 デフォルトでは、キーを離すと文字起こしが挿入され、`Enter` を押すのを待ちます。`voice` 設定オブジェクトで `"autoSubmit": true` を設定して、文字起こしが少なくとも 3 語以上の場合、キーを離すときにプロンプトを自動的に送信します。
 
-`Space` を長押しまたはタップして音声入力が開始されるのは、そのキープレスが本来プロンプトに入力される場所のみです。[トランスクリプト ビューアー](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)では `Space` は会話をページ送りし、[vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)の INSERT 外ではコマンドになります。どちらの場所からでも音声入力するには、`meta+k` などの[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)してください。
+`Space` を長押しまたはタップして音声入力が開始されるのは、そのキープレスが本来プロンプトに入力される場所のみです。[トランスクリプト ビューアー](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)では `Space` は会話をページ送りし、[vim モード](https://code.claude.com/docs/ja/interactive-mode.md#vim-editor-mode)の INSERT 外ではコマンドになります。INSERT 外で音声入力するには、またはトランスクリプト ビューアーから長押しモードで音声入力するには、`meta+k` などの[修飾子の組み合わせにリバインド](#rebind-the-dictation-key)してください。
 
 ## タップして録音して送信
 
@@ -87,17 +87,42 @@ Turned on voice mode (hold). Hold space to record. Dictation language: en (/conf
 
 `/voice tap` でタップモードを有効にします。プロンプト入力が空の場合、`Space` をタップして録音を開始します。フッターは録音中に `● REC · tap to send` と表示されます。`Space` をもう 1 回タップして停止します。
 
-Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3 語以上の場合、プロンプトを自動的に送信します。短い文字起こしは挿入されますが送信されないため、誤ったタップは単語を送信しません。
+2 回目のタップの後、Claude Code はトランスクリプトを挿入し、トランスクリプトが十分な長さであればプロンプトを送信します。
+
+* **3 語以上**: Claude Code がプロンプトを自動的に送信します。
+* **それより少ない語数**: トランスクリプトは挿入されますが送信されないため、誤ってタップしても余計な単語が送信されることはありません。
 
 3 語のしきい値は、スペースなしで書かれた言語の単語をカウントします。日本語、中国語、タイ語の文字起こしは個々の単語をカウントするため、タップモードおよび `autoSubmit` を使用したホールドモードで自動送信されます。
 
-最初のタップはプロンプト入力が空の場合にのみ録音を開始するため、メッセージを作成しながら通常どおりスペースを入力できます。2 番目のタップは入力内容に関係なく録音を停止します。15 秒以上の無音または 2 分間の合計の後、録音も自動的に停止します。
+録音の開始または再開は 1 回のタップで行い、録音は 2 回目のタップなしで停止することもあります。
+
+* **開始**: 最初のタップはプロンプト入力が空の場合に録音を開始するため、メッセージを作成しながら通常どおりスペースを入力できます。自動的に停止した録音に追加するには、[録音を再開します](#resume-a-recording-that-stopped-by-itself)。
+* **停止**: プロンプトを送信または編集したときにも録音は停止します。認識された単語がないまま 60 秒経過した場合、または合計 10 分経過した場合は自動的に停止します。
+
+### 自動的に停止した録音を再開する
+
+タップモードの録音が自動的に停止すると、話した内容は送信されないままプロンプトに残り、フッターに停止の理由が表示されます。その内容を送信するか、編集していなければ内容に追加できます。
+
+* **内容を送信する**: `Enter` を押します。
+* **内容に追加する**: カーソルを内容の末尾に置き、`Space` をタップして再度録音します。もう一度タップして停止すると、3 語以上追加した場合、Claude Code はテキスト全体を送信します。
+
+録音が停止した原因を確認するには、フッターメッセージのうち `dictation stopped` で始まる部分を探します。
+
+| メッセージ | 録音が停止した原因 |
+| :- | :- |
+| `dictation stopped after 1m with no new words` | 60 秒間単語が認識されませんでした。話していた場合は、[`No speech detected`](#troubleshooting) の対処法を試してください |
+| `dictation stopped at its 10m limit` | 録音が 10 分に達しました |
+| `dictation stopped: lost the connection` | 音声テキスト変換サービスへの接続が閉じられたか、失敗後に再度開けませんでした |
+| `dictation stopped: lost the microphone` | マイクを録音するプログラム（SoX や `arecord` など）が終了したか、起動できませんでした |
+| `dictation stopped: the prompt lost focus` | モデルピッカーなどのパネルが開いたか、[トランスクリプトビューア](https://code.claude.com/docs/ja/interactive-mode.md#transcript-viewer)を開きました |
+| `dictation stopped: the terminal detached` | 最後に残っていたターミナルが[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md)からデタッチされました |
+| `dictation stopped: the prompt changed` | プロンプトのテキストが変更されました（入力した場合など）。再度音声入力するには、まずプロンプトを送信またはクリアしてください |
 
 ## 録音をキャンセルする
 
-`Esc` キーまたは `Ctrl+C` キーを押して、ディクテーションを確定する代わりにキャンセルできます。Claude Code はマイクを停止し、トランスクリプトを破棄し、プロンプトを録音開始前の状態に復元します。
+パネル、質問、権限プロンプトのいずれも開いていない状態で `Esc` キーまたは `Ctrl+C` キーを押すと、ディクテーションを確定する代わりにキャンセルできます。Claude Code はマイクを停止し、トランスクリプトを破棄し、プロンプトを録音開始前の状態に復元します。
 
-両方のキーは、完了した録音のトランスクリプトがまだ処理中の場合もキャンセルできます。処理中に編集または送信したプロンプトは、そのままの状態で保持されます。
+プロンプトでは、完了した録音のトランスクリプトがまだ処理中の場合も、両方のキーでキャンセルできます。処理中に編集または送信したプロンプトは、そのままの状態で保持されます。
 
 どちらのキーもキャンセルを実行する以外の処理は行いません。`Esc` は Claude の応答を中断しませんし、`Ctrl+C` はプロンプトをクリアしたり、[Claude Code を終了する 2 回のプレスの最初のプレス](https://code.claude.com/docs/ja/interactive-mode.md#general-controls)としてカウントされません。
 
@@ -177,13 +202,20 @@ Claude Code は文字起こしを挿入し、文字起こしが少なくとも 3
 * **`Voice mode could not find a working audio recorder in WSL`**：WSLg は ALSA デバイスではなく PulseAudio を通じてオーディオをルーティングするため、SoX は PulseAudio バックエンドを明示的にインストールする必要があります。`sudo apt install sox libsox-fmt-pulse` を実行してください。`sox` だけをインストールすると ALSA バックエンドが引き込まれますが、WSL では `/dev/snd` デバイスがないため記録できません。
 * **`Voice input is failing repeatedly and has been paused`**：音声ディクテーションが 10 秒以内に 3 回の失敗に達しました。Claude Code は最初の失敗から 10 秒が経過するまでディクテーションを一時停止します。これは通常、このホストのマイクまたはオーディオスタックがオーディオをキャプチャできないことを意味します。例えば、ヘッドレスサーバー、オーディオパススルーのないリモートシェル、またはマイク権限が拒否されている場合です。動作する入力デバイスを確認し、上記のエントリから根本原因を修正してから、音声を再度トリガーしてください。v2.1.202 より前は、起動時の失敗のみが一時停止にカウントされていました。
 * **ホールドモードで `Space` を押し続けても何も起こらない**：押し続けている間、プロンプト入力を監視してください。スペースが蓄積し続ける場合、音声ディクテーションがオフになっている可能性があります。`/voice hold` を実行して有効にしてください。1 つまたは 2 つのスペースだけが表示されてから何も起こらない場合、音声ディクテーションはオンですがホールド検出がトリガーされていません。ホールド検出はターミナルがキーリピートイベントを送信する必要があるため、OS レベルでキーリピートが無効になっている場合、押し続けているキーを検出できません。キーリピート要件を回避するために `/voice tap` でタップモードに切り替えてください。
-* **タップモードで `Space` をタップするとスペースが入力され、記録されない**：最初のタップは、プロンプト入力が空の場合にのみ記録を開始します。入力を最初にクリアするか、`/voice tap` を実行してタップモードであることを確認してください。
+* **タップモードで `Space` をタップするとスペースが入力され、記録されない**：プロンプトにテキストがあり、[記録を再開](#resume-a-recording-that-stopped-by-itself)していない場合、`Space` はスペースを入力します。記録するには、先にプロンプトを送信するかクリアしてください。プロンプトがすでに空の場合は、`/voice tap` を実行してタップモードをオンにしてください。
 * **`No audio detected from microphone`**：記録が開始されましたが、無音がキャプチャされました。正しい入力デバイスがシステムデフォルトとして設定されており、その入力レベルがミュートされていないか、ゼロに近くないことを確認してください。Windows では、設定 → システム → サウンド → 入力 を開いてマイクを選択してください。macOS では、システム設定 → サウンド → 入力 を開いてください。
 * **`Voice connection failed`**：接続に失敗したため、記録が文字起こしサービスに到達しませんでした。ネットワークを確認して、もう一度試してください。オーディオをキャプチャしない記録は、このメッセージの代わりに `No audio detected from microphone` を報告します。v2.1.200 より前は、無音マイクが接続失敗を報告する可能性があり、実際の問題が入力デバイスであるのに、ネットワーク問題を示唆していました。
 * **`Dictation error: WebSocket error:` の後に `unable to get local issuer certificate` などの証明書エラーが続く**：VS Code ページの [TLS 検査プロキシの背後でディクテーションまたは Web タブが失敗する](https://code.claude.com/docs/ja/vs-code.md#dictation-or-the-web-tab-fails-behind-a-tls-inspecting-proxy) を参照してください。
 * **`Voice stream error: WebSocket upgrade rejected with HTTP <status>`**：サーバーが表示された HTTP ステータスで接続を拒否したため、これはネットワーク障害ではありません。400 範囲のステータスは通常、古いサインイン、またはプロキシもしくはボット保護サービスが文字起こしサービスの代わりに応答していることを意味します。`/login` を実行してサインインを更新し、ステータスが続く場合はネットワークパス上の VPN またはプロキシを確認してください。拒否が到着したときにまだ記録中の場合、Claude Code は 400 範囲外のステータスを 1 回再試行してからこのメッセージを表示します。400 範囲のステータスは再試行しません。v2.1.229 から v2.1.231 では、ネイティブビルドはこのメッセージを表示しませんでした：Claude Code は記録を続け、ホールドモードフッターは `listening…` を表示し続け、記録を停止した後に `Voice connection failed` を報告しました。
 * **`No speech detected`**：オーディオは文字起こしサービスに到達しましたが、単語は認識されませんでした。マイクに近づいて話し、背景ノイズを減らし、[ディクテーション言語](#change-the-dictation-language) が話している言語と一致することを確認してください。
-* **`Dictation stopped: no speech recognized for 15 seconds` または `Dictation stopped at its 2-minute limit`**：VS Code 拡張機能では、認識された単語がないまま 15 秒が経過するか、開始から 2 分が経過すると記録が終了します。その 15 秒間に話していた場合は、`No speech detected` の対処法を試してください。すでに認識された単語はプロンプトボックスに残り、送信されません。さらに追加するには、マイクボタンをもう一度クリックしてください。
+* **ターミナルのフッターに `text kept, Enter to send` または `dictation stopped` が表示される**：タップモードの記録が 2 回目のタップなしで停止しました。プロンプトに残っている単語はまだ送信されていません。`Enter` を押して送信するか、[単語を追加](#resume-a-recording-that-stopped-by-itself)してください。v2.1.332 より前は、認識された単語がないまま 15 秒が経過するか、2 分が経過すると記録が停止し、その後 Claude Code は 3 語以上のトランスクリプトを送信していました。
+* **`Dictation stopped: no speech recognized for 60 seconds`、`Dictation stopped at its 10-minute limit`、または `Dictation stopped: this panel was hidden`**：VS Code 拡張機能が記録を停止しました。すでに認識された単語はプロンプトボックスに残り、送信されません。さらに追加するには、マイクボタンをもう一度クリックしてください。パネルが非表示の間は、制限が短くなります：
+
+  * **表示されているパネル**：接続とマイクが正常に動作している場合、認識された単語がないまま 60 秒が経過するか、開始から 10 分が経過すると記録が終了します。その 60 秒間に話していた場合は、`No speech detected` の対処法を試してください。
+  * **非表示のパネル**：パネルを非表示にした後、認識された単語がないまま 15 秒が経過するか、非表示にしてから 2 分が経過すると記録が終了します。ディクテーション中はパネルを表示したままにしてください。
+
+  v2.1.332 より前は、最初の 2 つのメッセージは `Dictation stopped: no speech recognized for 15 seconds` と `Dictation stopped at its 2-minute limit` でした。
+* **`Dictation error: The microphone stopped sending audio`**：すでに認識された単語は VS Code 拡張機能のプロンプトボックスに残り、送信されません。再試行するには、マイクボタンをクリックしてください。
 * **文字起こしが乱れているか、言語が間違っている**：ディクテーションはデフォルトで英語です。別の言語でディクテーションしている場合は、最初に `/config` で設定してください。[ディクテーション言語を変更する](#change-the-dictation-language) を参照してください。
 
 ### Terminal not listed in macOS Microphone settings

@@ -298,7 +298,7 @@ MCP ツール定義は [デフォルトで遅延](https://code.claude.com/docs/j
 
 > [tab] settings.json
 >
-> これを [settings.json](https://code.claude.com/docs/ja/settings.md#where-settings-live) に追加して、すべての Bash コマンドの前にフックを実行します。
+> これを [settings.json](https://code.claude.com/docs/ja/settings.md#where-settings-live) に追加して、すべての Bash ツール呼び出しの前にフックを実行します。
 >
 > ```json theme={null}
 > {

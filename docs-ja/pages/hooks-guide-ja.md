@@ -475,6 +475,7 @@ Claude Code は、ライフサイクルの特定の時点でフックイベン�
 | `Setup` | `--init-only` で Claude Code を起動するとき、または `-p` モードで `--init` または `--maintenance` を使用するとき。CI またはスクリプトでの 1 回限りの準備用 |
 | `UserPromptSubmit` | プロンプトを送信するとき、Claude が処理する前。[Claude Code が独自に開始するターン](https://code.claude.com/docs/ja/hooks.md#userpromptsubmit)でも発火します |
 | `UserPromptExpansion` | ユーザーが入力したコマンドがプロンプトに展開されるとき、Claude に到達する前。展開をブロックできます |
+| `PreSkillShellCommand` | スキルの[挿入されたシェルコマンド](https://code.claude.com/docs/ja/skills.md#inject-dynamic-context)が実行される前。コマンドをブロックできます |
 | `PreToolUse` | ツール呼び出しが実行される前。ブロックできます |
 | `PermissionRequest` | ツール呼び出しが権限決定を必要とするとき |
 | `PermissionDenied` | オートモードがツール呼び出しを拒否するとき、分類器の判定がない拒否を含みます。JSON `hookSpecificOutput.retry: true` を使用して、モデルが拒否されたツール呼び出しを再試行できることを伝えます。Claude Code は分類器が判定を出さなかった場合、`retry` を無視します |
@@ -694,6 +695,7 @@ matcher がない場合、フックはそのイベントが発生するたびに
 | `ElicitationResult` | MCP サーバー名 | `Elicitation` と同じ値 |
 | `FileChanged` | 監視するファイル名のリテラル（[FileChanged](https://code.claude.com/docs/ja/hooks.md#filechanged) を参照） | `.envrc\|.env` |
 | `UserPromptExpansion` | コマンド名 | スキル名またはコマンド名 |
+| `PreSkillShellCommand` | コマンドを実行するツール | `Bash`、`PowerShell` |
 | `UserPromptSubmit`、`PostToolBatch`、`Stop`、`TeammateIdle`、`TaskCreated`、`TaskCompleted`、`WorktreeCreate`、`WorktreeRemove`、`CwdChanged`、`MessageDisplay` | matcher 非対応 | 発生するたびに常に発火 |
 
 以下のタブでは、さまざまなイベントタイプに対する matcher の例をさらにいくつか示します。
@@ -805,7 +807,9 @@ Claude Code が Bash の入力をサブコマンドに分割できない場合�
 
 `if` フィールドは、権限ルールと同じパターン（`"Bash(git *)"`、`"Edit(*.ts)"` など）を受け付けます。複数のツール名に一致させるには、それぞれ独自の `if` 値を持つ個別のハンドラーを使用するか、パイプによる選択がサポートされている `matcher` レベルで照合してください。
 
-`if` はツールイベント（`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`）でのみ機能します。それ以外のイベントに追加すると、フックは実行されなくなります。
+> [!NOTE]
+>
+> `if` は `PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`PermissionRequest`、`PermissionDenied`、`PreSkillShellCommand` でのみ機能します。それ以外のイベントに追加すると、フックは実行されなくなります。
 
 ### フックの場所を設定する
 

@@ -137,7 +137,7 @@ claude.ai の [**Organization settings > Desktop 3P**](https://claude.ai/admin-s
 
 Claude Code は、優先度の高い順に次の順序でソースを確認します。
 
-1. リモート設定。claude.ai から[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)として、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)によって配信されます。Claude Code がこのソースを取得するのは、セッションが次のいずれかの条件を満たす場合のみです。
+1. リモート設定。claude.ai から[サーバー管理設定](https://code.claude.com/docs/ja/server-managed-settings.md)として、または [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)によって配信されます。セッションが次のいずれかの条件を満たす場合、Claude Code はこのソースを取得できます。
 
    * [対象となる認証情報](https://code.claude.com/docs/ja/server-managed-settings.md#platform-availability)を持っている
    * `/login` でゲートウェイにサインインする

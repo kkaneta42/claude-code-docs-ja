@@ -821,6 +821,8 @@ PowerShell ツールも、実行するコマンドに同じタイムアウト、
 
 auto モードでは、本来ユーザーの承認が必要なコマンドでも呼び出しは中止されません。スキルは、最初にそのコマンドを実行するよう Claude に指示する内容とともに読み込まれ、Claude 自身による呼び出しは [auto モードの通常のチェック](https://code.claude.com/docs/ja/permission-modes.md#how-the-classifier-evaluates-actions)を経由します。ただし、`agent` を設定する[フォークされたスキル](#run-skills-in-a-subagent)や、Claude が[注入されたコマンドを実行するシェルツール](#how-injected-commands-run)を持たないセッションでは、引き続き呼び出しが中止されます。
 
+`PreToolUse` フックは、スキルの読み込み時に実行される注入されたコマンドに対しては発火しません。権限チェックを通過したコマンドをログに記録またはブロックするには、[`PreSkillShellCommand` フック](https://code.claude.com/docs/ja/hooks#preskillshellcommand)を使用してください。
+
 ### サブエージェントでスキルを実行する
 
 スキルを分離された環境で実行したい場合は、フロントマターに `context: fork` を追加します。Claude Code は `agent` フィールドで設定されたタイプの新しいサブエージェントを起動し、スキルの内容をそのプロンプトとして渡します。サブエージェントはユーザーの会話履歴を参照しないため、スキルの指示はそれ単体で完結している必要があります。
