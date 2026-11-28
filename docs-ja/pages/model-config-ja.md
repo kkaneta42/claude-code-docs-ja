@@ -459,7 +459,7 @@ Claude Enterprise プランの組織管理者は、claude.ai の管理コンソ�
 
 管理者は、組織のデフォルトがユーザーの選択を上書きするように設定することもできます。上書きが有効な場合、組織のデフォルトはユーザー、プロジェクト、ローカル設定内の `model` の値よりも優先されます。その場合、`/model` で保存したモデルは現在のセッションに適用され、新しいセッションでは組織のデフォルトに戻ります。ユーザーの選択が異なる場合、`/model` には `Your organization's default (<model>) applies on restart` と表示されます。
 
-上書きが有効な場合でも、`--model` フラグ、`ANTHROPIC_MODEL`、管理設定、`--settings` は引き続き優先されます。メンバーが選択できるモデルを制限するには、代わりに[組織のモデル制限](#organization-model-restrictions)または [`availableModels`](#restrict-model-selection) を使用してください。
+ターミナルでは、上書きが有効な場合でも、新しいセッションは `--model` フラグ、`ANTHROPIC_MODEL`、管理設定、または `--settings` で設定されたモデルで開始されます。メンバーが選択できるモデルを制限するには、[組織のモデル制限](#organization-model-restrictions)または [`availableModels`](#restrict-model-selection) を使用してください。
 
 Claude Code は起動時に一度だけ組織のデフォルトを読み込むため、セッション中に管理者がデフォルトを変更した場合は、次回の起動時に反映されます。
 

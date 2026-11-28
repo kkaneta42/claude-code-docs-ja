@@ -2068,6 +2068,7 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ�
 | `permissions.disableBypassPermissionsMode` | ユーザーが Bypass permissions モードを有効にするのを防ぐには`"disable"`に設定します。 |
 | `disableAutoMode` | [Auto](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)モードをモードセレクタから削除するには`"disable"`に設定します。`permissions`の下でも受け入れられます。 |
 | `autoMode` | 組織全体で auto モード分類器が信頼およびブロックするものをカスタマイズします。[auto モードを設定する](https://code.claude.com/docs/ja/auto-mode-config.md)を参照してください。 |
+| `model` | [新しいローカルセッションの開始時に使用される](#set-the-model-that-new-sessions-start-on)モデル ID を設定します |
 | `browserExternalPageTools` | Claude が[Browser ペイン](#browse-external-sites)の外部ページを読み取るまたは操作するためのツールを使用するのを防ぐには`"disabled"`に設定します。ユーザーは引き続き外部サイトに自分でナビゲートできます。ローカル開発サーバープレビューは影響を受けません。 |
 | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](https://code.claude.com/docs/ja/desktop-ios-simulator.md#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
 | `disableBrowserExternalNavigation` | [Browser ペイン](#browse-external-sites)の外部ブラウジングを完全にオフにするには`true`に設定します。ユーザーも Claude も外部サイトにナビゲートできません。localhost 開発サーバープレビューは影響を受けません。SSH および WSL セッションでの Browser ペインの HTML プレビューでは[スクリプトは実行されません](#turn-off-scripts-in-ssh-and-wsl-previews-for-your-organization)。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
@@ -2098,6 +2099,18 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
 ユーザーが`permissions.disableBypassPermissionsMode`または`disableAutoMode`を上書きできないようにするには、管理設定でそれを設定してください。
 
 管理ソースのみが設定できる権限、プラグイン、および配信キーについては、[管理設定のみが設定できるキー](https://code.claude.com/docs/ja/managed-settings.md#managed-only-settings)を参照してください。
+
+#### 新しいセッションの開始時に使用されるモデルを設定する
+
+モデルピッカーでモデルの横に **Set by admin** と表示されている場合、管理設定でそのモデルが[`model`](https://code.claude.com/docs/ja/model-config#control-the-model-users-run-on)として設定されていることを意味します。このラベルが表示されている場合、新しいローカルセッションの開始時には、ユーザーがそのモデルを選択できるのであれば、ユーザーが最後に選択したモデルよりもそのモデルが優先されます。ユーザーは引き続き、セッションごとに別のモデルを選択できます。
+
+開始時のモデルの設定をやめるには：
+
+1. ユーザーのコンピューターで **Settings > Code** または **Settings > Claude Code** を開き、**Starting values from your organization** の下を見て、どの管理ソースが適用されているかを確認します。
+2. `model`を設定している各管理ソースから`model`を削除し、ユーザーに Desktop を再起動してもらいます。
+3. 各ユーザーに、使用する各フォルダで、セッションの最初のメッセージを送信する前にモデルを選択してもらいます。それまでは、新しいセッションが削除したモデルで開始される可能性があります。
+
+[組織のデフォルトモデル](https://code.claude.com/docs/ja/model-config.md#organization-default-model)がユーザーの選択を上書きする場合、ターミナルでは`model`が優先されるにもかかわらず、これらのセッションはユーザーがそのデフォルトを選択できるときにはそのデフォルトで開始されます。ユーザーが選択できるようにするには、[**Organization settings > Models**](https://claude.ai/admin-settings/models)と、独自のデフォルトを持つ各カスタムロールでも、**Always start with the default model and effort level** をオフにしてください。
 
 #### すべてのユーザーにスキルをデプロイする
 
@@ -2299,7 +2312,7 @@ Desktop と CLI は同じ設定ファイルを読み込むため、セットア�
 * `~/.claude.json` または `.mcp.json` で設定された **[MCP サーバー](https://code.claude.com/docs/ja/mcp.md)** は両方で機能します
 * 設定で定義された **[フック](https://code.claude.com/docs/ja/hooks.md)** および **[スキル](https://code.claude.com/docs/ja/skills.md)** は両方に適用されます
 * `~/.claude.json` および `~/.claude/settings.json` の **[設定](https://code.claude.com/docs/ja/settings.md)** は共有されます。`settings.json` の権限ルール、許可されたツール、およびその他の設定は Desktop セッションに適用されます。一部のキーは[コードタブでは異なる動作をします](#claude-code-settings-that-behave-differently-in-the-code-tab)。
-* **モデル**：同じ[モデル](https://code.claude.com/docs/ja/model-config.md#available-models)が両方で利用可能です。Desktop では、プロンプトボックスの下の行にあるモデルピッカーからモデルを選択します。セッション中にも同じピッカーからモデルを変更できます。
+* **モデル**：Desktop では、プロンプトボックスの下の行にあるモデルピッカーからモデルを選択します。セッション中にも同じピッカーからモデルを変更できます。
 
 #### Claude Desktop チャットアプリからの MCP サーバー
 

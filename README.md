@@ -17,6 +17,77 @@ Claude Code公式ドキュメントの日本語版を自動更新・管理する
 <!-- UPDATE_LOG_START -->
 
 <details>
+<summary>2026-11-28</summary>
+
+**変更ファイル:**
+
+```
+ docs-ja/pages/desktop-ja.md      | 15 ++++++++++++++-
+ docs-ja/pages/model-config-ja.md |  2 +-
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+```
+
+<details>
+<summary>desktop-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/desktop-ja.md b/docs-ja/pages/desktop-ja.md
+index d169fc3..65b8f7a 100644
+--- a/docs-ja/pages/desktop-ja.md
++++ b/docs-ja/pages/desktop-ja.md
+@@ -2069,4 +2069,5 @@ HIPAA が有効になっている Enterprise 組織では、**Desktop** トグ
+ | `disableAutoMode` | [Auto](https://code.claude.com/docs/ja/permission-modes.md#eliminate-prompts-with-auto-mode)モードをモードセレクタから削除するには`"disable"`に設定します。`permissions`の下でも受け入れられます。 |
+ | `autoMode` | 組織全体で auto モード分類器が信頼およびブロックするものをカスタマイズします。[auto モードを設定する](https://code.claude.com/docs/ja/auto-mode-config.md)を参照してください。 |
++| `model` | [新しいローカルセッションの開始時に使用される](#set-the-model-that-new-sessions-start-on)モデル ID を設定します |
+ | `browserExternalPageTools` | Claude が[Browser ペイン](#browse-external-sites)の外部ページを読み取るまたは操作するためのツールを使用するのを防ぐには`"disabled"`に設定します。ユーザーは引き続き外部サイトに自分でナビゲートできます。ローカル開発サーバープレビューは影響を受けません。 |
+ | `disableMobileSimulatorTools` | Claude の[iOS Simulator ペイン](https://code.claude.com/docs/ja/desktop-ios-simulator.md#turn-off-simulator-access)でデバイスを制御およびキャプチャするためのツールをブロックするには`true`に設定します。ペインはユーザー自身のタップに対して使用可能なままです。Claude のアクセスのみが削除されます。値は JSON ブール値`true`である必要があります。文字列`"true"`は無視されます。 |
+@@ -2100,4 +2101,16 @@ Desktop セッションがどこで実行されるかに応じて、どの管理
+ 管理ソースのみが設定できる権限、プラグイン、および配信キーについては、[管理設定のみが設定できるキー](https://code.claude.com/docs/ja/managed-settings.md#managed-only-settings)を参照してください。
+ 
++#### 新しいセッションの開始時に使用されるモデルを設定する
++
++モデルピッカーでモデルの横に **Set by admin** と表示されている場合、管理設定でそのモデルが[`model`](https://code.claude.com/docs/ja/model-config#control-the-model-users-run-on)として設定されていることを意味します。このラベルが表示されている場合、新しいローカルセッションの開始時には、ユーザーがそのモデルを選択できるのであれば、ユーザーが最後に選択したモデルよりもそのモデルが優先されます。ユーザーは引き続き、セッションごとに別のモデルを選択できます。
++
++開始時のモデルの設定をやめるには：
++
++1. ユーザーのコンピューターで **Settings > Code** または **Settings > Claude Code** を開き、**Starting values from your organization** の下を見て、どの管理ソースが適用されているかを確認します。
++2. `model`を設定している各管理ソースから`model`を削除し、ユーザーに Desktop を再起動してもらいます。
++3. 各ユーザーに、使用する各フォルダで、セッションの最初のメッセージを送信する前にモデルを選択してもらいます。それまでは、新しいセッションが削除したモデルで開始される可能性があります。
++
++[組織のデフォルトモデル](https://code.claude.com/docs/ja/model-config.md#organization-default-model)がユーザーの選択を上書きする場合、ターミナルでは`model`が優先されるにもかかわらず、これらのセッションはユーザーがそのデフォルトを選択できるときにはそのデフォルトで開始されます。ユーザーが選択できるようにするには、[**Organization settings > Models**](https://claude.ai/admin-settings/models)と、独自のデフォルトを持つ各カスタムロールでも、**Always start with the default model and effort level** をオフにしてください。
++
+ #### すべてのユーザーにスキルをデプロイする
+ 
+@@ -2300,5 +2313,5 @@ Desktop と CLI は同じ設定ファイルを読み込むため、セットア
+ * 設定で定義された **[フック](https://code.claude.com/docs/ja/hooks.md)** および **[スキル](https://code.claude.com/docs/ja/skills.md)** は両方に適用されます
+ * `~/.claude.json` および `~/.claude/settings.json` の **[設定](https://code.claude.com/docs/ja/settings.md)** は共有されます。`settings.json` の権限ルール、許可されたツール、およびその他の設定は Desktop セッションに適用されます。一部のキーは[コードタブでは異なる動作をします](#claude-code-settings-that-behave-differently-in-the-code-tab)。
+```
+
+</details>
+
+<details>
+<summary>model-config-ja.md</summary>
+
+```diff
+diff --git a/docs-ja/pages/model-config-ja.md b/docs-ja/pages/model-config-ja.md
+index 6aa5cec..15177d3 100644
+--- a/docs-ja/pages/model-config-ja.md
++++ b/docs-ja/pages/model-config-ja.md
+@@ -460,5 +460,5 @@ Claude Enterprise プランの組織管理者は、claude.ai の管理コンソ
+ 管理者は、組織のデフォルトがユーザーの選択を上書きするように設定することもできます。上書きが有効な場合、組織のデフォルトはユーザー、プロジェクト、ローカル設定内の `model` の値よりも優先されます。その場合、`/model` で保存したモデルは現在のセッションに適用され、新しいセッションでは組織のデフォルトに戻ります。ユーザーの選択が異なる場合、`/model` には `Your organization's default (<model>) applies on restart` と表示されます。
+ 
+-上書きが有効な場合でも、`--model` フラグ、`ANTHROPIC_MODEL`、管理設定、`--settings` は引き続き優先されます。メンバーが選択できるモデルを制限するには、代わりに[組織のモデル制限](#organization-model-restrictions)または [`availableModels`](#restrict-model-selection) を使用してください。
++ターミナルでは、上書きが有効な場合でも、新しいセッションは `--model` フラグ、`ANTHROPIC_MODEL`、管理設定、または `--settings` で設定されたモデルで開始されます。メンバーが選択できるモデルを制限するには、[組織のモデル制限](#organization-model-restrictions)または [`availableModels`](#restrict-model-selection) を使用してください。
+ 
+ Claude Code は起動時に一度だけ組織のデフォルトを読み込むため、セッション中に管理者がデフォルトを変更した場合は、次回の起動時に反映されます。
+```
+
+</details>
+
+</details>
+
+
+<details>
 <summary>2026-11-26</summary>
 
 **変更ファイル:**
@@ -2729,89 +2800,6 @@ index 1571287..f1c1f96 100644
 +* [組織のデフォルトモデル](https://code.claude.com/docs/ja/model-config.md#organization-default-model)：新しいセッションが開始するモデルを設定します。メンバーは引き続きモデルを切り替えられます。メンバーをデフォルトに戻すには、そのセクションで説明している上書きをオンにします。メンバーが選択できるモデルを制限するには、[組織のモデル制限](https://code.claude.com/docs/ja/model-config.md#organization-model-restrictions)を使用します。
  * [組織の effort 制限](https://code.claude.com/docs/ja/model-config.md#organization-effort-limits)：ロールごとに effort レベルの上限を設定します。サーバー側で強制されます。
  
-```
-
-</details>
-
-<details>
-<summary>agent-view-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/agent-view-ja.md b/docs-ja/pages/agent-view-ja.md
-index f78e4db..4cf2176 100644
---- a/docs-ja/pages/agent-view-ja.md
-+++ b/docs-ja/pages/agent-view-ja.md
-@@ -9,5 +9,5 @@
- `claude agents` で開くエージェントビューは、すべてのバックグラウンドセッションの 1 つの画面です。実行中のもの、入力が必要なもの、完了したものが表示されます。新しいセッションをディスパッチし、トランスクリプトをスクロールする代わりに一目でセッションの状態を確認し、セッションが必要とするときだけ介入します。各バックグラウンドセッションは完全な Claude Code の会話であり、ターミナルが接続されていなくてもバックグラウンドで実行し続けるため、いつでも開いて、返信して、去ることができます。
- 
--![ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。](https://mintcdn.com/claude-code/v_J840yKc6uuKDX_/images/agent-view-light.png?fit=max\&auto=format\&n=v_J840yKc6uuKDX_\&q=85\&s=bd95fda83ea66ca8b2e0e7b68f8cb29e)
-+![ターミナルのエージェントビュー。上部の行は、入力を待機しているセッション、実行中のセッション、完了したセッションの数をカウントします。4 つのセッションは「入力が必要」、「実行中」、「完了」の下にグループ化されています。各行はセッションの名前、最新のステータスまたは質問、および時間を表示します。下部には新しいタスクを説明するための入力と、キーボードヒントの行があります。](https://mintcdn.com/claude-code/H7YQo-xfDxC94ETh/images/agent-view-light.png?fit=max\&auto=format\&n=H7YQo-xfDxC94ETh\&q=85\&s=f27b570ff81c2a316bef487645b1331c)
- 
- Claude が複数の独立したタスクに対して、あなたが毎ステップを監視することなく作業できる場合に、エージェントビューを使用します。バグ修正、プルリクエストレビュー、不安定なテストの調査を 3 つの行としてディスパッチし、別のウィンドウで作業を続け、行が入力が必要であることを示すか、結果が得られたときに確認します。
-@@ -266,5 +266,5 @@ Windows では、アタッチしてから約 0.5 秒以内に `←` を押すと
- プロンプトのテキストの最後の文字を削除した直後、またはプロンプト履歴を移動した直後に `←` を押すと、Claude Code は確認を求めます。最初の押下では `Press ← again to open agents`（アタッチされたセッションでは `Press ← again to go back to agents`）が表示され、2 回目の押下で切り替わります。
- 
--`←` がフォアグラウンドセッションをバックグラウンドにすると、エージェントビューはリストの上に `Your conversation moved to the background` を表示し、そのセッションの行が既に選択されています。そこから：
-+`←` でセッションをバックグラウンドにした後：
- 
- * `Enter` を押して会話を再度開きます。
-```
-
-</details>
-
-<details>
-<summary>amazon-bedrock-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/amazon-bedrock-ja.md b/docs-ja/pages/amazon-bedrock-ja.md
-index 95aa4b3..663cebf 100644
---- a/docs-ja/pages/amazon-bedrock-ja.md
-+++ b/docs-ja/pages/amazon-bedrock-ja.md
-@@ -466,5 +466,5 @@ export ANTHROPIC_BEDROCK_SERVICE_TIER=priority
- ```
- 
--Claude Code は、この変数が設定されたセッションからのすべての [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) リクエストで、これを `X-Amzn-Bedrock-Service-Tier` ヘッダーとして送信します。ただし、[モデルアクセスチェック](#startup-model-checks)は除きます。この設定は、[Mantle エンドポイント](#use-the-mantle-endpoint)へのリクエストや [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)を経由するリクエストには影響しません。ティアの可用性はモデルとリージョンによって異なります。予約容量は、この設定の代わりに[プロビジョニングされたスループット](https://docs.aws.amazon.com/bedrock/latest/userguide/prov-throughput.html) ARN をモデル ID として使用します。
-+Claude Code は、この変数が設定されたセッションからのすべての [Invoke API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModelWithResponseStream.html) リクエストで、これを `X-Amzn-Bedrock-Service-Tier` ヘッダーとして送信します。ただし、[モデルアクセスチェック](#startup-model-checks)は除きます。この設定は、[Mantle エンドポイント](#use-the-mantle-endpoint)へのリクエストや [Claude apps ゲートウェイ](https://code.claude.com/docs/ja/claude-apps-gateway)を経由するリクエストには影響しません。ティアの可用性はモデルとリージョンによって異なります。
- 
- ターミナルから開始する[バックグラウンドセッション](https://code.claude.com/docs/ja/agent-view.md#settings-and-provider)にも適用するには、設定の [`env`](https://code.claude.com/docs/ja/settings-reference#env) ブロックで `ANTHROPIC_BEDROCK_SERVICE_TIER` を設定します。これらのセッションがエクスポートした値を受け取るのは、[スーパーバイザー](https://code.claude.com/docs/ja/agent-view.md#the-supervisor-process)を開始したシェルがその値をエクスポートしていた場合のみです。
-```
-
-</details>
-
-<details>
-<summary>analytics-ja.md</summary>
-
-```diff
-diff --git a/docs-ja/pages/analytics-ja.md b/docs-ja/pages/analytics-ja.md
-index cc8b9e9..fdcd4dd 100644
---- a/docs-ja/pages/analytics-ja.md
-+++ b/docs-ja/pages/analytics-ja.md
-@@ -72,9 +72,8 @@ GitHub 認証フローを完了し、分析に含める GitHub 組織を選択
- > これらのメトリクスは意図的に保守的であり、Claude Code の実際の影響の過小評価を表しています。Claude Code の関与に高い信頼度がある行と PR のみがカウントされます。
- 
--ダッシュボードの上部に以下のサマリーメトリクスが表示されます。
-+ダッシュボードには以下のサマリーメトリクスが表示されます。
- 
--* **PRs with CC**：Claude Code で記述された少なくとも 1 行のコードを含むマージされたプルリクエストの総数
--* **Lines of code with CC**：Claude Code 支援で記述されたすべてのマージされた PR 全体のコード行数。「有効な行」のみがカウントされます。正規化後に 3 文字以上の行で、空行と括弧またはトリビアルな句読点のみの行を除きます。
--* **PRs with Claude Code（%）**：Claude Code 支援コードを含むすべてのマージされた PR のパーセンテージ
-+* **PRs with Claude Code**：Claude Code で記述された少なくとも 1 行のコードを含むマージされたプルリクエスト。1 つのカードには件数が、もう 1 つのカードにはマージされたすべての PR に占める割合が表示されます
-+* **LOC with Claude Code**：Claude Code 支援で記述された、すべてのマージされた PR 全体のコード行（LOC）の総数。「有効な行」のみがカウントされます。これは正規化後に 3 文字を超える行です。
- * **Suggestion accept rate**：ユーザーが Claude Code のコード編集提案を受け入れる回数のパーセンテージ。Edit、Write、NotebookEdit ツール使用を含みます。
- * **Lines of code accepted**：受け入れられた編集において Claude Code の Edit ツールと Write ツールが追加または削除したコード行の総数。拒否された提案は除外され、後で削除された行によって合計が減ることはありません。
-@@ -84,17 +83,7 @@ GitHub 認証フローを完了し、分析に含める GitHub 組織を選択
- ダッシュボードには、時系列でトレンドを視覚化するためのいくつかのチャートが含まれています。
- 
--#### 採用を追跡する
--
--採用チャートは日次使用トレンドを表示します。
--
--* **users**：日次アクティブユーザー
--* **sessions**：1 日あたりのアクティブな Claude Code セッション数
--
- #### ユーザーあたりの PR を測定する
- 
--このチャートは、時系列での個々の開発者アクティビティを表示します。
 ```
 
 </details>
